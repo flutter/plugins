@@ -372,7 +372,7 @@ void main() {
       );
       expect(
           controller.textureId, VideoPlayerController.kUninitializedTextureId);
-      expect(await controller.position, const Duration());
+      expect(await controller.position, Duration.zero);
       await controller.initialize();
 
       await controller.dispose();
@@ -470,7 +470,7 @@ void main() {
           'https://127.0.0.1',
         );
         await controller.initialize();
-        expect(await controller.position, const Duration());
+        expect(await controller.position, Duration.zero);
 
         await controller.seekTo(const Duration(milliseconds: 500));
 
@@ -493,13 +493,13 @@ void main() {
           'https://127.0.0.1',
         );
         await controller.initialize();
-        expect(await controller.position, const Duration());
+        expect(await controller.position, Duration.zero);
 
         await controller.seekTo(const Duration(seconds: 100));
         expect(await controller.position, const Duration(seconds: 1));
 
         await controller.seekTo(const Duration(seconds: -100));
-        expect(await controller.position, const Duration());
+        expect(await controller.position, Duration.zero);
       });
     });
 
@@ -619,7 +619,7 @@ void main() {
         );
 
         await controller.initialize();
-        expect(controller.value.position, const Duration());
+        expect(controller.value.position, Duration.zero);
         expect(controller.value.caption.text, '');
 
         await controller.seekTo(const Duration(milliseconds: 100));
@@ -652,7 +652,7 @@ void main() {
 
         await controller.initialize();
         controller.setCaptionOffset(const Duration(milliseconds: 100));
-        expect(controller.value.position, const Duration());
+        expect(controller.value.position, Duration.zero);
         expect(controller.value.caption.text, '');
 
         await controller.seekTo(const Duration(milliseconds: 100));
@@ -688,7 +688,7 @@ void main() {
 
         await controller.initialize();
         controller.setCaptionOffset(const Duration(milliseconds: -100));
-        expect(controller.value.position, const Duration());
+        expect(controller.value.position, Duration.zero);
         expect(controller.value.caption.text, '');
 
         await controller.seekTo(const Duration(milliseconds: 100));
@@ -788,7 +788,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(controller.value.isBuffering, isTrue);
 
-        const Duration bufferStart = Duration();
+        const Duration bufferStart = Duration.zero;
         const Duration bufferEnd = Duration(milliseconds: 500);
         fakeVideoEventStream.add(VideoEvent(
             eventType: VideoEventType.bufferingUpdate,
@@ -883,7 +883,7 @@ void main() {
           text: 'foo', number: 0, start: Duration.zero, end: Duration.zero);
       const Duration captionOffset = Duration(milliseconds: 250);
       final List<DurationRange> buffered = <DurationRange>[
-        DurationRange(const Duration(), const Duration(seconds: 4))
+        DurationRange(Duration.zero, const Duration(seconds: 4))
       ];
       const bool isInitialized = true;
       const bool isPlaying = true;
@@ -1118,7 +1118,7 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   @override
   Future<Duration> getPosition(int textureId) async {
     calls.add('position');
-    return _positions[textureId] ?? const Duration();
+    return _positions[textureId] ?? Duration.zero;
   }
 
   @override
