@@ -5,7 +5,7 @@
 #import "GoogleMapController.h"
 #import "FLTGoogleMapJSONConversions.h"
 #import "FLTGoogleMapTileOverlayController.h"
-#import "GoogleMapHeatmapController.h"
+#import "FLTGoogleMapHeatmapController.h"
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 

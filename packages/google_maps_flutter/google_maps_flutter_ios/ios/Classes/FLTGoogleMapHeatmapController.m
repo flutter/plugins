@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "GoogleMapHeatmapController.h"
+#import "FLTGoogleMapHeatmapController.h"
 #import "FLTGoogleMapJSONConversions.h"
 @import GoogleMapsUtils;
 
@@ -33,8 +33,6 @@
 - (void)clearTileCache {
   [_heatmapTileLayer clearTileCache];
 }
-
-#pragma mark - FLTGoogleMapHeatmapOptionsSink methods
 
 - (void)setWeightedData:(NSArray<GMUWeightedLatLng *> *)weightedData {
   _heatmapTileLayer.weightedData = weightedData;

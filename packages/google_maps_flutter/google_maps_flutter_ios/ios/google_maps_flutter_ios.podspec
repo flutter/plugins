@@ -22,7 +22,13 @@ Downloaded by pub (not CocoaPods).
   s.dependency 'Google-Maps-iOS-Utils'
   s.static_framework = true
   s.platform = :ios, '9.0'
-  s.swift_version = '4.0'
+  # "Google-Maps-iOS-Utils" is static and contains Swift classes.
+  # Find the Swift runtime when these plugins are built as libraries without `use_frameworks!`
+  s.swift_version = '5.0'
+  s.xcconfig = {
+    'LIBRARY_SEARCH_PATHS' => '$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)/ $(SDKROOT)/usr/lib/swift',
+    'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) /usr/lib/swift',
+  }
   # GoogleMaps does not support arm64 simulators.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 end
