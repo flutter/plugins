@@ -1,3 +1,7 @@
+## 0.9.8+4
+
+* Fixes a crash due to sending orientation change events when the engine is torn down. 
+
 ## 0.9.8+3
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
