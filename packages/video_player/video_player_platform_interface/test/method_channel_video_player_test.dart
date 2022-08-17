@@ -23,12 +23,14 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
   MixWithOthersMessage? mixWithOthersMessage;
+  PreparePictureInPictureMessage? preparePictureInPictureMessage;
+  PictureInPictureMessage? pictureInPictureMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
     log.add('create');
     createMessage = arg;
-    return TextureMessage()..textureId = 3;
+    return TextureMessage(textureId: 3);
   }
 
   @override
@@ -61,10 +63,28 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   }
 
   @override
+  bool isPictureInPictureSupported() {
+    log.add('isPictureInPictureSupported');
+    return true;
+  }
+
+  @override
+  void preparePictureInPicture(PreparePictureInPictureMessage msg) {
+    log.add('preparePictureInPicture');
+    preparePictureInPictureMessage = msg;
+  }
+
+  @override
+  void setPictureInPicture(PictureInPictureMessage arg) {
+    log.add('setPictureInPicture');
+    pictureInPictureMessage = arg;
+  }
+
+  @override
   PositionMessage position(TextureMessage arg) {
     log.add('position');
     textureMessage = arg;
-    return PositionMessage()..position = 234;
+    return PositionMessage(textureId: arg.textureId, position: 234);
   }
 
   @override

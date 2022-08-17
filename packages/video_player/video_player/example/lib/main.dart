@@ -207,6 +207,10 @@ class _BumbleBeeRemoteVideo extends StatefulWidget {
 class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   late VideoPlayerController _controller;
 
+  final GlobalKey<State<StatefulWidget>> _key =
+      GlobalKey<State<StatefulWidget>>();
+  final Key _pictureInPictureKey = UniqueKey();
+
   Future<ClosedCaptionFile> _loadCaptions() async {
     final String fileContents = await DefaultAssetBundle.of(context)
         .loadString('assets/bumble_bee_captions.vtt');
@@ -243,17 +247,63 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
         children: <Widget>[
           Container(padding: const EdgeInsets.only(top: 20.0)),
           const Text('With remote mp4'),
+          FutureBuilder<bool>(
+            key: _pictureInPictureKey,
+            future: _controller.isPictureInPictureSupported(),
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) =>
+                Text(snapshot.data ?? false
+                    ? 'Pip is suported'
+                    : 'Pip is not supported'),
+          ),
+          MaterialButton(
+            color: Colors.blue,
+            onPressed: () {
+              final RenderBox? box =
+                  _key.currentContext?.findRenderObject() as RenderBox?;
+              if (box == null) {
+                return;
+              }
+              final Offset offset = box.localToGlobal(Offset.zero);
+              _controller.preparePictureInPicture(
+                top: offset.dy,
+                left: offset.dx,
+                width: box.size.width,
+                height: box.size.height,
+              );
+            },
+            child: const Text('Prepare'),
+          ),
+          MaterialButton(
+            color: Colors.blue,
+            onPressed: () =>
+                _controller.setPictureInPicture(!_controller.value.isPipActive),
+            child:
+                Text(_controller.value.isPipActive ? 'Stop PiP' : 'Start PiP'),
+          ),
           Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
               child: Stack(
+                key: _key,
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.caption.text),
-                  _ControlsOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                  if (_controller.value.isPipActive) ...<Widget>[
+                    Container(color: Colors.white),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const <Widget>[
+                        Icon(Icons.picture_in_picture),
+                        SizedBox(height: 8),
+                        Text('This video is playing in picture in picture.'),
+                      ],
+                    ),
+                  ] else ...<Widget>[
+                    VideoProgressIndicator(_controller, allowScrubbing: true),
+                    _ControlsOverlay(controller: _controller),
+                  ],
                 ],
               ),
             ),
