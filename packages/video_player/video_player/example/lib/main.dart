@@ -273,7 +273,7 @@ class _ControlsOverlay extends StatelessWidget {
     Duration(seconds: -3),
     Duration(seconds: -1, milliseconds: -500),
     Duration(milliseconds: -250),
-    Duration(),
+    Duration.zero,
     Duration(milliseconds: 250),
     Duration(seconds: 1, milliseconds: 500),
     Duration(seconds: 3),
