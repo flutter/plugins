@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Adds a new `draggable` property to the data controlling the `Link` widget.
+
 ## 2.1.0
 
 * Adds a new `launchUrl` method corresponding to the new app-facing interface.

@@ -72,6 +72,11 @@ abstract class LinkInfo {
 
   /// Whether the link is disabled or not.
   bool get isDisabled;
+
+  /// Whether the link can be dragged e.g. to create a shortcut on the desktop.
+  ///
+  /// Default is true.
+  bool get draggable => true;
 }
 
 typedef _SendMessage = Function(String, ByteData?, void Function(ByteData?));
