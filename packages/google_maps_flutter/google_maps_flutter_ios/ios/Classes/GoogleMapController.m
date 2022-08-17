@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #import "GoogleMapController.h"
+#import "FLTGoogleMapHeatmapController.h"
 #import "FLTGoogleMapJSONConversions.h"
 #import "FLTGoogleMapTileOverlayController.h"
-#import "FLTGoogleMapHeatmapController.h"
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
