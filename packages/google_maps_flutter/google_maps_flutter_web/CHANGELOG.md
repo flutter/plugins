@@ -1,6 +1,11 @@
 ## 0.4.1
 
 * Adds support for heatmap layers.
+
+## 0.4.0+2
+
+* Updates conversion of `BitmapDescriptor.fromBytes` marker icons to support the
+  new `size` parameter. Issue [#73789](https://github.com/flutter/flutter/issues/73789).
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 
 ## 0.4.0+1
