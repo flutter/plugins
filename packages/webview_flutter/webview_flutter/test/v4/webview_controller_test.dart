@@ -14,8 +14,6 @@ import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_i
 
 import 'webview_controller_test.mocks.dart';
 
-typedef VoidCallback = void Function();
-
 @GenerateMocks(<Type>[PlatformWebViewController])
 void main() {
   test('loadFile', () async {
