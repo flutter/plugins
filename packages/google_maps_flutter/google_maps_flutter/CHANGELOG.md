@@ -1,4 +1,4 @@
-## NEXT
+## 2.1.11
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Moves Android and iOS implementations to federated packages.
