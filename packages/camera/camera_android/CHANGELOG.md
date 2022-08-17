@@ -1,3 +1,8 @@
+## 0.10.1
+
+* Bumps androidx.annotation version to 1.4.0.
+* Bumps gradle version to 7.2.2.
+
 ## 0.10.0
 
 * **Breaking Change** Updates Android camera access permission error codes to be consistent with other platforms. If your app still handles the legacy `cameraPermission` exception, please update it to handle the new permission exception codes that are noted in the README.
