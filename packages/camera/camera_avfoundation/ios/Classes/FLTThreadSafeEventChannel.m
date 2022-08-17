@@ -23,7 +23,9 @@
               completion:(void (^)(void))completion {
   __weak typeof(self) weakSelf = self;
   FLTEnsureToRunOnMainQueue(^{
-    [weakSelf.channel setStreamHandler:handler];
+    typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+    [strongSelf.channel setStreamHandler:handler];
     completion();
   });
 }

@@ -23,7 +23,9 @@
              completion:(void (^)(int64_t))completion {
   __weak typeof(self) weakSelf = self;
   FLTEnsureToRunOnMainQueue(^{
-    completion([weakSelf.registry registerTexture:texture]);
+    typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+    completion([strongSelf.registry registerTexture:texture]);
   });
 }
 
