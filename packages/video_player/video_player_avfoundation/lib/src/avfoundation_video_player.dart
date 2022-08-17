@@ -146,6 +146,10 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
           return VideoEvent(eventType: VideoEventType.bufferingStart);
         case 'bufferingEnd':
           return VideoEvent(eventType: VideoEventType.bufferingEnd);
+        case 'stoppedPiP':
+          return VideoEvent(eventType: VideoEventType.stoppedPiP);
+        case 'startingPiP':
+          return VideoEvent(eventType: VideoEventType.startingPiP);
         default:
           return VideoEvent(eventType: VideoEventType.unknown);
       }
@@ -161,6 +165,36 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     return _api
         .setMixWithOthers(MixWithOthersMessage(mixWithOthers: mixWithOthers));
+  }
+
+  @override
+  Future<bool> isPictureInPictureSupported() {
+    return _api.isPictureInPictureSupported();
+  }
+
+  @override
+  Future<void> preparePictureInPicture({
+    required int textureId,
+    required double top,
+    required double left,
+    required double width,
+    required double height,
+  }) {
+    return _api.preparePictureInPicture(PreparePictureInPictureMessage(
+      textureId: textureId,
+      top: top,
+      left: left,
+      width: width,
+      height: height,
+    ));
+  }
+
+  @override
+  Future<void> setPictureInPicture(int textureId, bool enabled) {
+    return _api.setPictureInPicture(PictureInPictureMessage(
+      textureId: textureId,
+      enabled: enabled ? 1 : 0,
+    ));
   }
 
   EventChannel _eventChannelFor(int textureId) {
