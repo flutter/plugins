@@ -212,7 +212,7 @@ task:
         - flutter config --enable-linux-desktop
         - ./script/tool_runner.sh build-examples --linux
       native_test_script:
-        - ./script/tool_runner.sh native-test --linux --no-integration
+        - xvfb-run ./script/tool_runner.sh native-test --linux --no-integration
       drive_script:
         - xvfb-run ./script/tool_runner.sh drive-examples --linux
 
