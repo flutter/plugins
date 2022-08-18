@@ -12,7 +12,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 
 /** CameraAndroidCameraxPlugin */
-public class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware {
+public final class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware {
   private InstanceManager instanceManager;
 
   /**

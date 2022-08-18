@@ -12,16 +12,16 @@ import 'java_object.dart';
 /// Provides an object to manage the camera.
 class ProcessCameraProvider extends JavaObject {
   /// Creates a [ProcessCameraProvider].
-  ProcessCameraProvider(
-      {super.binaryMessenger, super.instanceManager})
-    : _api = ProcessCameraProviderHostApiImpl(
-       binaryMessenger: binaryMessenger,
-       instanceManager: instanceManager,
-      ),
-     super.detached();
+  ProcessCameraProvider({super.binaryMessenger, super.instanceManager})
+      : _api = ProcessCameraProviderHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+        super.detached();
 
   /// Creates a detached [ProcessCameraProvider].
-  ProcessCameraProvider.detached({super.binaryMessenger, super.instanceManager}) : super.detached();
+  ProcessCameraProvider.detached({super.binaryMessenger, super.instanceManager})
+      : super.detached();
 
   late final ProcessCameraProviderHostApiImpl _api;
 
@@ -44,8 +44,9 @@ class ProcessCameraProvider extends JavaObject {
   }
 
   /// Retrieves the cameras available to the device.
-  Future<List<CameraInfo>> getAvailableCameras() {
-    return _api.getAvailableCamerasFromInstances(instanceManager.getIdentifier(this)!);
+  Future<List<CameraInfo>> getAvailableCameraInfos() {
+    return _api.getAvailableCameraInfosFromInstances(
+        instanceManager.getIdentifier(this)!);
   }
 }
 
@@ -70,15 +71,18 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
   /// Retrieves an instance of a ProcessCameraProvider from the context of
   /// the FlutterActivity.
   Future<ProcessCameraProvider> getInstancefromInstances() async {
-    return instanceManager.getInstanceWithWeakReference(await getInstance())! as ProcessCameraProvider;
+    return instanceManager.getInstanceWithWeakReference(await getInstance())!
+        as ProcessCameraProvider;
   }
 
   /// Retrives the list of CameraInfos corresponding to the available cameras.
-  Future<List<CameraInfo>> getAvailableCamerasFromInstances(int instanceId) async {
+  Future<List<CameraInfo>> getAvailableCameraInfosFromInstances(
+      int instanceId) async {
     final List<int?> cameraInfos = await getAvailableCameraInfos(instanceId);
 
     return (cameraInfos.map<CameraInfo>((int? id) =>
-        instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo)).toList();
+            instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo))
+        .toList();
   }
 }
 

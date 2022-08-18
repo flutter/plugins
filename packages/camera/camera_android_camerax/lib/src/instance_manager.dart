@@ -4,6 +4,25 @@
 
 import 'package:flutter/foundation.dart';
 
+/// An immutable object that can provide functional copies of itself.
+///
+/// All implementers are expected to be immutable as defined by the annotation.
+// TODO(bparrishMines): Uncomment annotation once
+// https://github.com/flutter/plugins/pull/5831 lands or when making a breaking
+// change for https://github.com/flutter/flutter/issues/107199.
+// @immutable
+mixin Copyable {
+  /// Instantiates and returns a functionally identical object to oneself.
+  ///
+  /// Outside of tests, this method should only ever be called by
+  /// [InstanceManager].
+  ///
+  /// Subclasses should always override their parent's implementation of this
+  /// method.
+  @protected
+  Copyable copy();
+}
+
 /// Maintains instances used to communicate with the native objects they
 /// represent.
 ///

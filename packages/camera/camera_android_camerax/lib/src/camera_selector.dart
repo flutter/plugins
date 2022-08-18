@@ -12,7 +12,8 @@ import 'java_object.dart';
 /// Selects a camera for use.
 class CameraSelector extends JavaObject {
   /// Creates a [CameraSelector].
-  CameraSelector({super.binaryMessenger, super.instanceManager, this.lensFacing})
+  CameraSelector(
+      {super.binaryMessenger, super.instanceManager, this.lensFacing})
       : _api = CameraSelectorHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
@@ -20,7 +21,9 @@ class CameraSelector extends JavaObject {
         super.detached();
 
   /// Creates a detached [CameraSelector].
-  CameraSelector.detached({super.binaryMessenger, super.instanceManager, this.lensFacing}) : super.detached();
+  CameraSelector.detached(
+      {super.binaryMessenger, super.instanceManager, this.lensFacing})
+      : super.detached();
 
   /// Sends binary data across the Flutter platform barrier.
   late final BinaryMessenger? binaryMessenger;
@@ -91,7 +94,8 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
     int instanceId,
     int lensFacing,
   ) async {
-    final int cameraSelectorId = await requireLensFacing(instanceId, lensFacing);
+    final int cameraSelectorId =
+        await requireLensFacing(instanceId, lensFacing);
 
     final CameraSelector? cameraSelector = instanceManager
         .getInstanceWithWeakReference(cameraSelectorId) as CameraSelector?;
@@ -103,14 +107,16 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
     int instanceId,
     List<CameraInfo> cameraInfos,
   ) async {
-    final List<int> cameraInfoIds = (cameraInfos
-        .map<int>((CameraInfo info) => instanceManager.getIdentifier(info)!)).toList();
-    final List<int?> filteredCameraInfoIds = await filter(instanceId, cameraInfoIds);
+    final List<int> cameraInfoIds = (cameraInfos.map<int>(
+        (CameraInfo info) => instanceManager.getIdentifier(info)!)).toList();
+    final List<int?> filteredCameraInfoIds =
+        await filter(instanceId, cameraInfoIds);
     if (filteredCameraInfoIds.isEmpty) {
       return <CameraInfo>[];
     }
     return (filteredCameraInfoIds.map<CameraInfo>((int? id) =>
-        instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo)).toList();
+            instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo))
+        .toList();
   }
 }
 

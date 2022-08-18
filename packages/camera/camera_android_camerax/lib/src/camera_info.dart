@@ -45,7 +45,9 @@ class CameraInfoHostApiImpl extends CameraInfoHostApi {
 
   /// Gets sensor orientation degrees of [CameraInfo].
   Future<int> getSensorRotationDegreesFromInstance(CameraInfo instance) async {
-    return getSensorRotationDegrees(instanceManager.getIdentifier(instance)!);
+    final int sensorRotationDegrees = await getSensorRotationDegrees(
+        instanceManager.getIdentifier(instance)!);
+    return sensorRotationDegrees;
   }
 }
 
@@ -78,4 +80,3 @@ class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
     );
   }
 }
-//TODO(cs): get rid of the futures at the lowest level possible. this has gotten crazy.
