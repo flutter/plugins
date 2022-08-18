@@ -4,8 +4,8 @@
 
 #import "FLTVideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
-#import <AVKit/AVKit.h>
 #import <GLKit/GLKit.h>
+#import <AVKit/AVKit.h>
 #import "AVAssetTrackUtils.h"
 #import "messages.g.h"
 
@@ -32,8 +32,7 @@
 }
 @end
 
-@interface FLTVideoPlayer
-    : NSObject <FlutterTexture, FlutterStreamHandler, AVPictureInPictureControllerDelegate>
+@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler, AVPictureInPictureControllerDelegate>
 @property(readonly, nonatomic) AVPlayer *player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput *videoOutput;
 @property(readonly, nonatomic) CADisplayLink *displayLink;
@@ -44,7 +43,7 @@
 @property(nonatomic, readonly) BOOL isPlaying;
 @property(nonatomic) BOOL isLooping;
 @property(nonatomic, readonly) BOOL isInitialized;
-@property(nonatomic) AVPlayerLayer *playerLayer;
+@property(nonatomic) AVPlayerLayer* playerLayer;
 @property(nonatomic) bool pictureInPictureEnabled;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
@@ -62,6 +61,7 @@ static void *playbackBufferFullContext = &playbackBufferFullContext;
 #if TARGET_OS_IOS
 AVPictureInPictureController *_pipController;
 #endif
+
 
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset frameUpdater:(FLTFrameUpdater *)frameUpdater {
@@ -243,26 +243,24 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)setPictureInPicture:(BOOL)pictureInPictureEnabled {
-  if (self.pictureInPictureEnabled == pictureInPictureEnabled) {
-    return;
-  }
-
-  self.pictureInPictureEnabled = pictureInPictureEnabled;
-  if (_pipController && self.pictureInPictureEnabled &&
-      ![_pipController isPictureInPictureActive]) {
-    self.playerLayer.opacity = 0.001;
-    if (_eventSink != nil) {
-      _eventSink(@{@"event" : @"startingPiP"});
+    if (self.pictureInPictureEnabled == pictureInPictureEnabled) {
+        return;
     }
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [_pipController startPictureInPicture];
-    });
-  } else if (_pipController && !self.pictureInPictureEnabled &&
-             [_pipController isPictureInPictureActive]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [_pipController stopPictureInPicture];
-    });
-  }
+
+    self.pictureInPictureEnabled = pictureInPictureEnabled;
+    if (_pipController && self.pictureInPictureEnabled && ![_pipController isPictureInPictureActive]) {
+        self.playerLayer.opacity = 0.001;
+        if (_eventSink != nil) {
+            _eventSink(@{@"event" : @"startingPiP"});
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_pipController startPictureInPicture];
+        });
+    } else if (_pipController && !self.pictureInPictureEnabled && [_pipController isPictureInPictureActive]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_pipController stopPictureInPicture];
+        });
+    }
 }
 
 #if TARGET_OS_IOS
@@ -273,56 +271,50 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   }
 }
 
-- (void)usePlayerLayer:(CGRect)frame {
-  if (_player) {
-    self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
-    UIViewController *vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-    self.playerLayer.frame = frame;
-    self.playerLayer.needsDisplayOnBoundsChange = YES;
+- (void)usePlayerLayer: (CGRect) frame {
+    if (_player) {
+        self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
+        UIViewController* vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+        self.playerLayer.frame = frame;
+        self.playerLayer.needsDisplayOnBoundsChange = YES;
+        self.playerLayer.opacity = 0;
+        [vc.view.layer addSublayer:self.playerLayer];
+        vc.view.layer.needsDisplayOnBoundsChange = YES;
+        #if TARGET_OS_IOS
+            [self setupPipController];
+        #endif
+    }
+}
+#endif
+
+#if TARGET_OS_IOS
+- (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+    self.pictureInPictureEnabled = false;
     self.playerLayer.opacity = 0;
-    [vc.view.layer addSublayer:self.playerLayer];
-    vc.view.layer.needsDisplayOnBoundsChange = YES;
-#if TARGET_OS_IOS
-    [self setupPipController];
-#endif
-  }
-}
-#endif
-
-#if TARGET_OS_IOS
-- (void)pictureInPictureControllerDidStopPictureInPicture:
-    (AVPictureInPictureController *)pictureInPictureController {
-  self.pictureInPictureEnabled = false;
-  self.playerLayer.opacity = 0;
-  if (_eventSink != nil) {
-    _eventSink(@{@"event" : @"stoppedPiP"});
-  }
+    if (_eventSink != nil) {
+      _eventSink(@{@"event" : @"stoppedPiP"});
+    }
 }
 
-- (void)pictureInPictureControllerDidStartPictureInPicture:
-    (AVPictureInPictureController *)pictureInPictureController {
-  self.playerLayer.opacity = 0.001;
-  if (_eventSink != nil) {
-    _eventSink(@{@"event" : @"startingPiP"});
-  }
-  [self updatePlayingState];
+- (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+    self.playerLayer.opacity = 0.001;
+    if (_eventSink != nil) {
+      _eventSink(@{@"event" : @"startingPiP"});
+    }
+    [self updatePlayingState];
 }
 
-- (void)pictureInPictureControllerWillStopPictureInPicture:
-    (AVPictureInPictureController *)pictureInPictureController {
+- (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
 }
 
-- (void)pictureInPictureControllerWillStartPictureInPicture:
-    (AVPictureInPictureController *)pictureInPictureController {
+- (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
 }
 
-- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController
-    failedToStartPictureInPictureWithError:(NSError *)error {
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController failedToStartPictureInPictureWithError:(NSError *)error {
+
 }
 
-- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController
-    restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:
-        (void (^)(BOOL))completionHandler {
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL))completionHandler {
 }
 #endif
 
@@ -724,21 +716,20 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   }
 }
 
-- (void)preparePictureInPicture:(FLTPreparePictureInPictureMessage *)input
-                          error:(FlutterError **)error {
-  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player usePlayerLayer:CGRectMake(input.left.floatValue, input.top.floatValue,
+
+- (void)preparePictureInPicture:(FLTPreparePictureInPictureMessage*)input error:(FlutterError**)error {
+   FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
+   [player usePlayerLayer:CGRectMake(input.left.floatValue, input.top.floatValue,
                                     input.width.floatValue, input.height.floatValue)];
 }
 
-- (void)setPictureInPicture:(FLTPictureInPictureMessage *)input error:(FlutterError **)error {
-  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player setPictureInPicture:input.enabled.intValue == 1];
+- (void)setPictureInPicture:(FLTPictureInPictureMessage*)input error:(FlutterError**)error {
+   FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
+   [player setPictureInPicture:input.enabled.intValue == 1];
 }
 
-- (nullable NSNumber *)isPictureInPictureSupported:
-    (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  return [NSNumber numberWithBool:[AVPictureInPictureController isPictureInPictureSupported]];
+- (nullable NSNumber *)isPictureInPictureSupported:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    return [NSNumber numberWithBool:[AVPictureInPictureController isPictureInPictureSupported]];
 }
 
 @end
