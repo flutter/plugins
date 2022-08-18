@@ -257,6 +257,26 @@ void main() {
       expect(position, const Duration(milliseconds: 234));
     });
 
+    test('isPictureInPictureSupported', () async {
+      final bool isSupported = await player.isPictureInPictureSupported();
+      expect(log.log.last, 'isPictureInPictureSupported');
+      expect(isSupported, true);
+    });
+
+    test('setPictureInPicture true', () async {
+      await player.setPictureInPicture(1, true);
+      expect(log.log.last, 'setPictureInPicture');
+      expect(log.pictureInPictureMessage?.textureId, 1);
+      expect(log.pictureInPictureMessage?.enabled, 1);
+    });
+
+    test('setPictureInPicture false', () async {
+      await player.setPictureInPicture(1, false);
+      expect(log.log.last, 'setPictureInPicture');
+      expect(log.pictureInPictureMessage?.textureId, 1);
+      expect(log.pictureInPictureMessage?.enabled, 0);
+    });
+
     test('videoEventsFor', () async {
       _ambiguate(ServicesBinding.instance)
           ?.defaultBinaryMessenger

@@ -8,11 +8,14 @@
 // @dart = 2.12
 import 'dart:async';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../lib/src/messages.g.dart';
+// TODO(gaaclarke): The following output had to be tweaked from a relative path to a uri.
+import 'package:video_player_platform_interface/messages.g.dart';
+import 'package:video_player_avfoundation/src/messages.g.dart';
 
 class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
   const _TestHostVideoPlayerApiCodec();
