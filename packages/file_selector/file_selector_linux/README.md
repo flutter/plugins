@@ -1,6 +1,6 @@
-# file\_selector\_windows
+# file\_selector\_linux
 
-The Windows implementation of [`file_selector`][1].
+The Linux implementation of [`file_selector`][1].
 
 ## Usage
 

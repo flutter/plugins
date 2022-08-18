@@ -212,9 +212,9 @@ task:
         - flutter config --enable-linux-desktop
         - ./script/tool_runner.sh build-examples --linux
       native_test_script:
-        - ./script/tool_runner.sh native-test --linux --no-integration
+        - xvfb-run ./script/tool_runner.sh native-test --linux --no-integration
       drive_script:
-        - xvfb-run ./script/tool_runner.sh drive-examples --linux
+        - xvfb-run ./script/tool_runner.sh drive-examples --linux --exclude=script/configs/exclude_integration_linux.yaml
 
 # Heavy-workload Linux tasks.
 # These use machines with more CPUs and memory, so will reduce parallelization
