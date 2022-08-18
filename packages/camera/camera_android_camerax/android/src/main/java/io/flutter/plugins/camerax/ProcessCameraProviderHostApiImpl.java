@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.camerax;
 
-import android.app.Activity;
+import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -14,25 +14,27 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderHostApi;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHostApi {
   private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
 
-  private Activity activity;
+  private Context context;
 
   public ProcessCameraProviderHostApiImpl(
-      BinaryMessenger binaryMessenger, InstanceManager instanceManager, Activity activity) {
+      BinaryMessenger binaryMessenger, InstanceManager instanceManager, Context context) {
     this.binaryMessenger = binaryMessenger;
     this.instanceManager = instanceManager;
-    this.activity = activity;
+    this.context = context;
   }
 
   // Returns the instance of the ProcessCameraProvider.
   @Override
   public void getInstance(GeneratedCameraXLibrary.Result<Long> result) {
+    System.out.println("WOOOHOOOOOO!");
     ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
-        ProcessCameraProvider.getInstance(activity);
+        ProcessCameraProvider.getInstance(context);
 
     cameraProviderFuture.addListener(
         () -> {
@@ -44,13 +46,21 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
               // If cameraProvider is already defined, this method will have no effect.
               final ProcessCameraProviderFlutterApiImpl flutterApi =
                   new ProcessCameraProviderFlutterApiImpl(binaryMessenger, instanceManager);
+              Long processCameraProviderId =
+                  instanceManager.addHostCreatedInstance(processCameraProvider);
               flutterApi.create(processCameraProvider, reply -> {});
+              System.out.println("create flutter api!!!!!!!!!!!!!!!!!!!");
+              result.success(
+                  Objects.requireNonNull(
+                      instanceManager.getIdentifierForStrongReference(processCameraProvider)));
+            } else {
+              System.out.println("in lost state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
           } catch (Exception e) {
             result.error(e);
           }
         },
-        ContextCompat.getMainExecutor(activity));
+        ContextCompat.getMainExecutor(context));
   }
 
   // Returns cameras available to the ProcessCameraProvider.

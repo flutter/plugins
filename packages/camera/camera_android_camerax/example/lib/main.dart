@@ -8,12 +8,8 @@ import 'package:flutter/material.dart';
 late List<CameraDescription> _cameras = <CameraDescription>[];
 
 Future<void> main() async {
-  try {
   WidgetsFlutterBinding.ensureInitialized();
   _cameras = await CameraPlatform.instance.availableCameras();
-  } catch (e) {
-    print(e);
-  }
 
   runApp(const MyApp());
 }

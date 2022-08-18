@@ -17,7 +17,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   static void registerWith() {
     CameraPlatform.instance = AndroidCameraCameraX();
 
-   //TODO(cs): link these to the actual Flutter Apis that are used?
+    //TODO(cs): link these to the actual Flutter Apis that are used?
     // CameraInfoFlutterApi.setup(CameraInfoFlutterApiImpl());
     // CameraSelectorFlutterApi.setup(CameraSelectorFlutterApiImpl());
     // ProcessCameraProviderFlutterApi.setup(

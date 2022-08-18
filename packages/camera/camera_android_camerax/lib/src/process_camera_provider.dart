@@ -13,23 +13,21 @@ import 'java_object.dart';
 class ProcessCameraProvider extends JavaObject {
   /// Creates a [ProcessCameraProvider].
   ProcessCameraProvider({super.binaryMessenger, super.instanceManager})
-      : _api = ProcessCameraProviderHostApiImpl(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-        ),
+      : binaryMessenger = binaryMessenger,
+        instanceManager = instanceManager,
         super.detached();
 
   /// Creates a detached [ProcessCameraProvider].
   ProcessCameraProvider.detached({super.binaryMessenger, super.instanceManager})
       : super.detached();
 
-  late final ProcessCameraProviderHostApiImpl _api;
+  ProcessCameraProviderHostApiImpl? _api;
 
   /// Sends binary data across the Flutter platform barrier.
-  late final BinaryMessenger? binaryMessenger;
+  BinaryMessenger? binaryMessenger;
 
   /// Maintains instances store to communicate with native language objects.
-  late final InstanceManager instanceManager;
+  InstanceManager? instanceManager;
 
   /// Gets an instance of [ProcessCameraProvider].
   static Future<ProcessCameraProvider> getInstance(
@@ -45,8 +43,13 @@ class ProcessCameraProvider extends JavaObject {
 
   /// Retrieves the cameras available to the device.
   Future<List<CameraInfo>> getAvailableCameraInfos() {
-    return _api.getAvailableCameraInfosFromInstances(
-        instanceManager.getIdentifier(this)!);
+    _api = ProcessCameraProviderHostApiImpl(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    );
+    print("calling getAvailableCameraInfos");
+    return _api!.getAvailableCameraInfosFromInstances(
+        JavaObject.globalInstanceManager.getIdentifier(this)!);
   }
 }
 
@@ -79,7 +82,7 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
   Future<List<CameraInfo>> getAvailableCameraInfosFromInstances(
       int instanceId) async {
     final List<int?> cameraInfos = await getAvailableCameraInfos(instanceId);
-
+    print(cameraInfos);
     return (cameraInfos.map<CameraInfo>((int? id) =>
             instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo))
         .toList();
