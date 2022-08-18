@@ -56,6 +56,7 @@ packages/video_player/video_player_avfoundation/**       @hellohuanlin
 packages/webview_flutter/webview_flutter_wkwebview/**    @cyanglaz
 
 # - Linux
+packages/file_selector/file_selector_linux/**            @cbracken
 packages/path_provider/path_provider_linux/**            @cbracken
 packages/shared_preferences/shared_preferences_linux/**  @cbracken
 packages/url_launcher/url_launcher_linux/**              @cbracken
