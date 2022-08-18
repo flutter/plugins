@@ -19,3 +19,9 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  video_player_web:
+    path: ../../../video_player/video_player_web
