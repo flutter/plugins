@@ -47,7 +47,7 @@ class BuildParams {
     this.context, {
     required this.controller,
     this.layoutDirection = TextDirection.ltr,
-    this.gestureRecognizers,
+    this.gestureRecognizers = const <Factory<OneSequenceGestureRecognizer>>{},
   });
 
   /// Describes the part of the user interface represented by the returned
@@ -69,5 +69,5 @@ class BuildParams {
   ///
   /// When this is empty or null, the web view will only handle pointer events
   /// for gestures that were not claimed by any other gesture recognizer.
-  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 }
