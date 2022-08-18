@@ -518,11 +518,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       // playing back. This is necessary because we do not set playback speed
       // when paused.
       await _applyPlaybackSpeed();
-
-      // This ensures that the correct playback max video resolution is always applied when
-      // playing back. This is necessary because we do not set max video resolution
-      // when paused.
-      await _applyMaxVideoResolution();
     } else {
       _timer?.cancel();
       await _videoPlayerPlatform.pause(_textureId);
