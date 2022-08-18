@@ -1,0 +1,26 @@
+name: file_selector_linux
+description: Liunx implementation of the file_selector plugin.
+version: 0.0.3
+homepage: https://github.com/google/flutter-desktop-embedding/tree/master/plugins/file_selector/file_selector_linux
+
+flutter:
+  plugin:
+    implements: file_selector
+    platforms:
+      linux:
+        pluginClass: FileSelectorPlugin
+        dartPluginClass: FileSelectorLinux
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.22.0"
+
+dependencies:
+  cross_file: ^0.3.1
+  file_selector_platform_interface: ^2.1.0
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
