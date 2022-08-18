@@ -43,8 +43,8 @@
 @property(nonatomic, readonly) BOOL isPlaying;
 @property(nonatomic) BOOL isLooping;
 @property(nonatomic, readonly) BOOL isInitialized;
-@property(nonatomic) AVPlayerLayer* _playerLayer;
-@property(nonatomic) bool _pictureInPicture;
+@property(nonatomic) AVPlayerLayer* playerLayer;
+@property(nonatomic) bool pictureInPictureEnabled;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
                 httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers;
@@ -59,7 +59,6 @@ static void *playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void *playbackBufferFullContext = &playbackBufferFullContext;
 
 #if TARGET_OS_IOS
-API_AVAILABLE(ios(9.0))
 AVPictureInPictureController *_pipController;
 #endif
 
@@ -243,54 +242,43 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   return self;
 }
 
-- (void)setPictureInPicture:(BOOL)pictureInPicture {
-    if (self._pictureInPicture == pictureInPicture) {
+- (void)setPictureInPicture:(BOOL)pictureInPictureEnabled {
+    if (self.pictureInPictureEnabled == pictureInPictureEnabled) {
         return;
     }
 
-    self._pictureInPicture = pictureInPicture;
-    if (@available(iOS 9.0, *)) {
-        if (_pipController && self._pictureInPicture && ![_pipController isPictureInPictureActive]) {
-            self._playerLayer.opacity = 0.001;
-            if (_eventSink != nil) {
-              _eventSink(@{@"event" : @"startingPiP"});
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_pipController startPictureInPicture];
-            });
-        } else if (_pipController && !self._pictureInPicture && [_pipController isPictureInPictureActive]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_pipController stopPictureInPicture];
-            });
-        } else {
-            // Fallback on earlier versions
+    self.pictureInPictureEnabled = pictureInPictureEnabled;
+    if (_pipController && self.pictureInPictureEnabled && ![_pipController isPictureInPictureActive]) {
+        self.playerLayer.opacity = 0.001;
+        if (_eventSink != nil) {
+            _eventSink(@{@"event" : @"startingPiP"});
         }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_pipController startPictureInPicture];
+        });
+    } else if (_pipController && !self.pictureInPictureEnabled && [_pipController isPictureInPictureActive]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_pipController stopPictureInPicture];
+        });
     }
 }
 
 #if TARGET_OS_IOS
 - (void)setupPipController {
   if ([AVPictureInPictureController isPictureInPictureSupported]) {
-    _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:self._playerLayer];
+    _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:self.playerLayer];
     _pipController.delegate = self;
-    // Listen if pip is available
-    // Swift code:
-    //        pipPossibleObservation = pipController.observe(\AVPictureInPictureController.isPictureInPicturePossible,
-    //options: [.initial, .new]) { [weak self] _, change in
-    //            // Update the PiP button's enabled state.
-    //            self?.pipButton.isEnabled = change.newValue ?? false
-    //        }
   }
 }
 
 - (void)usePlayerLayer: (CGRect) frame {
     if (_player) {
-        self._playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
+        self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
         UIViewController* vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-        self._playerLayer.frame = frame;
-        self._playerLayer.needsDisplayOnBoundsChange = YES;
-        self._playerLayer.opacity = 0;
-        [vc.view.layer addSublayer:self._playerLayer];
+        self.playerLayer.frame = frame;
+        self.playerLayer.needsDisplayOnBoundsChange = YES;
+        self.playerLayer.opacity = 0;
+        [vc.view.layer addSublayer:self.playerLayer];
         vc.view.layer.needsDisplayOnBoundsChange = YES;
         #if TARGET_OS_IOS
             [self setupPipController];
@@ -300,23 +288,23 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 #endif
 
 #if TARGET_OS_IOS
-- (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
-    self._pictureInPicture = false;
-    self._playerLayer.opacity = 0;
+- (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+    self.pictureInPictureEnabled = false;
+    self.playerLayer.opacity = 0;
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"stoppedPiP"});
     }
 }
 
-- (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
-    self._playerLayer.opacity = 0.001;
+- (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+    self.playerLayer.opacity = 0.001;
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"startingPiP"});
     }
     [self updatePlayingState];
 }
 
-- (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
+- (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
 }
 
 - (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {

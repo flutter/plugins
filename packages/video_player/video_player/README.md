@@ -129,4 +129,13 @@ and so on.
 
 To learn about playback speed limitations, see the [`setPlaybackSpeed` method documentation](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setPlaybackSpeed.html).
 
+### Picture in Picture
+
+This plugin supports picture in picture mode on iOS.
+- Make sure you don't forget to set the correct `UIBackgroundModes` if you want to support picture in picture make sure to enable `audio` (in xcode it will also say, airplay & picture in picture)
+On Android the implementation is different. There is no link to the video player. You have multiple options on android:
+- [picture in picutre android documentation](https://developer.android.com/guide/topics/ui/picture-in-picture)
+- [simple_pip_mode](https://pub.dev/packages/simple_pip_mode)
+- Create your own plugin that follows the andorid documentation
+
 Furthermore, see the example app for an example playback speed implementation.
