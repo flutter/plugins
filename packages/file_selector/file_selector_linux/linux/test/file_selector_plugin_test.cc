@@ -62,7 +62,8 @@ TEST(FileSelectorPlugin, TestOpenWithFilter) {
     g_autoptr(FlValue) image_group_extensions = fl_value_new_list();
     fl_value_append_take(image_group_extensions, fl_value_new_string("*.png"));
     fl_value_append_take(image_group_extensions, fl_value_new_string("*.gif"));
-    fl_value_append_take(image_group_extensions, fl_value_new_string("*.jgpeg"));
+    fl_value_append_take(image_group_extensions,
+                         fl_value_new_string("*.jgpeg"));
     g_autoptr(FlValue) image_group = fl_value_new_map();
     fl_value_set_string_take(image_group, "label",
                              fl_value_new_string("Images"));
