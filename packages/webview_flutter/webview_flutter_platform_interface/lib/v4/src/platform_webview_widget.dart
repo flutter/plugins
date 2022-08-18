@@ -104,7 +104,7 @@ class BuildParams {
   /// [ListView] will want to handle vertical drags. The web view will claim
   /// gestures that are recognized by any of the recognizers on this list.
   ///
-  /// When this is empty or null, the web view will only handle pointer events
-  /// for gestures that were not claimed by any other gesture recognizer.
+  /// When this is empty, the web view will only handle pointer events for
+  /// gestures that were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 }
