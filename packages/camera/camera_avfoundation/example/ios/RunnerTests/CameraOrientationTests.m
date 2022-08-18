@@ -92,6 +92,39 @@
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
+- (void)testOrientationChanged_noRetainCycle {
+  dispatch_queue_t captureSessionQueue = dispatch_queue_create("capture_session_queue", NULL);
+  FLTCam *mockCam = OCMClassMock([FLTCam class]);
+  FLTThreadSafeMethodChannel *mockChannel = OCMClassMock([FLTThreadSafeMethodChannel class]);
+
+  __weak CameraPlugin *weakCamera;
+
+  @autoreleasepool {
+    CameraPlugin *camera = [[CameraPlugin alloc] initWithRegistry:nil messenger:nil];
+    weakCamera = camera;
+    camera.captureSessionQueue = captureSessionQueue;
+    camera.camera = mockCam;
+    camera.deviceEventMethodChannel = mockChannel;
+
+    [camera orientationChanged:
+                [self createMockNotificationForOrientation:UIDeviceOrientationLandscapeLeft]];
+  }
+
+  // Sanity check
+  XCTAssertNil(weakCamera, @"Camera must have been deallocated.");
+
+  // Must check in captureSessionQueue since orientationChanged dispatches to this queue.
+  XCTestExpectation *expectation =
+      [self expectationWithDescription:@"Dispatched to capture session queue"];
+  dispatch_async(captureSessionQueue, ^{
+    OCMVerify(never(), [mockCam setDeviceOrientation:UIDeviceOrientationLandscapeLeft]);
+    OCMVerify(never(), [mockChannel invokeMethod:@"orientation_changed" arguments:OCMOCK_ANY]);
+    [expectation fulfill];
+  });
+
+  [self waitForExpectationsWithTimeout:1 handler:nil];
+}
+
 - (NSNotification *)createMockNotificationForOrientation:(UIDeviceOrientation)deviceOrientation {
   UIDevice *mockDevice = OCMClassMock([UIDevice class]);
   OCMStub([mockDevice orientation]).andReturn(deviceOrientation);
