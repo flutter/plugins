@@ -1,3 +1,8 @@
+## 0.9.0+1
+
+* Updates README for endorsement.
+* Updates `flutter_test` to be a `dev_dependencies` entry.
+
 ## 0.9.0
 
 * **BREAKING CHANGE**: Methods that take `XTypeGroup`s now throw an
