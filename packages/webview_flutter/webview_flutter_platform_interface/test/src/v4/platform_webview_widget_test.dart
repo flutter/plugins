@@ -82,7 +82,7 @@ class ExtendsWebViewWidgetDelegate extends PlatformWebViewWidget {
       : super.implementation(params);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildParams params) {
     throw UnimplementedError(
         'build is not implemented for ExtendedWebViewWidgetDelegate.');
   }
