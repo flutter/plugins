@@ -40,6 +40,43 @@ abstract class PlatformWebViewWidget extends PlatformInterface {
 }
 
 /// Describes the parameters necessary for displaying the platform WebView.
+///
+/// Platform specific implementations can add additional fields by extending
+/// this class.
+///
+/// {@tool sample}
+/// This example demonstrates how to extend the [BuildParams] to provide
+/// additional platform specific parameters.
+///
+/// When extending [BuildParams], additional parameters should always accept
+/// `null` or have a default value to prevent breaking changes.
+///
+/// ```dart
+/// @immutable
+/// class WebKitBuildParams extends BuildParams {
+///   WebKitBuildParams(
+///     super.context, {
+///     required super.controller,
+///     super.layoutDirection,
+///     super.gestureRecognizers,
+///     this.platformSpecificFieldExample,
+///   });
+///
+///   WebKitBuildParams.fromBuildParams(
+///     BuildParams params, {
+///     Object? platformSpecificFieldExample,
+///   }) : this(
+///           params.context,
+///           controller: params.controller,
+///           layoutDirection: params.layoutDirection,
+///           gestureRecognizers: params.gestureRecognizers,
+///           platformSpecificFieldExample: platformSpecificFieldExample,
+///         );
+///
+///   final Object? platformSpecificFieldExample;
+/// }
+/// ```
+/// {@end-tool}
 @immutable
 class BuildParams {
   /// Constructs a [BuildParams].
