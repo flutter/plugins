@@ -5,21 +5,22 @@
 package io.flutter.plugins.camerax;
 
 import androidx.camera.core.CameraSelector;
-import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraSelectorFlutterApi;
-import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraSelectorFlutterApi;
 
 public class CameraSelectorFlutterApiImpl extends CameraSelectorFlutterApi {
   private final InstanceManager instanceManager;
 
   public CameraSelectorFlutterApiImpl(
-    BinaryMessenger binaryMessenger,
-    InstanceManager instanceManager) {
+      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     super(binaryMessenger);
     this.instanceManager = instanceManager;
   }
 
   void create(CameraSelector cameraSelector, Reply<Void> reply) {
-    create(instanceManager.getIdentifierForStrongReference(cameraSelector), null, reply); //TODO(cs): add degrees
+    create(
+        instanceManager.getIdentifierForStrongReference(cameraSelector),
+        null,
+        reply); //TODO(cs): add degrees
   }
 }

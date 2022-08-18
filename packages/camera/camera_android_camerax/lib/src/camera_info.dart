@@ -2,28 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show BinaryMessenger;
 
 import 'camerax.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
+/// Represents the metadata of a camera.
 class CameraInfo extends JavaObject {
-  CameraInfo.detached({super.binaryMessenger, super.instanceManager}) {
-    super.detached();
-    _api = CameraInfoHostApiImpl(
-      binaryMessenger: binaryMessenger,
-      instanceManager: instanceManager,
-      );
-  }
+  /// Constructs a [CameraInfo] object.
+  CameraInfo.detached({super.binaryMessenger, super.instanceManager})
+      : _api = CameraInfoHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+        super.detached();
 
-  static late final CameraInfoHostApiImpl _api;
+  late final CameraInfoHostApiImpl _api;
 
   /// Gets sensor orientation degrees of camera.
   Future<int> getSensorRotationDegrees() =>
       _api.getSensorRotationDegreesFromInstance(this);
 }
 
+/// Host API implementation of [CameraInfo].
 class CameraInfoHostApiImpl extends CameraInfoHostApi {
   /// Constructs a [CameraInfoHostApiImpl].
   CameraInfoHostApiImpl({
@@ -43,11 +45,11 @@ class CameraInfoHostApiImpl extends CameraInfoHostApi {
 
   /// Gets sensor orientation degrees of [CameraInfo].
   Future<int> getSensorRotationDegreesFromInstance(CameraInfo instance) async {
-    return getSensorRotationDegrees(
-        instanceManager.getIdentifier(instance)!);
+    return getSensorRotationDegrees(instanceManager.getIdentifier(instance)!);
   }
 }
 
+/// Flutter API implementation of [CameraInfo].
 class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
   /// Constructs a [CameraInfoFlutterApiImpl].
   CameraInfoFlutterApiImpl({
@@ -76,3 +78,4 @@ class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
     );
   }
 }
+//TODO(cs): get rid of the futures at the lowest level possible. this has gotten crazy.

@@ -7,20 +7,18 @@ package io.flutter.plugins.camerax;
 import androidx.annotation.NonNull;
 import androidx.camera.core.CameraInfo;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraInfoHostApi;
-import io.flutter.plugins.camerax.InstanceManager;
 
 public class CameraInfoHostApiImpl implements CameraInfoHostApi {
   private final InstanceManager instanceManager;
 
-  public CameraInfoHostApiImpl(
-    InstanceManager instanceManager) {
+  public CameraInfoHostApiImpl(InstanceManager instanceManager) {
     this.instanceManager = instanceManager;
   }
 
   @Override
   public Long getSensorRotationDegrees(@NonNull Long instanceId) {
     CameraInfo cameraInfo =
-      (CameraInfo) instanceManager.getInstance(instanceId); // may return null?
+        (CameraInfo) instanceManager.getInstance(instanceId); // may return null?
     return Long.valueOf(cameraInfo.getSensorRotationDegrees());
-  }  
+  }
 }

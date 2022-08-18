@@ -5,9 +5,8 @@
 package io.flutter.plugins.camerax;
 
 import androidx.camera.lifecycle.ProcessCameraProvider;
-import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderFlutterApi;
-import io.flutter.plugins.camerax.InstanceManager;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderFlutterApi;
 
 public class ProcessCameraProviderFlutterApiImpl extends ProcessCameraProviderFlutterApi {
   public ProcessCameraProviderFlutterApiImpl(

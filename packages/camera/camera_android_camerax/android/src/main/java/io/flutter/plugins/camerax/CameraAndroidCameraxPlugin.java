@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.plugins.camerax.GeneratedCameraXLibrary;
 import io.flutter.plugin.common.BinaryMessenger;
 
 /** CameraAndroidCameraxPlugin */
@@ -41,24 +40,26 @@ public class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware 
 
     // Set up Host APIs.
     GeneratedCameraXLibrary.ProcessCameraProviderHostApi.setup(
-      binaryMessenger,
-      new ProcessCameraProviderHostApiImpl(
-        binaryMessenger, //TODO(cs): possibly refactor this to take Flutter API.
-        instanceManager,
-        activity));
+        binaryMessenger,
+        new ProcessCameraProviderHostApiImpl(
+            binaryMessenger, //TODO(cs): possibly refactor this to take Flutter API.
+            instanceManager,
+            activity));
     GeneratedCameraXLibrary.CameraInfoHostApi.setup(
-      binaryMessenger,
-      new CameraInfoHostApiImpl(instanceManager));
+        binaryMessenger, new CameraInfoHostApiImpl(instanceManager));
     GeneratedCameraXLibrary.CameraSelectorHostApi.setup(
-      binaryMessenger,
-      new CameraSelectorHostApiImpl(
-        binaryMessenger, //TODO(cs): possibly refactor this to take Flutter API.
-        instanceManager));
+        binaryMessenger,
+        new CameraSelectorHostApiImpl(
+            binaryMessenger, //TODO(cs): possibly refactor this to take Flutter API.
+            instanceManager));
   }
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    (new CameraAndroidCameraxPlugin()).setUp(flutterPluginBinding.getBinaryMessenger(), (Activity) flutterPluginBinding.getApplicationContext());
+    (new CameraAndroidCameraxPlugin())
+        .setUp(
+            flutterPluginBinding.getBinaryMessenger(),
+            (Activity) flutterPluginBinding.getApplicationContext());
   }
 
   @Override
