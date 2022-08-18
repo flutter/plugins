@@ -20,7 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   google_maps_flutter_android: ^2.1.10
-  google_maps_flutter_ios: ^2.1.10 ~
+  google_maps_flutter_ios: ^2.1.10
   google_maps_flutter_platform_interface: ^2.2.1
 
 dev_dependencies:
