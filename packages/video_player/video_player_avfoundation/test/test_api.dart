@@ -14,7 +14,6 @@ import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 // TODO(gaaclarke): The following output had to be tweaked from a relative path to a uri.
-import 'package:video_player_platform_interface/messages.g.dart';
 import 'package:video_player_avfoundation/src/messages.g.dart';
 
 class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
