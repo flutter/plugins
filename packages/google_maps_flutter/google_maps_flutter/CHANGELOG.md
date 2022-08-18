@@ -1,7 +1,10 @@
 
-## 2.1.11
+## 2.1.12
 
 * Fixes violations of new analysis option use_named_constants.
+
+## 2.1.11
+
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Moves Android and iOS implementations to federated packages.
 
