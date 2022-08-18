@@ -1,6 +1,7 @@
 ## NEXT
 
 * Added setMaxVideoResolution method to support different video resolutions while picking a video stream from a source with different tracks
+* Fixes violations of new analysis option use_named_constants.
 
 ## 2.3.9
 

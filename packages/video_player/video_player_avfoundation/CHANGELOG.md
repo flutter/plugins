@@ -1,6 +1,7 @@
 ## NEXT
 
 * Added setMaxVideoResolution method to support different video resolutions while picking a video stream from a source with different tracks
+* Fixes violations of new analysis option use_named_constants.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 

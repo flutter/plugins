@@ -8,7 +8,7 @@
 #import "FLTCam.h"
 #import "FLTThreadSafeFlutterResult.h"
 
-/// Methods exposed for unit testing.
+/// APIs exposed for unit testing.
 @interface CameraPlugin ()
 
 /// All FLTCam's state access and capture session related operations should be on run on this queue.
@@ -16,6 +16,10 @@
 
 /// An internal camera object that manages camera's state and performs camera operations.
 @property(nonatomic, strong) FLTCam *camera;
+
+/// A thread safe wrapper of the method channel used to send device events such as orientation
+/// changes.
+@property(nonatomic, strong) FLTThreadSafeMethodChannel *deviceEventMethodChannel;
 
 /// Inject @p FlutterTextureRegistry and @p FlutterBinaryMessenger for unit testing.
 - (instancetype)initWithRegistry:(NSObject<FlutterTextureRegistry> *)registry
