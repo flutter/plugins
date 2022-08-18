@@ -350,6 +350,35 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
     await _applyPlaybackSpeed();
   }
 
+  /// Returns true if picture in picture is supported on the device.
+  Future<bool> isPictureInPictureSupported() {
+    return _platform.isPictureInPictureSupported();
+  }
+
+  /// Prepare picture in picture by passing the location of the video player view
+  Future<void> preparePictureInPicture({
+    required double top,
+    required double left,
+    required double width,
+    required double height,
+  }) {
+    return _platform.preparePictureInPicture(
+      textureId: textureId,
+      top: top,
+      left: left,
+      width: width,
+      height: height,
+    );
+  }
+
+  /// Start/stop picture in picture mode
+  Future<void> setPictureInPicture(bool enabled) {
+    return _platform.setPictureInPicture(
+      textureId,
+      enabled,
+    );
+  }
+
   void _updatePosition(Duration position) {
     value = value.copyWith(position: position);
   }

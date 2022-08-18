@@ -32,7 +32,10 @@ class _App extends StatelessWidget {
                 icon: Icon(Icons.cloud),
                 text: 'Remote',
               ),
-              Tab(icon: Icon(Icons.insert_drive_file), text: 'Asset'),
+              Tab(
+                icon: Icon(Icons.insert_drive_file),
+                text: 'Asset',
+              ),
             ],
           ),
         ),
@@ -110,6 +113,10 @@ class _BumbleBeeRemoteVideo extends StatefulWidget {
 class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   late MiniController _controller;
 
+  final GlobalKey<State<StatefulWidget>> _playerKey =
+      GlobalKey<State<StatefulWidget>>();
+  final Key _pictureInPictureKey = UniqueKey();
+
   @override
   void initState() {
     super.initState();
@@ -136,9 +143,43 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
         children: <Widget>[
           Container(padding: const EdgeInsets.only(top: 20.0)),
           const Text('With remote mp4'),
+          FutureBuilder<bool>(
+            key: _pictureInPictureKey,
+            future: _controller.isPictureInPictureSupported(),
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) =>
+                Text(snapshot.data ?? false
+                    ? 'Pip is supported'
+                    : 'Pip is not supported'),
+          ),
+          MaterialButton(
+            color: Colors.blue,
+            onPressed: () {
+              final RenderBox? box =
+                  _playerKey.currentContext?.findRenderObject() as RenderBox?;
+              if (box == null) {
+                return;
+              }
+              final Offset offset = box.localToGlobal(Offset.zero);
+              _controller.preparePictureInPicture(
+                top: offset.dy,
+                left: offset.dx,
+                width: box.size.width,
+                height: box.size.height,
+              );
+            },
+            child: const Text('Prepare'),
+          ),
+          MaterialButton(
+            color: Colors.blue,
+            onPressed: () =>
+                _controller.setPictureInPicture(!_controller.value.isPipActive),
+            child:
+                Text(_controller.value.isPipActive ? 'Stop PiP' : 'Start PiP'),
+          ),
           Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(
+              key: _playerKey,
               aspectRatio: _controller.value.aspectRatio,
               child: Stack(
                 alignment: Alignment.bottomCenter,

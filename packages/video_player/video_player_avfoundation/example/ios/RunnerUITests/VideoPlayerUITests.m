@@ -29,6 +29,23 @@
   XCUIElement *playButton = app.staticTexts[@"Play"];
   XCTAssertTrue([playButton waitForExistenceWithTimeout:30.0]);
   [playButton tap];
+    
+  XCUIElement *pipSupportedText = app.staticTexts[@"Pip is supported"];
+  XCTAssertTrue([pipSupportedText waitForExistenceWithTimeout:30.0]);
+    
+  XCUIElement *pipPrepareButton = app.buttons[@"Prepare"];
+  XCTAssertTrue([pipPrepareButton waitForExistenceWithTimeout:30.0]);
+  [pipPrepareButton tap];
+      
+  XCUIElement *pipStartButton = app.buttons[@"Start PiP"];
+  XCTAssertTrue([pipStartButton waitForExistenceWithTimeout:30.0]);
+  [pipStartButton tap];
+    
+  XCUIElement *pipStopButton = app.buttons[@"Stop PiP"];
+  XCTAssertTrue([pipStopButton waitForExistenceWithTimeout:30.0]);
+  [pipStopButton tap];
+
+  XCTAssertTrue([pipStartButton waitForExistenceWithTimeout:30.0]);
 
   NSPredicate *find1xButton = [NSPredicate predicateWithFormat:@"label CONTAINS '1.0x'"];
   XCUIElement *playbackSpeed1x = [app.staticTexts elementMatchingPredicate:find1xButton];

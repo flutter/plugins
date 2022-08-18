@@ -207,7 +207,7 @@ class _BumbleBeeRemoteVideo extends StatefulWidget {
 class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   late VideoPlayerController _controller;
 
-  final GlobalKey<State<StatefulWidget>> _key =
+  final GlobalKey<State<StatefulWidget>> _playerKey =
       GlobalKey<State<StatefulWidget>>();
   final Key _pictureInPictureKey = UniqueKey();
 
@@ -252,14 +252,14 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
             future: _controller.isPictureInPictureSupported(),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) =>
                 Text(snapshot.data ?? false
-                    ? 'Pip is suported'
+                    ? 'Pip is supported'
                     : 'Pip is not supported'),
           ),
           MaterialButton(
             color: Colors.blue,
             onPressed: () {
               final RenderBox? box =
-                  _key.currentContext?.findRenderObject() as RenderBox?;
+                  _playerKey.currentContext?.findRenderObject() as RenderBox?;
               if (box == null) {
                 return;
               }
@@ -285,7 +285,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
             child: AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
               child: Stack(
-                key: _key,
+                key: _playerKey,
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[
                   VideoPlayer(_controller),
