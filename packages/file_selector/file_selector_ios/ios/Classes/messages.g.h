@@ -17,18 +17,21 @@ NS_ASSUME_NONNULL_BEGIN
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithUtis:(NSArray<NSString *> *)utis
-    allowMultiSelection:(NSNumber *)allowMultiSelection;
-@property(nonatomic, strong) NSArray<NSString *> * utis;
-@property(nonatomic, strong) NSNumber * allowMultiSelection;
+         allowMultiSelection:(NSNumber *)allowMultiSelection;
+@property(nonatomic, strong) NSArray<NSString *> *utis;
+@property(nonatomic, strong) NSNumber *allowMultiSelection;
 @end
 
 /// The codec used by FFSFileSelectorApi.
 NSObject<FlutterMessageCodec> *FFSFileSelectorApiGetCodec(void);
 
 @protocol FFSFileSelectorApi
-- (void)openFileSelectorWithConfig:(FFSFileSelectorConfig *)config completion:(void(^)(NSArray<NSString *> *_Nullable, FlutterError *_Nullable))completion;
+- (void)openFileSelectorWithConfig:(FFSFileSelectorConfig *)config
+                        completion:(void (^)(NSArray<NSString *> *_Nullable,
+                                             FlutterError *_Nullable))completion;
 @end
 
-extern void FFSFileSelectorApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FFSFileSelectorApi> *_Nullable api);
+extern void FFSFileSelectorApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
+                                    NSObject<FFSFileSelectorApi> *_Nullable api);
 
 NS_ASSUME_NONNULL_END

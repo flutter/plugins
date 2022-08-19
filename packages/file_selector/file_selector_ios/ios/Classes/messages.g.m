@@ -14,25 +14,24 @@ static NSDictionary<NSString *, id> *wrapResult(id result, FlutterError *error) 
   NSDictionary *errorDict = (NSDictionary *)[NSNull null];
   if (error) {
     errorDict = @{
-        @"code": (error.code ?: [NSNull null]),
-        @"message": (error.message ?: [NSNull null]),
-        @"details": (error.details ?: [NSNull null]),
-        };
+      @"code" : (error.code ?: [NSNull null]),
+      @"message" : (error.message ?: [NSNull null]),
+      @"details" : (error.details ?: [NSNull null]),
+    };
   }
   return @{
-      @"result": (result ?: [NSNull null]),
-      @"error": errorDict,
-      };
+    @"result" : (result ?: [NSNull null]),
+    @"error" : errorDict,
+  };
 }
-static id GetNullableObject(NSDictionary* dict, id key) {
+static id GetNullableObject(NSDictionary *dict, id key) {
   id result = dict[key];
   return (result == [NSNull null]) ? nil : result;
 }
-static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
+static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   id result = array[key];
   return (result == [NSNull null]) ? nil : result;
 }
-
 
 @interface FFSFileSelectorConfig ()
 + (FFSFileSelectorConfig *)fromMap:(NSDictionary *)dict;
@@ -42,8 +41,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 
 @implementation FFSFileSelectorConfig
 + (instancetype)makeWithUtis:(NSArray<NSString *> *)utis
-    allowMultiSelection:(NSNumber *)allowMultiSelection {
-  FFSFileSelectorConfig* pigeonResult = [[FFSFileSelectorConfig alloc] init];
+         allowMultiSelection:(NSNumber *)allowMultiSelection {
+  FFSFileSelectorConfig *pigeonResult = [[FFSFileSelectorConfig alloc] init];
   pigeonResult.utis = utis;
   pigeonResult.allowMultiSelection = allowMultiSelection;
   return pigeonResult;
@@ -56,7 +55,9 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   NSAssert(pigeonResult.allowMultiSelection != nil, @"");
   return pigeonResult;
 }
-+ (nullable FFSFileSelectorConfig *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FFSFileSelectorConfig fromMap:dict] : nil; }
++ (nullable FFSFileSelectorConfig *)nullableFromMap:(NSDictionary *)dict {
+  return (dict) ? [FFSFileSelectorConfig fromMap:dict] : nil;
+}
 - (NSDictionary *)toMap {
   return @{
     @"utis" : (self.utis ?: [NSNull null]),
@@ -68,15 +69,13 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @interface FFSFileSelectorApiCodecReader : FlutterStandardReader
 @end
 @implementation FFSFileSelectorApiCodecReader
-- (nullable id)readValueOfType:(UInt8)type 
-{
+- (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
-    case 128:     
+    case 128:
       return [FFSFileSelectorConfig fromMap:[self readValue]];
-    
-    default:    
+
+    default:
       return [super readValueOfType:type];
-    
   }
 }
 @end
@@ -84,13 +83,11 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @interface FFSFileSelectorApiCodecWriter : FlutterStandardWriter
 @end
 @implementation FFSFileSelectorApiCodecWriter
-- (void)writeValue:(id)value 
-{
+- (void)writeValue:(id)value {
   if ([value isKindOfClass:[FFSFileSelectorConfig class]]) {
     [self writeByte:128];
     [self writeValue:[value toMap]];
-  } else 
-{
+  } else {
     [super writeValue:value];
   }
 }
@@ -111,31 +108,35 @@ NSObject<FlutterMessageCodec> *FFSFileSelectorApiGetCodec() {
   static dispatch_once_t sPred = 0;
   static FlutterStandardMessageCodec *sSharedObject = nil;
   dispatch_once(&sPred, ^{
-    FFSFileSelectorApiCodecReaderWriter *readerWriter = [[FFSFileSelectorApiCodecReaderWriter alloc] init];
+    FFSFileSelectorApiCodecReaderWriter *readerWriter =
+        [[FFSFileSelectorApiCodecReaderWriter alloc] init];
     sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
   });
   return sSharedObject;
 }
 
-
-void FFSFileSelectorApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FFSFileSelectorApi> *api) {
+void FFSFileSelectorApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
+                             NSObject<FFSFileSelectorApi> *api) {
   {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.FileSelectorApi.openFile"
+    FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
+           initWithName:@"dev.flutter.pigeon.FileSelectorApi.openFile"
         binaryMessenger:binaryMessenger
-        codec:FFSFileSelectorApiGetCodec()        ];
+                  codec:FFSFileSelectorApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(openFileSelectorWithConfig:completion:)], @"FFSFileSelectorApi api (%@) doesn't respond to @selector(openFileSelectorWithConfig:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(openFileSelectorWithConfig:completion:)],
+                @"FFSFileSelectorApi api (%@) doesn't respond to "
+                @"@selector(openFileSelectorWithConfig:completion:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FFSFileSelectorConfig *arg_config = GetNullableObjectAtIndex(args, 0);
-        [api openFileSelectorWithConfig:arg_config completion:^(NSArray<NSString *> *_Nullable output, FlutterError *_Nullable error) {
-          callback(wrapResult(output, error));
-        }];
+        [api openFileSelectorWithConfig:arg_config
+                             completion:^(NSArray<NSString *> *_Nullable output,
+                                          FlutterError *_Nullable error) {
+                               callback(wrapResult(output, error));
+                             }];
       }];
-    }
-    else {
+    } else {
       [channel setMessageHandler:nil];
     }
   }
