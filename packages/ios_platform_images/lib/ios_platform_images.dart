@@ -8,7 +8,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart'
     show SynchronousFuture, describeIdentity, immutable, objectRuntimeType;
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
+
+import 'package:ios_platform_images/platform_images_api.g.dart';
 
 class _FutureImageStreamCompleter extends ImageStreamCompleter {
   _FutureImageStreamCompleter({
@@ -106,8 +107,10 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
 ///
 /// For example, loading an image that is in `Assets.xcassts`.
 class IosPlatformImages {
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/ios_platform_images');
+  static final PlatformImagesApi _api = PlatformImagesApi();
+
+  /// Empty registerWith method.
+  static void registerWith() {}
 
   /// Loads an image from asset catalogs.  The equivalent would be:
   /// `[UIImage imageNamed:name]`.
@@ -116,24 +119,8 @@ class IosPlatformImages {
   ///
   /// See [https://developer.apple.com/documentation/uikit/uiimage/1624146-imagenamed?language=objc]
   static ImageProvider load(String name) {
-    final Future<Map<String, dynamic>?> loadInfo =
-        _channel.invokeMapMethod<String, dynamic>('loadImage', name);
-    final Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
-    final Completer<double> scaleCompleter = Completer<double>();
-    loadInfo.then((Map<String, dynamic>? map) {
-      if (map == null) {
-        scaleCompleter.completeError(
-          Exception("Image couldn't be found: $name"),
-        );
-        bytesCompleter.completeError(
-          Exception("Image couldn't be found: $name"),
-        );
-        return;
-      }
-      scaleCompleter.complete(map['scale']! as double);
-      bytesCompleter.complete(map['data']! as Uint8List);
-    });
-    return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
+    final Future<PlatformImage> image = _api.getPlatformImage(name);
+    return _platformImageToFutureMemoryImage(image, name);
   }
 
   /// Loads an image from the system.  The equivalent would be:
@@ -171,7 +158,7 @@ class IosPlatformImages {
     double size, {
     List<Color> colors = const <Color>[],
     bool preferMulticolor = false,
-    ui.FontWeight weight = FontWeight.normal,
+    FontWeight weight = FontWeight.regular,
   }) {
     if (preferMulticolor) {
       if (colors != const <Color>[]) {
@@ -190,35 +177,34 @@ class IosPlatformImages {
             ])
         .toList();
 
-    final Future<Map<String, Object?>?> loadInfo =
-        _channel.invokeMapMethod<String, Object?>(
-      'loadSystemImage',
-      <Object?>[
-        name,
-        size,
-        weight.index,
-        colorsRGBA,
-        preferMulticolor,
-      ],
-    );
+    final Future<PlatformImage> image =
+        _api.getSystemImage(name, size, weight, colorsRGBA, preferMulticolor);
+
+    return _platformImageToFutureMemoryImage(image, name);
+  }
+
+  static _FutureMemoryImage _platformImageToFutureMemoryImage(
+      Future<PlatformImage> image, String name) {
     final Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
     final Completer<double> scaleCompleter = Completer<double>();
-    loadInfo.then((Map<String, Object?>? map) {
-      if (map == null) {
+    image.then((PlatformImage image) {
+      if (image == null || image.bytes == null || image.scale == null) {
         scaleCompleter.completeError(
-          ArgumentError("System image couldn't be found: $name"),
+          ArgumentError("Image couldn't be found: $name"),
         );
         bytesCompleter.completeError(
-          ArgumentError("System image couldn't be found: $name"),
+          ArgumentError("Image couldn't be found: $name"),
         );
         return;
       }
-      scaleCompleter.complete(map['scale']! as double);
-      bytesCompleter.complete(map['data']! as Uint8List);
+
+      scaleCompleter.complete(image.scale);
+      bytesCompleter.complete(image.bytes);
     });
     return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
   }
 
+  // TODO(cadenkriese): reimplement
   /// Resolves an URL for a resource.  The equivalent would be:
   /// `[[NSBundle mainBundle] URLForResource:name withExtension:ext]`.
   ///
@@ -226,7 +212,6 @@ class IosPlatformImages {
   ///
   /// See [https://developer.apple.com/documentation/foundation/nsbundle/1411540-urlforresource?language=objc]
   static Future<String?> resolveURL(String name, {String? extension}) {
-    return _channel
-        .invokeMethod<String>('resolveURL', <Object?>[name, extension]);
+    return _api.resolveURL(name, extension);
   }
 }

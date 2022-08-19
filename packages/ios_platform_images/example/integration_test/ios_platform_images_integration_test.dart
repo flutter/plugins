@@ -36,9 +36,9 @@ void main() {
     },
   );
 
-  test(
+  testWidgets(
     'ios system image error case',
-    () async {
+    (WidgetTester tester) async {
       final Completer<ImageInfo> _completer = Completer<ImageInfo>();
 
       final ImageProvider imageProvider =
@@ -47,8 +47,9 @@ void main() {
       imageProvider.resolve(ImageConfiguration.empty).completer?.addListener(
             ImageStreamListener(
               (ImageInfo info, bool _) => _completer.complete(info),
-              onError: (Object exception, StackTrace? _) =>
-                  _completer.completeError(exception),
+              onError: (Object exception, StackTrace? stack) => () {
+                _completer.completeError(exception);
+              },
             ),
           );
 

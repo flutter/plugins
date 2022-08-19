@@ -12,7 +12,8 @@ flutter:
   plugin:
     platforms:
       ios:
-        pluginClass: IosPlatformImagesPlugin
+        dartPluginClass: IosPlatformImages
+        pluginClass: FLTPlatformImagesPlugin
 
 dependencies:
   flutter:
@@ -21,3 +22,5 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  pedantic: ^1.10.0
+  pigeon: ^3.2.3
