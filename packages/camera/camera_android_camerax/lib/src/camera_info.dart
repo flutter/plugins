@@ -11,18 +11,34 @@ import 'java_object.dart';
 /// Represents the metadata of a camera.
 class CameraInfo extends JavaObject {
   /// Constructs a [CameraInfo] object.
-  CameraInfo.detached({super.binaryMessenger, super.instanceManager})
-      : _api = CameraInfoHostApiImpl(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-        ),
-        super.detached();
+  CameraInfo.detached({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
+      :  super.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager) {
+        setUpApis(binaryMessenger, instanceManager);
+      }
 
-  late final CameraInfoHostApiImpl _api;
+  static CameraInfoHostApiImpl? _api;
+  static CameraInfoFlutterApiImpl? _flutterApi;
+
+  static void setUpApis(BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
+    if (_api == null) {
+      _api = CameraInfoHostApiImpl(
+        binaryMessenger: binaryMessenger,
+        instanceManager: instanceManager,
+      );
+    }
+    if (_flutterApi == null) {
+      _flutterApi = CameraInfoFlutterApiImpl(
+        binaryMessenger: binaryMessenger,
+        instanceManager: instanceManager,
+      );
+      CameraInfoFlutterApi.setup(_flutterApi);
+    }
+
+  }
 
   /// Gets sensor orientation degrees of camera.
   Future<int> getSensorRotationDegrees() =>
-      _api.getSensorRotationDegreesFromInstance(this);
+      _api!.getSensorRotationDegreesFromInstance(this);
 }
 
 /// Host API implementation of [CameraInfo].
@@ -52,7 +68,7 @@ class CameraInfoHostApiImpl extends CameraInfoHostApi {
 }
 
 /// Flutter API implementation of [CameraInfo].
-class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
+class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi { //TODO(this needs to be setup)
   /// Constructs a [CameraInfoFlutterApiImpl].
   CameraInfoFlutterApiImpl({
     this.binaryMessenger,
@@ -70,13 +86,10 @@ class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
 
   @override
   void create(int instanceId) {
+    print('Instance id for CameraInfo ${instanceId}');
     instanceManager.addHostCreatedInstance(
       CameraInfo.detached(),
       instanceId,
-      onCopy: (CameraInfo original) => CameraInfo.detached(
-        binaryMessenger: binaryMessenger,
-        instanceManager: instanceManager,
-      ),
     );
   }
 }

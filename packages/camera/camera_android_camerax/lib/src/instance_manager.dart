@@ -42,7 +42,6 @@ class InstanceManager {
   /// Constructs an [InstanceManager].
   InstanceManager({required void Function(int) onWeakReferenceRemoved}) {
     this.onWeakReferenceRemoved = (int identifier) {
-      debugPrint('Releasing weak reference with identifier: $identifier');
       _weakInstances.remove(identifier);
       onWeakReferenceRemoved(identifier);
     };
@@ -64,10 +63,9 @@ class InstanceManager {
   // by calling instanceManager.getIdentifier() inside of `==` while this was a
   // HashMap).
   final Expando<int> _identifiers = Expando<int>();
-  final Map<int, WeakReference<Object>> _weakInstances =
-      <int, WeakReference<Object>>{};
-  final Map<int, Object> _strongInstances = <int, Object>{};
-  final Map<int, Function> _copyCallbacks = <int, Function>{};
+  final Map<int, WeakReference<Copyable>> _weakInstances =
+      <int, WeakReference<Copyable>>{};
+  final Map<int, Copyable> _strongInstances = <int, Copyable>{};
   late final Finalizer<int> _finalizer;
   int _nextIdentifier = 0;
 
@@ -83,14 +81,11 @@ class InstanceManager {
   /// Throws assertion error if the instance has already been added.
   ///
   /// Returns the randomly generated id of the [instance] added.
-  int addDartCreatedInstance<T extends Object>(
-    T instance, {
-    required T Function(T original) onCopy,
-  }) {
+  int addDartCreatedInstance(Copyable instance) {
     assert(getIdentifier(instance) == null);
 
     final int identifier = _nextUniqueIdentifier();
-    _addInstanceWithIdentifier(instance, identifier, onCopy: onCopy);
+    _addInstanceWithIdentifier(instance, identifier);
     return identifier;
   }
 
@@ -102,7 +97,7 @@ class InstanceManager {
   ///
   /// This does not remove the the strong referenced instance associated with
   /// [instance]. This can be done with [remove].
-  int? removeWeakReference(Object instance) {
+  int? removeWeakReference(Copyable instance) {
     final int? identifier = getIdentifier(instance);
     if (identifier == null) {
       return null;
@@ -124,9 +119,7 @@ class InstanceManager {
   ///
   /// This does not remove the the weak referenced instance associtated with
   /// [identifier]. This can be done with [removeWeakReference].
-  T? remove<T extends Object>(int identifier) {
-    debugPrint('Releasing strong reference with identifier: $identifier');
-    _copyCallbacks.remove(identifier);
+  T? remove<T extends Copyable>(int identifier) {
     return _strongInstances.remove(identifier) as T?;
   }
 
@@ -142,16 +135,15 @@ class InstanceManager {
   ///
   /// This method also expects the host `InstanceManager` to have a strong
   /// reference to the instance the identifier is associated with.
-  T? getInstanceWithWeakReference<T extends Object>(int identifier) {
-    final Object? weakInstance = _weakInstances[identifier]?.target;
+  T? getInstanceWithWeakReference<T extends Copyable>(int identifier) {
+    final Copyable? weakInstance = _weakInstances[identifier]?.target;
 
     if (weakInstance == null) {
-      final Object? strongInstance = _strongInstances[identifier];
+      final Copyable? strongInstance = _strongInstances[identifier];
       if (strongInstance != null) {
-        final Object copy =
-            _copyCallbacks[identifier]!(strongInstance)! as Object;
+        final Copyable copy = strongInstance.copy();
         _identifiers[copy] = identifier;
-        _weakInstances[identifier] = WeakReference<Object>(copy);
+        _weakInstances[identifier] = WeakReference<Copyable>(copy);
         _finalizer.attach(copy, identifier, detach: copy);
         return copy as T;
       }
@@ -162,7 +154,7 @@ class InstanceManager {
   }
 
   /// Retrieves the identifier associated with instance.
-  int? getIdentifier(Object instance) {
+  int? getIdentifier(Copyable instance) {
     return _identifiers[instance];
   }
 
@@ -175,30 +167,21 @@ class InstanceManager {
   /// added.
   ///
   /// Returns unique identifier of the [instance] added.
-  void addHostCreatedInstance<T extends Object>(
-    T instance,
-    int identifier, {
-    required T Function(T original) onCopy,
-  }) {
+  void addHostCreatedInstance(Copyable instance, int identifier) {
     assert(!containsIdentifier(identifier));
     assert(getIdentifier(instance) == null);
     assert(identifier >= 0);
-    _addInstanceWithIdentifier(instance, identifier, onCopy: onCopy);
+    _addInstanceWithIdentifier(instance, identifier);
   }
 
-  void _addInstanceWithIdentifier<T extends Object>(
-    T instance,
-    int identifier, {
-    required T Function(T original) onCopy,
-  }) {
+  void _addInstanceWithIdentifier(Copyable instance, int identifier) {
     _identifiers[instance] = identifier;
-    _weakInstances[identifier] = WeakReference<Object>(instance);
+    _weakInstances[identifier] = WeakReference<Copyable>(instance);
     _finalizer.attach(instance, identifier, detach: instance);
 
-    final Object copy = onCopy(instance);
+    final Copyable copy = instance.copy();
     _identifiers[copy] = identifier;
     _strongInstances[identifier] = copy;
-    _copyCallbacks[identifier] = onCopy;
   }
 
   /// Whether this manager contains the given [identifier].

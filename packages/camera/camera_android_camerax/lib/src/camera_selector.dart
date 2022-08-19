@@ -12,60 +12,68 @@ import 'java_object.dart';
 /// Selects a camera for use.
 class CameraSelector extends JavaObject {
   /// Creates a [CameraSelector].
-  CameraSelector(
-      {super.binaryMessenger, super.instanceManager, this.lensFacing})
-      : _api = CameraSelectorHostApiImpl(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-        ),
-        super.detached();
-
-  /// Creates a detached [CameraSelector].
   CameraSelector.detached(
-      {super.binaryMessenger, super.instanceManager, this.lensFacing})
-      : super.detached();
+    {this.binaryMessenger, this.instanceManager, this.lensFacing})
+       : super.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager) {
+    setUpApis(binaryMessenger, instanceManager);  
+  }
 
   /// Sends binary data across the Flutter platform barrier.
   late final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances store to communicate with native language objects.
-  late final InstanceManager instanceManager;
+  late final InstanceManager? instanceManager;
 
-  late final CameraSelectorHostApiImpl _api;
+  static CameraSelectorHostApiImpl? _api;
+
+  static CameraSelectorFlutterApiImpl? _flutterApi;
 
   /// ID for back facing lens.
   static const int LENS_FACING_BACK = 1;
 
-  /// ID for front facin lens.
+  /// ID for front facing lens.
   static const int LENS_FACING_FRONT = 0;
 
   /// Lens direction of this selector.
   final int? lensFacing;
 
+  static void setUpApis(BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
+    if (_flutterApi == null) {
+      _flutterApi = CameraSelectorFlutterApiImpl(
+        binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+      CameraSelectorFlutterApi.setup(_flutterApi);
+    }
+
+    if (_api == null) {
+      _api = CameraSelectorHostApiImpl(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+      );
+    }
+  }
+
   /// Selector for default front facing camera.
   static final Future<CameraSelector> defaultFrontCamera =
-      CameraSelector().requireLensFacing(LENS_FACING_BACK);
+      CameraSelector.detached().requireLensFacing(LENS_FACING_BACK);
 
   /// Selector for default back facing camera.
   static final Future<CameraSelector> defaultBackCamera =
-      CameraSelector().requireLensFacing(LENS_FACING_FRONT);
+      CameraSelector.detached().requireLensFacing(LENS_FACING_FRONT);
 
   /// Returns selector with the lens direction specified.
   Future<CameraSelector> requireLensFacing(int lensFacing) {
-    CameraSelectorFlutterApi.setup(CameraSelectorFlutterApiImpl(
-      binaryMessenger: binaryMessenger,
-      instanceManager: instanceManager,
-    ));
-    return _api.requireLensFacingInInstance(
-      instanceManager.getIdentifier(this)!,
+    setUpApis(binaryMessenger, instanceManager);
+    return _api!.requireLensFacingInInstance(
+      this,
       lensFacing,
     );
   }
 
   /// Filters available cameras based on provided [CameraInfo]s.
   Future<List<CameraInfo>> filter(List<CameraInfo> cameraInfos) {
-    return _api.filterFromInstance(
-      instanceManager.getIdentifier(this)!,
+    setUpApis(binaryMessenger, instanceManager);
+    return _api!.filterFromInstance(
+      this,
       cameraInfos,
     );
   }
@@ -91,11 +99,15 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
 
   /// Modifies a [CameraSelector] to have the lens direction specified.
   Future<CameraSelector> requireLensFacingInInstance(
-    int instanceId,
+    CameraSelector instance,
     int lensFacing,
   ) async {
+    int? instanceId = instanceManager.getIdentifier(instance);
+    if (instanceId == null) {
+      instanceId = instanceManager.addDartCreatedInstance(instance);
+    } 
     final int cameraSelectorId =
-        await requireLensFacing(instanceId, lensFacing);
+        await requireLensFacing(instanceId!, lensFacing);
 
     final CameraSelector? cameraSelector = instanceManager
         .getInstanceWithWeakReference(cameraSelectorId) as CameraSelector?;
@@ -104,13 +116,17 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
 
   /// Filters a list of [CameraInfo]s based on the [CameraSelector].
   Future<List<CameraInfo>> filterFromInstance(
-    int instanceId,
+    CameraSelector instance,
     List<CameraInfo> cameraInfos,
   ) async {
+    int? instanceId = instanceManager.getIdentifier(instance);
+    if (instanceId == null) {
+      instanceId = instanceManager.addDartCreatedInstance(instance);
+    } 
     final List<int> cameraInfoIds = (cameraInfos.map<int>(
         (CameraInfo info) => instanceManager.getIdentifier(info)!)).toList();
     final List<int?> filteredCameraInfoIds =
-        await filter(instanceId, cameraInfoIds);
+        await filter(instanceId!, cameraInfoIds);
     if (filteredCameraInfoIds.isEmpty) {
       return <CameraInfo>[];
     }
@@ -142,11 +158,6 @@ class CameraSelectorFlutterApiImpl implements CameraSelectorFlutterApi {
     instanceManager.addHostCreatedInstance(
       CameraSelector.detached(lensFacing: lensFacing),
       identifier,
-      onCopy: (CameraSelector original) => CameraSelector.detached(
-        binaryMessenger: binaryMessenger,
-        instanceManager: instanceManager,
-        lensFacing: lensFacing,
-      ),
     );
   }
 }
