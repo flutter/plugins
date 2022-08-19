@@ -45,13 +45,13 @@ class FileSelectorIOS extends FileSelectorPlatform {
   // iOS doesn't support filter groups.
   List<String> _allowedUtiListFromTypeGroups(List<XTypeGroup>? typeGroups) {
     if (typeGroups == null || typeGroups.isEmpty) {
-      return [];
+      return <String>[];
     }
     final List<String> allowedUTIs = <String>[];
     for (final XTypeGroup typeGroup in typeGroups) {
       // If any group allows everything, no filtering should be done.
       if (typeGroup.allowsAny) {
-        return [];
+        return <String>[];
       }
       if (typeGroup.macUTIs?.isEmpty ?? true) {
         throw ArgumentError('The provided type group $typeGroup should either '
