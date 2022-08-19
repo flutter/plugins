@@ -116,21 +116,23 @@ HRESULT PhotoHandler::InitPhotoSink(IMFCaptureEngine* capture_engine,
   return hr;
 }
 
-bool PhotoHandler::TakePhoto(const std::string& file_path,
-                             IMFCaptureEngine* capture_engine,
-                             IMFMediaType* base_media_type) {
+HRESULT PhotoHandler::TakePhoto(const std::string& file_path,
+                                IMFCaptureEngine* capture_engine,
+                                IMFMediaType* base_media_type) {
   assert(!file_path.empty());
   assert(capture_engine);
   assert(base_media_type);
 
   file_path_ = file_path;
 
-  if (FAILED(InitPhotoSink(capture_engine, base_media_type))) {
-    return false;
+  HRESULT hr = InitPhotoSink(capture_engine, base_media_type);
+  if (FAILED(hr)) {
+    return hr;
   }
 
   photo_state_ = PhotoState::kTakingPhoto;
-  return SUCCEEDED(capture_engine->TakePhoto());
+
+  return capture_engine->TakePhoto();
 }
 
 void PhotoHandler::OnPhotoTaken() {

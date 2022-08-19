@@ -39,4 +39,17 @@
   XCTAssertEqualObjects([instanceManager removeInstanceWithIdentifier:0], object);
   XCTAssertEqual([instanceManager strongInstanceCount], 0);
 }
+
+- (void)testDeallocCallbackIsIgnoredIfNull {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
+  // This sets deallocCallback to nil to test that uses are null checked.
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:nil];
+#pragma clang diagnostic pop
+
+  [instanceManager addDartCreatedInstance:[[NSObject alloc] init] withIdentifier:0];
+
+  // Tests that this doesn't cause a EXC_BAD_ACCESS crash.
+  [instanceManager removeInstanceWithIdentifier:0];
+}
 @end

@@ -1,0 +1,11 @@
+framework module quick_actions_ios {
+  umbrella header "quick_actions_ios-umbrella.h"
+
+  export *
+  module * { export * }
+
+  explicit module Test {
+    header "FLTQuickActionsPlugin_Test.h"
+    header "FLTShortcutStateManager.h"
+  }
+}

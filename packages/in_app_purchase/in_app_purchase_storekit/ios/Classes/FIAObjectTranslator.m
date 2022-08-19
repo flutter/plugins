@@ -74,8 +74,12 @@
     @"subscriptionPeriod" :
             [FIAObjectTranslator getMapFromSKProductSubscriptionPeriod:discount.subscriptionPeriod]
         ?: [NSNull null],
-    @"paymentMode" : @(discount.paymentMode)
+    @"paymentMode" : @(discount.paymentMode),
   }];
+  if (@available(iOS 12.2, *)) {
+    [map setObject:discount.identifier ?: [NSNull null] forKey:@"identifier"];
+    [map setObject:@(discount.type) forKey:@"type"];
+  }
 
   // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
   // expanded to a map. Matching android to only get the currencySymbol for now.

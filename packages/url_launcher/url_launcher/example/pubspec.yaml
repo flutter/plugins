@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  path: ^1.8.0
   url_launcher:
     # When depending on this package from a real application you should use:
     #   url_launcher: ^x.y.z
@@ -18,6 +19,7 @@ dependencies:
     path: ../
 
 dev_dependencies:
+  build_runner: ^2.1.10
   flutter_driver:
     sdk: flutter
   integration_test:

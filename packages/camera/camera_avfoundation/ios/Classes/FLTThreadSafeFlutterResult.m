@@ -52,6 +52,11 @@
  */
 - (void)send:(id _Nullable)result {
   FLTEnsureToRunOnMainQueue(^{
+    // WARNING: Should not use weak self, because `FlutterResult`s are passed as arguments
+    // (retained within call stack, but not in the heap). FLTEnsureToRunOnMainQueue may trigger a
+    // context switch (when calling from background thread), in which case using weak self will
+    // always result in a nil self. Alternative to using strong self, we can also create a local
+    // strong variable to be captured by this block.
     self.flutterResult(result);
   });
 }

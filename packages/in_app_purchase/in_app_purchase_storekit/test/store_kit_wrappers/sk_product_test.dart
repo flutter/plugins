@@ -39,6 +39,16 @@ void main() {
     });
 
     test(
+        'SKProductDiscountWrapper missing identifier and type should have '
+        'property values consistent with map', () {
+      final SKProductDiscountWrapper wrapper =
+          SKProductDiscountWrapper.fromJson(
+              buildDiscountMapMissingIdentifierAndType(
+                  dummyDiscountMissingIdentifierAndType));
+      expect(wrapper, equals(dummyDiscountMissingIdentifierAndType));
+    });
+
+    test(
         'SKProductDiscountWrapper should have properties to be default if map is empty',
         () {
       final SKProductDiscountWrapper wrapper =
