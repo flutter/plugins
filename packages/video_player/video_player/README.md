@@ -1,3 +1,5 @@
+<?code-excerpt path-base="excerpts/packages/video_player_example"?>
+
 # Video Player plugin for Flutter
 
 [![pub package](https://img.shields.io/pub/v/video_player.svg)](https://pub.dev/packages/video_player)
@@ -49,7 +51,7 @@ The `VideoPlayerOptions.mixWithOthers` option can't be implemented in web, at le
 - On Web, available formats depend on your users' browsers (vendor and version). Check [package:video_player_web](https://pub.dev/packages/video_player_web) for more specific information.
 
 ## Example
-
+<?code-excerpt "basic.dart (basic-example)"?>
 ```dart
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
