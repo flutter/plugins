@@ -33,16 +33,13 @@ class PublishCheckCommand extends PackageLoopingCommand {
       help: 'Allows the pre-release SDK warning to pass.\n'
           'When enabled, a pub warning, which asks to publish the package as a pre-release version when '
           'the SDK constraint is a pre-release version, is ignored.',
-      defaultsTo: false,
     );
     argParser.addFlag(_machineFlag,
         help: 'Switch outputs to a machine readable JSON. \n'
             'The JSON contains a "status" field indicating the final status of the command, the possible values are:\n'
             '    $_statusNeedsPublish: There is at least one package need to be published. They also passed all publish checks.\n'
             '    $_statusMessageNoPublish: There are no packages needs to be published. Either no pubspec change detected or all versions have already been published.\n'
-            '    $_statusMessageError: Some error has occurred.',
-        defaultsTo: false,
-        negatable: true);
+            '    $_statusMessageError: Some error has occurred.');
   }
 
   static const String _allowPrereleaseFlag = 'allow-pre-release';

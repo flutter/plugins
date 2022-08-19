@@ -1,3 +1,7 @@
+## 0.9.1
+
+* Adds an endorsed Linux implementation.
+
 ## 0.9.0
 
 * **BREAKING CHANGE**: The following methods:

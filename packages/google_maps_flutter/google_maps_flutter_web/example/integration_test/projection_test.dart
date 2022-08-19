@@ -211,13 +211,13 @@ void main() {
 Future<void> pumpCenteredMap(
   WidgetTester tester, {
   required CameraPosition initialCamera,
-  Size size = const Size(320, 240),
+  Size? size,
   void Function(GoogleMapController)? onMapCreated,
 }) async {
   await tester.pumpWidget(
     CenteredMap(
       initialCamera: initialCamera,
-      size: size,
+      size: size ?? const Size(320, 240),
       onMapCreated: onMapCreated,
     ),
   );

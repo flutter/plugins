@@ -1,6 +1,11 @@
+## NEXT
+
+* Updates mockito-core to 4.6.1.
+* Removes deprecated FieldSetter from QuickActionsTest.
+
 ## 0.6.2
 
-* Update gradle version to 7.2.1 on Android.
+* Updates gradle version to 7.2.1.
 
 ## 0.6.1 
 

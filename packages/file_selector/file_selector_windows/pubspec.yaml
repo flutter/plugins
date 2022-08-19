@@ -21,10 +21,10 @@ dependencies:
   file_selector_platform_interface: ^2.1.0
   flutter:
     sdk: flutter
-  flutter_test:
-    sdk: flutter
 
 dev_dependencies:
   build_runner: 2.1.11
+  flutter_test:
+    sdk: flutter
   mockito: ^5.1.0
   pigeon: ^3.2.5

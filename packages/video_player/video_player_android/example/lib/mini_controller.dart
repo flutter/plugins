@@ -325,8 +325,8 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
   Future<void> seekTo(Duration position) async {
     if (position > value.duration) {
       position = value.duration;
-    } else if (position < const Duration()) {
-      position = const Duration();
+    } else if (position < Duration.zero) {
+      position = Duration.zero;
     }
     await _platform.seekTo(_textureId, position);
     _updatePosition(position);
@@ -521,7 +521,6 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       );
     } else {
       progressIndicator = const LinearProgressIndicator(
-        value: null,
         valueColor: AlwaysStoppedAnimation<Color>(playedColor),
         backgroundColor: backgroundColor,
       );

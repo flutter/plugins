@@ -19,7 +19,6 @@
 @interface CameraPlugin ()
 @property(readonly, nonatomic) FLTThreadSafeTextureRegistry *registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
-@property(readonly, nonatomic) FLTThreadSafeMethodChannel *deviceEventMethodChannel;
 @end
 
 @implementation CameraPlugin
@@ -56,6 +55,10 @@
       [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:methodChannel];
 }
 
+- (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  [UIDevice.currentDevice endGeneratingDeviceOrientationNotifications];
+}
+
 - (void)startOrientationListener {
   [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -73,11 +76,12 @@
     return;
   }
 
+  __weak typeof(self) weakSelf = self;
   dispatch_async(self.captureSessionQueue, ^{
     // `FLTCam::setDeviceOrientation` must be called on capture session queue.
-    [self.camera setDeviceOrientation:orientation];
+    [weakSelf.camera setDeviceOrientation:orientation];
     // `CameraPlugin::sendDeviceOrientation` can be called on any queue.
-    [self sendDeviceOrientation:orientation];
+    [weakSelf sendDeviceOrientation:orientation];
   });
 }
 
@@ -89,11 +93,11 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   // Invoke the plugin on another dispatch queue to avoid blocking the UI.
-  dispatch_async(_captureSessionQueue, ^{
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(self.captureSessionQueue, ^{
     FLTThreadSafeFlutterResult *threadSafeResult =
         [[FLTThreadSafeFlutterResult alloc] initWithResult:result];
-
-    [self handleMethodCallAsync:call result:threadSafeResult];
+    [weakSelf handleMethodCallAsync:call result:threadSafeResult];
   });
 }
 
@@ -261,7 +265,11 @@
 - (void)handleCreateMethodCall:(FlutterMethodCall *)call
                         result:(FLTThreadSafeFlutterResult *)result {
   // Create FLTCam only if granted camera access (and audio access if audio is enabled)
+  __weak typeof(self) weakSelf = self;
   FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
+    typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+
     if (error) {
       [result sendFlutterError:error];
     } else {
@@ -272,14 +280,17 @@
       if (audioEnabled) {
         // Setup audio capture session only if granted audio access.
         FLTRequestAudioPermissionWithCompletionHandler(^(FlutterError *error) {
+          // cannot use the outter `strongSelf`
+          typeof(self) strongSelf = weakSelf;
+          if (!strongSelf) return;
           if (error) {
             [result sendFlutterError:error];
           } else {
-            [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
+            [strongSelf createCameraOnSessionQueueWithCreateMethodCall:call result:result];
           }
         });
       } else {
-        [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
+        [strongSelf createCameraOnSessionQueueWithCreateMethodCall:call result:result];
       }
     }
   });
@@ -287,7 +298,11 @@
 
 - (void)createCameraOnSessionQueueWithCreateMethodCall:(FlutterMethodCall *)createMethodCall
                                                 result:(FLTThreadSafeFlutterResult *)result {
+  __weak typeof(self) weakSelf = self;
   dispatch_async(self.captureSessionQueue, ^{
+    typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+
     NSString *cameraName = createMethodCall.arguments[@"cameraName"];
     NSString *resolutionPreset = createMethodCall.arguments[@"resolutionPreset"];
     NSNumber *enableAudio = createMethodCall.arguments[@"enableAudio"];
@@ -296,22 +311,22 @@
                                     resolutionPreset:resolutionPreset
                                          enableAudio:[enableAudio boolValue]
                                          orientation:[[UIDevice currentDevice] orientation]
-                                 captureSessionQueue:self.captureSessionQueue
+                                 captureSessionQueue:strongSelf.captureSessionQueue
                                                error:&error];
 
     if (error) {
       [result sendError:error];
     } else {
-      if (self.camera) {
-        [self.camera close];
+      if (strongSelf.camera) {
+        [strongSelf.camera close];
       }
-      self.camera = cam;
-      [self.registry registerTexture:cam
-                          completion:^(int64_t textureId) {
-                            [result sendSuccessWithData:@{
-                              @"cameraId" : @(textureId),
-                            }];
-                          }];
+      strongSelf.camera = cam;
+      [strongSelf.registry registerTexture:cam
+                                completion:^(int64_t textureId) {
+                                  [result sendSuccessWithData:@{
+                                    @"cameraId" : @(textureId),
+                                  }];
+                                }];
     }
   });
 }

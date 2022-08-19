@@ -320,7 +320,7 @@ void main() {
                 eventType: VideoEventType.bufferingUpdate,
                 buffered: <DurationRange>[
                   DurationRange(
-                    const Duration(milliseconds: 0),
+                    Duration.zero,
                     const Duration(milliseconds: 1234),
                   ),
                   DurationRange(
