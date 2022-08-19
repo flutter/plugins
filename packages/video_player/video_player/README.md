@@ -54,18 +54,21 @@ The `VideoPlayerOptions.mixWithOthers` option can't be implemented in web, at le
 
 <?code-excerpt "basic.dart (basic-example)"?>
 ```dart
-import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
-void main() => runApp(VideoApp());
+void main() => runApp(const VideoApp());
 
+/// Stateful widget to fetch and then display video content
 class VideoApp extends StatefulWidget {
+  const VideoApp({Key? key}) : super(key: key);
+
   @override
   _VideoAppState createState() => _VideoAppState();
 }
 
 class _VideoAppState extends State<VideoApp> {
-  VideoPlayerController _controller;
+  late VideoPlayerController _controller;
 
   @override
   void initState() {
