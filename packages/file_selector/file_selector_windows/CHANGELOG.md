@@ -1,3 +1,7 @@
+## 0.9.1+2
+
+* Fixes the problem that the initial directory does not work after completing a file selection.
+
 ## 0.9.1+1
 
 * Updates README for endorsement.
