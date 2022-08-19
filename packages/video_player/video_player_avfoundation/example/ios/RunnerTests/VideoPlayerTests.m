@@ -199,7 +199,6 @@
                         }
                       }];
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
-
   // Starts paused.
   AVPlayer *avPlayer = player.player;
   XCTAssertEqual(avPlayer.rate, 0);
@@ -219,6 +218,36 @@
   [videoPlayerPlugin setVolume:volume error:&error];
   XCTAssertNil(error);
   XCTAssertEqual(avPlayer.volume, 0.1f);
+
+  // Set Picture In Picture
+  FLTPreparePictureInPictureMessage *preparePictureInPicture =
+      [FLTPreparePictureInPictureMessage makeWithTextureId:textureId
+                                                       top:@0
+                                                      left:@0
+                                                     width:@300
+                                                    height:@200];
+  [videoPlayerPlugin preparePictureInPicture:preparePictureInPicture error:&error];
+  XCTAssertNil(error);
+
+  // Set Picture In Picture Start
+  FLTPictureInPictureMessage *setPictureInPictureStart =
+      [FLTPictureInPictureMessage makeWithTextureId:textureId enabled:@true];
+  XCTestExpectation *startingPiPExpectation = [self expectationWithDescription:@"startingPiP"];
+  [player onListenWithArguments:nil
+                      eventSink:^(NSDictionary<NSString *, id> *event) {
+                        if ([event[@"event"] isEqualToString:@"startingPiP"]) {
+                          [startingPiPExpectation fulfill];
+                        }
+                      }];
+  [videoPlayerPlugin setPictureInPicture:setPictureInPictureStart error:&error];
+  XCTAssertNil(error);
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
+
+  // Set Picture In Picture Stop
+  FLTPictureInPictureMessage *setPictureInPictureStop =
+      [FLTPictureInPictureMessage makeWithTextureId:textureId enabled:@false];
+  XCTAssertNil(error);
+  [videoPlayerPlugin setPictureInPicture:setPictureInPictureStop error:&error];
 
   [player onCancelWithArguments:nil];
 
