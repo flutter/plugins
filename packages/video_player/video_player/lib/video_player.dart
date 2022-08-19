@@ -543,12 +543,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     double left = 0,
     double width = 0,
     double height = 0,
+    bool enableStartPictureInPictureAutomaticallyFromInline = false,
   }) async {
     if (!value.isInitialized || _isDisposed) {
       return;
     }
     await _videoPlayerPlatform.preparePictureInPicture(
       textureId: _textureId,
+      enableStartPictureInPictureAutomaticallyFromInline:
+          enableStartPictureInPictureAutomaticallyFromInline,
       top: top,
       left: left,
       width: width,

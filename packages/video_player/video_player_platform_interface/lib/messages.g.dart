@@ -191,6 +191,50 @@ class MixWithOthersMessage {
   }
 }
 
+class PreparePictureInPictureMessage {
+  PreparePictureInPictureMessage({
+    required this.textureId,
+    required this.enableStartPictureInPictureAutomaticallyFromInline,
+    required this.top,
+    required this.left,
+    required this.width,
+    required this.height,
+  });
+
+  int textureId;
+  int enableStartPictureInPictureAutomaticallyFromInline;
+  double top;
+  double left;
+  double width;
+  double height;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['enableStartPictureInPictureAutomaticallyFromInline'] =
+        enableStartPictureInPictureAutomaticallyFromInline;
+    pigeonMap['top'] = top;
+    pigeonMap['left'] = left;
+    pigeonMap['width'] = width;
+    pigeonMap['height'] = height;
+    return pigeonMap;
+  }
+
+  static PreparePictureInPictureMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return PreparePictureInPictureMessage(
+      textureId: pigeonMap['textureId']! as int,
+      enableStartPictureInPictureAutomaticallyFromInline:
+          pigeonMap['enableStartPictureInPictureAutomaticallyFromInline']!
+              as int,
+      top: pigeonMap['top']! as double,
+      left: pigeonMap['left']! as double,
+      width: pigeonMap['width']! as double,
+      height: pigeonMap['height']! as double,
+    );
+  }
+}
+
 class PictureInPictureMessage {
   PictureInPictureMessage({
     required this.textureId,
@@ -212,43 +256,6 @@ class PictureInPictureMessage {
     return PictureInPictureMessage(
       textureId: pigeonMap['textureId']! as int,
       enabled: pigeonMap['enabled']! as int,
-    );
-  }
-}
-
-class PreparePictureInPictureMessage {
-  PreparePictureInPictureMessage({
-    required this.textureId,
-    required this.top,
-    required this.left,
-    required this.width,
-    required this.height,
-  });
-
-  int textureId;
-  double top;
-  double left;
-  double width;
-  double height;
-
-  Object encode() {
-    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['textureId'] = textureId;
-    pigeonMap['top'] = top;
-    pigeonMap['left'] = left;
-    pigeonMap['width'] = width;
-    pigeonMap['height'] = height;
-    return pigeonMap;
-  }
-
-  static PreparePictureInPictureMessage decode(Object message) {
-    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
-    return PreparePictureInPictureMessage(
-      textureId: pigeonMap['textureId']! as int,
-      top: pigeonMap['top']! as double,
-      left: pigeonMap['left']! as double,
-      width: pigeonMap['width']! as double,
-      height: pigeonMap['height']! as double,
     );
   }
 }

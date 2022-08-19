@@ -361,9 +361,12 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
     required double left,
     required double width,
     required double height,
+    bool enableStartPictureInPictureAutomaticallyFromInline = false,
   }) {
     return _platform.preparePictureInPicture(
       textureId: textureId,
+      enableStartPictureInPictureAutomaticallyFromInline:
+          enableStartPictureInPictureAutomaticallyFromInline,
       top: top,
       left: left,
       width: width,

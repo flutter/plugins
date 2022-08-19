@@ -63,22 +63,29 @@ class MixWithOthersMessage {
   bool mixWithOthers;
 }
 
+class PreparePictureInPictureMessage {
+  PreparePictureInPictureMessage(
+    this.textureId,
+    this.enableStartPictureInPictureAutomaticallyFromInline,
+    this.top,
+    this.left,
+    this.width,
+    this.height,
+  );
+
+  int textureId;
+  int enableStartPictureInPictureAutomaticallyFromInline;
+  double top;
+  double left;
+  double width;
+  double height;
+}
+
 class PictureInPictureMessage {
   PictureInPictureMessage(this.textureId, this.enabled);
 
   int textureId;
   int enabled;
-}
-
-class PreparePictureInPictureMessage {
-  PreparePictureInPictureMessage(
-      this.textureId, this.top, this.left, this.width, this.height);
-
-  int textureId;
-  double top;
-  double left;
-  double width;
-  double height;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')

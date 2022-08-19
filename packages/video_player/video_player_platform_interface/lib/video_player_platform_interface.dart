@@ -113,6 +113,7 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   /// Prepare picture in picture by passing the location of the video player view
   Future<void> preparePictureInPicture({
     required int textureId,
+    required bool enableStartPictureInPictureAutomaticallyFromInline,
     required double top,
     required double left,
     required double width,

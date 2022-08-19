@@ -18,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTPositionMessage;
 @class FLTCreateMessage;
 @class FLTMixWithOthersMessage;
-@class FLTPictureInPictureMessage;
 @class FLTPreparePictureInPictureMessage;
+@class FLTPictureInPictureMessage;
 
 @interface FLTTextureMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
@@ -82,27 +82,30 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSNumber *mixWithOthers;
 @end
 
+@interface FLTPreparePictureInPictureMessage : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithTextureId:(NSNumber *)textureId
+    enableStartPictureInPictureAutomaticallyFromInline:
+        (NSNumber *)enableStartPictureInPictureAutomaticallyFromInline
+                                                   top:(NSNumber *)top
+                                                  left:(NSNumber *)left
+                                                 width:(NSNumber *)width
+                                                height:(NSNumber *)height;
+@property(nonatomic, strong) NSNumber *textureId;
+@property(nonatomic, strong) NSNumber *enableStartPictureInPictureAutomaticallyFromInline;
+@property(nonatomic, strong) NSNumber *top;
+@property(nonatomic, strong) NSNumber *left;
+@property(nonatomic, strong) NSNumber *width;
+@property(nonatomic, strong) NSNumber *height;
+@end
+
 @interface FLTPictureInPictureMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithTextureId:(NSNumber *)textureId enabled:(NSNumber *)enabled;
 @property(nonatomic, strong) NSNumber *textureId;
 @property(nonatomic, strong) NSNumber *enabled;
-@end
-
-@interface FLTPreparePictureInPictureMessage : NSObject
-/// `init` unavailable to enforce nonnull fields, see the `make` class method.
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithTextureId:(NSNumber *)textureId
-                              top:(NSNumber *)top
-                             left:(NSNumber *)left
-                            width:(NSNumber *)width
-                           height:(NSNumber *)height;
-@property(nonatomic, strong) NSNumber *textureId;
-@property(nonatomic, strong) NSNumber *top;
-@property(nonatomic, strong) NSNumber *left;
-@property(nonatomic, strong) NSNumber *width;
-@property(nonatomic, strong) NSNumber *height;
 @end
 
 /// The codec used by FLTAVFoundationVideoPlayerApi.

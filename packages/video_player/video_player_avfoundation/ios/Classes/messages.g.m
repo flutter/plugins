@@ -61,12 +61,12 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 + (FLTMixWithOthersMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-@interface FLTPictureInPictureMessage ()
-+ (FLTPictureInPictureMessage *)fromMap:(NSDictionary *)dict;
-- (NSDictionary *)toMap;
-@end
 @interface FLTPreparePictureInPictureMessage ()
 + (FLTPreparePictureInPictureMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
+@interface FLTPictureInPictureMessage ()
++ (FLTPictureInPictureMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
 
@@ -235,6 +235,57 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 }
 @end
 
+@implementation FLTPreparePictureInPictureMessage
++ (instancetype)makeWithTextureId:(NSNumber *)textureId
+    enableStartPictureInPictureAutomaticallyFromInline:
+        (NSNumber *)enableStartPictureInPictureAutomaticallyFromInline
+                                                   top:(NSNumber *)top
+                                                  left:(NSNumber *)left
+                                                 width:(NSNumber *)width
+                                                height:(NSNumber *)height {
+  FLTPreparePictureInPictureMessage *pigeonResult =
+      [[FLTPreparePictureInPictureMessage alloc] init];
+  pigeonResult.textureId = textureId;
+  pigeonResult.enableStartPictureInPictureAutomaticallyFromInline =
+      enableStartPictureInPictureAutomaticallyFromInline;
+  pigeonResult.top = top;
+  pigeonResult.left = left;
+  pigeonResult.width = width;
+  pigeonResult.height = height;
+  return pigeonResult;
+}
++ (FLTPreparePictureInPictureMessage *)fromMap:(NSDictionary *)dict {
+  FLTPreparePictureInPictureMessage *pigeonResult =
+      [[FLTPreparePictureInPictureMessage alloc] init];
+  pigeonResult.textureId = GetNullableObject(dict, @"textureId");
+  NSAssert(pigeonResult.textureId != nil, @"");
+  pigeonResult.enableStartPictureInPictureAutomaticallyFromInline =
+      GetNullableObject(dict, @"enableStartPictureInPictureAutomaticallyFromInline");
+  NSAssert(pigeonResult.enableStartPictureInPictureAutomaticallyFromInline != nil, @"");
+  pigeonResult.top = GetNullableObject(dict, @"top");
+  NSAssert(pigeonResult.top != nil, @"");
+  pigeonResult.left = GetNullableObject(dict, @"left");
+  NSAssert(pigeonResult.left != nil, @"");
+  pigeonResult.width = GetNullableObject(dict, @"width");
+  NSAssert(pigeonResult.width != nil, @"");
+  pigeonResult.height = GetNullableObject(dict, @"height");
+  NSAssert(pigeonResult.height != nil, @"");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary
+      dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId",
+                                   (self.enableStartPictureInPictureAutomaticallyFromInline
+                                        ? self.enableStartPictureInPictureAutomaticallyFromInline
+                                        : [NSNull null]),
+                                   @"enableStartPictureInPictureAutomaticallyFromInline",
+                                   (self.top ? self.top : [NSNull null]), @"top",
+                                   (self.left ? self.left : [NSNull null]), @"left",
+                                   (self.width ? self.width : [NSNull null]), @"width",
+                                   (self.height ? self.height : [NSNull null]), @"height", nil];
+}
+@end
+
 @implementation FLTPictureInPictureMessage
 + (instancetype)makeWithTextureId:(NSNumber *)textureId enabled:(NSNumber *)enabled {
   FLTPictureInPictureMessage *pigeonResult = [[FLTPictureInPictureMessage alloc] init];
@@ -254,46 +305,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   return [NSDictionary
       dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId",
                                    (self.enabled ? self.enabled : [NSNull null]), @"enabled", nil];
-}
-@end
-
-@implementation FLTPreparePictureInPictureMessage
-+ (instancetype)makeWithTextureId:(NSNumber *)textureId
-                              top:(NSNumber *)top
-                             left:(NSNumber *)left
-                            width:(NSNumber *)width
-                           height:(NSNumber *)height {
-  FLTPreparePictureInPictureMessage *pigeonResult =
-      [[FLTPreparePictureInPictureMessage alloc] init];
-  pigeonResult.textureId = textureId;
-  pigeonResult.top = top;
-  pigeonResult.left = left;
-  pigeonResult.width = width;
-  pigeonResult.height = height;
-  return pigeonResult;
-}
-+ (FLTPreparePictureInPictureMessage *)fromMap:(NSDictionary *)dict {
-  FLTPreparePictureInPictureMessage *pigeonResult =
-      [[FLTPreparePictureInPictureMessage alloc] init];
-  pigeonResult.textureId = GetNullableObject(dict, @"textureId");
-  NSAssert(pigeonResult.textureId != nil, @"");
-  pigeonResult.top = GetNullableObject(dict, @"top");
-  NSAssert(pigeonResult.top != nil, @"");
-  pigeonResult.left = GetNullableObject(dict, @"left");
-  NSAssert(pigeonResult.left != nil, @"");
-  pigeonResult.width = GetNullableObject(dict, @"width");
-  NSAssert(pigeonResult.width != nil, @"");
-  pigeonResult.height = GetNullableObject(dict, @"height");
-  NSAssert(pigeonResult.height != nil, @"");
-  return pigeonResult;
-}
-- (NSDictionary *)toMap {
-  return [NSDictionary
-      dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId",
-                                   (self.top ? self.top : [NSNull null]), @"top",
-                                   (self.left ? self.left : [NSNull null]), @"left",
-                                   (self.width ? self.width : [NSNull null]), @"width",
-                                   (self.height ? self.height : [NSNull null]), @"height", nil];
 }
 @end
 

@@ -175,6 +175,7 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   @override
   Future<void> preparePictureInPicture({
     required int textureId,
+    required bool enableStartPictureInPictureAutomaticallyFromInline,
     required double top,
     required double left,
     required double width,
@@ -182,6 +183,8 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   }) {
     return _api.preparePictureInPicture(PreparePictureInPictureMessage(
       textureId: textureId,
+      enableStartPictureInPictureAutomaticallyFromInline:
+          enableStartPictureInPictureAutomaticallyFromInline ? 1 : 0,
       top: top,
       left: left,
       width: width,

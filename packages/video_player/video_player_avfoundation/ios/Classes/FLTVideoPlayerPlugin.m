@@ -261,14 +261,20 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 #if TARGET_OS_IOS
-- (void)setupPipController {
+- (void)setupPipController:(BOOL)canStartPictureInPictureAutomaticallyFromInline {
   if ([AVPictureInPictureController isPictureInPictureSupported]) {
     _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:self.playerLayer];
+    if (@available(iOS 14.2, *)) {
+      _pipController.canStartPictureInPictureAutomaticallyFromInline =
+          canStartPictureInPictureAutomaticallyFromInline;
+    }
     _pipController.delegate = self;
   }
 }
 
-- (void)usePlayerLayer:(CGRect)frame {
+- (void)usePlayerLayer:(CGRect)frame
+    canStartPictureInPictureAutomaticallyFromInline:
+        (BOOL)canStartPictureInPictureAutomaticallyFromInline {
   if (_player) {
     self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
     UIViewController *vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
@@ -278,7 +284,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     [vc.view.layer addSublayer:self.playerLayer];
     vc.view.layer.needsDisplayOnBoundsChange = YES;
 #if TARGET_OS_IOS
-    [self setupPipController];
+    [self setupPipController:canStartPictureInPictureAutomaticallyFromInline];
 #endif
   }
 }
@@ -722,7 +728,9 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
                           error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
   [player usePlayerLayer:CGRectMake(input.left.floatValue, input.top.floatValue,
-                                    input.width.floatValue, input.height.floatValue)];
+                                    input.width.floatValue, input.height.floatValue)
+      canStartPictureInPictureAutomaticallyFromInline:
+          input.enableStartPictureInPictureAutomaticallyFromInline.intValue == 1];
 }
 
 - (void)setPictureInPicture:(FLTPictureInPictureMessage *)input error:(FlutterError **)error {
