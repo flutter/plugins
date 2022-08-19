@@ -46,7 +46,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
 
   /// The file selector used to prompt the user to select images or videos.
   @visibleForTesting
-  static late FileSelectorPlatform fileSelector = FileSelectorWindows();
+  static FileSelectorPlatform fileSelector = FileSelectorWindows();
 
   /// Registers this class as the default instance of [ImagePickerPlatform].
   static void registerWith() {

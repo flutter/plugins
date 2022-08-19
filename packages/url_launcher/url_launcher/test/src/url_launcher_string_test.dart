@@ -43,8 +43,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -60,8 +59,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -77,8 +75,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -86,8 +83,7 @@ void main() {
           webOnlyWindowName: null,
         )
         ..setResponse(true);
-      expect(await launchUrlString(urlString, mode: LaunchMode.platformDefault),
-          isTrue);
+      expect(await launchUrlString(urlString), isTrue);
     });
 
     test('explicit default launch mode with non-web URL', () async {
@@ -95,8 +91,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -104,8 +99,7 @@ void main() {
           webOnlyWindowName: null,
         )
         ..setResponse(true);
-      expect(await launchUrlString(urlString, mode: LaunchMode.platformDefault),
-          isTrue);
+      expect(await launchUrlString(urlString), isTrue);
     });
 
     test('in-app webview', () async {
@@ -113,8 +107,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -131,8 +124,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.externalApplication,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -151,8 +143,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.externalNonBrowserApplication,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: true,
@@ -171,8 +162,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           enableJavaScript: false,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -193,8 +183,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           enableJavaScript: true,
           enableDomStorage: false,
           universalLinksOnly: false,
@@ -215,8 +204,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -245,8 +233,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: emailLaunchUrlString,
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -257,15 +244,14 @@ void main() {
       expect(await launchUrlString(emailLaunchUrlString), isTrue);
     });
 
-    test('allows non-parseable url', () async {
+    test('allows non-parsable url', () async {
       // Not a valid Dart [Uri], but a valid URL on at least some platforms.
       const String urlString =
           'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1';
       mock
         ..setLaunchExpectations(
           url: urlString,
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,

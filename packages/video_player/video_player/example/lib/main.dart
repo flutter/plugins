@@ -7,7 +7,6 @@
 /// An example of using the plugin, controlling lifecycle and playback of the
 /// video.
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -274,7 +273,7 @@ class _ControlsOverlay extends StatelessWidget {
     Duration(seconds: -3),
     Duration(seconds: -1, milliseconds: -500),
     Duration(milliseconds: -250),
-    Duration(milliseconds: 0),
+    Duration.zero,
     Duration(milliseconds: 250),
     Duration(seconds: 1, milliseconds: 500),
     Duration(seconds: 3),
@@ -420,12 +419,11 @@ class _PlayerVideoAndPopPageState extends State<_PlayerVideoAndPopPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 0,
       child: Center(
         child: FutureBuilder<bool>(
           future: started(),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.data == true) {
+            if (snapshot.data ?? false) {
               return AspectRatio(
                 aspectRatio: _videoPlayerController.value.aspectRatio,
                 child: VideoPlayer(_videoPlayerController),

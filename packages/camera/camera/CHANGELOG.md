@@ -1,3 +1,57 @@
+## 0.10.0+1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 0.10.0
+
+* **Breaking Change** Bumps default camera_web package version, which updates permission exception code from `cameraPermission` to `CameraAccessDenied`.
+* **Breaking Change** Bumps default camera_android package version, which updates permission exception code from `cameraPermission` to 
+  `CameraAccessDenied` and `AudioAccessDenied`.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 0.9.8+1
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
+## 0.9.8
+
+* Moves Android and iOS implementations to federated packages.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 0.9.7+1
+
+* Moves streaming implementation to the platform interface package.
+
+## 0.9.7
+
+* Returns all the available cameras on iOS.
+
+## 0.9.6
+
+* Adds audio access permission handling logic on iOS to fix an issue with `prepareForVideoRecording` not awaiting for the audio permission request result.
+
+## 0.9.5+1
+
+* Suppresses warnings for pre-iOS-11 codepaths.
+
+## 0.9.5
+
+* Adds camera access permission handling logic on iOS to fix a related crash when using the camera for the first time.
+
+## 0.9.4+24
+
+* Fixes preview orientation when pausing preview with locked orientation.
+
+## 0.9.4+23
+
+* Minor fixes for new analysis options.
+
+## 0.9.4+22
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 0.9.4+21
 
 * Fixes README code samples.

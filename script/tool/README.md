@@ -105,6 +105,8 @@ cd <repository root>
 dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --ios --android --no-integration --packages plugin_name
 # Run all tests for macOS:
 dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --macos --packages plugin_name
+# Run all tests for Windows:
+dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --windows --packages plugin_name
 ```
 
 ### Update README.md from Example Sources
@@ -117,6 +119,31 @@ before running this command.
 cd <repository root>
 dart run ./script/tool/bin/flutter_plugin_tools.dart update-excerpts --packages plugin_name
 ```
+
+### Update CHANGELOG and Version
+
+`update-release-info` will automatically update the version and `CHANGELOG.md`
+following standard repository style and practice. It can be used for
+single-package updates to handle the details of getting the `CHANGELOG.md`
+format correct, but is especially useful for bulk updates across multiple packages.
+
+For instance, if you add a new analysis option that requires production
+code changes across many packages:
+
+```sh
+cd <repository root>
+dart run ./script/tool/bin/flutter_plugin_tools.dart update-release-info \
+  --version=minimal \
+  --changelog="Fixes violations of new analysis option some_new_option."
+```
+
+The `minimal` option for `--version` will skip unchanged packages, and treat
+each changed package as either `bugfix` or `next` depending on the files that
+have changed in that package, so it is often the best choice for a bulk change.
+
+For cases where you know the change time, `minor` or `bugfix` will make the
+corresponding version bump, or `next` will update only `CHANGELOG.md` without
+changing the version.
 
 ### Publish a Release
 
@@ -153,4 +180,4 @@ For changes that are relevant to flutter/packages, you will also need to:
 - Update the tool's pubspec.yaml and CHANGELOG
 - Publish the tool
 - Update the pinned version in
-  [flutter/packages](https://github.com/flutter/packages/blob/master/.cirrus.yml)
+  [flutter/packages](https://github.com/flutter/packages/blob/main/.cirrus.yml)

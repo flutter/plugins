@@ -12,9 +12,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../channel.dart';
 import '../in_app_purchase_storekit_platform.dart';
-import 'sk_payment_queue_delegate_wrapper.dart';
-import 'sk_payment_transaction_wrappers.dart';
-import 'sk_product_wrapper.dart';
 
 part 'sk_payment_queue_wrapper.g.dart';
 

@@ -5,10 +5,11 @@
 import 'dart:async';
 import 'dart:html' as html;
 
-import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+
+import 'duration_utils.dart';
 
 // An error code value to error name Map.
 // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code
@@ -135,6 +136,7 @@ class VideoPlayer {
   }
 
   /// Controls whether the video should start again after it finishes.
+  // ignore: use_setters_to_change_properties
   void setLooping(bool value) {
     _videoElement.loop = value;
   }
@@ -194,13 +196,10 @@ class VideoPlayer {
 
   // Sends an [VideoEventType.initialized] [VideoEvent] with info about the wrapped video.
   void _sendInitialized() {
-    final Duration? duration = !_videoElement.duration.isNaN
-        ? Duration(
-            milliseconds: (_videoElement.duration * 1000).round(),
-          )
-        : null;
+    final Duration? duration =
+        convertNumVideoDurationToPluginDuration(_videoElement.duration);
 
-    final Size? size = !_videoElement.videoHeight.isNaN
+    final Size? size = _videoElement.videoHeight.isFinite
         ? Size(
             _videoElement.videoWidth.toDouble(),
             _videoElement.videoHeight.toDouble(),

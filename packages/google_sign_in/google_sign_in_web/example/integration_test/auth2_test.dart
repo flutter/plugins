@@ -30,32 +30,31 @@ void main() {
 
   late GoogleSignInPlugin plugin;
 
-  group('plugin.init() throws a catchable exception', () {
+  group('plugin.initWithParams() throws a catchable exception', () {
     setUp(() {
       // The pre-configured use case for the instances of the plugin in this test
       gapiUrl = toBase64Url(gapi_mocks.auth2InitError());
       plugin = GoogleSignInPlugin();
     });
 
-    testWidgets('init throws PlatformException', (WidgetTester tester) async {
+    testWidgets('throws PlatformException', (WidgetTester tester) async {
       await expectLater(
-          plugin.init(
+          plugin.initWithParams(const SignInInitParameters(
             hostedDomain: 'foo',
             scopes: <String>['some', 'scope'],
             clientId: '1234',
-          ),
+          )),
           throwsA(isA<PlatformException>()));
     });
 
-    testWidgets('init forwards error code from JS',
-        (WidgetTester tester) async {
+    testWidgets('forwards error code from JS', (WidgetTester tester) async {
       try {
-        await plugin.init(
+        await plugin.initWithParams(const SignInInitParameters(
           hostedDomain: 'foo',
           scopes: <String>['some', 'scope'],
           clientId: '1234',
-        );
-        fail('plugin.init should have thrown an exception!');
+        ));
+        fail('plugin.initWithParams should have thrown an exception!');
       } catch (e) {
         final String code = js_util.getProperty<String>(e, 'code');
         expect(code, 'idpiframe_initialization_failed');
@@ -63,16 +62,17 @@ void main() {
     });
   });
 
-  group('other methods also throw catchable exceptions on init fail', () {
-    // This function ensures that init gets called, but for some reason, we
-    // ignored that it has thrown stuff...
+  group('other methods also throw catchable exceptions on initWithParams fail',
+      () {
+    // This function ensures that initWithParams gets called, but for some
+    // reason, we ignored that it has thrown stuff...
     Future<void> _discardInit() async {
       try {
-        await plugin.init(
+        await plugin.initWithParams(const SignInInitParameters(
           hostedDomain: 'foo',
           scopes: <String>['some', 'scope'],
           clientId: '1234',
-        );
+        ));
       } catch (e) {
         // Noop so we can call other stuff
       }
@@ -114,28 +114,40 @@ void main() {
     });
 
     testWidgets('Init requires clientId', (WidgetTester tester) async {
-      expect(plugin.init(hostedDomain: ''), throwsAssertionError);
+      expect(
+          plugin.initWithParams(const SignInInitParameters(hostedDomain: '')),
+          throwsAssertionError);
     });
 
-    testWidgets('Init doesn\'t accept spaces in scopes',
+    testWidgets("Init doesn't accept serverClientId",
         (WidgetTester tester) async {
       expect(
-          plugin.init(
+          plugin.initWithParams(const SignInInitParameters(
+            clientId: '',
+            serverClientId: '',
+          )),
+          throwsAssertionError);
+    });
+
+    testWidgets("Init doesn't accept spaces in scopes",
+        (WidgetTester tester) async {
+      expect(
+          plugin.initWithParams(const SignInInitParameters(
             hostedDomain: '',
             clientId: '',
             scopes: <String>['scope with spaces'],
-          ),
+          )),
           throwsAssertionError);
     });
 
     // See: https://github.com/flutter/flutter/issues/88084
     testWidgets('Init passes plugin_name parameter with the expected value',
         (WidgetTester tester) async {
-      await plugin.init(
+      await plugin.initWithParams(const SignInInitParameters(
         hostedDomain: 'foo',
         scopes: <String>['some', 'scope'],
         clientId: '1234',
-      );
+      ));
 
       final Object? initParameters =
           js_util.getProperty(html.window, 'gapi2.init.parameters');
@@ -147,13 +159,13 @@ void main() {
       expect(pluginNameParameter, 'dart-google_sign_in_web');
     });
 
-    group('Successful .init, then', () {
+    group('Successful .initWithParams, then', () {
       setUp(() async {
-        await plugin.init(
+        await plugin.initWithParams(const SignInInitParameters(
           hostedDomain: 'foo',
           scopes: <String>['some', 'scope'],
           clientId: '1234',
-        );
+        ));
         await plugin.initialized;
       });
 
@@ -191,11 +203,11 @@ void main() {
       // The pre-configured use case for the instances of the plugin in this test
       gapiUrl = toBase64Url(gapi_mocks.auth2SignInError());
       plugin = GoogleSignInPlugin();
-      await plugin.init(
+      await plugin.initWithParams(const SignInInitParameters(
         hostedDomain: 'foo',
         scopes: <String>['some', 'scope'],
         clientId: '1234',
-      );
+      ));
       await plugin.initialized;
     });
 

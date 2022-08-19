@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_platform_interface/src/types/exposure_mode.dart';
-import 'package:camera_platform_interface/src/types/focus_mode.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

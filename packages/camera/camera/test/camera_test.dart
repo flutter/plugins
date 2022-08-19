@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
@@ -14,6 +13,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:quiver/core.dart';
 
 List<CameraDescription> get mockAvailableCameras => <CameraDescription>[
       const CameraDescription(
@@ -697,7 +697,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -742,7 +741,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -787,7 +785,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -1181,6 +1178,30 @@ void main() {
       expect(cameraController.value.isPreviewPaused, equals(true));
     });
 
+    test(
+        'pausePreview() sets previewPauseOrientation according to locked orientation',
+        () async {
+      final CameraController cameraController = CameraController(
+          const CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      cameraController.value = cameraController.value.copyWith(
+          isPreviewPaused: false,
+          deviceOrientation: DeviceOrientation.portraitUp,
+          lockedCaptureOrientation:
+              Optional<DeviceOrientation>.of(DeviceOrientation.landscapeRight));
+
+      await cameraController.pausePreview();
+
+      expect(cameraController.value.deviceOrientation,
+          equals(DeviceOrientation.portraitUp));
+      expect(cameraController.value.previewPauseOrientation,
+          equals(DeviceOrientation.landscapeRight));
+    });
+
     test('pausePreview() throws $CameraException on $PlatformException',
         () async {
       final CameraController cameraController = CameraController(
@@ -1195,7 +1216,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -1261,7 +1281,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -1315,7 +1334,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -1361,7 +1379,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 

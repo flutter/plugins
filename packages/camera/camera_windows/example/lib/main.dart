@@ -9,11 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 /// Example app for Camera Windows plugin.
 class MyApp extends StatefulWidget {
+  /// Default Constructor
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -111,7 +114,6 @@ class _MyAppState extends State<MyApp> {
 
       await CameraPlatform.instance.initializeCamera(
         cameraId,
-        imageFormatGroup: ImageFormatGroup.unknown,
       );
 
       final CameraInitializedEvent event = await initialized;
@@ -426,7 +428,6 @@ class _MyAppState extends State<MyApp> {
                   vertical: 10,
                 ),
                 child: Align(
-                  alignment: Alignment.center,
                   child: Container(
                     constraints: const BoxConstraints(
                       maxHeight: 500,

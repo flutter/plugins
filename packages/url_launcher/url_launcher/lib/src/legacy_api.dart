@@ -76,10 +76,10 @@ Future<bool> launch(
   final bool isWebURL =
       url != null && (url.scheme == 'http' || url.scheme == 'https');
 
-  if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
+  if ((forceSafariVC ?? false || forceWebView) && !isWebURL) {
     throw PlatformException(
         code: 'NOT_A_WEB_SCHEME',
-        message: 'To use webview or safariVC, you need to pass'
+        message: 'To use webview or safariVC, you need to pass '
             'in a web URL. This $urlString is not a web URL.');
   }
 

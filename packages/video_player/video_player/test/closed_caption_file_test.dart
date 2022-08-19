@@ -21,8 +21,7 @@ void main() {
           'number: 1, '
           'start: 0:00:01.000000, '
           'end: 0:00:02.000000, '
-          'text: caption'
-          ')');
+          'text: caption)');
     });
   });
 }

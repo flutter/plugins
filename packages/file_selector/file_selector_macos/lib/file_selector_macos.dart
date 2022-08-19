@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:cross_file/cross_file.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
@@ -106,10 +105,19 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     };
     for (final XTypeGroup typeGroup in typeGroups) {
       // If any group allows everything, no filtering should be done.
+      if (typeGroup.allowsAny) {
+        return null;
+      }
+      // Reject a filter that isn't an allow-any, but doesn't set any
+      // macOS-supported filter categories.
       if ((typeGroup.extensions?.isEmpty ?? true) &&
           (typeGroup.macUTIs?.isEmpty ?? true) &&
           (typeGroup.mimeTypes?.isEmpty ?? true)) {
-        return null;
+        throw ArgumentError('Provided type group $typeGroup does not allow '
+            'all files, but does not set any of the macOS-supported filter '
+            'categories. At least one of "extensions", "macUTIs", or '
+            '"mimeTypes" must be non-empty for macOS if anything is '
+            'non-empty.');
       }
       allowedTypes[extensionKey]!.addAll(typeGroup.extensions ?? <String>[]);
       allowedTypes[mimeTypeKey]!.addAll(typeGroup.mimeTypes ?? <String>[]);

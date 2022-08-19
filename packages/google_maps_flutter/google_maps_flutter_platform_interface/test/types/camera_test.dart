@@ -9,13 +9,14 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('toMap / fromMap', () {
-    const cameraPosition = CameraPosition(
+    const CameraPosition cameraPosition = CameraPosition(
         target: LatLng(10.0, 15.0), bearing: 0.5, tilt: 30.0, zoom: 1.5);
     // Cast to <dynamic, dynamic> to ensure that recreating from JSON, where
     // type information will have likely been lost, still works.
-    final json = (cameraPosition.toMap() as Map<String, dynamic>)
-        .cast<dynamic, dynamic>();
-    final cameraPositionFromJson = CameraPosition.fromMap(json);
+    final Map<dynamic, dynamic> json =
+        (cameraPosition.toMap() as Map<String, dynamic>)
+            .cast<dynamic, dynamic>();
+    final CameraPosition? cameraPositionFromJson = CameraPosition.fromMap(json);
 
     expect(cameraPosition, cameraPositionFromJson);
   });

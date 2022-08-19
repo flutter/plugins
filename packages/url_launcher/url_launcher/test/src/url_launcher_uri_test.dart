@@ -48,8 +48,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -65,8 +64,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -82,8 +80,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -91,7 +88,7 @@ void main() {
           webOnlyWindowName: null,
         )
         ..setResponse(true);
-      expect(await launchUrl(url, mode: LaunchMode.platformDefault), isTrue);
+      expect(await launchUrl(url), isTrue);
     });
 
     test('explicit default launch mode with non-web URL', () async {
@@ -99,8 +96,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -108,7 +104,7 @@ void main() {
           webOnlyWindowName: null,
         )
         ..setResponse(true);
-      expect(await launchUrl(url, mode: LaunchMode.platformDefault), isTrue);
+      expect(await launchUrl(url), isTrue);
     });
 
     test('in-app webview', () async {
@@ -116,8 +112,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -133,8 +128,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.externalApplication,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -151,8 +145,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.externalNonBrowserApplication,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: true,
@@ -170,8 +163,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           enableJavaScript: false,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -192,8 +184,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           enableJavaScript: true,
           enableDomStorage: false,
           universalLinksOnly: false,
@@ -214,8 +205,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: url.toString(),
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,
@@ -247,8 +237,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: emailLaunchUrl.toString(),
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.platformDefault,
           enableJavaScript: true,
           enableDomStorage: true,
           universalLinksOnly: false,

@@ -23,7 +23,19 @@ class XcodeAnalyzeCommand extends PackageLoopingCommand {
         super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addFlag(platformIOS, help: 'Analyze iOS');
     argParser.addFlag(platformMacOS, help: 'Analyze macOS');
+    argParser.addOption(_minIOSVersionArg,
+        help: 'Sets the minimum iOS deployment version to use when compiling, '
+            'overriding the default minimum version. This can be used to find '
+            'deprecation warnings that will affect the plugin in the future.');
+    argParser.addOption(_minMacOSVersionArg,
+        help:
+            'Sets the minimum macOS deployment version to use when compiling, '
+            'overriding the default minimum version. This can be used to find '
+            'deprecation warnings that will affect the plugin in the future.');
   }
+
+  static const String _minIOSVersionArg = 'ios-min-version';
+  static const String _minMacOSVersionArg = 'macos-min-version';
 
   final Xcode _xcode;
 
@@ -57,15 +69,24 @@ class XcodeAnalyzeCommand extends PackageLoopingCommand {
       return PackageResult.skip('Not implemented for target platform(s).');
     }
 
+    final String minIOSVersion = getStringArg(_minIOSVersionArg);
+    final String minMacOSVersion = getStringArg(_minMacOSVersionArg);
+
     final List<String> failures = <String>[];
     if (testIOS &&
         !await _analyzePlugin(package, 'iOS', extraFlags: <String>[
           '-destination',
-          'generic/platform=iOS Simulator'
+          'generic/platform=iOS Simulator',
+          if (minIOSVersion.isNotEmpty)
+            'IPHONEOS_DEPLOYMENT_TARGET=$minIOSVersion',
         ])) {
       failures.add('iOS');
     }
-    if (testMacOS && !await _analyzePlugin(package, 'macOS')) {
+    if (testMacOS &&
+        !await _analyzePlugin(package, 'macOS', extraFlags: <String>[
+          if (minMacOSVersion.isNotEmpty)
+            'MACOSX_DEPLOYMENT_TARGET=$minMacOSVersion',
+        ])) {
       failures.add('macOS');
     }
 

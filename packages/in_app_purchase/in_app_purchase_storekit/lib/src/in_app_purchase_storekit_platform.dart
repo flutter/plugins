@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:in_app_purchase_storekit/src/in_app_purchase_storekit_platform_addition.dart';
 
 import '../in_app_purchase_storekit.dart';
 import '../store_kit_wrappers.dart';
@@ -72,11 +71,11 @@ class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
   Future<bool> buyNonConsumable({required PurchaseParam purchaseParam}) async {
     await _skPaymentQueueWrapper.addPayment(SKPaymentWrapper(
         productIdentifier: purchaseParam.productDetails.id,
-        quantity: 1,
+        quantity:
+            purchaseParam is AppStorePurchaseParam ? purchaseParam.quantity : 1,
         applicationUsername: purchaseParam.applicationUserName,
         simulatesAskToBuyInSandbox: purchaseParam is AppStorePurchaseParam &&
-            purchaseParam.simulatesAskToBuyInSandbox,
-        requestData: null));
+            purchaseParam.simulatesAskToBuyInSandbox));
 
     return true; // There's no error feedback from iOS here to return.
   }

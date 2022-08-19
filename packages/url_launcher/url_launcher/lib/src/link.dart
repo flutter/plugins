@@ -86,7 +86,7 @@ class Link extends StatelessWidget implements LinkInfo {
 /// event channel messages to instruct the framework to push the route name.
 class DefaultLinkDelegate extends StatelessWidget {
   /// Creates a delegate for the given [link].
-  const DefaultLinkDelegate(this.link);
+  const DefaultLinkDelegate(this.link, {Key? key}) : super(key: key);
 
   /// Given a [link], creates an instance of [DefaultLinkDelegate].
   ///
@@ -130,7 +130,7 @@ class DefaultLinkDelegate extends StatelessWidget {
       );
     } else {
       FlutterError.reportError(FlutterErrorDetails(
-        exception: 'Could not launch link ${url.toString()}',
+        exception: 'Could not launch link $url',
         stack: StackTrace.current,
         library: 'url_launcher',
         context: ErrorDescription('during launching a link'),

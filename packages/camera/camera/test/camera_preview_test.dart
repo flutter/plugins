@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -203,7 +201,6 @@ void main() {
       controller.value = controller.value.copyWith(
         isInitialized: true,
         deviceOrientation: DeviceOrientation.portraitUp,
-        lockedCaptureOrientation: null,
         recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
             DeviceOrientation.landscapeLeft),
         previewSize: const Size(480, 640),

@@ -18,7 +18,14 @@ void main() {
     test('Cannot be implemented with `implements`', () {
       expect(() {
         GoogleSignInPlatform.instance = ImplementsGoogleSignInPlatform();
-      }, throwsA(isA<Error>()));
+        // In versions of `package:plugin_platform_interface` prior to fixing
+        // https://github.com/flutter/flutter/issues/109339, an attempt to
+        // implement a platform interface using `implements` would sometimes
+        // throw a `NoSuchMethodError` and other times throw an
+        // `AssertionError`.  After the issue is fixed, an `AssertionError` will
+        // always be thrown.  For the purpose of this test, we don't really care
+        // what exception is thrown, so just allow any exception.
+      }, throwsA(anything));
     });
 
     test('Can be extended', () {
@@ -27,6 +34,44 @@ void main() {
 
     test('Can be mocked with `implements`', () {
       GoogleSignInPlatform.instance = ImplementsWithIsMock();
+    });
+  });
+
+  group('GoogleSignInTokenData', () {
+    test('can be compared by == operator', () {
+      final GoogleSignInTokenData firstInstance = GoogleSignInTokenData(
+        accessToken: 'accessToken',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      final GoogleSignInTokenData secondInstance = GoogleSignInTokenData(
+        accessToken: 'accessToken',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      expect(firstInstance == secondInstance, isTrue);
+    });
+  });
+
+  group('GoogleSignInUserData', () {
+    test('can be compared by == operator', () {
+      final GoogleSignInUserData firstInstance = GoogleSignInUserData(
+        email: 'email',
+        id: 'id',
+        displayName: 'displayName',
+        photoUrl: 'photoUrl',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      final GoogleSignInUserData secondInstance = GoogleSignInUserData(
+        email: 'email',
+        id: 'id',
+        displayName: 'displayName',
+        photoUrl: 'photoUrl',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      expect(firstInstance == secondInstance, isTrue);
     });
   });
 }

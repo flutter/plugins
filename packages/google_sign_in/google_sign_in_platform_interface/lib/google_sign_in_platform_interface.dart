@@ -63,8 +63,7 @@ abstract class GoogleSignInPlatform {
   /// if the provided instance is a class implemented with `implements`.
   void _verifyProvidesDefaultImplementations() {}
 
-  /// Initializes the plugin. You must call this method before calling other
-  /// methods.
+  /// Initializes the plugin. Deprecated: call [initWithParams] instead.
   ///
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
@@ -87,6 +86,21 @@ abstract class GoogleSignInPlatform {
     String? clientId,
   }) async {
     throw UnimplementedError('init() has not been implemented.');
+  }
+
+  /// Initializes the plugin with specified [params]. You must call this method
+  /// before calling other methods.
+  ///
+  /// See:
+  ///
+  /// * [SignInInitParameters]
+  Future<void> initWithParams(SignInInitParameters params) async {
+    await init(
+      scopes: params.scopes,
+      signInOption: params.signInOption,
+      hostedDomain: params.hostedDomain,
+      clientId: params.clientId,
+    );
   }
 
   /// Attempts to reuse pre-existing credentials to sign in again, without user interaction.

@@ -31,6 +31,10 @@
         [[SKProductSubscriptionPeriodStub alloc] initWithMap:map[@"subscriptionPeriod"]];
     [self setValue:subscriptionPeriodSub forKey:@"subscriptionPeriod"];
     [self setValue:map[@"paymentMode"] ?: @(0) forKey:@"paymentMode"];
+    if (@available(iOS 12.2, *)) {
+      [self setValue:map[@"identifier"] ?: [NSNull null] forKey:@"identifier"];
+      [self setValue:map[@"type"] ?: @(0) forKey:@"type"];
+    }
   }
   return self;
 }

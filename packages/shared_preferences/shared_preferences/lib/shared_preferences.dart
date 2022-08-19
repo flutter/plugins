@@ -140,7 +140,7 @@ class SharedPreferences {
 
   /// Always returns true.
   /// On iOS, synchronize is marked deprecated. On Android, we commit every set.
-  @deprecated
+  @Deprecated('This method is now a no-op, and should no longer be called.')
   Future<bool> commit() async => true;
 
   /// Completes with true once the user preferences for the app has been cleared.

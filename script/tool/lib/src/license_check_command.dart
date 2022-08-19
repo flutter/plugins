@@ -241,8 +241,7 @@ class LicenseCheckCommand extends PluginCommand {
     }
 
     // Sort by path for more usable output.
-    final int Function(File, File) pathCompare =
-        (File a, File b) => a.path.compareTo(b.path);
+    int pathCompare(File a, File b) => a.path.compareTo(b.path);
     incorrectFirstPartyFiles.sort(pathCompare);
     unrecognizedThirdPartyFiles.sort(pathCompare);
 

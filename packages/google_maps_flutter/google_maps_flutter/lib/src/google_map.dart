@@ -40,6 +40,9 @@ class UnknownMapObjectIdError extends Error {
 }
 
 /// Android specific settings for [GoogleMap].
+// TODO(stuartmorgan): Deprecate this in favor of pointing people who want to
+// change this to using the Android implementation Dart class directly. This
+// should be done as part of switching the default to hybrid composition.
 class AndroidGoogleMapsFlutter {
   AndroidGoogleMapsFlutter._();
 
@@ -55,7 +58,7 @@ class AndroidGoogleMapsFlutter {
   static bool get useAndroidViewSurface {
     final GoogleMapsFlutterPlatform platform =
         GoogleMapsFlutterPlatform.instance;
-    if (platform is MethodChannelGoogleMapsFlutter) {
+    if (platform is GoogleMapsFlutterAndroid) {
       return platform.useAndroidViewSurface;
     }
     return false;
@@ -73,7 +76,7 @@ class AndroidGoogleMapsFlutter {
   static set useAndroidViewSurface(bool useAndroidViewSurface) {
     final GoogleMapsFlutterPlatform platform =
         GoogleMapsFlutterPlatform.instance;
-    if (platform is MethodChannelGoogleMapsFlutter) {
+    if (platform is GoogleMapsFlutterAndroid) {
       platform.useAndroidViewSurface = useAndroidViewSurface;
     }
   }
@@ -105,7 +108,7 @@ class GoogleMap extends StatefulWidget {
     this.layoutDirection,
 
     /// If no padding is specified default padding will be 0.
-    this.padding = const EdgeInsets.all(0),
+    this.padding = EdgeInsets.zero,
     this.indoorViewEnabled = false,
     this.trafficEnabled = false,
     this.buildingsEnabled = true,
@@ -294,30 +297,34 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
-  late _GoogleMapOptions _googleMapOptions;
+  late MapConfiguration _mapConfiguration;
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMapsFlutterPlatform.instance.buildViewWithTextDirection(
+    return GoogleMapsFlutterPlatform.instance.buildViewWithConfiguration(
       _mapId,
       onPlatformViewCreated,
-      textDirection: widget.layoutDirection ??
-          Directionality.maybeOf(context) ??
-          TextDirection.ltr,
-      initialCameraPosition: widget.initialCameraPosition,
-      markers: widget.markers,
-      polygons: widget.polygons,
-      polylines: widget.polylines,
-      circles: widget.circles,
-      gestureRecognizers: widget.gestureRecognizers,
-      mapOptions: _googleMapOptions.toMap(),
+      widgetConfiguration: MapWidgetConfiguration(
+        textDirection: widget.layoutDirection ??
+            Directionality.maybeOf(context) ??
+            TextDirection.ltr,
+        initialCameraPosition: widget.initialCameraPosition,
+        gestureRecognizers: widget.gestureRecognizers,
+      ),
+      mapObjects: MapObjects(
+        markers: widget.markers,
+        polygons: widget.polygons,
+        polylines: widget.polylines,
+        circles: widget.circles,
+      ),
+      mapConfiguration: _mapConfiguration,
     );
   }
 
   @override
   void initState() {
     super.initState();
-    _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
+    _mapConfiguration = _configurationFromMapWidget(widget);
     _markers = keyByMarkerId(widget.markers);
     _polygons = keyByPolygonId(widget.polygons);
     _polylines = keyByPolylineId(widget.polylines);
@@ -347,16 +354,15 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   Future<void> _updateOptions() async {
-    final _GoogleMapOptions newOptions = _GoogleMapOptions.fromWidget(widget);
-    final Map<String, dynamic> updates =
-        _googleMapOptions.updatesMap(newOptions);
+    final MapConfiguration newConfig = _configurationFromMapWidget(widget);
+    final MapConfiguration updates = newConfig.diffFrom(_mapConfiguration);
     if (updates.isEmpty) {
       return;
     }
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
-    controller._updateMapOptions(updates);
-    _googleMapOptions = newOptions;
+    controller._updateMapConfiguration(updates);
+    _mapConfiguration = newConfig;
   }
 
   Future<void> _updateMarkers() async {
@@ -524,98 +530,27 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 }
 
-/// Configuration options for the GoogleMaps user interface.
-class _GoogleMapOptions {
-  _GoogleMapOptions.fromWidget(GoogleMap map)
-      : compassEnabled = map.compassEnabled,
-        mapToolbarEnabled = map.mapToolbarEnabled,
-        cameraTargetBounds = map.cameraTargetBounds,
-        mapType = map.mapType,
-        minMaxZoomPreference = map.minMaxZoomPreference,
-        rotateGesturesEnabled = map.rotateGesturesEnabled,
-        scrollGesturesEnabled = map.scrollGesturesEnabled,
-        tiltGesturesEnabled = map.tiltGesturesEnabled,
-        trackCameraPosition = map.onCameraMove != null,
-        zoomControlsEnabled = map.zoomControlsEnabled,
-        zoomGesturesEnabled = map.zoomGesturesEnabled,
-        liteModeEnabled = map.liteModeEnabled,
-        myLocationEnabled = map.myLocationEnabled,
-        myLocationButtonEnabled = map.myLocationButtonEnabled,
-        padding = map.padding,
-        indoorViewEnabled = map.indoorViewEnabled,
-        trafficEnabled = map.trafficEnabled,
-        buildingsEnabled = map.buildingsEnabled,
-        assert(!map.liteModeEnabled || Platform.isAndroid);
-
-  final bool compassEnabled;
-
-  final bool mapToolbarEnabled;
-
-  final CameraTargetBounds cameraTargetBounds;
-
-  final MapType mapType;
-
-  final MinMaxZoomPreference minMaxZoomPreference;
-
-  final bool rotateGesturesEnabled;
-
-  final bool scrollGesturesEnabled;
-
-  final bool tiltGesturesEnabled;
-
-  final bool trackCameraPosition;
-
-  final bool zoomControlsEnabled;
-
-  final bool zoomGesturesEnabled;
-
-  final bool liteModeEnabled;
-
-  final bool myLocationEnabled;
-
-  final bool myLocationButtonEnabled;
-
-  final EdgeInsets padding;
-
-  final bool indoorViewEnabled;
-
-  final bool trafficEnabled;
-
-  final bool buildingsEnabled;
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'compassEnabled': compassEnabled,
-      'mapToolbarEnabled': mapToolbarEnabled,
-      'cameraTargetBounds': cameraTargetBounds.toJson(),
-      'mapType': mapType.index,
-      'minMaxZoomPreference': minMaxZoomPreference.toJson(),
-      'rotateGesturesEnabled': rotateGesturesEnabled,
-      'scrollGesturesEnabled': scrollGesturesEnabled,
-      'tiltGesturesEnabled': tiltGesturesEnabled,
-      'zoomControlsEnabled': zoomControlsEnabled,
-      'zoomGesturesEnabled': zoomGesturesEnabled,
-      'liteModeEnabled': liteModeEnabled,
-      'trackCameraPosition': trackCameraPosition,
-      'myLocationEnabled': myLocationEnabled,
-      'myLocationButtonEnabled': myLocationButtonEnabled,
-      'padding': <double>[
-        padding.top,
-        padding.left,
-        padding.bottom,
-        padding.right,
-      ],
-      'indoorEnabled': indoorViewEnabled,
-      'trafficEnabled': trafficEnabled,
-      'buildingsEnabled': buildingsEnabled,
-    };
-  }
-
-  Map<String, dynamic> updatesMap(_GoogleMapOptions newOptions) {
-    final Map<String, dynamic> prevOptionsMap = toMap();
-
-    return newOptions.toMap()
-      ..removeWhere(
-          (String key, dynamic value) => prevOptionsMap[key] == value);
-  }
+/// Builds a [MapConfiguration] from the given [map].
+MapConfiguration _configurationFromMapWidget(GoogleMap map) {
+  assert(!map.liteModeEnabled || Platform.isAndroid);
+  return MapConfiguration(
+    compassEnabled: map.compassEnabled,
+    mapToolbarEnabled: map.mapToolbarEnabled,
+    cameraTargetBounds: map.cameraTargetBounds,
+    mapType: map.mapType,
+    minMaxZoomPreference: map.minMaxZoomPreference,
+    rotateGesturesEnabled: map.rotateGesturesEnabled,
+    scrollGesturesEnabled: map.scrollGesturesEnabled,
+    tiltGesturesEnabled: map.tiltGesturesEnabled,
+    trackCameraPosition: map.onCameraMove != null,
+    zoomControlsEnabled: map.zoomControlsEnabled,
+    zoomGesturesEnabled: map.zoomGesturesEnabled,
+    liteModeEnabled: map.liteModeEnabled,
+    myLocationEnabled: map.myLocationEnabled,
+    myLocationButtonEnabled: map.myLocationButtonEnabled,
+    padding: map.padding,
+    indoorViewEnabled: map.indoorViewEnabled,
+    trafficEnabled: map.trafficEnabled,
+    buildingsEnabled: map.buildingsEnabled,
+  );
 }

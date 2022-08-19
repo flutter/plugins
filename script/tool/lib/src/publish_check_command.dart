@@ -10,7 +10,6 @@ import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -34,16 +33,13 @@ class PublishCheckCommand extends PackageLoopingCommand {
       help: 'Allows the pre-release SDK warning to pass.\n'
           'When enabled, a pub warning, which asks to publish the package as a pre-release version when '
           'the SDK constraint is a pre-release version, is ignored.',
-      defaultsTo: false,
     );
     argParser.addFlag(_machineFlag,
         help: 'Switch outputs to a machine readable JSON. \n'
             'The JSON contains a "status" field indicating the final status of the command, the possible values are:\n'
             '    $_statusNeedsPublish: There is at least one package need to be published. They also passed all publish checks.\n'
             '    $_statusMessageNoPublish: There are no packages needs to be published. Either no pubspec change detected or all versions have already been published.\n'
-            '    $_statusMessageError: Some error has occurred.',
-        defaultsTo: false,
-        negatable: true);
+            '    $_statusMessageError: Some error has occurred.');
   }
 
   static const String _allowPrereleaseFlag = 'allow-pre-release';
@@ -247,12 +243,12 @@ HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
   bool _passesAuthorsCheck(RepositoryPackage package) {
     final List<String> pathComponents =
-        package.directory.fileSystem.path.split(package.directory.path);
+        package.directory.fileSystem.path.split(package.path);
     if (pathComponents.contains('third_party')) {
       // Third-party packages aren't required to have an AUTHORS file.
       return true;
     }
-    return package.directory.childFile('AUTHORS').existsSync();
+    return package.authorsFile.existsSync();
   }
 
   void _printImportantStatusMessage(String message, {required bool isError}) {

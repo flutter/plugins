@@ -33,8 +33,8 @@ void main() {
   testWidgets('image is loaded correctly ', (WidgetTester tester) async {
     final html.ImageElement imageElement =
         await imageResizer.loadImage(pngFile.path);
-    expect(imageElement.width!, 10);
-    expect(imageElement.height!, 10);
+    expect(imageElement.width, 10);
+    expect(imageElement.height, 10);
   });
 
   testWidgets(
@@ -117,7 +117,7 @@ Future<Size> _getImageSize(XFile file) async {
     completer.complete(Size(image.width!.toDouble(), image.height!.toDouble()));
   });
   image.onError.listen((html.Event event) {
-    completer.complete(const Size(0, 0));
+    completer.complete(Size.zero);
   });
   return completer.future;
 }
