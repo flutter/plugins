@@ -250,7 +250,6 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   self.pictureInPictureEnabled = pictureInPictureEnabled;
   if (_pipController && self.pictureInPictureEnabled &&
       ![_pipController isPictureInPictureActive]) {
-    self.playerLayer.opacity = 0.001;
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"startingPiP"});
     }
@@ -275,7 +274,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     UIViewController *vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     self.playerLayer.frame = frame;
     self.playerLayer.needsDisplayOnBoundsChange = YES;
-    self.playerLayer.opacity = 0;
+    self.playerLayer.opacity = 0.001;
     [vc.view.layer addSublayer:self.playerLayer];
     vc.view.layer.needsDisplayOnBoundsChange = YES;
 #if TARGET_OS_IOS
@@ -289,7 +288,6 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)pictureInPictureControllerDidStopPictureInPicture:
     (AVPictureInPictureController *)pictureInPictureController {
   self.pictureInPictureEnabled = false;
-  self.playerLayer.opacity = 0;
   if (_eventSink != nil) {
     _eventSink(@{@"event" : @"stoppedPiP"});
   }
@@ -297,7 +295,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)pictureInPictureControllerDidStartPictureInPicture:
     (AVPictureInPictureController *)pictureInPictureController {
-  self.playerLayer.opacity = 0.001;
+  self.pictureInPictureEnabled = true;
   if (_eventSink != nil) {
     _eventSink(@{@"event" : @"startingPiP"});
   }
