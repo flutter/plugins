@@ -41,6 +41,9 @@
   XCTAssertTrue([pipStartButton waitForExistenceWithTimeout:30.0]);
   [pipStartButton tap];
 
+  XCUIElement *pipUIView = app.otherElements[@"PIPUIView"];
+  XCTAssertTrue([pipUIView waitForExistenceWithTimeout:30.0]);
+
   XCUIElement *pipStopButton = app.buttons[@"Stop PiP"];
   XCTAssertTrue([pipStopButton waitForExistenceWithTimeout:30.0]);
   [pipStopButton tap];
