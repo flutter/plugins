@@ -8,11 +8,14 @@ import 'package:flutter/material.dart';
 /// Screen that allows the user to select a text file using `openFile`, then
 /// displays its contents in a dialog.
 class OpenTextPage extends StatelessWidget {
+  /// Default Constructor
+  const OpenTextPage({Key? key}) : super(key: key);
+
   Future<void> _openTextFile(BuildContext context) async {
     final XTypeGroup typeGroup = XTypeGroup(
       label: 'text',
       extensions: <String>['txt', 'json'],
-      macUTIs: <String>['public.text', 'public.json'],
+      macUTIs: <String>['public.text'],
     );
     final XFile? file = await FileSelectorPlatform.instance
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
@@ -41,7 +44,10 @@ class OpenTextPage extends StatelessWidget {
           children: <Widget>[
             ElevatedButton(
               style: ElevatedButton.styleFrom(
+                // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+                // ignore: deprecated_member_use
                 primary: Colors.blue,
+                // ignore: deprecated_member_use
                 onPrimary: Colors.white,
               ),
               child: const Text('Press to open a text file (json, txt)'),
@@ -57,7 +63,8 @@ class OpenTextPage extends StatelessWidget {
 /// Widget that displays a text file in a dialog.
 class TextDisplay extends StatelessWidget {
   /// Default Constructor.
-  const TextDisplay(this.fileName, this.fileContent);
+  const TextDisplay(this.fileName, this.fileContent, {Key? key})
+      : super(key: key);
 
   /// The name of the selected file.
   final String fileName;
