@@ -734,7 +734,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (nullable NSNumber *)isPictureInPictureSupported:
     (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  return [NSNumber numberWithBool:[AVPictureInPictureController isPictureInPictureSupported]];
+  return @(AVPictureInPictureController.isPictureInPictureSupported);
 }
 
 @end
