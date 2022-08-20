@@ -6,6 +6,7 @@ import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_i
 
 import 'webkit_navigation_delegate.dart';
 import 'webkit_webview_controller.dart';
+import 'webkit_webview_widget.dart';
 
 /// Implementation of [WebViewPlatform] using the WebKit API.
 class WebKitWebViewPlatform extends WebViewPlatform {
@@ -21,5 +22,12 @@ class WebKitWebViewPlatform extends WebViewPlatform {
     PlatformNavigationDelegateCreationParams params,
   ) {
     return WebKitNavigationDelegate(params);
+  }
+
+  @override
+  WebKitWebViewWidget createPlatformWebViewWidget(
+    PlatformWebViewWidgetCreationParams params,
+  ) {
+    return WebKitWebViewWidget(params);
   }
 }

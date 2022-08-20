@@ -22,7 +22,7 @@ class WebKitWebViewControllerCreationParams
     extends PlatformWebViewControllerCreationParams {
   /// Constructs a [WebKitWebViewControllerCreationParams].
   WebKitWebViewControllerCreationParams({
-    @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
+    @visibleForTesting this.webKitProxy = const WebKitProxy(),
   }) : _configuration = webKitProxy.createWebViewConfiguration();
 
   /// Constructs a [WebKitWebViewControllerCreationParams] using a
@@ -35,34 +35,21 @@ class WebKitWebViewControllerCreationParams
   }) : this(webKitProxy: webKitProxy);
 
   final WKWebViewConfiguration _configuration;
+
+  /// Handles constructing objects and calling static methods for the WebKit
+  /// native library.
+  @visibleForTesting
+  final WebKitProxy webKitProxy;
 }
 
 /// An implementation of [PlatformWebViewController] with the WebKit api.
 class WebKitWebViewController extends PlatformWebViewController {
   /// Constructs a [WebKitWebViewController].
-  WebKitWebViewController(
-    PlatformWebViewControllerCreationParams params, {
-    @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  }) : super.implementation(params is WebKitWebViewControllerCreationParams
+  WebKitWebViewController(PlatformWebViewControllerCreationParams params)
+      : super.implementation(params is WebKitWebViewControllerCreationParams
             ? params
             : WebKitWebViewControllerCreationParams
                 .fromPlatformWebViewControllerCreationParams(params)) {
-    final WeakReference<WebKitWebViewController> weakThis =
-        WeakReference<WebKitWebViewController>(this);
-    webView = webKitProxy.createWebView(
-      (params as WebKitWebViewControllerCreationParams)._configuration,
-      observeValue: (
-        String keyPath,
-        NSObject object,
-        Map<NSKeyValueChangeKey, Object?> change,
-      ) {
-        if (weakThis.target?._onProgress != null) {
-          final double progress =
-              change[NSKeyValueChangeKey.newValue]! as double;
-          weakThis.target!._onProgress!((progress * 100).round());
-        }
-      },
-    );
     webView.addObserver(
       webView,
       keyPath: 'estimatedProgress',
@@ -72,13 +59,34 @@ class WebKitWebViewController extends PlatformWebViewController {
     );
   }
 
-  late final WKWebView webView;
+  /// The WebKit WebView being controlled.
+  late final WKWebView webView = withWeakRefenceTo(this, (
+    WeakReference<WebKitWebViewController> weakReference,
+  ) {
+    return _webKitParams.webKitProxy.createWebView(
+      _webKitParams._configuration,
+      observeValue: (
+        String keyPath,
+        NSObject object,
+        Map<NSKeyValueChangeKey, Object?> change,
+      ) {
+        if (weakReference.target?._onProgress != null) {
+          final double progress =
+              change[NSKeyValueChangeKey.newValue]! as double;
+          weakReference.target!._onProgress!((progress * 100).round());
+        }
+      },
+    );
+  });
 
   final Map<String, WebKitJavaScriptChannelParams> _javaScriptChannelParams =
       <String, WebKitJavaScriptChannelParams>{};
 
   bool _zoomEnabled = true;
   void Function(int progress)? _onProgress;
+
+  WebKitWebViewControllerCreationParams get _webKitParams =>
+      params as WebKitWebViewControllerCreationParams;
 
   @override
   Future<void> loadFile(String absoluteFilePath) {
