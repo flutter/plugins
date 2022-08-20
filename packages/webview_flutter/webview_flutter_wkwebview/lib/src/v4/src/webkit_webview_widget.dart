@@ -4,7 +4,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:webview_flutter_platform_interface/v4/src/platform_webview_widget.dart';
+import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 
 import '../../foundation/foundation.dart';
 import '../webview_flutter_wkwebview.dart';
@@ -15,7 +15,7 @@ class WebKitWebViewWidget extends PlatformWebViewWidget {
   WebKitWebViewWidget(super.params) : super.implementation();
 
   @override
-  Widget build(BuildParams params) {
+  Widget build(BuildContext context) {
     return UiKitView(
       viewType: 'plugins.flutter.io/webview',
       onPlatformViewCreated: (_) {},
