@@ -1,3 +1,8 @@
+## 0.8.5+2
+
+* Updates `image_picker_platform_interface` constraint to the correct minimum
+  version.
+
 ## 0.8.5+1
 
 * Switches to an internal method channel implementation.

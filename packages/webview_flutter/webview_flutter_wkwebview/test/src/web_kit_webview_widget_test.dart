@@ -212,8 +212,6 @@ void main() {
         await buildWidget(
           tester,
           creationParams: CreationParams(
-            autoMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
             webSettings: WebSettings(
               userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
@@ -737,7 +735,7 @@ void main() {
         await buildWidget(tester);
 
         when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
-          (_) => Future<String?>.value(null),
+          (_) => Future<String?>.value(),
         );
         expect(
           () => testController.runJavascriptReturningResult('runJavaScript'),
@@ -1217,7 +1215,7 @@ void main() {
 
       testWidgets('progress observer is not removed without being set first',
           (WidgetTester tester) async {
-        await buildWidget(tester, hasProgressTracking: false);
+        await buildWidget(tester);
 
         verifyNever(mockWebView.removeObserver(
           mockWebView,

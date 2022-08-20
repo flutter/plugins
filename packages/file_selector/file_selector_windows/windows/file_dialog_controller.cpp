@@ -17,8 +17,8 @@ FileDialogController::FileDialogController(IFileDialog* dialog)
 
 FileDialogController::~FileDialogController() {}
 
-HRESULT FileDialogController::SetDefaultFolder(IShellItem* folder) {
-  return dialog_->SetDefaultFolder(folder);
+HRESULT FileDialogController::SetFolder(IShellItem* folder) {
+  return dialog_->SetFolder(folder);
 }
 
 HRESULT FileDialogController::SetFileName(const wchar_t* name) {

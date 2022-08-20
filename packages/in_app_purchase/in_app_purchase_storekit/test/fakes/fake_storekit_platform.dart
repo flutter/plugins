@@ -63,8 +63,6 @@ class FakeStoreKitPlatform {
       payment: SKPaymentWrapper(productIdentifier: id, quantity: quantity),
       transactionState: SKPaymentTransactionStateWrapper.purchasing,
       transactionTimeStamp: 123123.121,
-      error: null,
-      originalTransaction: null,
     );
   }
 
@@ -76,9 +74,7 @@ class FakeStoreKitPlatform {
             SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
         transactionState: SKPaymentTransactionStateWrapper.purchased,
         transactionTimeStamp: 123123.121,
-        transactionIdentifier: transactionId,
-        error: null,
-        originalTransaction: null);
+        transactionIdentifier: transactionId);
   }
 
   SKPaymentTransactionWrapper createFailedTransaction(String productId,
@@ -92,8 +88,7 @@ class FakeStoreKitPlatform {
         error: const SKError(
             code: 0,
             domain: 'ios_domain',
-            userInfo: <String, Object>{'message': 'an error message'}),
-        originalTransaction: null);
+            userInfo: <String, Object>{'message': 'an error message'}));
   }
 
   SKPaymentTransactionWrapper createCanceledTransaction(
@@ -108,8 +103,7 @@ class FakeStoreKitPlatform {
         error: SKError(
             code: errorCode,
             domain: 'ios_domain',
-            userInfo: const <String, Object>{'message': 'an error message'}),
-        originalTransaction: null);
+            userInfo: const <String, Object>{'message': 'an error message'}));
   }
 
   SKPaymentTransactionWrapper createRestoredTransaction(
@@ -120,9 +114,7 @@ class FakeStoreKitPlatform {
             SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
         transactionState: SKPaymentTransactionStateWrapper.restored,
         transactionTimeStamp: 123123.121,
-        transactionIdentifier: transactionId,
-        error: null,
-        originalTransaction: null);
+        transactionIdentifier: transactionId);
   }
 
   Future<dynamic> onMethodCall(MethodCall call) {

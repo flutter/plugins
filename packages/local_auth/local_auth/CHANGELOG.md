@@ -1,3 +1,7 @@
+## 2.1.2
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 2.1.1
 
 * Replaces `USE_FINGERPRINT` permission with `USE_BIOMETRIC` in README and example project.

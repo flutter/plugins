@@ -1,3 +1,7 @@
+## 0.2.3+3
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 0.2.3+2
 
 * Fixes incorrect json key in `queryPurchasesAsync` that fixes restore purchases functionality.

@@ -146,7 +146,7 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-        MockProcess(exitCode: 0), // pub get
+        MockProcess(), // pub get
         MockProcess(exitCode: 1), // test script
       ];
 
@@ -306,7 +306,7 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-        MockProcess(exitCode: 0), // pub get
+        MockProcess(), // pub get
         MockProcess(exitCode: 1), // test script
       ];
 

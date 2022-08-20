@@ -10,7 +10,8 @@
 @interface TranslatorTest : XCTestCase
 
 @property(strong, nonatomic) NSDictionary *periodMap;
-@property(strong, nonatomic) NSDictionary *discountMap;
+@property(strong, nonatomic) NSMutableDictionary *discountMap;
+@property(strong, nonatomic) NSMutableDictionary *discountMissingIdentifierMap;
 @property(strong, nonatomic) NSMutableDictionary *productMap;
 @property(strong, nonatomic) NSDictionary *productResponseMap;
 @property(strong, nonatomic) NSDictionary *paymentMap;
@@ -27,13 +28,27 @@
 
 - (void)setUp {
   self.periodMap = @{@"numberOfUnits" : @(0), @"unit" : @(0)};
-  self.discountMap = @{
+
+  self.discountMap = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"price" : @"1",
     @"priceLocale" : [FIAObjectTranslator getMapFromNSLocale:NSLocale.systemLocale],
     @"numberOfPeriods" : @1,
     @"subscriptionPeriod" : self.periodMap,
-    @"paymentMode" : @1
-  };
+    @"paymentMode" : @1,
+  }];
+  if (@available(iOS 12.2, *)) {
+    self.discountMap[@"identifier"] = @"test offer id";
+    self.discountMap[@"type"] = @(SKProductDiscountTypeIntroductory);
+  }
+  self.discountMissingIdentifierMap = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"price" : @"1",
+    @"priceLocale" : [FIAObjectTranslator getMapFromNSLocale:NSLocale.systemLocale],
+    @"numberOfPeriods" : @1,
+    @"subscriptionPeriod" : self.periodMap,
+    @"paymentMode" : @1,
+    @"identifier" : [NSNull null],
+    @"type" : @0,
+  }];
 
   self.productMap = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"price" : @"1",
@@ -271,6 +286,15 @@
       XCTAssertEqualObjects(
           error, @"When specifying a payment discount the 'identifier' field is mandatory.");
     }
+  }
+}
+
+- (void)testGetMapFromSKProductDiscountMissingIdentifier {
+  if (@available(iOS 12.2, *)) {
+    SKProductDiscountStub *discount =
+        [[SKProductDiscountStub alloc] initWithMap:self.discountMissingIdentifierMap];
+    NSDictionary *map = [FIAObjectTranslator getMapFromSKProductDiscount:discount];
+    XCTAssertEqualObjects(map, self.discountMissingIdentifierMap);
   }
 }
 
