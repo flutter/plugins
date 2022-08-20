@@ -1,6 +1,8 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter_platform_interface/v4/src/platform_webview_widget.dart';
 
@@ -13,19 +15,14 @@ class WebKitWebViewWidget extends PlatformWebViewWidget {
   WebKitWebViewWidget(super.params) : super.implementation();
 
   @override
-  Widget build(
-    BuildContext context, {
-    required covariant WebKitWebViewController controller,
-    TextDirection? layoutDirection = TextDirection.ltr,
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
-  }) {
+  Widget build(BuildParams params) {
     return UiKitView(
       viewType: 'plugins.flutter.io/webview',
       onPlatformViewCreated: (_) {},
-      layoutDirection: layoutDirection,
-      gestureRecognizers: gestureRecognizers,
-      creationParams:
-          NSObject.globalInstanceManager.getIdentifier(controller.webView),
+      layoutDirection: params.layoutDirection,
+      gestureRecognizers: params.gestureRecognizers,
+      creationParams: NSObject.globalInstanceManager.getIdentifier(
+          (params.controller as WebKitWebViewController).webView),
       creationParamsCodec: const StandardMessageCodec(),
     );
   }
