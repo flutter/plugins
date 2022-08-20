@@ -13,7 +13,7 @@ import 'package:video_player/video_player.dart';
 
 void main() => runApp(const VideoApp());
 
-/// Stateful widget to fetch and then display video content
+/// Stateful widget to fetch and then display video content.
 class VideoApp extends StatefulWidget {
   const VideoApp({Key? key}) : super(key: key);
 
