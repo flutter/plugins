@@ -36,7 +36,7 @@
 
 - (void)testReturnsPickedFiles {
   FFSFileSelectorPlugin *plugin = [[FFSFileSelectorPlugin alloc] init];
-  XCTestExpectation *completionWasCalled = [[XCTestExpectation alloc] init];
+  XCTestExpectation *completionWasCalled = [self expectationWithDescription:@"completion"];
   UIDocumentPickerViewController *picker =
       [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[]
                                                              inMode:UIDocumentPickerModeImport];
@@ -52,13 +52,13 @@
       didPickDocumentsAtURLs:@[
         [NSURL URLWithString:@"file:///file1.txt"], [NSURL URLWithString:@"file:///file2.txt"]
       ]];
-  [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
+  [self waitForExpectationsWithTimeout:1.0 handler:nil];
 }
 
 - (void)testReturnsPickedFileLegacy {
   // Tests that it handles the pre iOS 11 UIDocumentPickerDelegate method.
   FFSFileSelectorPlugin *plugin = [[FFSFileSelectorPlugin alloc] init];
-  XCTestExpectation *completionWasCalled = [[XCTestExpectation alloc] init];
+  XCTestExpectation *completionWasCalled = [self expectationWithDescription:@"completion"];
   UIDocumentPickerViewController *picker =
       [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[]
                                                              inMode:UIDocumentPickerModeImport];
@@ -74,7 +74,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   [plugin documentPicker:picker didPickDocumentAtURL:[NSURL URLWithString:@"file:///file1.txt"]];
 #pragma GCC diagnostic pop
-  [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
+  [self waitForExpectationsWithTimeout:1.0 handler:nil];
 }
 
 - (void)testCancellingPickerReturnsNil {
@@ -84,7 +84,7 @@
                                                              inMode:UIDocumentPickerModeImport];
   plugin.documentPickerViewControllerOverride = picker;
 
-  XCTestExpectation *completionWasCalled = [[XCTestExpectation alloc] init];
+  XCTestExpectation *completionWasCalled = [self expectationWithDescription:@"completion"];
   [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:@[]
                                                      allowMultiSelection:@NO]
                           completion:^(NSArray<NSString *> *paths, FlutterError *error) {
@@ -92,7 +92,7 @@
                             [completionWasCalled fulfill];
                           }];
   [plugin documentPickerWasCancelled:picker];
-  [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
+  [self waitForExpectationsWithTimeout:1.0 handler:nil];
 }
 
 @end

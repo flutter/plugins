@@ -61,9 +61,9 @@
 - (void)documentPicker:(UIDocumentPickerViewController *)controller
     didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
   NSMutableArray *paths = [NSMutableArray arrayWithCapacity:urls.count];
-  [urls enumerateObjectsUsingBlock:^(NSURL *url, NSUInteger idx, BOOL *stop) {
+  for (NSURL *url in urls) {
     [paths addObject:url.path];
-  }];
+  };
   [self sendBackResults:paths error:nil forPicker:controller];
 }
 
