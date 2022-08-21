@@ -14,7 +14,14 @@ void main() {
     test('Cannot be implemented with `implements`', () {
       expect(() {
         InAppPurchasePlatform.instance = ImplementsInAppPurchasePlatform();
-      }, throwsNoSuchMethodError);
+        // In versions of `package:plugin_platform_interface` prior to fixing
+        // https://github.com/flutter/flutter/issues/109339, an attempt to
+        // implement a platform interface using `implements` would sometimes
+        // throw a `NoSuchMethodError` and other times throw an
+        // `AssertionError`.  After the issue is fixed, an `AssertionError` will
+        // always be thrown.  For the purpose of this test, we don't really care
+        // what exception is thrown, so just allow any exception.
+      }, throwsA(anything));
     });
 
     test('Can be extended', () {
@@ -126,7 +133,7 @@ void main() {
       InAppPurchasePlatformAddition.instance = null;
     });
 
-    test('Cannot be implemented with `implements`', () {
+    test('Default instance is null', () {
       expect(InAppPurchasePlatformAddition.instance, isNull);
     });
 

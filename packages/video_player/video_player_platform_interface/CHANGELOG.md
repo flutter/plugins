@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes violations of new analysis option use_named_constants.
+
 ## 5.1.4
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.

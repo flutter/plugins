@@ -4,5 +4,7 @@
 
 library webview_flutter_wkwebview;
 
+export 'src/webkit_navigation_delegate.dart';
+export 'src/webkit_webview_controller.dart';
 export 'src/webkit_webview_controller.dart';
 export 'src/webkit_webview_cookie_manager.dart';
