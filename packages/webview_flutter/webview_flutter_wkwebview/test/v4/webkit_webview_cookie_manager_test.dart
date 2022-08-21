@@ -24,9 +24,10 @@ void main() {
           MockWKWebsiteDataStore();
 
       final WebKitWebViewCookieManager manager = WebKitWebViewCookieManager(
-        const PlatformWebViewCookieManagerCreationParams(),
-        webKitProxy: WebKitProxy(
-          defaultWebsiteDataStore: () => mockWKWebsiteDataStore,
+        WebKitWebViewCookieManagerCreationParams(
+          webKitProxy: WebKitProxy(
+            defaultWebsiteDataStore: () => mockWKWebsiteDataStore,
+          ),
         ),
       );
 
@@ -55,9 +56,10 @@ void main() {
       when(mockWKWebsiteDataStore.httpCookieStore).thenReturn(mockCookieStore);
 
       final WebKitWebViewCookieManager manager = WebKitWebViewCookieManager(
-        const PlatformWebViewCookieManagerCreationParams(),
-        webKitProxy: WebKitProxy(
-          defaultWebsiteDataStore: () => mockWKWebsiteDataStore,
+        WebKitWebViewCookieManagerCreationParams(
+          webKitProxy: WebKitProxy(
+            defaultWebsiteDataStore: () => mockWKWebsiteDataStore,
+          ),
         ),
       );
 
@@ -87,9 +89,10 @@ void main() {
       when(mockWKWebsiteDataStore.httpCookieStore).thenReturn(mockCookieStore);
 
       final WebKitWebViewCookieManager manager = WebKitWebViewCookieManager(
-        const PlatformWebViewCookieManagerCreationParams(),
-        webKitProxy: WebKitProxy(
-          defaultWebsiteDataStore: () => mockWKWebsiteDataStore,
+        WebKitWebViewCookieManagerCreationParams(
+          webKitProxy: WebKitProxy(
+            defaultWebsiteDataStore: () => mockWKWebsiteDataStore,
+          ),
         ),
       );
 

@@ -9,21 +9,50 @@ import '../../foundation/foundation.dart';
 import '../../web_kit/web_kit.dart';
 import 'webkit_proxy.dart';
 
+/// Object specifying creation parameters for a [WebKitWebViewCookieManager].
+class WebKitWebViewCookieManagerCreationParams
+    extends PlatformWebViewCookieManagerCreationParams {
+  /// Constructs a [WebKitWebViewCookieManagerCreationParams].
+  WebKitWebViewCookieManagerCreationParams({
+    WebKitProxy? webKitProxy,
+  }) : webKitProxy = webKitProxy ?? const WebKitProxy();
+
+  /// Constructs a [WebKitWebViewCookieManagerCreationParams] using a
+  /// [PlatformWebViewCookieManagerCreationParams].
+  WebKitWebViewCookieManagerCreationParams.fromPlatformWebViewCookieManagerCreationParams(
+    // Recommended placeholder to prevent being broken by platform interface.
+    // ignore: avoid_unused_constructor_parameters
+    PlatformWebViewCookieManagerCreationParams params, {
+    @visibleForTesting WebKitProxy? webKitProxy,
+  }) : this(webKitProxy: webKitProxy);
+
+  /// Handles constructing objects and calling static methods for the WebKit
+  /// native library.
+  @visibleForTesting
+  final WebKitProxy webKitProxy;
+
+  /// Manages stored data for [WKWebView]s.
+  late final WKWebsiteDataStore _websiteDataStore =
+      webKitProxy.defaultWebsiteDataStore();
+}
+
 /// An implementation of [PlatformWebViewCookieManager] with the WebKit api.
 class WebKitWebViewCookieManager extends PlatformWebViewCookieManager {
   /// Constructs a [WebKitWebViewCookieManager].
-  WebKitWebViewCookieManager(
-    super.params, {
-    @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  })  : _websiteDataStore = webKitProxy.defaultWebsiteDataStore(),
-        super.implementation();
+  WebKitWebViewCookieManager(PlatformWebViewCookieManagerCreationParams params)
+      : super.implementation(
+          params is WebKitWebViewCookieManagerCreationParams
+              ? params
+              : WebKitWebViewCookieManagerCreationParams
+                  .fromPlatformWebViewCookieManagerCreationParams(params),
+        );
 
-  /// Manages stored data for [WKWebView]s.
-  late final WKWebsiteDataStore _websiteDataStore;
+  WebKitWebViewCookieManagerCreationParams get _webkitParams =>
+      params as WebKitWebViewCookieManagerCreationParams;
 
   @override
   Future<bool> clearCookies() {
-    return _websiteDataStore.removeDataOfTypes(
+    return _webkitParams._websiteDataStore.removeDataOfTypes(
       <WKWebsiteDataType>{WKWebsiteDataType.cookies},
       DateTime.fromMillisecondsSinceEpoch(0),
     );
@@ -37,7 +66,7 @@ class WebKitWebViewCookieManager extends PlatformWebViewCookieManager {
       );
     }
 
-    return _websiteDataStore.httpCookieStore.setCookie(
+    return _webkitParams._websiteDataStore.httpCookieStore.setCookie(
       NSHttpCookie.withProperties(
         <NSHttpCookiePropertyKey, Object>{
           NSHttpCookiePropertyKey.name: cookie.name,
