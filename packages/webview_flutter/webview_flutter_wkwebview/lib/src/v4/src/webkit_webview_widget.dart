@@ -17,8 +17,8 @@ class WebKitWebViewWidgetCreationParams
     required super.controller,
     super.layoutDirection,
     super.gestureRecognizers,
-    InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+    @visibleForTesting InstanceManager? instanceManager,
+  }) : _instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   WebKitWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
     PlatformWebViewWidgetCreationParams params, {
@@ -31,7 +31,9 @@ class WebKitWebViewWidgetCreationParams
           instanceManager: instanceManager,
         );
 
-  final InstanceManager instanceManager;
+  // Maintains instances used to communicate with the native objects they
+  // represent.
+  final InstanceManager _instanceManager;
 }
 
 /// An implementation of [PlatformWebViewWidget] with the WebKit api.
