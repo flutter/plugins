@@ -1,3 +1,7 @@
+## 1.9.3
+
+* Removes `BuildParams` from v4 interface and adds `layoutDirection` to the creation params.
+
 ## 1.9.2
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
