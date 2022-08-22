@@ -11,7 +11,7 @@ void main() {
 
   testWidgets('Can set shortcuts', (WidgetTester tester) async {
     const QuickActions quickActions = QuickActions();
-    await quickActions.initialize(null);
+    await quickActions.initialize((String _) {});
 
     const ShortcutItem shortCutItem = ShortcutItem(
       type: 'action_one',
