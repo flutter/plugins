@@ -43,7 +43,7 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
     GeneratedCameraXLibrary.ProcessCameraProviderHostApi.setup(
         binaryMessenger,
         new ProcessCameraProviderHostApiImpl(
-            binaryMessenger, //TODO(cs): possibly refactor this to take Flutter API.
+            binaryMessenger,
             instanceManager,
             context));
     GeneratedCameraXLibrary.CameraInfoHostApi.setup(
@@ -51,7 +51,7 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
     GeneratedCameraXLibrary.CameraSelectorHostApi.setup(
         binaryMessenger,
         new CameraSelectorHostApiImpl(
-            binaryMessenger, //TODO(cs): possibly refactor this to take Flutter API.
+            binaryMessenger,
             instanceManager));
   }
 

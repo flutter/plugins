@@ -61,9 +61,9 @@ abstract class CameraInfoFlutterApi {
 
 @HostApi()
 abstract class CameraSelectorHostApi {
-  int requireLensFacing(int instanceId, int lensDirection);
+  int requireLensFacing(int lensDirection);
 
-  List<int> filter(int instanceId, List<int> cameraInfos);
+  List<int> filter(int instanceId, List<int> cameraInfoIds);
 }
 
 @FlutterApi()

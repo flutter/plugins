@@ -71,7 +71,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         new CameraInfoFlutterApiImpl(binaryMessenger, instanceManager);
 
     for (CameraInfo cameraInfo : availableCameras) {
-      long cameraInfoId = instanceManager.addHostCreatedInstance(cameraInfo); //TODO(cs): something has gone awry with how I'm creating objects on both sides.
+      long cameraInfoId = instanceManager.addHostCreatedInstance(cameraInfo);
       cameraInfoFlutterApi.create(cameraInfo, result -> {});
       Long cameraInfoId2 = instanceManager.getIdentifierForStrongReference(cameraInfo);
       availableCamerasIds.add(cameraInfoId);

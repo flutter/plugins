@@ -23,7 +23,7 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
   }
 
   @Override
-  public Long requireLensFacing(@NonNull Long instanceId, @NonNull Long lensDirection) { //TODO(cs): do we need instance id?
+  public Long requireLensFacing(@NonNull Long lensDirection) {
     CameraSelector cameraSelectorWithLensSpecified =
         (new CameraSelector.Builder()).requireLensFacing(Math.toIntExact(lensDirection)).build();
 
@@ -31,7 +31,7 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
         new CameraSelectorFlutterApiImpl(binaryMessenger, instanceManager);
     long cameraSelectorWithLensSpecifiedId =
       instanceManager.addHostCreatedInstance(cameraSelectorWithLensSpecified);
-    cameraInfoFlutterApi.create(cameraSelectorWithLensSpecified, result -> {});
+    cameraInfoFlutterApi.create(cameraSelectorWithLensSpecified, lensDirection, result -> {});
 
     return cameraSelectorWithLensSpecifiedId;
   }
@@ -39,12 +39,12 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
   @Override
   public List<Long> filter(
       @NonNull Long instanceId,
-      @NonNull List<Long> cameraInfos) { //TODO(cs): change argument to cameraInfosId
+      @NonNull List<Long> cameraInfoIds) {
     CameraSelector cameraSelector =
         (CameraSelector) instanceManager.getInstance(instanceId); // may be null?
     List<CameraInfo> cameraInfosForFilter = new ArrayList<CameraInfo>();
 
-    for (Number cameraInfoId1 : cameraInfos) {
+    for (Number cameraInfoId1 : cameraInfoIds) {
       Long cameraInfoId = cameraInfoId1.longValue();
 
       CameraInfo cameraInfo = (CameraInfo) instanceManager.getInstance(cameraInfoId);

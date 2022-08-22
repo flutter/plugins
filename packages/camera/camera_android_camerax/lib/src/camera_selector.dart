@@ -63,18 +63,15 @@ class CameraSelector extends JavaObject {
   /// Returns selector with the lens direction specified.
   Future<CameraSelector> requireLensFacing(int lensFacing) {
     setUpApis(binaryMessenger, instanceManager);
-    return _api!.requireLensFacingInInstance(
-      this,
-      lensFacing,
-    );
+    return _api!.requireLensFacingInInstance(lensFacing);
   }
 
   /// Filters available cameras based on provided [CameraInfo]s.
-  Future<List<CameraInfo>> filter(List<CameraInfo> cameraInfos) {
+  Future<List<CameraInfo>> filter(List<CameraInfo> cameraInfoIds) {
     setUpApis(binaryMessenger, instanceManager);
     return _api!.filterFromInstance(
       this,
-      cameraInfos,
+      cameraInfoIds,
     );
   }
 }
@@ -98,19 +95,12 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
   final InstanceManager instanceManager;
 
   /// Modifies a [CameraSelector] to have the lens direction specified.
-  Future<CameraSelector> requireLensFacingInInstance(
-    CameraSelector instance,
-    int lensFacing,
-  ) async {
-    int? instanceId = instanceManager.getIdentifier(instance);
-    if (instanceId == null) {
-      instanceId = instanceManager.addDartCreatedInstance(instance);
-    } 
-    final int cameraSelectorId =
-        await requireLensFacing(instanceId!, lensFacing);
-
-    final CameraSelector? cameraSelector = instanceManager
+  Future<CameraSelector> requireLensFacingInInstance(int lensFacing) async {
+    final int cameraSelectorId = await requireLensFacing(lensFacing);
+    final CameraSelector? cameraSelector =
+      instanceManager
         .getInstanceWithWeakReference(cameraSelectorId) as CameraSelector?;
+
     return cameraSelector!;
   }
 

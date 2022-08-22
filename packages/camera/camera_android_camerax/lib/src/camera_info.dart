@@ -86,7 +86,6 @@ class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi { //TODO(this needs 
 
   @override
   void create(int instanceId) {
-    print('Instance id for CameraInfo ${instanceId}');
     instanceManager.addHostCreatedInstance(
       CameraInfo.detached(),
       instanceId,
