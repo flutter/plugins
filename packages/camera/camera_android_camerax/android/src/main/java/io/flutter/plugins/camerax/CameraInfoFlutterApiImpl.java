@@ -18,7 +18,6 @@ public class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
   }
 
   void create(CameraInfo cameraInfo, Reply<Void> reply) {
-    System.out.println("CameraInfo Ids on Java side 2: " + Long.toString(instanceManager.getIdentifierForStrongReference(cameraInfo)));
     create(instanceManager.getIdentifierForStrongReference(cameraInfo), reply);
   }
 }

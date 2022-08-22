@@ -41,7 +41,7 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
       @NonNull Long instanceId,
       @NonNull List<Long> cameraInfoIds) {
     CameraSelector cameraSelector =
-        (CameraSelector) instanceManager.getInstance(instanceId); // may be null?
+        (CameraSelector) instanceManager.getInstance(instanceId);
     List<CameraInfo> cameraInfosForFilter = new ArrayList<CameraInfo>();
 
     for (Number cameraInfoId1 : cameraInfoIds) {

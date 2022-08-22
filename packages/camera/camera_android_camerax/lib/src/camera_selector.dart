@@ -37,6 +37,7 @@ class CameraSelector extends JavaObject {
   /// Lens direction of this selector.
   final int? lensFacing;
 
+  /// Instantiates Host and Flutter APIs for the [CameraSelector] class.
   static void setUpApis(BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
     if (_flutterApi == null) {
       _flutterApi = CameraSelectorFlutterApiImpl(
@@ -44,12 +45,10 @@ class CameraSelector extends JavaObject {
       CameraSelectorFlutterApi.setup(_flutterApi);
     }
 
-    if (_api == null) {
-      _api = CameraSelectorHostApiImpl(
-      binaryMessenger: binaryMessenger,
-      instanceManager: instanceManager,
-      );
-    }
+    _api ??= CameraSelectorHostApiImpl(
+    binaryMessenger: binaryMessenger,
+    instanceManager: instanceManager,
+    );
   }
 
   /// Selector for default front facing camera.
@@ -110,13 +109,12 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
     List<CameraInfo> cameraInfos,
   ) async {
     int? instanceId = instanceManager.getIdentifier(instance);
-    if (instanceId == null) {
-      instanceId = instanceManager.addDartCreatedInstance(instance);
-    } 
+    instanceId ??= instanceManager.addDartCreatedInstance(instance);
+
     final List<int> cameraInfoIds = (cameraInfos.map<int>(
         (CameraInfo info) => instanceManager.getIdentifier(info)!)).toList();
     final List<int?> filteredCameraInfoIds =
-        await filter(instanceId!, cameraInfoIds);
+        await filter(instanceId, cameraInfoIds);
     if (filteredCameraInfoIds.isEmpty) {
       return <CameraInfo>[];
     }

@@ -19,13 +19,13 @@ class CameraInfo extends JavaObject {
   static CameraInfoHostApiImpl? _api;
   static CameraInfoFlutterApiImpl? _flutterApi;
 
+  /// Instantiates Host and Flutter APIs for the [CameraInfo] class.
   static void setUpApis(BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
-    if (_api == null) {
-      _api = CameraInfoHostApiImpl(
-        binaryMessenger: binaryMessenger,
-        instanceManager: instanceManager,
-      );
-    }
+    _api ??= CameraInfoHostApiImpl(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    );
+
     if (_flutterApi == null) {
       _flutterApi = CameraInfoFlutterApiImpl(
         binaryMessenger: binaryMessenger,
@@ -68,7 +68,7 @@ class CameraInfoHostApiImpl extends CameraInfoHostApi {
 }
 
 /// Flutter API implementation of [CameraInfo].
-class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi { //TODO(this needs to be setup)
+class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
   /// Constructs a [CameraInfoFlutterApiImpl].
   CameraInfoFlutterApiImpl({
     this.binaryMessenger,

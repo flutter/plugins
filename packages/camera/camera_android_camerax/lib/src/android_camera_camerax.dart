@@ -8,7 +8,6 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 
 import 'camera_info.dart';
 import 'camera_selector.dart';
-import 'camerax.pigeon.dart';
 import 'process_camera_provider.dart';
 
 /// The Android implementation of [CameraPlatform] that uses the CameraX library.
@@ -40,7 +39,7 @@ class AndroidCameraCameraX extends CameraPlatform {
       // Check if it is a front camera.
       final List<CameraInfo> frontCamerasFiltered =
           await defaultFromCameraSelector.filter(<CameraInfo>[info]);
-      if (!frontCamerasFiltered.isEmpty) {
+      if (frontCamerasFiltered.isNotEmpty) {
         final CameraDescription description = await createCameraDescription(
             frontCamerasFiltered[0],
             CameraLensDirection.front); // There should only be one?
@@ -52,7 +51,7 @@ class AndroidCameraCameraX extends CameraPlatform {
       // Check if it is a back camera.
       final List<CameraInfo> backCamerasFiltered =
           await defaultBackCameraSelector.filter(<CameraInfo>[info]);
-      if (!backCamerasFiltered.isEmpty) {
+      if (backCamerasFiltered.isNotEmpty) {
         final CameraDescription description = await createCameraDescription(
             backCamerasFiltered[0],
             CameraLensDirection.back); // There should only be one?

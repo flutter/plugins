@@ -31,7 +31,6 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
    */
   @SuppressWarnings("deprecation")
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    System.out.println("REGISTERED!!!!!!!!!!!!!!!!!!!!!!!!!!2");
     (new CameraAndroidCameraxPlugin()).setUp(registrar.messenger(), registrar.activeContext());
   }
 
@@ -57,7 +56,6 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    System.out.println("ATTACHED!!!!!!");
     (new CameraAndroidCameraxPlugin())
         .setUp(
             flutterPluginBinding.getBinaryMessenger(),
@@ -73,7 +71,6 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-    System.out.println("ATTACHED TO ACTIVITY!");
   }
 
   @Override
