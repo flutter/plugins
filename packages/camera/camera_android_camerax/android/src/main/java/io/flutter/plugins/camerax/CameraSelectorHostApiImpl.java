@@ -24,11 +24,8 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
 
   @Override
   public Long requireLensFacing(@NonNull Long instanceId, @NonNull Long lensDirection) { //TODO(cs): do we need instance id?
-    System.out.println("HELLO?????????");
     CameraSelector cameraSelectorWithLensSpecified =
         (new CameraSelector.Builder()).requireLensFacing(Math.toIntExact(lensDirection)).build();
-
-    System.out.println(cameraSelectorWithLensSpecified);
 
     final CameraSelectorFlutterApiImpl cameraInfoFlutterApi =
         new CameraSelectorFlutterApiImpl(binaryMessenger, instanceManager);
@@ -36,7 +33,6 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
       instanceManager.addHostCreatedInstance(cameraSelectorWithLensSpecified);
     cameraInfoFlutterApi.create(cameraSelectorWithLensSpecified, result -> {});
 
-    System.out.println(cameraSelectorWithLensSpecifiedId);
     return cameraSelectorWithLensSpecifiedId;
   }
 
@@ -48,13 +44,6 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
         (CameraSelector) instanceManager.getInstance(instanceId); // may be null?
     List<CameraInfo> cameraInfosForFilter = new ArrayList<CameraInfo>();
 
-    System.out.println(cameraInfos.getClass());
-    System.out.println("HELLO?1");
-    System.out.println(cameraInfos.size());
-    System.out.println(cameraInfos.get(0));
-    System.out.println("HELLO?2");
-    // long whatever = cameraInfos.get(0);
-    System.out.println("HELLO?3");
     for (Number cameraInfoId1 : cameraInfos) {
       Long cameraInfoId = cameraInfoId1.longValue();
 

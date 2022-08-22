@@ -54,11 +54,11 @@ class CameraSelector extends JavaObject {
 
   /// Selector for default front facing camera.
   static final Future<CameraSelector> defaultFrontCamera =
-      CameraSelector.detached().requireLensFacing(LENS_FACING_BACK);
+      CameraSelector.detached().requireLensFacing(LENS_FACING_FRONT);
 
   /// Selector for default back facing camera.
   static final Future<CameraSelector> defaultBackCamera =
-      CameraSelector.detached().requireLensFacing(LENS_FACING_FRONT);
+      CameraSelector.detached().requireLensFacing(LENS_FACING_BACK);
 
   /// Returns selector with the lens direction specified.
   Future<CameraSelector> requireLensFacing(int lensFacing) {

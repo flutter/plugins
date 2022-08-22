@@ -32,7 +32,6 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
   // Returns the instance of the ProcessCameraProvider.
   @Override
   public void getInstance(GeneratedCameraXLibrary.Result<Long> result) {
-    System.out.println("WOOOHOOOOOO!");
     ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
         ProcessCameraProvider.getInstance(context);
 
@@ -50,11 +49,8 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
               long processCameraProviderId =
                   instanceManager.addHostCreatedInstance(processCameraProvider);
               flutterApi.create(processCameraProvider, reply -> {});
-              System.out.println("create flutter api!!!!!!!!!!!!!!!!!!!");
 
               result.success(processCameraProviderId);
-            } else {
-              System.out.println("in lost state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
           } catch (Exception e) {
             result.error(e);
@@ -70,19 +66,14 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         (ProcessCameraProvider) instanceManager.getInstance(instanceId); // may return null?
 
     List<CameraInfo> availableCameras = processCameraProvider.getAvailableCameraInfos();
-    System.out.println("CAMILLE");
-    System.out.println(availableCameras);
     List<Long> availableCamerasIds = new ArrayList<Long>();
     final CameraInfoFlutterApiImpl cameraInfoFlutterApi =
         new CameraInfoFlutterApiImpl(binaryMessenger, instanceManager);
 
     for (CameraInfo cameraInfo : availableCameras) {
-      System.out.println(cameraInfo == null);
       long cameraInfoId = instanceManager.addHostCreatedInstance(cameraInfo); //TODO(cs): something has gone awry with how I'm creating objects on both sides.
-      System.out.println("CameraInfo Ids on Java side 1: " + Long.toString(cameraInfoId));
-      cameraInfoFlutterApi.create(cameraInfo, result -> {System.out.println("IT WAS CALLED?");});
+      cameraInfoFlutterApi.create(cameraInfo, result -> {});
       Long cameraInfoId2 = instanceManager.getIdentifierForStrongReference(cameraInfo);
-      System.out.println("CameraInfo Ids on Java side 3: " + Long.toString(cameraInfoId2));
       availableCamerasIds.add(cameraInfoId);
     }
     return availableCamerasIds;

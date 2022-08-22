@@ -40,27 +40,26 @@ class AndroidCameraCameraX extends CameraPlatform {
       // Check if it is a front camera.
       final List<CameraInfo> frontCamerasFiltered =
           await defaultFromCameraSelector.filter(<CameraInfo>[info]);
-      // if (frontCamerasFiltered != null) {
-      //   final CameraDescription description = await createCameraDescription(
-      //       frontCamerasFiltered[0],
-      //       CameraLensDirection.front); // There should only be one?
-      //   cameraDescriptions
-      //       .add(description); // Might need to avoid duplicates here?
-      //   break;
-      // }
+      if (!frontCamerasFiltered.isEmpty) {
+        final CameraDescription description = await createCameraDescription(
+            frontCamerasFiltered[0],
+            CameraLensDirection.front); // There should only be one?
+        cameraDescriptions
+            .add(description); // Might need to avoid duplicates here?
+        break;
+      }
 
       // Check if it is a back camera.
       final List<CameraInfo> backCamerasFiltered =
           await defaultBackCameraSelector.filter(<CameraInfo>[info]);
-      // if (backCamerasFiltered != null) {
-      //   final CameraDescription description = await createCameraDescription(
-      //       backCamerasFiltered[0],
-      //       CameraLensDirection.back); // There should only be one?
-      //   cameraDescriptions
-      //       .add(description); // Might need to avoid duplicates here?
-      // }
+      if (!backCamerasFiltered.isEmpty) {
+        final CameraDescription description = await createCameraDescription(
+            backCamerasFiltered[0],
+            CameraLensDirection.back); // There should only be one?
+        cameraDescriptions
+            .add(description); // Might need to avoid duplicates here?
+      }
     }
-
     return cameraDescriptions;
   }
 
