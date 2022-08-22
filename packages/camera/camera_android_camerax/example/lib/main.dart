@@ -25,13 +25,18 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    String availableCameraNames = 'Available cameras:';
+    for (final CameraDescription cameraDescription in _cameras) {
+      availableCameraNames = '$availableCameraNames ${cameraDescription.name},';
+    }
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Available cameras:'),
+          title: const Text('Camera Example'),
         ),
         body: Center(
-          child: _cameras.isEmpty ? const Text('RIP') : const Text('YAY'),
+          child: Text(availableCameraNames.substring(
+              0, availableCameraNames.length - 1)),
         ),
       ),
     );

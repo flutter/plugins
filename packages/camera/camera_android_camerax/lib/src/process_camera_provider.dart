@@ -19,29 +19,31 @@ class ProcessCameraProvider extends JavaObject {
   static ProcessCameraProviderFlutterApiImpl? _flutterApi;
 
   /// Instantiates Host and Flutter APIs for the [ProcessCameraProvider] class.
-  static void setUpApis(BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
+  static void setUpApis(
+      BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
     if (_flutterApi == null) {
       _flutterApi = ProcessCameraProviderFlutterApiImpl(
-        binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
       ProcessCameraProviderFlutterApi.setup(_flutterApi);
     }
 
     _api ??= ProcessCameraProviderHostApiImpl(
-    binaryMessenger: binaryMessenger,
-    instanceManager: instanceManager,
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
     );
   }
 
   /// Gets an instance of [ProcessCameraProvider].
   static Future<ProcessCameraProvider> getInstance(
-      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {    
+      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     setUpApis(binaryMessenger, instanceManager);
 
     return _api!.getInstancefromInstances();
   }
 
   /// Retrieves the cameras available to the device.
-  Future<List<CameraInfo>> getAvailableCameraInfos({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
+  Future<List<CameraInfo>> getAvailableCameraInfos(
+      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     assert(_api != null);
 
     return _api!.getAvailableCameraInfosFromInstances(
@@ -80,8 +82,8 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
     CameraInfo.setUpApis(binaryMessenger, instanceManager);
     final List<int?> cameraInfos = await getAvailableCameraInfos(instanceId);
     return (cameraInfos.map<CameraInfo>((int? id) =>
-              instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo))
-                .toList();
+            instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo))
+        .toList();
   }
 }
 

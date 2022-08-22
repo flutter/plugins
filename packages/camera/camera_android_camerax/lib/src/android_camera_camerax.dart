@@ -26,7 +26,7 @@ class AndroidCameraCameraX extends CameraPlatform {
         await provider.getAvailableCameraInfos();
     final List<CameraDescription> cameraDescriptions = <CameraDescription>[];
 
-    if (availableCameraInfos == null) {
+    if (availableCameraInfos.isEmpty) {
       return cameraDescriptions;
     }
 
@@ -41,10 +41,8 @@ class AndroidCameraCameraX extends CameraPlatform {
           await defaultFromCameraSelector.filter(<CameraInfo>[info]);
       if (frontCamerasFiltered.isNotEmpty) {
         final CameraDescription description = await createCameraDescription(
-            frontCamerasFiltered[0],
-            CameraLensDirection.front); // There should only be one?
-        cameraDescriptions
-            .add(description); // Might need to avoid duplicates here?
+            frontCamerasFiltered[0], CameraSelector.LENS_FACING_FRONT);
+        cameraDescriptions.add(description);
         break;
       }
 
@@ -53,10 +51,8 @@ class AndroidCameraCameraX extends CameraPlatform {
           await defaultBackCameraSelector.filter(<CameraInfo>[info]);
       if (backCamerasFiltered.isNotEmpty) {
         final CameraDescription description = await createCameraDescription(
-            backCamerasFiltered[0],
-            CameraLensDirection.back); // There should only be one?
-        cameraDescriptions
-            .add(description); // Might need to avoid duplicates here?
+            backCamerasFiltered[0], CameraSelector.LENS_FACING_BACK);
+        cameraDescriptions.add(description);
       }
     }
     return cameraDescriptions;
@@ -64,13 +60,14 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   /// Helper method that creates descriptions of cameras.
   Future<CameraDescription> createCameraDescription(
-      CameraInfo cameraInfo, CameraLensDirection lensDirection) async {
-    final String name = 'cam ${lensDirection.toString().toUpperCase()}';
+      CameraInfo cameraInfo, int lensDirection) async {
     final int sensorOrientation = await cameraInfo.getSensorRotationDegrees();
 
     return CameraDescription(
-        name: name,
-        lensDirection: lensDirection,
+        name: lensDirection.toString(),
+        lensDirection: lensDirection == CameraSelector.LENS_FACING_FRONT
+            ? CameraLensDirection.front
+            : CameraLensDirection.back,
         sensorOrientation: sensorOrientation);
   }
 }

@@ -14,7 +14,6 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderHostApi;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHostApi {
   private final BinaryMessenger binaryMessenger;

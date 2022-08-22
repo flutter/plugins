@@ -11,21 +11,21 @@ import 'java_object.dart';
 /// Represents the metadata of a camera.
 class CameraInfo extends JavaObject {
   /// Constructs a [CameraInfo] object.
-  CameraInfo.detached({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
-      :  super.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager) {
-        setUpApis(binaryMessenger, instanceManager);
-      }
+  CameraInfo.detached(
+      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
+      : super.detached(
+            binaryMessenger: binaryMessenger,
+            instanceManager: instanceManager) {
+    setUpCameraInfoApis(binaryMessenger, instanceManager);
+  }
 
   static CameraInfoHostApiImpl? _api;
+
   static CameraInfoFlutterApiImpl? _flutterApi;
 
   /// Instantiates Host and Flutter APIs for the [CameraInfo] class.
-  static void setUpApis(BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
-    _api ??= CameraInfoHostApiImpl(
-      binaryMessenger: binaryMessenger,
-      instanceManager: instanceManager,
-    );
-
+  static void setUpCameraInfoApis(
+      BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
     if (_flutterApi == null) {
       _flutterApi = CameraInfoFlutterApiImpl(
         binaryMessenger: binaryMessenger,
@@ -34,6 +34,10 @@ class CameraInfo extends JavaObject {
       CameraInfoFlutterApi.setup(_flutterApi);
     }
 
+    _api ??= CameraInfoHostApiImpl(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    );
   }
 
   /// Gets sensor orientation degrees of camera.

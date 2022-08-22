@@ -30,18 +30,15 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
     final CameraSelectorFlutterApiImpl cameraInfoFlutterApi =
         new CameraSelectorFlutterApiImpl(binaryMessenger, instanceManager);
     long cameraSelectorWithLensSpecifiedId =
-      instanceManager.addHostCreatedInstance(cameraSelectorWithLensSpecified);
+        instanceManager.addHostCreatedInstance(cameraSelectorWithLensSpecified);
     cameraInfoFlutterApi.create(cameraSelectorWithLensSpecified, lensDirection, result -> {});
 
     return cameraSelectorWithLensSpecifiedId;
   }
 
   @Override
-  public List<Long> filter(
-      @NonNull Long instanceId,
-      @NonNull List<Long> cameraInfoIds) {
-    CameraSelector cameraSelector =
-        (CameraSelector) instanceManager.getInstance(instanceId);
+  public List<Long> filter(@NonNull Long instanceId, @NonNull List<Long> cameraInfoIds) {
+    CameraSelector cameraSelector = (CameraSelector) instanceManager.getInstance(instanceId);
     List<CameraInfo> cameraInfosForFilter = new ArrayList<CameraInfo>();
 
     for (Number cameraInfoId1 : cameraInfoIds) {
