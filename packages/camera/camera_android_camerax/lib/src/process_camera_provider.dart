@@ -19,7 +19,7 @@ class ProcessCameraProvider extends JavaObject {
   static ProcessCameraProviderFlutterApiImpl? _flutterApi;
 
   /// Instantiates Host and Flutter APIs for the [ProcessCameraProvider] class.
-  static void setUpApis(
+  static void setUpProcessCameraProviderApis(
       BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
     if (_flutterApi == null) {
       _flutterApi = ProcessCameraProviderFlutterApiImpl(
@@ -36,7 +36,7 @@ class ProcessCameraProvider extends JavaObject {
   /// Gets an instance of [ProcessCameraProvider].
   static Future<ProcessCameraProvider> getInstance(
       {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
-    setUpApis(binaryMessenger, instanceManager);
+    setUpProcessCameraProviderApis(binaryMessenger, instanceManager);
 
     return _api!.getInstancefromInstances();
   }
@@ -79,7 +79,7 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
   /// Retrives the list of CameraInfos corresponding to the available cameras.
   Future<List<CameraInfo>> getAvailableCameraInfosFromInstances(
       int instanceId) async {
-    CameraInfo.setUpApis(binaryMessenger, instanceManager);
+    CameraInfo.setUpCameraInfoApis(binaryMessenger, instanceManager);
     final List<int?> cameraInfos = await getAvailableCameraInfos(instanceId);
     return (cameraInfos.map<CameraInfo>((int? id) =>
             instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo))
