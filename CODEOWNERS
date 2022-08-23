@@ -42,6 +42,7 @@ packages/video_player/video_player_android/**            @camsim99
 
 # - iOS
 packages/camera/camera_avfoundation/**                   @hellohuanlin
+packages/file_selector/file_selector_ios/**              @jmagman
 packages/google_maps_flutter/google_maps_flutter_ios/**  @cyanglaz
 packages/google_sign_in/google_sign_in_ios/**            @jmagman
 packages/image_picker/image_picker_ios/**                @cyanglaz
