@@ -12,7 +12,7 @@ import 'process_camera_provider.dart';
 
 /// The Android implementation of [CameraPlatform] that uses the CameraX library.
 class AndroidCameraCameraX extends CameraPlatform {
-  /// Registers this calss as the default instance of [CameraPlatform].
+  /// Registers this class as the default instance of [CameraPlatform].
   static void registerWith() {
     CameraPlatform.instance = AndroidCameraCameraX();
   }

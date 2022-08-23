@@ -30,6 +30,14 @@ class CameraSelector extends JavaObject {
   /// ID for back facing lens.
   static const int LENS_FACING_BACK = 1;
 
+  /// Selector for default front facing camera.
+  static final Future<CameraSelector> defaultFrontCamera =
+      CameraSelector.detached().requireLensFacing(LENS_FACING_FRONT);
+
+  /// Selector for default back facing camera.
+  static final Future<CameraSelector> defaultBackCamera =
+      CameraSelector.detached().requireLensFacing(LENS_FACING_BACK);
+
   /// Sends binary data across the Flutter platform barrier.
   late final BinaryMessenger? binaryMessenger;
 
@@ -53,14 +61,6 @@ class CameraSelector extends JavaObject {
       instanceManager: instanceManager,
     );
   }
-
-  /// Selector for default front facing camera.
-  static final Future<CameraSelector> defaultFrontCamera =
-      CameraSelector.detached().requireLensFacing(LENS_FACING_FRONT);
-
-  /// Selector for default back facing camera.
-  static final Future<CameraSelector> defaultBackCamera =
-      CameraSelector.detached().requireLensFacing(LENS_FACING_BACK);
 
   /// Returns selector with the lens direction specified.
   Future<CameraSelector> requireLensFacing(int lensFacing) {

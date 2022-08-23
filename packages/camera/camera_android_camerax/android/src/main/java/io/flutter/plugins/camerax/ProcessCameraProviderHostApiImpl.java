@@ -37,7 +37,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
     cameraProviderFuture.addListener(
         () -> {
           try {
-            // Camera provider is now guaranteed to be available
+            // Camera provider is now guaranteed to be available.
             ProcessCameraProvider processCameraProvider = cameraProviderFuture.get();
 
             if (!instanceManager.containsInstance(processCameraProvider)) {
