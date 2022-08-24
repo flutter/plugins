@@ -12,8 +12,8 @@ import '../billing_client_wrappers.dart';
 class InAppPurchaseAndroidPlatformAddition
     extends InAppPurchasePlatformAddition {
   /// Creates a [InAppPurchaseAndroidPlatformAddition] which uses the supplied
-  /// `BillingClient` to provide Android specific features.
-  InAppPurchaseAndroidPlatformAddition(this._billingClient);
+  /// `BillingClientManager` to provide Android specific features.
+  InAppPurchaseAndroidPlatformAddition(this._billingClientManager);
 
   /// Whether pending purchase is enabled.
   ///
@@ -42,7 +42,7 @@ class InAppPurchaseAndroidPlatformAddition
     // No-op, until it is time to completely remove this method from the API.
   }
 
-  final BillingClient _billingClient;
+  final BillingClientManager _billingClientManager;
 
   /// Mark that the user has consumed a product.
   ///
@@ -54,8 +54,10 @@ class InAppPurchaseAndroidPlatformAddition
       throw ArgumentError(
           'consumePurchase unsuccessful. The `purchase.verificationData` is not valid');
     }
-    return _billingClient
-        .consumeAsync(purchase.verificationData.serverVerificationData);
+    return _billingClientManager.run(
+      (BillingClient client) =>
+          client.consumeAsync(purchase.verificationData.serverVerificationData),
+    );
   }
 
   /// Query all previous purchases.
@@ -78,8 +80,12 @@ class InAppPurchaseAndroidPlatformAddition
     PlatformException? exception;
     try {
       responses = await Future.wait(<Future<PurchasesResultWrapper>>[
-        _billingClient.queryPurchases(SkuType.inapp),
-        _billingClient.queryPurchases(SkuType.subs)
+        _billingClientManager.run(
+          (BillingClient client) => client.queryPurchases(SkuType.inapp),
+        ),
+        _billingClientManager.run(
+          (BillingClient client) => client.queryPurchases(SkuType.subs),
+        ),
       ]);
     } on PlatformException catch (e) {
       exception = e;
@@ -141,7 +147,8 @@ class InAppPurchaseAndroidPlatformAddition
   /// Checks if the specified feature or capability is supported by the Play Store.
   /// Call this to check if a [BillingClientFeature] is supported by the device.
   Future<bool> isFeatureSupported(BillingClientFeature feature) async {
-    return _billingClient.isFeatureSupported(feature);
+    return _billingClientManager
+        .runRaw((BillingClient client) => client.isFeatureSupported(feature));
   }
 
   /// Initiates a flow to confirm the change of price for an item subscribed by the user.
@@ -151,8 +158,12 @@ class InAppPurchaseAndroidPlatformAddition
   ///
   /// The skuDetails needs to have already been fetched in a
   /// [InAppPurchaseAndroidPlatform.queryProductDetails] call.
-  Future<BillingResultWrapper> launchPriceChangeConfirmationFlow(
-      {required String sku}) {
-    return _billingClient.launchPriceChangeConfirmationFlow(sku: sku);
+  Future<BillingResultWrapper> launchPriceChangeConfirmationFlow({
+    required String sku,
+  }) {
+    return _billingClientManager.run(
+      (BillingClient client) =>
+          client.launchPriceChangeConfirmationFlow(sku: sku),
+    );
   }
 }

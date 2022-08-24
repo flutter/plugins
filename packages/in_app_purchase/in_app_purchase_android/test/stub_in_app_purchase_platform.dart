@@ -5,7 +5,9 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-typedef AdditionalSteps = void Function(dynamic args);
+// `FutureOr<dynamic>` instead of `FutureOr<void>` to avoid
+// "don't assign to void" warnings.
+typedef AdditionalSteps = FutureOr<dynamic> Function(dynamic args);
 
 class StubInAppPurchasePlatform {
   final Map<String, dynamic> _expectedCalls = <String, dynamic>{};
@@ -36,7 +38,7 @@ class StubInAppPurchasePlatform {
     _previousCalls.add(call);
     if (_expectedCalls.containsKey(call.method)) {
       if (_additionalSteps[call.method] != null) {
-        _additionalSteps[call.method]!(call.arguments);
+        await _additionalSteps[call.method]!(call.arguments);
       }
       return Future<dynamic>.sync(() => _expectedCalls[call.method]);
     } else {
