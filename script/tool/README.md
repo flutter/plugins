@@ -51,6 +51,8 @@ following shows a number of common commands being run for a specific plugin.
 All examples assume running from source; see above for running the
 published version instead.
 
+Some commands require the Flutter-bundled version of Dart to be the first `dart` loaded into path (or the only version of Dart installed).
+
 Most commands take a `--packages` argument to control which package(s) the
 command is targetting. An package name can be any of:
 - The name of a package (e.g., `path_provider_android`).
