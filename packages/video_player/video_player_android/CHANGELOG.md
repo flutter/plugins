@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes violations of new analysis option use_named_constants.
+
 ## 2.3.9
 
 * Updates ExoPlayer to 2.18.1.
