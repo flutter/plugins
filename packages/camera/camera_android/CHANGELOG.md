@@ -1,3 +1,7 @@
+## 0.10.0+1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 0.10.0
 
 * **Breaking Change** Updates Android camera access permission error codes to be consistent with other platforms. If your app still handles the legacy `cameraPermission` exception, please update it to handle the new permission exception codes that are noted in the README.

@@ -450,8 +450,6 @@ void main() {
             initialCameraPosition: const CameraPosition(
               target: LatLng(43.308, -5.6910),
               zoom: 12,
-              bearing: 0,
-              tilt: 0,
             ),
           );
 
