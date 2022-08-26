@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:wrapper_example/src/example_library.pigeon.dart';
 import 'package:wrapper_example/src/instance_manager.dart';
+import 'package:wrapper_example/src/my_class.dart';
 import 'package:wrapper_example/wrapper_example.dart';
 
 import 'my_class_test.mocks.dart';
@@ -107,7 +109,28 @@ void main() {
     });
 
     test('myCallbackMethod', () {
+      final InstanceManager instanceManager = InstanceManager(
+        onWeakReferenceRemoved: (_) {},
+      );
 
+      late final MyClass? callbackValue;
+      final MyClass myClass = MyClass.detached(
+        'myString',
+        myCallbackMethod: (MyClass instance) => callbackValue = instance,
+        instanceManager: instanceManager,
+      );
+      instanceManager.addHostCreatedInstance(
+        myClass,
+        0,
+        onCopy: (_) => MyClass.detached('myString'),
+      );
+
+      final MyClassFlutterApi flutterApi = MyClassFlutterApiImpl(
+        instanceManager: instanceManager,
+      );
+      flutterApi.myCallbackMethod(0);
+
+      expect(callbackValue, myClass);
     });
   });
 }
