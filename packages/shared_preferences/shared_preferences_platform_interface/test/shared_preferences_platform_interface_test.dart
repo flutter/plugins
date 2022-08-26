@@ -21,7 +21,8 @@ void main() {
     test('disallows implementing interface, unusual exception', () {
       expect(
         () {
-          SharedPreferencesStorePlatform.instance = IllegalImplementationWithUnusualException();
+          SharedPreferencesStorePlatform.instance =
+              IllegalImplementationWithUnusualException();
         },
         throwsAssertionError,
       );
