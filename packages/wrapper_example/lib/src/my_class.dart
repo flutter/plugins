@@ -92,7 +92,6 @@ class MyClassFlutterApiImpl implements MyClassFlutterApi {
   void create(
     int identifier,
     String primitiveField,
-    int classFieldIdentifier,
   ) {
     instanceManager.addHostCreatedInstance(
       MyClass.detached(primitiveField),

@@ -1,6 +1,9 @@
 package com.example.wrapper_example;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import com.example.wrapper_example.example_library.MyClass;
 import com.example.wrapper_example.example_library.MyOtherClass;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -9,6 +12,13 @@ import java.util.Objects;
 public class MyClassHostApiImpl implements GeneratedExampleLibraryApis.MyClassHostApi {
   private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
+  private final MyClassProxy myClassProxy;
+
+  public static class MyClassProxy {
+    public void myStaticMethod() {
+      MyClass.myStaticMethod();
+    }
+  }
 
   public static class MyClassImpl extends MyClass {
     private final MyClassFlutterApiImpl api;
@@ -24,13 +34,23 @@ public class MyClassHostApiImpl implements GeneratedExampleLibraryApis.MyClassHo
 
     @Override
     public void myCallbackMethod() {
-      api.myCallbackMethod(this, reply -> {});
+      getApi().myCallbackMethod(this, reply -> {});
+    }
+
+    @VisibleForTesting
+    public MyClassFlutterApiImpl getApi() {
+      return api;
     }
   }
 
   public MyClassHostApiImpl(BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+    this(binaryMessenger, instanceManager, new MyClassProxy());
+  }
+
+  public MyClassHostApiImpl(BinaryMessenger binaryMessenger, InstanceManager instanceManager, @VisibleForTesting MyClassProxy myClassProxy) {
     this.binaryMessenger = binaryMessenger;
     this.instanceManager = instanceManager;
+    this.myClassProxy = myClassProxy;
   }
 
   @Override
@@ -49,7 +69,7 @@ public class MyClassHostApiImpl implements GeneratedExampleLibraryApis.MyClassHo
 
   @Override
   public void myStaticMethod() {
-    MyClass.myStaticMethod();
+    myClassProxy.myStaticMethod();
   }
 
   @Override

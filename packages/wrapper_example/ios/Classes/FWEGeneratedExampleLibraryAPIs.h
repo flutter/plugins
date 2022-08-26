@@ -45,7 +45,7 @@ NSObject<FlutterMessageCodec> *FWEMyClassFlutterApiGetCodec(void);
 
 @interface FWEMyClassFlutterApi : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)createIdentifier:(NSNumber *)identifier primitiveField:(NSString *)primitiveField classFieldIdentifier:(NSNumber *)classFieldIdentifier completion:(void(^)(NSError *_Nullable))completion;
+- (void)createIdentifier:(NSNumber *)identifier primitiveField:(NSString *)primitiveField completion:(void(^)(NSError *_Nullable))completion;
 - (void)myCallbackMethodIdentifier:(NSNumber *)identifier completion:(void(^)(NSError *_Nullable))completion;
 @end
 /// The codec used by FWEMyOtherClassHostApi.

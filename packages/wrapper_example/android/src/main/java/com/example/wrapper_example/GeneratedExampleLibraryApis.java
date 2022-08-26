@@ -242,10 +242,10 @@ public class GeneratedExampleLibraryApis {
       return MyClassFlutterApiCodec.INSTANCE;
     }
 
-    public void create(@NonNull Long identifierArg, @NonNull String primitiveFieldArg, @NonNull Long classFieldIdentifierArg, Reply<Void> callback) {
+    public void create(@NonNull Long identifierArg, @NonNull String primitiveFieldArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.MyClassFlutterApi.create", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(identifierArg, primitiveFieldArg, classFieldIdentifierArg)), channelReply -> {
+      channel.send(new ArrayList<Object>(Arrays.asList(identifierArg, primitiveFieldArg)), channelReply -> {
         callback.reply(null);
       });
     }

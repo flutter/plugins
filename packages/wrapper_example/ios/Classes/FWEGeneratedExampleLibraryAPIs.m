@@ -307,13 +307,13 @@ NSObject<FlutterMessageCodec> *FWEMyClassFlutterApiGetCodec() {
   }
   return self;
 }
-- (void)createIdentifier:(NSNumber *)arg_identifier primitiveField:(NSString *)arg_primitiveField classFieldIdentifier:(NSNumber *)arg_classFieldIdentifier completion:(void(^)(NSError *_Nullable))completion {
+- (void)createIdentifier:(NSNumber *)arg_identifier primitiveField:(NSString *)arg_primitiveField completion:(void(^)(NSError *_Nullable))completion {
   FlutterBasicMessageChannel *channel =
     [FlutterBasicMessageChannel
       messageChannelWithName:@"dev.flutter.pigeon.MyClassFlutterApi.create"
       binaryMessenger:self.binaryMessenger
       codec:FWEMyClassFlutterApiGetCodec()];
-  [channel sendMessage:@[arg_identifier ?: [NSNull null], arg_primitiveField ?: [NSNull null], arg_classFieldIdentifier ?: [NSNull null]] reply:^(id reply) {
+  [channel sendMessage:@[arg_identifier ?: [NSNull null], arg_primitiveField ?: [NSNull null]] reply:^(id reply) {
     completion(nil);
   }];
 }

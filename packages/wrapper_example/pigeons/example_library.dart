@@ -87,7 +87,7 @@ abstract class MyClassHostApi {
 @FlutterApi()
 abstract class MyClassFlutterApi {
   /// Create the Dart instance.
-  void create(int identifier, String primitiveField, int classFieldIdentifier);
+  void create(int identifier, String primitiveField);
 
   void myCallbackMethod(int identifier);
 }

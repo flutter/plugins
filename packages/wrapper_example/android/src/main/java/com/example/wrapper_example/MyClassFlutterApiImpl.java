@@ -17,4 +17,8 @@ public class MyClassFlutterApiImpl extends GeneratedExampleLibraryApis.MyClassFl
         Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(instance)),
         callback);
   }
+
+  public void create(MyClass instance, String primitiveField, Reply<Void> callback) {
+    super.create(instanceManager.addHostCreatedInstance(instance), primitiveField, callback);
+  }
 }
