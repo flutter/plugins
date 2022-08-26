@@ -890,25 +890,29 @@ final class GoogleMapController
     if (mapView == null) {
       return;
     }
-    
-    MapsInitializer.initialize(context, null, (renderer -> {
-      if(renderer == MapsInitializer.Renderer.LEGACY){
-        // This fixes an issue where the mapView is still being used by the render thread after disposal.
-        // Delaying the actual mapView disposal to the next frame avoids the issue.
-        Handler handler = new Handler();
-        Runnable r = new Runnable() {
-          @Override
-          public void run() {
+
+    MapsInitializer.initialize(
+        context,
+        null,
+        (renderer -> {
+          if (renderer == MapsInitializer.Renderer.LEGACY) {
+            // This fixes an issue where the mapView is still being used by the render thread after disposal.
+            // Delaying the actual mapView disposal to the next frame avoids the issue.
+            Handler handler = new Handler();
+            Runnable r =
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    mapView.onDestroy();
+                    mapView = null;
+                  }
+                };
+            handler.postDelayed(r, 100);
+          } else {
             mapView.onDestroy();
             mapView = null;
           }
-        };
-        handler.postDelayed(r, 100);
-      } else {
-        mapView.onDestroy();
-        mapView = null;
-      }
-    }));
+        }));
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
