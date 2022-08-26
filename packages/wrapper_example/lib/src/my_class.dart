@@ -125,8 +125,8 @@ class MyClass extends BaseObject {
     this.primitiveField,
     MyOtherClass classField, {
     this.myCallbackMethod,
-    super.binaryMessenger,
-    super.instanceManager,
+    @visibleForTesting super.binaryMessenger,
+    @visibleForTesting super.instanceManager,
   })  : _api = _MyClassHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
