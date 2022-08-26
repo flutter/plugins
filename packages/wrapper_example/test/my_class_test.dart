@@ -19,7 +19,7 @@ void main() {
     // Ensure the test host api is removed after each test run.
     tearDown(() => TestMyClassHostApi.setup(null));
 
-    test('create', () {
+    test('hostApiCreate', () {
       // Sets a mock platform host api implementation. This serves as the
       // Java/Objective-C host api implementation.
       final MockTestMyClassHostApi mockApi = MockTestMyClassHostApi();
@@ -106,6 +106,20 @@ void main() {
 
       // Verify mock host api received the correct values.
       verify(mockApi.myMethod(0, 'myMethodString', 1));
+    });
+
+    test('flutterApiCreate', () {
+      final InstanceManager instanceManager = InstanceManager(
+        onWeakReferenceRemoved: (_) {},
+      );
+
+      final MyClassFlutterApi flutterApi = MyClassFlutterApiImpl(
+        instanceManager: instanceManager,
+      );
+
+      flutterApi.create(0, 'myString');
+
+      expect(instanceManager.getInstanceWithWeakReference(0), isA<MyClass>());
     });
 
     test('myCallbackMethod', () {
