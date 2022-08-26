@@ -161,7 +161,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 _cameraTogglesRowWidget(),
                 _thumbnailWidget(),
@@ -274,7 +273,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       children: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             IconButton(
               icon: const Icon(Icons.flash_on),
@@ -328,7 +326,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       child: ClipRect(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             IconButton(
               icon: const Icon(Icons.flash_off),
@@ -400,7 +397,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   TextButton(
                     style: styleAuto,
@@ -439,7 +435,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   Text(_minAvailableExposureOffset.toString()),
                   Slider(
@@ -490,7 +485,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   TextButton(
                     style: styleAuto,
@@ -528,7 +522,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         IconButton(
           icon: const Icon(Icons.camera_alt),

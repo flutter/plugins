@@ -24,7 +24,7 @@ void main() {
     late RecordingProcessRunner processRunner;
 
     setUp(() {
-      fileSystem = MemoryFileSystem(style: FileSystemStyle.posix);
+      fileSystem = MemoryFileSystem();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       mockPlatform = MockPlatform();
       processRunner = RecordingProcessRunner();
@@ -178,7 +178,7 @@ void main() {
           containsAllInOrder(
             <Matcher>[
               contains(
-                  'SKIPPING: Plugin does not have an Android implemenatation.')
+                  'SKIPPING: Plugin does not have an Android implementation.')
             ],
           ));
     });
@@ -197,7 +197,7 @@ void main() {
           containsAllInOrder(
             <Matcher>[
               contains(
-                  'SKIPPING: Plugin does not have an Android implemenatation.')
+                  'SKIPPING: Plugin does not have an Android implementation.')
             ],
           ));
     });

@@ -87,23 +87,31 @@ class CameraImpl : public Camera {
 
   // CaptureControllerListener
   void OnCreateCaptureEngineSucceeded(int64_t texture_id) override;
-  void OnCreateCaptureEngineFailed(const std::string& error) override;
+  void OnCreateCaptureEngineFailed(CameraResult result,
+                                   const std::string& error) override;
   void OnStartPreviewSucceeded(int32_t width, int32_t height) override;
-  void OnStartPreviewFailed(const std::string& error) override;
+  void OnStartPreviewFailed(CameraResult result,
+                            const std::string& error) override;
   void OnPausePreviewSucceeded() override;
-  void OnPausePreviewFailed(const std::string& error) override;
+  void OnPausePreviewFailed(CameraResult result,
+                            const std::string& error) override;
   void OnResumePreviewSucceeded() override;
-  void OnResumePreviewFailed(const std::string& error) override;
+  void OnResumePreviewFailed(CameraResult result,
+                             const std::string& error) override;
   void OnStartRecordSucceeded() override;
-  void OnStartRecordFailed(const std::string& error) override;
+  void OnStartRecordFailed(CameraResult result,
+                           const std::string& error) override;
   void OnStopRecordSucceeded(const std::string& file_path) override;
-  void OnStopRecordFailed(const std::string& error) override;
+  void OnStopRecordFailed(CameraResult result,
+                          const std::string& error) override;
   void OnTakePictureSucceeded(const std::string& file_path) override;
-  void OnTakePictureFailed(const std::string& error) override;
+  void OnTakePictureFailed(CameraResult result,
+                           const std::string& error) override;
   void OnVideoRecordSucceeded(const std::string& file_path,
                               int64_t video_duration) override;
-  void OnVideoRecordFailed(const std::string& error) override;
-  void OnCaptureError(const std::string& error) override;
+  void OnVideoRecordFailed(CameraResult result,
+                           const std::string& error) override;
+  void OnCaptureError(CameraResult result, const std::string& error) override;
 
   // Camera
   bool HasDeviceId(std::string& device_id) const override {
@@ -139,9 +147,9 @@ class CameraImpl : public Camera {
   // error ID and description. Pending results are cleared in the process.
   //
   // error_code: A string error code describing the error.
-  // error_message: A user-readable error message (optional).
+  // description: A user-readable error message (optional).
   void SendErrorForPendingResults(const std::string& error_code,
-                                  const std::string& descripion);
+                                  const std::string& description);
 
   // Called when camera is disposed.
   // Sends camera closing message to the cameras method channel.

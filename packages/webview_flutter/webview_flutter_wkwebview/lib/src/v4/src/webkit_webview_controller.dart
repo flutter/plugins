@@ -13,6 +13,7 @@ import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_i
 import '../../common/weak_reference_utils.dart';
 import '../../foundation/foundation.dart';
 import '../../web_kit/web_kit.dart';
+import 'webkit_navigation_delegate.dart';
 import 'webkit_proxy.dart';
 
 /// Object specifying creation parameters for a [WebKitWebViewController].
@@ -46,8 +47,29 @@ class WebKitWebViewController extends PlatformWebViewController {
             ? params
             : WebKitWebViewControllerCreationParams
                 .fromPlatformWebViewControllerCreationParams(params)) {
+    final WeakReference<WebKitWebViewController> weakThis =
+        WeakReference<WebKitWebViewController>(this);
     _webView = webKitProxy.createWebView(
-        (params as WebKitWebViewControllerCreationParams)._configuration);
+      (params as WebKitWebViewControllerCreationParams)._configuration,
+      observeValue: (
+        String keyPath,
+        NSObject object,
+        Map<NSKeyValueChangeKey, Object?> change,
+      ) {
+        if (weakThis.target?._onProgress != null) {
+          final double progress =
+              change[NSKeyValueChangeKey.newValue]! as double;
+          weakThis.target!._onProgress!((progress * 100).round());
+        }
+      },
+    );
+    _webView.addObserver(
+      _webView,
+      keyPath: 'estimatedProgress',
+      options: <NSKeyValueObservingOptions>{
+        NSKeyValueObservingOptions.newValue,
+      },
+    );
   }
 
   late final WKWebView _webView;
@@ -56,6 +78,7 @@ class WebKitWebViewController extends PlatformWebViewController {
       <String, WebKitJavaScriptChannelParams>{};
 
   bool _zoomEnabled = true;
+  void Function(int progress)? _onProgress;
 
   @override
   Future<void> loadFile(String absoluteFilePath) {
@@ -268,6 +291,14 @@ class WebKitWebViewController extends PlatformWebViewController {
     } else {
       await _disableZoom();
     }
+  }
+
+  @override
+  Future<void> setPlatformNavigationDelegate(
+    covariant WebKitNavigationDelegate handler,
+  ) {
+    _onProgress = handler.onProgress;
+    return _webView.setNavigationDelegate(handler.navigationDelegate);
   }
 
   Future<void> _disableZoom() {
