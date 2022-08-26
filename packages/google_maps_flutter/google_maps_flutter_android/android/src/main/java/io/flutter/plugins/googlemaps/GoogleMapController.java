@@ -891,6 +891,8 @@ final class GoogleMapController
       return;
     }
 
+    final MapView mapReference = mapView;
+    mapView = null;
     MapsInitializer.initialize(
         context,
         null,
@@ -903,14 +905,12 @@ final class GoogleMapController
                 new Runnable() {
                   @Override
                   public void run() {
-                    mapView.onDestroy();
-                    mapView = null;
+                    mapReference.onDestroy();
                   }
                 };
             handler.postDelayed(r, 100);
           } else {
-            mapView.onDestroy();
-            mapView = null;
+            mapReference.onDestroy();
           }
         }));
   }
