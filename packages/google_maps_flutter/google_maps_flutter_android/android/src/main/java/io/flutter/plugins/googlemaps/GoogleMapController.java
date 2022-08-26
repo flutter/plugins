@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Choreographer;
 import android.view.View;
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
@@ -888,13 +890,25 @@ final class GoogleMapController
     if (mapView == null) {
       return;
     }
-    // This fixes an issue where the mapView is still being used by the render thread after disposal.
-    // Delaying the actual mapView disposal to the next frame avoids the issue.
-    postFrameCallback(
-        () -> {
-          mapView.onDestroy();
-          mapView = null;
-        });
+    
+    MapsInitializer.initialize(context, null, (renderer -> {
+      if(renderer == MapsInitializer.Renderer.LEGACY){
+        // This fixes an issue where the mapView is still being used by the render thread after disposal.
+        // Delaying the actual mapView disposal to the next frame avoids the issue.
+        Handler handler = new Handler();
+        Runnable r = new Runnable() {
+          @Override
+          public void run() {
+            mapView.onDestroy();
+            mapView = null;
+          }
+        };
+        handler.postDelayed(r, 100);
+      } else {
+        mapView.onDestroy();
+        mapView = null;
+      }
+    }));
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
