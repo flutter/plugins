@@ -17,6 +17,15 @@ void main() {
         throwsAssertionError,
       );
     });
+
+    test('disallows implementing interface, unusual exception', () {
+      expect(
+        () {
+          SharedPreferencesStorePlatform.instance = IllegalImplementationWithUnusualException();
+        },
+        throwsAssertionError,
+      );
+    });
   });
 }
 
@@ -46,3 +55,12 @@ class IllegalImplementation implements SharedPreferencesStorePlatform {
     throw UnimplementedError();
   }
 }
+
+class IllegalImplementationWithUnusualException extends IllegalImplementation {
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    throw _UnusualException();
+  }
+}
+
+class _UnusualException {}

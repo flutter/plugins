@@ -27,7 +27,7 @@ abstract class SharedPreferencesStorePlatform {
     if (!value.isMock) {
       try {
         value._verifyProvidesDefaultImplementations();
-      } on NoSuchMethodError catch (_) {
+      } catch (_) {
         throw AssertionError(
             'Platform interfaces must not be implemented with `implements`');
       }
