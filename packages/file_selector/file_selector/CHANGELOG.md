@@ -1,6 +1,6 @@
 ## 0.9.2
 
-* Adds an endorsed ios implementation.
+* Adds an endorsed iOS implementation.
 
 ## 0.9.1
 
