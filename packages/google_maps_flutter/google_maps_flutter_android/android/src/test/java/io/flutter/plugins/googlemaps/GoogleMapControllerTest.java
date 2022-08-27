@@ -6,16 +6,22 @@ package io.flutter.plugins.googlemaps;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 import androidx.activity.ComponentActivity;
 import androidx.test.core.app.ApplicationProvider;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -144,5 +150,70 @@ public class GoogleMapControllerTest {
 
     argument.getValue().onMapLoaded();
     verify(mapView, never()).invalidate();
+  }
+
+  @Test
+  public void DestroyMapImmediatelyWithLatestRenderer() throws InterruptedException {
+    googleMapController.onMapReady(mockGoogleMap);
+    assertTrue(googleMapController != null);
+
+    MapView mapView = mock(MapView.class);
+    MapsInitializerFunction initializer = mock(MapsInitializerFunction.class);
+
+    googleMapController.setInitializer(initializer);
+    googleMapController.setView(mapView);
+
+    googleMapController.onDestroy(activity);
+    verify(mapView, never()).onDestroy(); // mapView should not be destroyed before renderer check
+
+    ArgumentCaptor<OnMapsSdkInitializedCallback> argument =
+        ArgumentCaptor.forClass(OnMapsSdkInitializedCallback.class);
+    verify(initializer)
+        .initialize(
+            any(Context.class),
+            isNull(),
+            argument.capture()); // verify MapInitializer is called to get active renderer
+    argument.getValue().onMapsSdkInitialized(MapsInitializer.Renderer.LATEST);
+    verify(mapView).onDestroy(); // mapView should be destroyed immediately
+  }
+
+  @Test
+  public void DelayMapDestructionWithLegacyRenderer() throws InterruptedException {
+    googleMapController.onMapReady(mockGoogleMap);
+    assertTrue(googleMapController != null);
+
+    MapView mapView = mock(MapView.class);
+    MapsInitializerFunction initializer = mock(MapsInitializerFunction.class);
+    Handler handler = mock(Handler.class);
+
+    googleMapController.setInitializer(initializer);
+    googleMapController.setView(mapView);
+    googleMapController.setHandler(
+        handler); // to be able to use postDelayed in a single threaded unit test
+
+    googleMapController.onDestroy(activity);
+    verify(mapView, never()).onDestroy(); // mapView should not be destroyed before renderer check
+
+    ArgumentCaptor<OnMapsSdkInitializedCallback> initializedCallback =
+        ArgumentCaptor.forClass(OnMapsSdkInitializedCallback.class);
+    verify(initializer)
+        .initialize(
+            any(Context.class),
+            isNull(),
+            initializedCallback
+                .capture()); // verify MapInitializer is called to get active renderer
+
+    initializedCallback.getValue().onMapsSdkInitialized(MapsInitializer.Renderer.LEGACY);
+    verify(handler, never())
+        .post(any(Runnable.class)); // handler should not immediately destroy mapView
+
+    ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass(Runnable.class);
+    verify(handler)
+        .postDelayed(
+            runnable.capture(),
+            anyLong()); // verify handler is called to destroy mapView after delay
+    runnable.getValue().run();
+
+    verify(mapView).onDestroy(); // mapView should be destroyed once the delayed callback is called
   }
 }

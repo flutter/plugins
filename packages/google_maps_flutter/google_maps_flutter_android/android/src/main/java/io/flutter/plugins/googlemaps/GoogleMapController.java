@@ -28,6 +28,7 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
@@ -86,6 +87,8 @@ final class GoogleMapController
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
   private List<Map<String, ?>> initialTileOverlays;
+  private MapsInitializerFunction initializer = MapsInitializer::initialize;
+  private Handler handler = new Handler();
 
   GoogleMapController(
       int id,
@@ -117,6 +120,16 @@ final class GoogleMapController
   @VisibleForTesting
   /*package*/ void setView(MapView view) {
     mapView = view;
+  }
+
+  @VisibleForTesting
+  /*package*/ void setInitializer(MapsInitializerFunction initializer) {
+    this.initializer = initializer;
+  }
+
+  @VisibleForTesting
+  /*package*/ void setHandler(Handler handler) {
+    this.handler = handler;
   }
 
   void init() {
@@ -663,6 +676,7 @@ final class GoogleMapController
     if (disposed) {
       return;
     }
+
     destroyMapViewIfNecessary();
   }
 
@@ -891,28 +905,29 @@ final class GoogleMapController
       return;
     }
 
-    final MapView mapReference = mapView;
+    final MapView mapReference = mapView; // keep a reference to the mapView for the callback
     mapView = null;
-    MapsInitializer.initialize(
-        context,
-        null,
-        (renderer -> {
-          if (renderer == MapsInitializer.Renderer.LEGACY) {
-            // This fixes an issue where the mapView is still being used by the render thread after disposal.
-            // Delaying the actual mapView disposal to the next frame avoids the issue.
-            Handler handler = new Handler();
-            Runnable r =
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    mapReference.onDestroy();
-                  }
-                };
+
+    // This fixes an issue where the mapView is still being used by the render thread after disposal.
+    // Delaying the actual mapView disposal to the next frame avoids the issue.
+    Runnable r =
+        () -> {
+          Log.e(TAG, "Mapview destroy in callback");
+          mapReference.onDestroy();
+        };
+
+    OnMapsSdkInitializedCallback mapCallback =
+        renderer -> {
+          if (renderer == MapsInitializer.Renderer.LATEST) {
+            Log.e(TAG, "Renderer LATEST");
+            handler.post(r);
+          } else if (renderer == MapsInitializer.Renderer.LEGACY) {
+            Log.e(TAG, "Renderer LEGACY");
             handler.postDelayed(r, 100);
-          } else {
-            mapReference.onDestroy();
           }
-        }));
+        };
+
+    initializer.initialize(context, null, mapCallback);
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
