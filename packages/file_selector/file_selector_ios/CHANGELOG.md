@@ -1,4 +1,4 @@
-## 0.9.0
+## 0.6.0
 
 * Updates README for endorsement.
 
