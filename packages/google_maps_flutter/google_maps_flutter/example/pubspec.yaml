@@ -18,6 +18,8 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  google_maps_flutter_android: ^2.1.10
+  google_maps_flutter_platform_interface: ^2.2.1
 
 dev_dependencies:
   espresso: ^0.1.0+2
