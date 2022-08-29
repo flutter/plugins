@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'method_channel_shared_preferences.dart';
 
@@ -15,7 +16,12 @@ import 'method_channel_shared_preferences.dart';
 /// (using `extends`) ensures that the subclass will get the default implementation, while
 /// platform implementations that `implements` this interface will be broken by newly added
 /// [SharedPreferencesStorePlatform] methods.
-abstract class SharedPreferencesStorePlatform {
+abstract class SharedPreferencesStorePlatform extends PlatformInterface {
+  /// Constructs a SharedPreferencesStorePlatform.
+  SharedPreferencesStorePlatform() : super(token: _token);
+
+  static final Object _token = Object();
+
   /// The default instance of [SharedPreferencesStorePlatform] to use.
   ///
   /// Defaults to [MethodChannelSharedPreferencesStore].
@@ -23,16 +29,11 @@ abstract class SharedPreferencesStorePlatform {
 
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [SharedPreferencesStorePlatform] when they register themselves.
-  static set instance(SharedPreferencesStorePlatform value) {
-    if (!value.isMock) {
-      try {
-        value._verifyProvidesDefaultImplementations();
-      } on NoSuchMethodError catch (_) {
-        throw AssertionError(
-            'Platform interfaces must not be implemented with `implements`');
-      }
+  static set instance(SharedPreferencesStorePlatform instance) {
+    if (!instance.isMock) {
+      PlatformInterface.verify(instance, _token);
     }
-    _instance = value;
+    _instance = instance;
   }
 
   static SharedPreferencesStorePlatform _instance =
@@ -44,6 +45,7 @@ abstract class SharedPreferencesStorePlatform {
   /// other than mocks (see class docs). This property provides a backdoor for mockito mocks to
   /// skip the verification that the class isn't implemented with `implements`.
   @visibleForTesting
+  @Deprecated('Use MockPlatformInterfaceMixin instead')
   bool get isMock => false;
 
   /// Removes the value associated with the [key].
@@ -65,14 +67,6 @@ abstract class SharedPreferencesStorePlatform {
 
   /// Returns all key/value pairs persisted in this store.
   Future<Map<String, Object>> getAll();
-
-  // This method makes sure that SharedPreferencesStorePlatform isn't implemented with `implements`.
-  //
-  // See class doc for more details on why implementing this class is forbidden.
-  //
-  // This private method is called by the instance setter, which fails if the class is
-  // implemented with `implements`.
-  void _verifyProvidesDefaultImplementations() {}
 }
 
 /// Stores data in memory.

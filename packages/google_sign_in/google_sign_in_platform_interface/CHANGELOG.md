@@ -1,3 +1,9 @@
+## 2.3.0
+
+* Adopts `plugin_platform_interface`.
+  * Deprecates `isMock` in favor of the now-standard
+    `MockPlatformInterfaceMixin`.
+
 ## 2.2.0
 
 * Adds support for the `serverClientId` parameter.

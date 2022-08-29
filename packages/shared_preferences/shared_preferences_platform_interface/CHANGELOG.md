@@ -1,5 +1,8 @@
-## NEXT
+## 2.1.0
 
+* Adopts `plugin_platform_interface`.
+  * Deprecates `isMock` in favor of the now-standard
+    `MockPlatformInterfaceMixin`.
 * Fixes newly enabled analyzer options.
 
 ## 2.0.0
