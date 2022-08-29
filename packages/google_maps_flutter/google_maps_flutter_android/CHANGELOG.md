@@ -1,3 +1,8 @@
+## 2.3.0
+
+* Switches the default for `useAndroidViewSurface` to true, and adds
+  information about the current mode behaviors to the README.
+
 ## 2.2.0
 
 * Updates `useAndroidViewSurface` to require Hybrid Composition, making the
