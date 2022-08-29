@@ -88,7 +88,9 @@ class SaveTextPage extends StatelessWidget {
                 onPrimary: Colors.white,
               ),
               onPressed: _isIOS ? null : () => _saveFile(),
-              child: const Text('Press to save a text file [Excludes ios]'),
+              child: const Text(
+                'Press to save a text file (not supported on iOS).',
+              ),
             ),
           ],
         ),
