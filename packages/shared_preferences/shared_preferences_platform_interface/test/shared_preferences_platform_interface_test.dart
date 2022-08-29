@@ -34,6 +34,7 @@ void main() {
   });
 }
 
+/// An implementation using `implements` that isn't a mock, which isn't allowed.
 class IllegalImplementation implements SharedPreferencesStorePlatform {
   // Intentionally declare self as not a mock to trigger the
   // compliance check.
