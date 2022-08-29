@@ -4,3 +4,4 @@
 - ios_platform_images
 # Can't use Flutter integration tests due to native modal UI.
 - file_selector_ios
+- file_selector

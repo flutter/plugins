@@ -1,3 +1,7 @@
+## 0.9.2
+
+* Adds an endorsed iOS implementation.
+
 ## 0.9.1
 
 * Adds an endorsed Linux implementation.
