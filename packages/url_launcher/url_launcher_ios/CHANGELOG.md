@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 6.0.17
 
 * Suppresses warnings for pre-iOS-13 codepaths.
