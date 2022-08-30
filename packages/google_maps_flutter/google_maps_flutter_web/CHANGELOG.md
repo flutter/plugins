@@ -1,5 +1,11 @@
 ## NEXT
 
+* Updates minimum Flutter version to 2.10.
+
+## 0.4.0+2
+
+* Updates conversion of `BitmapDescriptor.fromBytes` marker icons to support the
+  new `size` parameter. Issue [#73789](https://github.com/flutter/flutter/issues/73789).
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 
 ## 0.4.0+1

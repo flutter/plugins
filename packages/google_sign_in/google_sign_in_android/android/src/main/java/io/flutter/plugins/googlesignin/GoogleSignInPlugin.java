@@ -140,8 +140,15 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         String hostedDomain = call.argument("hostedDomain");
         String clientId = call.argument("clientId");
         String serverClientId = call.argument("serverClientId");
+        boolean forceCodeForRefreshToken = call.argument("forceCodeForRefreshToken");
         delegate.init(
-            result, signInOption, requestedScopes, hostedDomain, clientId, serverClientId);
+            result,
+            signInOption,
+            requestedScopes,
+            hostedDomain,
+            clientId,
+            serverClientId,
+            forceCodeForRefreshToken);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -198,7 +205,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         List<String> requestedScopes,
         String hostedDomain,
         String clientId,
-        String serverClientId);
+        String serverClientId,
+        boolean forceCodeForRefreshToken);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -326,7 +334,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         List<String> requestedScopes,
         String hostedDomain,
         String clientId,
-        String serverClientId) {
+        String serverClientId,
+        boolean forceCodeForRefreshToken) {
       try {
         GoogleSignInOptions.Builder optionsBuilder;
 
@@ -374,7 +383,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         }
         if (!Strings.isNullOrEmpty(serverClientId)) {
           optionsBuilder.requestIdToken(serverClientId);
-          optionsBuilder.requestServerAuthCode(serverClientId);
+          optionsBuilder.requestServerAuthCode(serverClientId, forceCodeForRefreshToken);
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));

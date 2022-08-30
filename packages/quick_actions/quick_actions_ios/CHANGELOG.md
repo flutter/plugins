@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 0.6.0+14
 
 * Refactors `FLTQuickActionsPlugin` class into multiple components. 
