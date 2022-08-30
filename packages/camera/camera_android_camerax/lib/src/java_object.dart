@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter/services.dart';
 
 import 'camerax.pigeon.dart';
@@ -10,7 +11,8 @@ import 'instance_manager.dart';
 /// Root of the Java class hierarchy.
 ///
 /// See https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html.
-class JavaObject with Copyable {
+@immutable
+class JavaObject {
   /// Constructs a [JavaObject] without creating the associated Java object.
   ///
   /// This should only be used by subclasses created by this library or to
@@ -34,11 +36,6 @@ class JavaObject with Copyable {
   /// Release the reference to a native Java instance.
   static void dispose(JavaObject instance) {
     instance._api.instanceManager.removeWeakReference(instance);
-  }
-
-  @override
-  JavaObject copy() {
-    return JavaObject.detached();
   }
 }
 

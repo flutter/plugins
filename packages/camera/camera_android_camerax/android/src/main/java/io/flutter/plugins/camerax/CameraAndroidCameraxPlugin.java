@@ -14,6 +14,8 @@ import io.flutter.plugin.common.BinaryMessenger;
 /** CameraAndroidCameraxPlugin */
 public final class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware {
   private InstanceManager instanceManager;
+  private FlutterPluginBinding pluginBinding;
+  private ProcessCameraProviderHostApiImpl processCameraProviderHostApi;
 
   /**
    * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
@@ -22,26 +24,16 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
    */
   public CameraAndroidCameraxPlugin() {}
 
-  /**
-   * Registers a plugin implementation that uses the stable {@code io.flutter.plugin.common}
-   * package.
-   *
-   * <p>Calling this automatically initializes the plugin. However plugins initialized this way
-   * won't react to changes in activity or context, unlike {@link CameraPlugin}.
-   */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    (new CameraAndroidCameraxPlugin()).setUp(registrar.messenger(), registrar.activeContext());
-  }
-
   void setUp(BinaryMessenger binaryMessenger, Context context) {
     // Set up instance manager.
-    instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager = InstanceManager.open(identifier -> {}); //{GeneratedCameraXLibrary.JavaObjectHostApi.dispose(identifier);});
 
     // Set up Host APIs.
+    processCameraProviderHostApi =
+      new ProcessCameraProviderHostApiImpl(binaryMessenger, instanceManager, context);
     GeneratedCameraXLibrary.ProcessCameraProviderHostApi.setup(
         binaryMessenger,
-        new ProcessCameraProviderHostApiImpl(binaryMessenger, instanceManager, context));
+        processCameraProviderHostApi);
     GeneratedCameraXLibrary.CameraInfoHostApi.setup(
         binaryMessenger, new CameraInfoHostApiImpl(instanceManager));
     GeneratedCameraXLibrary.CameraSelectorHostApi.setup(
@@ -50,6 +42,7 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
+    pluginBinding = flutterPluginBinding;
     (new CameraAndroidCameraxPlugin())
         .setUp(
             flutterPluginBinding.getBinaryMessenger(),
@@ -64,15 +57,28 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
   // Activity Lifecycle methods:
 
   @Override
-  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {}
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
+    updateContext(activityPluginBinding.getActivity());
+  }
 
   @Override
-  public void onDetachedFromActivityForConfigChanges() {}
+  public void onDetachedFromActivityForConfigChanges() {
+    updateContext(pluginBinding.getApplicationContext());
+  }
 
   @Override
   public void onReattachedToActivityForConfigChanges(
-      @NonNull ActivityPluginBinding activityPluginBinding) {}
+    @NonNull ActivityPluginBinding activityPluginBinding) {
+    updateContext(activityPluginBinding.getActivity());
+  }
 
   @Override
-  public void onDetachedFromActivity() {}
+  public void onDetachedFromActivity() {
+    updateContext(pluginBinding.getApplicationContext());
+  }
+
+  /** Updates context that ProcessCameraProvider will use to bind UseCases to. */
+  private void updateContext(Context context) {
+    processCameraProviderHostApi.setContext(context);
+  }
 }

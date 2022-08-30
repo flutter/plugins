@@ -26,7 +26,7 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
 abstract class JavaObjectHostApi {
   void dispose(int instanceId);
 }
@@ -36,7 +36,7 @@ abstract class JavaObjectFlutterApi {
   void dispose(int instanceId);
 }
 
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
 abstract class ProcessCameraProviderHostApi {
   @async
   int getInstance();
@@ -49,7 +49,7 @@ abstract class ProcessCameraProviderFlutterApi {
   void create(int instanceId);
 }
 
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
 abstract class CameraInfoHostApi {
   int getSensorRotationDegrees(int instanceId);
 }
@@ -59,7 +59,7 @@ abstract class CameraInfoFlutterApi {
   void create(int instanceId);
 }
 
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
 abstract class CameraSelectorHostApi {
   int requireLensFacing(int lensDirection);
 

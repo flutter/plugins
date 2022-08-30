@@ -4,11 +4,14 @@
 
 import 'package:flutter/services.dart' show BinaryMessenger;
 
+import 'android_camera_camerax_flutter_api_impls.dart';
 import 'camerax.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
 /// Represents the metadata of a camera.
+///
+/// See https://developer.android.com/reference/androidx/camera/core/CameraInfo.
 class CameraInfo extends JavaObject {
   /// Constructs a [CameraInfo] object.
   CameraInfo.detached(
@@ -16,29 +19,14 @@ class CameraInfo extends JavaObject {
       : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
-    setUpCameraInfoApis(binaryMessenger, instanceManager);
-  }
-
-  static CameraInfoHostApiImpl? _api;
-
-  static CameraInfoFlutterApiImpl? _flutterApi;
-
-  /// Instantiates Host and Flutter APIs for the [CameraInfo] class.
-  static void setUpCameraInfoApis(
-      BinaryMessenger? binaryMessenger, InstanceManager? instanceManager) {
-    if (_flutterApi == null) {
-      _flutterApi = CameraInfoFlutterApiImpl(
-        binaryMessenger: binaryMessenger,
-        instanceManager: instanceManager,
-      );
-      CameraInfoFlutterApi.setup(_flutterApi);
-    }
-
     _api ??= CameraInfoHostApiImpl(
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
     );
+    AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
   }
+
+  CameraInfoHostApiImpl? _api;
 
   /// Gets sensor orientation degrees of camera.
   Future<int> getSensorRotationDegrees() =>
@@ -91,8 +79,9 @@ class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
   @override
   void create(int instanceId) {
     instanceManager.addHostCreatedInstance(
-      CameraInfo.detached(),
+      CameraInfo.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager),
       instanceId,
+      onCopy: (CameraInfo original) {return CameraInfo.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager);},
     );
   }
 }

@@ -14,7 +14,7 @@ flutter:
   plugin:
     platforms:
       android:
-        default_package: camera_android_camerax
+        default_package: camera_android
       ios:
         default_package: camera_avfoundation
       web:
@@ -22,8 +22,6 @@ flutter:
 
 dependencies:
   camera_android: ^0.10.0
-  camera_android_camerax:
-    path: ../camera_android_camerax/
   camera_avfoundation: ^0.9.7+1
   camera_platform_interface: ^2.2.0
   camera_web: ^0.3.0

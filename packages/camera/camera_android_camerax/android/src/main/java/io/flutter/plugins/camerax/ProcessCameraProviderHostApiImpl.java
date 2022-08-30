@@ -28,7 +28,12 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
     this.context = context;
   }
 
-  // Returns the instance of the ProcessCameraProvider.
+  // TODO(cs): This will have consequences on this class because everything in this class revolves around the context.
+  public void setContext(Context context) {
+    this.context = context;
+  }
+
+  /** Returns the instance of the ProcessCameraProvider. */
   @Override
   public void getInstance(GeneratedCameraXLibrary.Result<Long> result) {
     ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
@@ -58,7 +63,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         ContextCompat.getMainExecutor(context));
   }
 
-  // Returns cameras available to the ProcessCameraProvider.
+  /** Returns cameras available to the ProcessCameraProvider. */
   @Override
   public List<Long> getAvailableCameraInfos(@NonNull Long instanceId) {
     ProcessCameraProvider processCameraProvider =

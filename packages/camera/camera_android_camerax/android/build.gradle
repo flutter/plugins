@@ -30,7 +30,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 16
+        // Many of the CameraX APIs require API 21.
+        minSdkVersion 21
     }
 }
 
