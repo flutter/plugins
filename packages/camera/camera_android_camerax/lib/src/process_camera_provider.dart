@@ -33,7 +33,7 @@ class ProcessCameraProvider extends JavaObject {
       {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
     // setUpProcessCameraProviderApis(binaryMessenger, instanceManager);
-     ProcessCameraProviderHostApiImpl api = ProcessCameraProviderHostApiImpl(
+    ProcessCameraProviderHostApiImpl api = ProcessCameraProviderHostApiImpl(
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
     );
@@ -111,7 +111,9 @@ class ProcessCameraProviderFlutterApiImpl
     instanceManager.addHostCreatedInstance(
       ProcessCameraProvider.detached(),
       identifier,
-      onCopy: (ProcessCameraProvider original) {return ProcessCameraProvider.detached();},
+      onCopy: (ProcessCameraProvider original) {
+        return ProcessCameraProvider.detached();
+      },
     );
   }
 }

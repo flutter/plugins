@@ -99,7 +99,13 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
     List<CameraInfo> cameraInfos,
   ) async {
     int? instanceId = instanceManager.getIdentifier(instance);
-    instanceId ??= instanceManager.addDartCreatedInstance(instance, onCopy: (CameraSelector original) {return CameraSelector.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager, lensFacing: original.lensFacing);});
+    instanceId ??= instanceManager.addDartCreatedInstance(instance,
+        onCopy: (CameraSelector original) {
+      return CameraSelector.detached(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+          lensFacing: original.lensFacing);
+    });
 
     final List<int> cameraInfoIds = (cameraInfos.map<int>(
         (CameraInfo info) => instanceManager.getIdentifier(info)!)).toList();
@@ -134,9 +140,17 @@ class CameraSelectorFlutterApiImpl implements CameraSelectorFlutterApi {
   @override
   void create(int identifier, int? lensFacing) {
     instanceManager.addHostCreatedInstance(
-      CameraSelector.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager, lensFacing: lensFacing),
+      CameraSelector.detached(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+          lensFacing: lensFacing),
       identifier,
-      onCopy: (CameraSelector original) {return CameraSelector.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager, lensFacing: original.lensFacing);},
+      onCopy: (CameraSelector original) {
+        return CameraSelector.detached(
+            binaryMessenger: binaryMessenger,
+            instanceManager: instanceManager,
+            lensFacing: original.lensFacing);
+      },
     );
   }
 }

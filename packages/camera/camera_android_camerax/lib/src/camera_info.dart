@@ -79,9 +79,13 @@ class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
   @override
   void create(int instanceId) {
     instanceManager.addHostCreatedInstance(
-      CameraInfo.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager),
+      CameraInfo.detached(
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager),
       instanceId,
-      onCopy: (CameraInfo original) {return CameraInfo.detached(binaryMessenger: binaryMessenger, instanceManager: instanceManager);},
+      onCopy: (CameraInfo original) {
+        return CameraInfo.detached(
+            binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+      },
     );
   }
 }

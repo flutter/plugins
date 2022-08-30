@@ -24,8 +24,8 @@ class AndroidCameraXCameraFlutterApis {
         cameraInfoFlutterApi ?? CameraInfoFlutterApiImpl();
     this.cameraSelectorFlutterApi =
         cameraSelectorFlutterApi ?? CameraSelectorFlutterApiImpl();
-    this.processCameraProviderFlutterApi =
-        processCameraProviderFlutterApi ?? ProcessCameraProviderFlutterApiImpl();
+    this.processCameraProviderFlutterApi = processCameraProviderFlutterApi ??
+        ProcessCameraProviderFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -33,7 +33,8 @@ class AndroidCameraXCameraFlutterApis {
   /// Mutable instance containing all Flutter Apis for Android CameraX Camera.
   ///
   /// This should only be changed for testing purposes.
-  static AndroidCameraXCameraFlutterApis instance = AndroidCameraXCameraFlutterApis();
+  static AndroidCameraXCameraFlutterApis instance =
+      AndroidCameraXCameraFlutterApis();
 
   /// Handles callbacks methods for the native Java Object class.
   late final JavaObjectFlutterApi javaObjectFlutterApi;
@@ -45,7 +46,8 @@ class AndroidCameraXCameraFlutterApis {
   late final CameraSelectorFlutterApiImpl cameraSelectorFlutterApi;
 
   /// Flutter Api for [ProcessCameraProvider].
-  late final ProcessCameraProviderFlutterApiImpl processCameraProviderFlutterApi;
+  late final ProcessCameraProviderFlutterApiImpl
+      processCameraProviderFlutterApi;
 
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
