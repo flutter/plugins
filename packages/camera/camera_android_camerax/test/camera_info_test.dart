@@ -5,13 +5,16 @@
 import 'package:camera_android_camerax/src/camera_info.dart';
 import 'package:camera_android_camerax/src/camerax_library.pigeon.dart';
 import 'package:camera_android_camerax/src/instance_manager.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
 import 'camera_info_test.mocks.dart';
 import 'test_camerax_library.pigeon.dart';
 
 @GenerateMocks(<Type>[TestCameraInfoHostApi])
 void main() {
-  TextWidgetsFlutterBinding.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
   group('CameraInfo', () {
     tearDown(() => TestCameraInfoHostApi.setup(null));
@@ -23,9 +26,6 @@ void main() {
       final InstanceManager instanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
-
-      // Create a MyClass instance and add to the instanceManager with
-      // identifier = 1.
       final CameraInfo cameraInfo = CameraInfo.detached(
         instanceManager: instanceManager,
       );
@@ -35,18 +35,18 @@ void main() {
         onCopy: (_) => CameraInfo.detached(),
       );
 
-      // Call my method.
+      when(mockApi.getSensorRotationDegrees(
+              instanceManager.getIdentifier(cameraInfo)))
+          .thenReturn(90);
       cameraInfo.getSensorRotationDegrees();
 
-      // Verify mock host api received the correct values.
-      verify(mockApi.getSensorRotationDegrees(0, 'myMethodString'));
+      verify(mockApi.getSensorRotationDegrees(0));
     });
 
     test('flutterApiCreateTest', () {
       final InstanceManager instanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
-
       final CameraInfoFlutterApi flutterApi = CameraInfoFlutterApiImpl(
         instanceManager: instanceManager,
       );

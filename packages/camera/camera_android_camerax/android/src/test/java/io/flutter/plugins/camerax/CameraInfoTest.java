@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import androidx.camera.core.CameraInfo;
 import io.flutter.plugin.common.BinaryMessenger;
 import java.util.Objects;
 import org.junit.After;
@@ -25,23 +26,25 @@ public class CameraInfoTest {
   @Mock public CameraInfo cameraInfo;
   @Mock public BinaryMessenger mockBinaryMessenger;
 
-  InstanceManager instanceManager;
+  InstanceManager testInstanceManager;
 
   @Before
   public void setUp() {
-    instanceManager = InstanceManager.open(identifier -> {});
+    testInstanceManager = InstanceManager.open(identifier -> {});
   }
 
   @After
   public void tearDown() {
-    instanceManager.close();
+    testInstanceManager.close();
   }
 
   @Test
   public void getSensorRotationDegreesTest() {
-    final CameraInfoHostApiImpl cameraInfoHostApi = new CameraInfoHostApiImpl(instanceManager);
+    testInstanceManager = InstanceManager.open(identifier -> {});
 
-    instanceManager.addDartCreatedInstance(cameraInfo, 1);
+    final CameraInfoHostApiImpl cameraInfoHostApi = new CameraInfoHostApiImpl(testInstanceManager);
+
+    testInstanceManager.addDartCreatedInstance(cameraInfo, 1);
 
     cameraInfoHostApi.getSensorRotationDegrees(1L);
     verify(cameraInfo).getSensorRotationDegrees();
@@ -50,14 +53,14 @@ public class CameraInfoTest {
   @Test
   public void flutterApiCreate() {
     final CameraInfoFlutterApiImpl spyFlutterApi =
-        spy(new CameraInfoFlutterApiImpl(mockBinaryMessenger, instanceManager));
+        spy(new CameraInfoFlutterApiImpl(mockBinaryMessenger, testInstanceManager));
 
-    // Create mock instance since a CameraInfo instance cannot be created directly.
-    final CameraInfo cameraInfo = mock(CameraInfo.class);
+    testInstanceManager.addHostCreatedInstance(cameraInfo);
     spyFlutterApi.create(cameraInfo, reply -> {});
 
+    System.out.println(testInstanceManager.getIdentifierForStrongReference(cameraInfo));
     final long identifier =
-        Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(cameraInfo));
+        Objects.requireNonNull(testInstanceManager.getIdentifierForStrongReference(cameraInfo));
     verify(spyFlutterApi).create(eq(identifier), any());
   }
 }
