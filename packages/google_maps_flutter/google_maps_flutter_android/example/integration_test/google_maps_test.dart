@@ -922,7 +922,16 @@ void main() {
     expect(iwVisibleStatus, false);
 
     await controller.showMarkerInfoWindow(marker.markerId);
-    iwVisibleStatus = await controller.isMarkerInfoWindowShown(marker.markerId);
+    // The Maps SDK doesn't return true for whether it is show immediately after
+    // showing it, so wait for it to become visible.
+    for (int i = 0; i < 100; i++) {
+      iwVisibleStatus =
+          await controller.isMarkerInfoWindowShown(marker.markerId);
+      await tester.pump();
+      if (iwVisibleStatus) {
+        break;
+      }
+    }
     expect(iwVisibleStatus, true);
 
     await controller.hideMarkerInfoWindow(marker.markerId);
