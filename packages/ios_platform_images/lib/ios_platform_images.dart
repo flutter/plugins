@@ -204,7 +204,6 @@ class IosPlatformImages {
     return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
   }
 
-  // TODO(cadenkriese): reimplement
   /// Resolves an URL for a resource.  The equivalent would be:
   /// `[[NSBundle mainBundle] URLForResource:name withExtension:ext]`.
   ///
