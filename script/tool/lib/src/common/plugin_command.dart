@@ -339,7 +339,7 @@ abstract class PluginCommand extends Command<void> {
           'Running for all packages that have changed relative to "$baseSha"\n');
       final List<String> changedFiles =
           await gitVersionFinder.getChangedFiles();
-      if (true || !_changesRequireFullTest(changedFiles)) {
+      if (!_changesRequireFullTest(changedFiles)) {
         packages = _getChangedPackageNames(changedFiles);
       }
     } else if (getBoolArg(_runOnDirtyPackagesArg)) {
