@@ -1,3 +1,7 @@
+## 5.5.0
+
+* Adds override for `GoogleSignInPlatform.initWithParams`.
+
 ## 5.4.0
 
 * Adds support for `serverClientId` configuration option.
