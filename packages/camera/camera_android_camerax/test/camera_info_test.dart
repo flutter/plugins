@@ -40,7 +40,6 @@ void main() {
               instanceManager.getIdentifier(cameraInfo)))
           .thenReturn(90);
       expect(await cameraInfo.getSensorRotationDegrees(), equals(90));
-
       verify(mockApi.getSensorRotationDegrees(0));
     });
 
