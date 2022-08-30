@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 2.2.2
 
 * Adds a `size` parameter to `BitmapDescriptor.fromBytes`, so **web** applications

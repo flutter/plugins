@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 2.3.0
 
 * Adopts `plugin_platform_interface`. As a result, `isMock` is deprecated in
