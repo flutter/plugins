@@ -56,5 +56,6 @@ dependencies {
                showStandardStreams = true
             }
         }
+
     }
 }

@@ -26,6 +26,7 @@ void main() {
       final InstanceManager instanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
+
       final CameraInfo cameraInfo = CameraInfo.detached(
         instanceManager: instanceManager,
       );

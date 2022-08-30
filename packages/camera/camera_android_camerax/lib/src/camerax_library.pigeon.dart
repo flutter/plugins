@@ -18,8 +18,7 @@ class JavaObjectHostApi {
   /// Constructor for [JavaObjectHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  JavaObjectHostApi({BinaryMessenger? binaryMessenger})
-      : _binaryMessenger = binaryMessenger;
+  JavaObjectHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
@@ -27,8 +26,7 @@ class JavaObjectHostApi {
 
   Future<void> dispose(int arg_identifier) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.JavaObjectHostApi.dispose', codec,
-        binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.JavaObjectHostApi.dispose', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_identifier]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -37,8 +35,7 @@ class JavaObjectHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -53,27 +50,22 @@ class JavaObjectHostApi {
 class _JavaObjectFlutterApiCodec extends StandardMessageCodec {
   const _JavaObjectFlutterApiCodec();
 }
-
 abstract class JavaObjectFlutterApi {
   static const MessageCodec<Object?> codec = _JavaObjectFlutterApiCodec();
 
   void dispose(int identifier);
-  static void setup(JavaObjectFlutterApi? api,
-      {BinaryMessenger? binaryMessenger}) {
+  static void setup(JavaObjectFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.JavaObjectFlutterApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.JavaObjectFlutterApi.dispose', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.JavaObjectFlutterApi.dispose was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.JavaObjectFlutterApi.dispose was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_identifier = (args[0] as int?);
-          assert(arg_identifier != null,
-              'Argument for dev.flutter.pigeon.JavaObjectFlutterApi.dispose was null, expected non-null int.');
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.JavaObjectFlutterApi.dispose was null, expected non-null int.');
           api.dispose(arg_identifier!);
           return;
         });
@@ -90,8 +82,7 @@ class CameraInfoHostApi {
   /// Constructor for [CameraInfoHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  CameraInfoHostApi({BinaryMessenger? binaryMessenger})
-      : _binaryMessenger = binaryMessenger;
+  CameraInfoHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
@@ -99,8 +90,7 @@ class CameraInfoHostApi {
 
   Future<int> getSensorRotationDegrees(int arg_identifier) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.CameraInfoHostApi.getSensorRotationDegrees', codec,
-        binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.CameraInfoHostApi.getSensorRotationDegrees', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_identifier]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -109,8 +99,7 @@ class CameraInfoHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -130,27 +119,22 @@ class CameraInfoHostApi {
 class _CameraInfoFlutterApiCodec extends StandardMessageCodec {
   const _CameraInfoFlutterApiCodec();
 }
-
 abstract class CameraInfoFlutterApi {
   static const MessageCodec<Object?> codec = _CameraInfoFlutterApiCodec();
 
   void create(int identifier);
-  static void setup(CameraInfoFlutterApi? api,
-      {BinaryMessenger? binaryMessenger}) {
+  static void setup(CameraInfoFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.CameraInfoFlutterApi.create', codec,
-          binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.CameraInfoFlutterApi.create', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.CameraInfoFlutterApi.create was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.CameraInfoFlutterApi.create was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_identifier = (args[0] as int?);
-          assert(arg_identifier != null,
-              'Argument for dev.flutter.pigeon.CameraInfoFlutterApi.create was null, expected non-null int.');
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.CameraInfoFlutterApi.create was null, expected non-null int.');
           api.create(arg_identifier!);
           return;
         });
