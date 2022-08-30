@@ -2,12 +2,4 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'camera_android_camerax_platform_interface.dart';
-
-/// Android Camera implented with the CameraX library.
-class CameraAndroidCamerax {
-  /// Returns platform version of this instance.
-  Future<String?> getPlatformVersion() {
-    return CameraAndroidCameraxPlatform.instance.getPlatformVersion();
-  }
-}
+export 'src/android_camera_camerax.dart';
