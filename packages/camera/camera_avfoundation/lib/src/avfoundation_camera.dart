@@ -138,12 +138,11 @@ class AVFoundationCamera extends CameraPlatform {
         'cameraId': cameraId,
         'imageFormatGroup': imageFormatGroup.name(),
       },
-    )
-        // TODO(srawlins): This should return a value of the future's type. This
-        // will fail upcoming analysis checks with
-        // https://github.com/flutter/flutter/issues/105750.
-        // ignore: body_might_complete_normally_catch_error
-        .catchError(
+    ).catchError(
+      // TODO(srawlins): This should return a value of the future's type. This
+      // will fail upcoming analysis checks with
+      // https://github.com/flutter/flutter/issues/105750.
+      // ignore: body_might_complete_normally_catch_error
       (Object error, StackTrace stackTrace) {
         if (error is! PlatformException) {
           throw error;
