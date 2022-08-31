@@ -51,6 +51,7 @@ Future<void> main() async {
   testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
+    final Completer<void> pageFinishedCompleter = Completer<void>();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -60,10 +61,14 @@ Future<void> main() async {
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
+          onPageFinished: pageFinishedCompleter.complete,
         ),
       ),
     );
+
     final WebViewController controller = await controllerCompleter.future;
+    await pageFinishedCompleter.future;
+
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
   });
@@ -86,12 +91,14 @@ Future<void> main() async {
       await tester.pumpAndSettle();
     });
 
-    expect(gcCompleter.future, completion(0));
+    final int gcIdentifier = await gcCompleter.future;
+    expect(gcIdentifier, 0);
   }, timeout: const Timeout(Duration(seconds: 10)));
 
   testWidgets('loadUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
+    final StreamController<String> pageLoads = StreamController<String>();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -101,13 +108,19 @@ Future<void> main() async {
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
+          onPageFinished: (String url) {
+            pageLoads.add(url);
+          },
         ),
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
+
     await controller.loadUrl(secondaryUrl);
-    final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, secondaryUrl);
+    await expectLater(
+      pageLoads.stream.firstWhere((String url) => url == secondaryUrl),
+      completion(secondaryUrl),
+    );
   });
 
   testWidgets('evaluateJavascript', (WidgetTester tester) async {
@@ -176,7 +189,7 @@ Future<void> main() async {
         Completer<WebViewController>();
     final Completer<void> pageStarted = Completer<void>();
     final Completer<void> pageLoaded = Completer<void>();
-    final List<String> messagesReceived = <String>[];
+    final Completer<String> channelCompleter = Completer<String>();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -193,7 +206,7 @@ Future<void> main() async {
             JavascriptChannel(
               name: 'Echo',
               onMessageReceived: (JavascriptMessage message) {
-                messagesReceived.add(message.message);
+                channelCompleter.complete(message.message);
               },
             ),
           },
@@ -210,9 +223,10 @@ Future<void> main() async {
     await pageStarted.future;
     await pageLoaded.future;
 
-    expect(messagesReceived, isEmpty);
+    expect(channelCompleter.isCompleted, isFalse);
     await controller.runJavascript('Echo.postMessage("hello");');
-    expect(messagesReceived, equals(<String>['hello']));
+
+    await expectLater(channelCompleter.future, completion('hello'));
   });
 
   testWidgets('resize webview', (WidgetTester tester) async {
@@ -1174,10 +1188,8 @@ Future<void> main() async {
       expect(controller.canGoBack(), completion(true));
       await controller.goBack();
       await pageLoaded.future;
-      expect(controller.currentUrl(), completion(primaryUrl));
+      await expectLater(controller.currentUrl(), completion(primaryUrl));
     },
-    // Flaky; see https://github.com/flutter/flutter/issues/90976
-    skip: true,
   );
 }
 

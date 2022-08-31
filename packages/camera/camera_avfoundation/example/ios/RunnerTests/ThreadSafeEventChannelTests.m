@@ -63,4 +63,20 @@
   [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
+- (void)testEventChannel_shouldBeKeptAliveWhenDispatchingBackToMainThread {
+  XCTestExpectation *expectation =
+      [self expectationWithDescription:@"Completion should be called."];
+  dispatch_async(dispatch_queue_create("test", NULL), ^{
+    FLTThreadSafeEventChannel *channel = [[FLTThreadSafeEventChannel alloc]
+        initWithEventChannel:OCMClassMock([FlutterEventChannel class])];
+
+    [channel setStreamHandler:OCMOCK_ANY
+                   completion:^{
+                     [expectation fulfill];
+                   }];
+  });
+
+  [self waitForExpectationsWithTimeout:1 handler:nil];
+}
+
 @end

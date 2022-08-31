@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 0.1.0+4
 
 * Fixes incorrect escaping of some characters when setting the HTML to the iframe element.
