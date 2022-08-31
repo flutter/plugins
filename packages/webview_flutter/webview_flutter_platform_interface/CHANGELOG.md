@@ -1,6 +1,7 @@
-## NEXT
+## 1.9.3
 
 * Updates minimum Flutter version to 2.10.
+* Removes `BuildParams` from v4 interface and adds `layoutDirection` to the creation params.
 
 ## 1.9.2
 
