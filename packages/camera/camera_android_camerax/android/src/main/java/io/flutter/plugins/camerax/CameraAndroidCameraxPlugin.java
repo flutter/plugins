@@ -43,7 +43,9 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    instanceManager.close();
+    if (instanceManager != null) {
+      instanceManager.close();
+    }
   }
 
   // Activity Lifecycle methods:
