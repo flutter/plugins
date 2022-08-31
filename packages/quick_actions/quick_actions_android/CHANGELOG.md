@@ -1,5 +1,6 @@
 ## NEXT
 
+* Updates minimum Flutter version to 2.10.
 * Updates mockito-core to 4.6.1.
 * Removes deprecated FieldSetter from QuickActionsTest.
 

@@ -30,7 +30,7 @@ class FileDialogController {
   FileDialogController& operator=(const FileDialogController&) = delete;
 
   // IFileDialog wrappers:
-  virtual HRESULT SetDefaultFolder(IShellItem* folder);
+  virtual HRESULT SetFolder(IShellItem* folder);
   virtual HRESULT SetFileName(const wchar_t* name);
   virtual HRESULT SetFileTypes(UINT count, COMDLG_FILTERSPEC* filters);
   virtual HRESULT SetOkButtonLabel(const wchar_t* text);

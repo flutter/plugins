@@ -1,0 +1,10 @@
+framework module file_selector_ios {
+  umbrella header "file_selector_ios-umbrella.h"
+
+  export *
+  module * { export * }
+
+  explicit module Test {
+    header "FFSFileSelectorPlugin_Test.h"
+  }
+}

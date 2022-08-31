@@ -1,6 +1,10 @@
-## 0.8.5+3
+## 0.8.5+4
 
 * Fixes names of picked files to match original filenames where possible.
+
+## 0.8.5+3
+
+* Updates minimum Flutter version to 2.10.
 
 ## 0.8.5+2
 
