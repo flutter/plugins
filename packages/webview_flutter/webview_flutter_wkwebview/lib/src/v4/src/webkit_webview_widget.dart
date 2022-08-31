@@ -10,8 +10,11 @@ import '../../common/instance_manager.dart';
 import '../../foundation/foundation.dart';
 import '../webview_flutter_wkwebview.dart';
 
+/// Object specifying creation parameters for a [WebKitWebViewWidget].
+@immutable
 class WebKitWebViewWidgetCreationParams
     extends PlatformWebViewWidgetCreationParams {
+  /// Constructs a [WebKitWebViewWidgetCreationParams].
   WebKitWebViewWidgetCreationParams({
     super.key,
     required super.controller,
@@ -20,6 +23,8 @@ class WebKitWebViewWidgetCreationParams
     @visibleForTesting InstanceManager? instanceManager,
   }) : _instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
+  /// Constructs a [WebKitWebViewWidgetCreationParams] using a
+  /// [PlatformWebViewWidgetCreationParams].
   WebKitWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
     PlatformWebViewWidgetCreationParams params, {
     InstanceManager? instanceManager,
@@ -57,7 +62,7 @@ class WebKitWebViewWidget extends PlatformWebViewWidget {
       onPlatformViewCreated: (_) {},
       layoutDirection: params.layoutDirection,
       gestureRecognizers: params.gestureRecognizers,
-      creationParams: _webKitParams.instanceManager.getIdentifier(
+      creationParams: _webKitParams._instanceManager.getIdentifier(
           (params.controller as WebKitWebViewController).webView),
       creationParamsCodec: const StandardMessageCodec(),
     );
