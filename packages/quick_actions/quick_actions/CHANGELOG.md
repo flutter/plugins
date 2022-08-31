@@ -1,6 +1,9 @@
-## NEXT
+## 1.0.0
 
+* Updates version to 1.0 to reflect current status.
 * Updates minimum Flutter version to 2.10.
+* Updates README to document that on Android, icons may need to be explicitly
+  marked as used in the Android project for release builds.
 * Minor fixes for new analysis options.
 
 ## 0.6.0+11
