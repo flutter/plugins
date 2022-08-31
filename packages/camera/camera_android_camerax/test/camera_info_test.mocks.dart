@@ -28,12 +28,7 @@ class MockTestCameraInfoHostApi extends _i1.Mock
   }
 
   @override
-<<<<<<< HEAD
   int getSensorRotationDegrees(int? identifier) => (super.noSuchMethod(
       Invocation.method(#getSensorRotationDegrees, [identifier]),
-=======
-  int getSensorRotationDegrees(int? instanceId) => (super.noSuchMethod(
-      Invocation.method(#getSensorRotationDegrees, [instanceId]),
->>>>>>> 416eab81f (Fix tests)
       returnValue: 0) as int);
 }
