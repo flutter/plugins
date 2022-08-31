@@ -20,7 +20,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -32,7 +32,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -44,7 +44,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -59,7 +59,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -86,7 +86,7 @@ void main() {
       (_) => Future<String>.value('https://dart.dev'),
     );
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -103,7 +103,7 @@ void main() {
       (_) => Future<bool>.value(false),
     );
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -117,7 +117,7 @@ void main() {
       (_) => Future<bool>.value(true),
     );
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -128,7 +128,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -140,7 +140,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -152,7 +152,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -164,7 +164,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -176,7 +176,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -188,7 +188,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -202,7 +202,7 @@ void main() {
     when(mockPlatformWebViewController.runJavaScriptReturningResult('1 + 1'))
         .thenAnswer((_) => Future<String>.value('2'));
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -216,7 +216,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -237,7 +237,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -251,7 +251,7 @@ void main() {
     when(mockPlatformWebViewController.getTitle())
         .thenAnswer((_) => Future<String>.value('myTitle'));
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -262,7 +262,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -274,7 +274,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -291,7 +291,7 @@ void main() {
       ),
     );
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -305,7 +305,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -317,7 +317,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -329,7 +329,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
@@ -343,7 +343,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
 
-    final WebViewController webViewController = WebViewController.withPlatform(
+    final WebViewController webViewController = WebViewController.fromPlatform(
       platform: mockPlatformWebViewController,
     );
 
