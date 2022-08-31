@@ -161,8 +161,8 @@ task:
       depends_on: analyze
       env:
         matrix:
+          CHANNEL: "3.0.5"
           CHANNEL: "2.10.5"
-          CHANNEL: "2.8.1"
       package_prep_script:
         # Allow analyzing plugins that use a Pigeon version with a higher
         # minimum Flutter/Dart version than the plugin itself.

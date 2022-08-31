@@ -518,8 +518,8 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
           );
         },
         onCreatePlatformView: (PlatformViewCreationParams params) {
-          final SurfaceAndroidViewController controller =
-              PlatformViewsService.initSurfaceAndroidView(
+          final AndroidViewController controller =
+              PlatformViewsService.initExpensiveAndroidView(
             id: params.id,
             viewType: viewType,
             layoutDirection: widgetConfiguration.textDirection,
