@@ -239,6 +239,48 @@ public class GoogleSignInTest {
     initAndAssertServerClientId(methodCall, serverClientId);
   }
 
+  @Test
+  public void init_PassesForceCodeForRefreshTokenFalseWithServerClientIdParameter() {
+    MethodCall methodCall = buildInitMethodCall("fakeClientId", "fakeServerClientId", false);
+
+    initAndAssertForceCodeForRefreshToken(methodCall, false);
+  }
+
+  @Test
+  public void init_PassesForceCodeForRefreshTokenTrueWithServerClientIdParameter() {
+    MethodCall methodCall = buildInitMethodCall("fakeClientId", "fakeServerClientId", true);
+
+    initAndAssertForceCodeForRefreshToken(methodCall, true);
+  }
+
+  @Test
+  public void init_PassesForceCodeForRefreshTokenFalseWithServerClientIdFromResources() {
+    final String packageName = "fakePackageName";
+    final String serverClientId = "fakeServerClientId";
+    final int resourceId = 1;
+    MethodCall methodCall = buildInitMethodCall(null, null, false);
+    when(mockContext.getPackageName()).thenReturn(packageName);
+    when(mockResources.getIdentifier("default_web_client_id", "string", packageName))
+        .thenReturn(resourceId);
+    when(mockContext.getString(resourceId)).thenReturn(serverClientId);
+
+    initAndAssertForceCodeForRefreshToken(methodCall, false);
+  }
+
+  @Test
+  public void init_PassesForceCodeForRefreshTokenTrueWithServerClientIdFromResources() {
+    final String packageName = "fakePackageName";
+    final String serverClientId = "fakeServerClientId";
+    final int resourceId = 1;
+    MethodCall methodCall = buildInitMethodCall(null, null, true);
+    when(mockContext.getPackageName()).thenReturn(packageName);
+    when(mockResources.getIdentifier("default_web_client_id", "string", packageName))
+        .thenReturn(resourceId);
+    when(mockContext.getString(resourceId)).thenReturn(serverClientId);
+
+    initAndAssertForceCodeForRefreshToken(methodCall, true);
+  }
+
   public void initAndAssertServerClientId(MethodCall methodCall, String serverClientId) {
     ArgumentCaptor<GoogleSignInOptions> optionsCaptor =
         ArgumentCaptor.forClass(GoogleSignInOptions.class);
@@ -249,13 +291,39 @@ public class GoogleSignInTest {
     Assert.assertEquals(serverClientId, optionsCaptor.getValue().getServerClientId());
   }
 
+  public void initAndAssertForceCodeForRefreshToken(
+      MethodCall methodCall, boolean forceCodeForRefreshToken) {
+    ArgumentCaptor<GoogleSignInOptions> optionsCaptor =
+        ArgumentCaptor.forClass(GoogleSignInOptions.class);
+    when(mockGoogleSignIn.getClient(any(Context.class), optionsCaptor.capture()))
+        .thenReturn(mockClient);
+    plugin.onMethodCall(methodCall, result);
+    verify(result).success(null);
+    Assert.assertEquals(
+        forceCodeForRefreshToken, optionsCaptor.getValue().isForceCodeForRefreshToken());
+  }
+
   private static MethodCall buildInitMethodCall(String clientId, String serverClientId) {
     return buildInitMethodCall(
-        "SignInOption.standard", Collections.<String>emptyList(), clientId, serverClientId);
+        "SignInOption.standard", Collections.<String>emptyList(), clientId, serverClientId, false);
   }
 
   private static MethodCall buildInitMethodCall(
-      String signInOption, List<String> scopes, String clientId, String serverClientId) {
+      String clientId, String serverClientId, boolean forceCodeForRefreshToken) {
+    return buildInitMethodCall(
+        "SignInOption.standard",
+        Collections.<String>emptyList(),
+        clientId,
+        serverClientId,
+        forceCodeForRefreshToken);
+  }
+
+  private static MethodCall buildInitMethodCall(
+      String signInOption,
+      List<String> scopes,
+      String clientId,
+      String serverClientId,
+      boolean forceCodeForRefreshToken) {
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("signInOption", signInOption);
     arguments.put("scopes", scopes);
@@ -265,6 +333,7 @@ public class GoogleSignInTest {
     if (serverClientId != null) {
       arguments.put("serverClientId", serverClientId);
     }
+    arguments.put("forceCodeForRefreshToken", forceCodeForRefreshToken);
     return new MethodCall("init", arguments);
   }
 }

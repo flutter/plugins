@@ -1,5 +1,11 @@
 ## NEXT
 
+* Updates minimum Flutter version to 2.10.
+* Fixes violations of new analysis option use_named_constants.
+
+## 5.1.4
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 5.1.3

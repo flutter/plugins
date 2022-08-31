@@ -6,9 +6,9 @@
 
 @interface FLTQuickActionsPlugin : NSObject <FlutterPlugin>
 
-/// Unavailable. Please use `initWithChannel:` instead.
+/// Unavailable.
 - (instancetype)init NS_UNAVAILABLE;
 
-/// Unavailable. Please use `initWithChannel:` instead.
+/// Unavailable.
 + (instancetype)new NS_UNAVAILABLE;
 @end

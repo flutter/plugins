@@ -1,6 +1,13 @@
-## NEXT
+## 1.9.3
 
+* Updates minimum Flutter version to 2.10.
+* Removes `BuildParams` from v4 interface and adds `layoutDirection` to the creation params.
+
+## 1.9.2
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+* Adds missing build params for v4 WebViewWidget interface.
 
 ## 1.9.1
 
