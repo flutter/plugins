@@ -1,6 +1,8 @@
-## NEXT
+## 0.2.4
 
 * Updates minimum Flutter version to 2.10.
+* Fixes the management of `BillingClient` connection.
+* Introduces `BillingClientManager`.
 
 ## 0.2.3+3
 
