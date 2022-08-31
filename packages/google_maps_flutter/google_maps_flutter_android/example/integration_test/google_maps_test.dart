@@ -9,6 +9,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_example/example_google_map.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
@@ -21,6 +22,40 @@ const CameraPosition _kInitialCameraPosition =
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   GoogleMapsFlutterPlatform.instance.enableDebugInspection();
+
+  testWidgets('uses surface view', (WidgetTester tester) async {
+    final GoogleMapsFlutterAndroid instance =
+        GoogleMapsFlutterPlatform.instance as GoogleMapsFlutterAndroid;
+    final bool previousUseAndroidViewSurfaceValue =
+        instance.useAndroidViewSurface;
+    instance.useAndroidViewSurface = true;
+
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: ExampleGoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        compassEnabled: false,
+        onMapCreated: (ExampleGoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    await mapIdCompleter.future;
+
+    // Wait for the placeholder to be replaced by the actual view.
+    while (!tester.any(find.byType(AndroidViewSurface)) &&
+        !tester.any(find.byType(AndroidView))) {
+      await tester.pump();
+    }
+
+    instance.useAndroidViewSurface = previousUseAndroidViewSurfaceValue;
+
+    expect(tester.any(find.byType(AndroidViewSurface)), true);
+  });
 
   testWidgets('testCompassToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
