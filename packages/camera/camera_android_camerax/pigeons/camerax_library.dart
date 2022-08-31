@@ -45,3 +45,15 @@ abstract class CameraInfoHostApi {
 abstract class CameraInfoFlutterApi {
   void create(int instanceId);
 }
+
+@HostApi(dartHostTestHandler: 'TestCameraSelectorHostApi')
+abstract class CameraSelectorHostApi {
+  int requireLensFacing(int lensDirection);
+
+  List<int> filter(int instanceId, List<int> cameraInfoIds);
+}
+
+@FlutterApi()
+abstract class CameraSelectorFlutterApi {
+  void create(int instanceId, int? lensFacing);
+}
