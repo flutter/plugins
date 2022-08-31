@@ -21,7 +21,7 @@ void main() {
       );
 
       final WebViewCookieManager cookieManager =
-          WebViewCookieManager.withPlatform(
+          WebViewCookieManager.fromPlatform(
         platform: mockPlatformWebViewCookieManager,
       );
 
@@ -33,7 +33,7 @@ void main() {
           MockPlatformWebViewCookieManager();
 
       final WebViewCookieManager cookieManager =
-          WebViewCookieManager.withPlatform(
+          WebViewCookieManager.fromPlatform(
         platform: mockPlatformWebViewCookieManager,
       );
 

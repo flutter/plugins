@@ -8,21 +8,21 @@ import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_i
 class WebViewCookieManager {
   /// Constructs a [WebViewCookieManager].
   WebViewCookieManager()
-      : this.withPlatform(
+      : this.fromPlatform(
           platform: PlatformWebViewCookieManager(
             const PlatformWebViewCookieManagerCreationParams(),
           ),
         );
 
-  /// Constructs a [WebViewCookieManager] with creation params for a specific
+  /// Constructs a [WebViewCookieManager] from creation params for a specific
   /// platform.
-  WebViewCookieManager.withPlatformCreationParams(
+  WebViewCookieManager.fromPlatformCreationParams(
     PlatformWebViewCookieManagerCreationParams params,
-  ) : this.withPlatform(platform: PlatformWebViewCookieManager(params));
+  ) : this.fromPlatform(platform: PlatformWebViewCookieManager(params));
 
-  /// Constructs a [WebViewCookieManager] with a specific platform
+  /// Constructs a [WebViewCookieManager] from a specific platform
   /// implementation.
-  WebViewCookieManager.withPlatform({required this.platform});
+  WebViewCookieManager.fromPlatform({required this.platform});
 
   /// Implementation of [PlatformWebViewCookieManager] for the current platform.
   final PlatformWebViewCookieManager platform;
