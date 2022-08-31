@@ -40,8 +40,6 @@ public class CameraInfoTest {
 
   @Test
   public void getSensorRotationDegreesTest() {
-    testInstanceManager = InstanceManager.open(identifier -> {});
-
     final CameraInfoHostApiImpl cameraInfoHostApi = new CameraInfoHostApiImpl(testInstanceManager);
 
     testInstanceManager.addDartCreatedInstance(cameraInfo, 1);
@@ -58,7 +56,6 @@ public class CameraInfoTest {
     testInstanceManager.addHostCreatedInstance(cameraInfo);
     spyFlutterApi.create(cameraInfo, reply -> {});
 
-    System.out.println(testInstanceManager.getIdentifierForStrongReference(cameraInfo));
     final long identifier =
         Objects.requireNonNull(testInstanceManager.getIdentifierForStrongReference(cameraInfo));
     verify(spyFlutterApi).create(eq(identifier), any());
