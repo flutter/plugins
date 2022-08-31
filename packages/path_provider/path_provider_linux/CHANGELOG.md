@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 2.1.7
 
 * Bumps ffi dependency to match path_provider_windows.

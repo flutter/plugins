@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 6.1.0
+
+* Adds override for `GoogleSignIn.initWithParams` to handle new `forceCodeForRefreshToken` parameter.
+
 ## 6.0.1
 
 * Updates gradle version to 7.2.1 on Android.
