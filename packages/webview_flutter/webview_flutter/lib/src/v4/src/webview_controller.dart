@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 
 /// Controls a WebView provided by the host platform.
+///
+/// Pass this to a [WebViewWidget] to display the WebView.
 class WebViewController {
   /// Constructs a [WebViewController].
   WebViewController()
