@@ -1,8 +1,7 @@
 ## 2.10.0
 
 * Bumps webkit from 1.0.0 to 1.5.0.
-* Raises minimum compileSdkVersion to 32. This requires setting the `compileSdkVersion` in the app
-  level `build.gradle` to a minimum of 32.
+* Raises minimum `compileSdkVersion` to 32.
 
 ## 2.9.5
 
