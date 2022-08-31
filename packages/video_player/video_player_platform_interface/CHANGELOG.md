@@ -1,5 +1,9 @@
-## NEXT
+## 6.0.0
 
+* **BREAKING CHANGE**: Removes `MethodChannelVideoPlayer`. The default
+  implementation is now only a placeholder with no functionality;
+  implementations of `video_player` must include their own `VideoPlayerPlatform`
+  Dart implementation.
 * Updates minimum Flutter version to 2.10.
 * Fixes violations of new analysis option use_named_constants.
 

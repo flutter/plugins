@@ -6,8 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'method_channel_video_player.dart';
-
 /// The interface that implementations of video_player must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `video_player`
@@ -21,11 +19,12 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static VideoPlayerPlatform _instance = MethodChannelVideoPlayer();
+  static VideoPlayerPlatform _instance = _PlaceholderImplementation();
 
-  /// The default instance of [VideoPlayerPlatform] to use.
+  /// The instance of [VideoPlayerPlatform] to use.
   ///
-  /// Defaults to [MethodChannelVideoPlayer].
+  /// Defaults to a placeholder that does not override any methods, and thus
+  /// throws `UnimplementedError` in most cases.
   static VideoPlayerPlatform get instance => _instance;
 
   /// Platform-specific plugins should override this with their own
@@ -104,6 +103,8 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
 }
+
+class _PlaceholderImplementation extends VideoPlayerPlatform {}
 
 /// Description of the data source used to create an instance of
 /// the video player.
