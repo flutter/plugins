@@ -23,7 +23,7 @@ void main() {
         const Text('WebView'),
       );
 
-      final WebViewWidget webViewWidget = WebViewWidget.withPlatform(
+      final WebViewWidget webViewWidget = WebViewWidget.fromPlatform(
         platform: mockPlatformWebViewWidget,
       );
 

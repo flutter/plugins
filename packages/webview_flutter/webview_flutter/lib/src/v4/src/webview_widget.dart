@@ -16,7 +16,7 @@ class WebViewWidget extends StatelessWidget {
     TextDirection layoutDirection = TextDirection.ltr,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers =
         const <Factory<OneSequenceGestureRecognizer>>{},
-  }) : this.withPlatform(
+  }) : this.fromPlatform(
           platform: PlatformWebViewWidget(
             PlatformWebViewWidgetCreationParams(
               key: key,
@@ -27,14 +27,14 @@ class WebViewWidget extends StatelessWidget {
           ),
         );
 
-  /// Constructs a [WebViewWidget] with creation params for a specific
+  /// Constructs a [WebViewWidget] from creation params for a specific
   /// platform.
-  WebViewWidget.withPlatformCreationParams(
+  WebViewWidget.fromPlatformCreationParams(
     PlatformWebViewWidgetCreationParams params,
-  ) : this.withPlatform(platform: PlatformWebViewWidget(params));
+  ) : this.fromPlatform(platform: PlatformWebViewWidget(params));
 
-  /// Constructs a [WebViewWidget] with a specific platform implementation.
-  WebViewWidget.withPlatform({required this.platform})
+  /// Constructs a [WebViewWidget] from a specific platform implementation.
+  WebViewWidget.fromPlatform({required this.platform})
       : super(key: platform.params.key);
 
   // TODO: This should be WebViewController! Don't submit.
