@@ -126,6 +126,16 @@ void main() {
         'clientId': 'fakeClientId',
       }),
       () {
+        googleSignIn.initWithParams(const SignInInitParameters(
+            hostedDomain: 'example.com',
+            scopes: <String>['two', 'scopes'],
+            clientId: 'fakeClientId'));
+      }: isMethodCall('init', arguments: <String, dynamic>{
+        'hostedDomain': 'example.com',
+        'scopes': <String>['two', 'scopes'],
+        'clientId': 'fakeClientId',
+      }),
+      () {
         googleSignIn.getTokens(
             email: 'example@example.com', shouldRecoverAuth: false);
       }: isMethodCall('getTokens', arguments: <String, dynamic>{

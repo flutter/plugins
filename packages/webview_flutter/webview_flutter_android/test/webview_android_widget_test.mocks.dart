@@ -28,8 +28,8 @@ class _FakeWebStorage_1 extends _i1.Fake implements _i2.WebStorage {}
 
 class _FakeWebView_2 extends _i1.Fake implements _i2.WebView {}
 
-class _FakeDownloadListener_3 extends _i1.Fake implements _i2.DownloadListener {
-}
+class _FakeDownloadListener_3 extends _i1.Fake
+    implements _i2.DownloadListener {}
 
 class _FakeJavascriptChannelRegistry_4 extends _i1.Fake
     implements _i3.JavascriptChannelRegistry {}

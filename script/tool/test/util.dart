@@ -23,6 +23,13 @@ import 'mocks.dart';
 
 export 'package:flutter_plugin_tools/src/common/repository_package.dart';
 
+/// The relative path from a package to the file that is used to enable
+/// README excerpting for a package.
+// This is a shared constant to ensure that both readme-check and
+// update-excerpt are looking for the same file, so that readme-check can't
+// get out of sync with what actually drives excerpting.
+const String kReadmeExcerptConfigPath = 'example/build.excerpt.yaml';
+
 const String _defaultDartConstraint = '>=2.14.0 <3.0.0';
 const String _defaultFlutterConstraint = '>=2.5.0';
 
@@ -117,7 +124,6 @@ RepositoryPackage createFakePlugin(
   createFakePubspec(
     package,
     name: name,
-    isFlutter: true,
     isPlugin: true,
     platformSupport: platformSupport,
     version: version,
@@ -399,10 +405,10 @@ class RecordingProcessRunner extends ProcessRunner {
     final io.Process? process = _getProcessToReturn(executable);
     final List<String>? processStdout =
         await process?.stdout.transform(stdoutEncoding.decoder).toList();
-    final String stdout = processStdout?.join('') ?? '';
+    final String stdout = processStdout?.join() ?? '';
     final List<String>? processStderr =
         await process?.stderr.transform(stderrEncoding.decoder).toList();
-    final String stderr = processStderr?.join('') ?? '';
+    final String stderr = processStderr?.join() ?? '';
 
     final io.ProcessResult result = process == null
         ? io.ProcessResult(1, 0, '', '')
