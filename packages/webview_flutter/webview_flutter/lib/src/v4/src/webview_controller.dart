@@ -91,7 +91,7 @@ class WebViewController {
     ));
   }
 
-  /// Accessor to the current URL that the WebView is displaying.
+  /// Returns the current URL that the WebView is displaying.
   ///
   /// If no URL was ever loaded, returns `null`.
   Future<String?> currentUrl() {
@@ -131,9 +131,8 @@ class WebViewController {
   ///
   /// The following caches are cleared:
   ///	1. Browser HTTP Cache.
-  ///	2. [Cache API](https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/cache-api) caches.
-  ///    These are not yet supported in iOS WkWebView. Service workers tend to
-  ///    use this cache.
+  ///	2. [Cache API](https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/cache-api)
+  ///    caches. Service workers tend to use this cache.
   ///	3. Application cache.
   Future<void> clearCache() {
     return platform.clearCache();
@@ -217,7 +216,7 @@ class WebViewController {
     return platform.getTitle();
   }
 
-  /// Set the scrolled position of this view.
+  /// Sets the scrolled position of this view.
   ///
   /// The parameters `x` and `y` specify the position to scroll to in WebView
   /// pixels.
@@ -225,7 +224,7 @@ class WebViewController {
     return platform.scrollTo(x, y);
   }
 
-  /// Move the scrolled position of this view.
+  /// Moves the scrolled position of this view.
   ///
   /// The parameters `x` and `y` specify the amount of WebView pixels to scroll
   /// by.
@@ -233,7 +232,7 @@ class WebViewController {
     return platform.scrollBy(x, y);
   }
 
-  /// Return the current scroll position of this view.
+  /// Returns the current scroll position of this view.
   ///
   /// Scroll position is measured from the top left.
   Future<Offset> getScrollPosition() async {
@@ -246,7 +245,7 @@ class WebViewController {
     return platform.enableZoom(enabled);
   }
 
-  /// Set the current background color of this view.
+  /// Sets the current background color of this view.
   Future<void> setBackgroundColor(Color color) {
     return platform.setBackgroundColor(color);
   }
