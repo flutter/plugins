@@ -74,7 +74,7 @@ public class CameraSelectorTest {
   }
 
   @Test
-  public void flutterApiCreate() {
+  public void flutterApiCreateTest() {
     final CameraSelectorFlutterApiImpl spyFlutterApi =
         spy(new CameraSelectorFlutterApiImpl(mockBinaryMessenger, testInstanceManager));
 
