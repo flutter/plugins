@@ -1,4 +1,4 @@
 ## NEXT
 
 * Creates camera_android_camerax plugin for development.
-* Add CameraInfo class and remove unnecessary code from plugin.
+* Adds CameraInfo class and removes unnecessary code from plugin.
