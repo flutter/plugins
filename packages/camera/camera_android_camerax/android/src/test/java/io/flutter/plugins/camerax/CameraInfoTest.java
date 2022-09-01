@@ -4,10 +4,12 @@
 
 package io.flutter.plugins.camerax;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.camera.core.CameraInfo;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -23,7 +25,7 @@ import org.mockito.junit.MockitoRule;
 public class CameraInfoTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock public CameraInfo cameraInfo;
+  @Mock public CameraInfo mockCameraInfo;
   @Mock public BinaryMessenger mockBinaryMessenger;
 
   InstanceManager testInstanceManager;
@@ -42,22 +44,24 @@ public class CameraInfoTest {
   public void getSensorRotationDegreesTest() {
     final CameraInfoHostApiImpl cameraInfoHostApi = new CameraInfoHostApiImpl(testInstanceManager);
 
-    testInstanceManager.addDartCreatedInstance(cameraInfo, 1);
+    testInstanceManager.addDartCreatedInstance(mockCameraInfo, 1);
 
-    cameraInfoHostApi.getSensorRotationDegrees(1L);
-    verify(cameraInfo).getSensorRotationDegrees();
+    when(mockCameraInfo.getSensorRotationDegrees()).thenReturn(90);
+
+    assertEquals((long) cameraInfoHostApi.getSensorRotationDegrees(1L), 90L);
+    verify(mockCameraInfo).getSensorRotationDegrees();
   }
 
   @Test
-  public void flutterApiCreate() {
+  public void flutterApiCreateTest() {
     final CameraInfoFlutterApiImpl spyFlutterApi =
         spy(new CameraInfoFlutterApiImpl(mockBinaryMessenger, testInstanceManager));
 
-    testInstanceManager.addHostCreatedInstance(cameraInfo);
-    spyFlutterApi.create(cameraInfo, reply -> {});
+    testInstanceManager.addHostCreatedInstance(mockCameraInfo);
+    spyFlutterApi.create(mockCameraInfo, reply -> {});
 
     final long identifier =
-        Objects.requireNonNull(testInstanceManager.getIdentifierForStrongReference(cameraInfo));
+        Objects.requireNonNull(testInstanceManager.getIdentifierForStrongReference(mockCameraInfo));
     verify(spyFlutterApi).create(eq(identifier), any());
   }
 }

@@ -19,7 +19,7 @@ void main() {
   group('CameraInfo', () {
     tearDown(() => TestCameraInfoHostApi.setup(null));
 
-    test('getSensorRotationDegreesTest', () {
+    test('getSensorRotationDegreesTest', () async {
       final MockTestCameraInfoHostApi mockApi = MockTestCameraInfoHostApi();
       TestCameraInfoHostApi.setup(mockApi);
 
@@ -38,7 +38,7 @@ void main() {
       when(mockApi.getSensorRotationDegrees(
               instanceManager.getIdentifier(cameraInfo)))
           .thenReturn(90);
-      cameraInfo.getSensorRotationDegrees();
+      expect(await cameraInfo.getSensorRotationDegrees(), equals(90));
 
       verify(mockApi.getSensorRotationDegrees(0));
     });
