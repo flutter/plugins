@@ -22,8 +22,8 @@ import 'package:mockito/mockito.dart' as _i1;
 
 class _FakeLostData_0 extends _i1.Fake implements _i2.LostData {}
 
-class _FakeLostDataResponse_1 extends _i1.Fake
-    implements _i2.LostDataResponse {}
+class _FakeLostDataResponse_1 extends _i1.Fake implements _i2.LostDataResponse {
+}
 
 /// A class which mocks [ImagePickerPlatform].
 ///
@@ -133,4 +133,13 @@ class MockImagePickerPlatform extends _i1.Mock
           Invocation.method(
               #getImageFromSource, [], {#source: source, #options: options}),
           returnValue: Future<_i5.XFile?>.value()) as _i4.Future<_i5.XFile?>);
+  @override
+  _i4.Future<List<_i5.XFile>> getMultiImageWithOptions(
+          {_i2.MultiImagePickerOptions? options =
+              const _i2.MultiImagePickerOptions()}) =>
+      (super.noSuchMethod(
+          Invocation.method(#getMultiImageWithOptions, [], {#options: options}),
+          returnValue:
+              Future<List<_i5.XFile>>.value(<_i5.XFile>[])) as _i4
+          .Future<List<_i5.XFile>>);
 }

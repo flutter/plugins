@@ -400,11 +400,11 @@ void main() {
 
     group('#Multi images', () {
       setUp(() {
-        when(mockPlatform.getMultiImage(
-                maxWidth: anyNamed('maxWidth'),
-                maxHeight: anyNamed('maxHeight'),
-                imageQuality: anyNamed('imageQuality')))
-            .thenAnswer((Invocation _) async => null);
+        when(
+          mockPlatform.getMultiImageWithOptions(
+            options: anyNamed('options'),
+          ),
+        ).thenAnswer((Invocation _) async => <XFile>[]);
       });
 
       group('#pickMultiImage', () {
@@ -433,14 +433,101 @@ void main() {
               maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70);
 
           verifyInOrder(<Object>[
-            mockPlatform.getMultiImage(),
-            mockPlatform.getMultiImage(maxWidth: 10.0),
-            mockPlatform.getMultiImage(maxHeight: 10.0),
-            mockPlatform.getMultiImage(maxWidth: 10.0, maxHeight: 20.0),
-            mockPlatform.getMultiImage(maxWidth: 10.0, imageQuality: 70),
-            mockPlatform.getMultiImage(maxHeight: 10.0, imageQuality: 70),
-            mockPlatform.getMultiImage(
-                maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70),
+            mockPlatform.getMultiImageWithOptions(
+              options: argThat(
+                isInstanceOf<MultiImagePickerOptions>(),
+                named: 'options',
+              ),
+            ),
+            mockPlatform.getMultiImageWithOptions(
+              options: argThat(
+                isInstanceOf<MultiImagePickerOptions>().having(
+                    (MultiImagePickerOptions options) =>
+                        options.imageOptions.maxWidth,
+                    'maxWidth',
+                    equals(10.0)),
+                named: 'options',
+              ),
+            ),
+            mockPlatform.getMultiImageWithOptions(
+              options: argThat(
+                isInstanceOf<MultiImagePickerOptions>().having(
+                    (MultiImagePickerOptions options) =>
+                        options.imageOptions.maxHeight,
+                    'maxHeight',
+                    equals(10.0)),
+                named: 'options',
+              ),
+            ),
+            mockPlatform.getMultiImageWithOptions(
+              options: argThat(
+                isInstanceOf<MultiImagePickerOptions>()
+                    .having(
+                        (MultiImagePickerOptions options) =>
+                            options.imageOptions.maxWidth,
+                        'maxWidth',
+                        equals(10.0))
+                    .having(
+                        (MultiImagePickerOptions options) =>
+                            options.imageOptions.maxHeight,
+                        'maxHeight',
+                        equals(20.0)),
+                named: 'options',
+              ),
+            ),
+            mockPlatform.getMultiImageWithOptions(
+              options: argThat(
+                isInstanceOf<MultiImagePickerOptions>()
+                    .having(
+                        (MultiImagePickerOptions options) =>
+                            options.imageOptions.maxWidth,
+                        'maxWidth',
+                        equals(10.0))
+                    .having(
+                        (MultiImagePickerOptions options) =>
+                            options.imageOptions.imageQuality,
+                        'imageQuality',
+                        equals(70)),
+                named: 'options',
+              ),
+            ),
+            mockPlatform.getMultiImageWithOptions(
+              options: argThat(
+                isInstanceOf<MultiImagePickerOptions>()
+                    .having(
+                        (MultiImagePickerOptions options) =>
+                            options.imageOptions.maxHeight,
+                        'maxHeight',
+                        equals(10.0))
+                    .having(
+                        (MultiImagePickerOptions options) =>
+                            options.imageOptions.imageQuality,
+                        'imageQuality',
+                        equals(70)),
+                named: 'options',
+              ),
+            ),
+            mockPlatform.getMultiImageWithOptions(
+              options: argThat(
+                isInstanceOf<MultiImagePickerOptions>()
+                    .having(
+                        (MultiImagePickerOptions options) =>
+                            options.imageOptions.maxWidth,
+                        'maxWidth',
+                        equals(10.0))
+                    .having(
+                        (MultiImagePickerOptions options) =>
+                            options.imageOptions.maxWidth,
+                        'maxHeight',
+                        equals(10.0))
+                    .having(
+                        (MultiImagePickerOptions options) =>
+                            options.imageOptions.imageQuality,
+                        'imageQuality',
+                        equals(70)),
+                named: 'options',
+              ),
+            ),
           ]);
         });
 
@@ -457,11 +544,45 @@ void main() {
           );
         });
 
-        test('handles a null image file response gracefully', () async {
+        test('handles an empty image file response gracefully', () async {
           final ImagePicker picker = ImagePicker();
 
-          expect(await picker.pickMultiImage(), isNull);
-          expect(await picker.pickMultiImage(), isNull);
+          expect(await picker.pickMultiImage(), isEmpty);
+          expect(await picker.pickMultiImage(), isEmpty);
+        });
+
+        test('Full metadata argument defaults to true', () async {
+          final ImagePicker picker = ImagePicker();
+          await picker.pickMultiImage();
+
+          verify(mockPlatform.getMultiImageWithOptions(
+            options: argThat(
+              isInstanceOf<MultiImagePickerOptions>().having(
+                  (MultiImagePickerOptions options) =>
+                      options.imageOptions.requestFullMetadata,
+                  'requestFullMetadata',
+                  isTrue),
+              named: 'options',
+            ),
+          ));
+        });
+
+        test('passes the full metadata argument correctly', () async {
+          final ImagePicker picker = ImagePicker();
+          await picker.pickMultiImage(
+            requestFullMetadata: false,
+          );
+
+          verify(mockPlatform.getMultiImageWithOptions(
+            options: argThat(
+              isInstanceOf<MultiImagePickerOptions>().having(
+                  (MultiImagePickerOptions options) =>
+                      options.imageOptions.requestFullMetadata,
+                  'requestFullMetadata',
+                  isFalse),
+              named: 'options',
+            ),
+          ));
         });
       });
     });

@@ -247,11 +247,16 @@ class ImagePicker {
   /// If specified, the images will be at most `maxWidth` wide and
   /// `maxHeight` tall. Otherwise the images will be returned at it's
   /// original width and height.
+  ///
   /// The `imageQuality` argument modifies the quality of the images, ranging from 0-100
   /// where 100 is the original/max quality. If `imageQuality` is null, the images with
   /// the original quality will be returned. Compression is only supported for certain
   /// image types such as JPEG and on Android PNG and WebP, too. If compression is not supported for the image that is picked,
   /// a warning message will be logged.
+  ///
+  /// Use `requestFullMetadata` (defaults to `true`) to control how much additional information the plugin tries to get.
+  /// If `requestFullMetadata` is set to `true`, the plugin tries to get the full image metadata which may require
+  /// extra permission requests on some platforms, such as `Photo Library Usage` permission on iOS .
   ///
   /// The method could throw [PlatformException] if the app does not have permission to access
   /// the camera or photos gallery, no camera is available, plugin is already in use,
@@ -259,10 +264,11 @@ class ImagePicker {
   /// be allocated (Android only) or due to an unknown error.
   ///
   /// See also [pickImage] to allow users to only pick a single image.
-  Future<List<XFile>?> pickMultiImage({
+  Future<List<XFile>> pickMultiImage({
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
+    bool requestFullMetadata = true,
   }) {
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
@@ -275,10 +281,15 @@ class ImagePicker {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
 
-    return platform.getMultiImage(
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
+    return platform.getMultiImageWithOptions(
+      options: MultiImagePickerOptions(
+        imageOptions: ImageOptions(
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+          requestFullMetadata: requestFullMetadata,
+        ),
+      ),
     );
   }
 
