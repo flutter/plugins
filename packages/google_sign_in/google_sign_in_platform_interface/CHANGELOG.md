@@ -1,3 +1,12 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 2.3.0
+
+* Adopts `plugin_platform_interface`. As a result, `isMock` is deprecated in
+  favor of the now-standard `MockPlatformInterfaceMixin`.
+
 ## 2.2.0
 
 * Adds support for the `serverClientId` parameter.

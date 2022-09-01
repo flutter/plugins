@@ -15,6 +15,8 @@ instead. (It is marked as Discontinued since it is no longer maintained as
 a general-purpose tool, but updates are still published for use in
 flutter/packages.)
 
+The commands in tools require the Flutter-bundled version of Dart to be the first `dart` loaded in the path.
+
 ### From Source (flutter/plugins only)
 
 Set up:

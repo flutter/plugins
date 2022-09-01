@@ -1,3 +1,8 @@
+## 0.2.0+4
+
+* Updates minimum Flutter version to 2.10.
+* Bumps gson to 2.9.1
+
 ## 0.2.0+3
 
 * Bumps okhttp to 4.10.0.
