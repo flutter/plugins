@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(tarrinneal): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
+
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -11,6 +15,8 @@ import 'package:path_provider/path_provider.dart';
 class SaveTextPage extends StatelessWidget {
   /// Default Constructor
   SaveTextPage({Key? key}) : super(key: key);
+
+  final bool _isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
@@ -81,8 +87,10 @@ class SaveTextPage extends StatelessWidget {
                 // ignore: deprecated_member_use
                 onPrimary: Colors.white,
               ),
-              child: const Text('Press to save a text file'),
-              onPressed: () => _saveFile(),
+              onPressed: _isIOS ? null : () => _saveFile(),
+              child: const Text(
+                'Press to save a text file (not supported on iOS).',
+              ),
             ),
           ],
         ),
