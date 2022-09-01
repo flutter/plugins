@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 0.8.5+2
 
 * Updates `image_picker_platform_interface` constraint to the correct minimum

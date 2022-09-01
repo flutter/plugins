@@ -1,3 +1,13 @@
+## 0.9.3
+
+* Raises minimum `compileSdkVersion` to 32 for the `all-plugins-app` command.
+
+## 0.9.2
+
+* Adds checking of `code-excerpt` configuration to `readme-check`, to validate
+  that if the excerpting tags are added to a README they are actually being
+  used.
+
 ## 0.9.1
 
 * Adds a `--downgrade` flag to `analyze` for analyzing with the oldest possible

@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 0.2.3+3
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.

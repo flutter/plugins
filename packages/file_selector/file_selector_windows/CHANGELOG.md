@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 0.9.1+2
 
 * Fixes the problem that the initial directory does not work after completing a file selection.

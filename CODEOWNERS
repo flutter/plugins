@@ -15,7 +15,7 @@ packages/local_auth/**                                   @stuartmorgan
 packages/path_provider/**                                @gaaclarke
 packages/plugin_platform_interface/**                    @stuartmorgan
 packages/quick_actions/**                                @stuartmorgan
-packages/shared_preferences/**                           @gaaclarke
+packages/shared_preferences/**                           @tarrinneal
 packages/url_launcher/**                                 @stuartmorgan
 packages/video_player/**                                 @gaaclarke
 packages/webview_flutter/**                              @bparrishMines
@@ -42,6 +42,7 @@ packages/video_player/video_player_android/**            @camsim99
 
 # - iOS
 packages/camera/camera_avfoundation/**                   @hellohuanlin
+packages/file_selector/file_selector_ios/**              @jmagman
 packages/google_maps_flutter/google_maps_flutter_ios/**  @cyanglaz
 packages/google_sign_in/google_sign_in_ios/**            @jmagman
 packages/image_picker/image_picker_ios/**                @cyanglaz
