@@ -21,7 +21,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.loadFile('file/path');
@@ -33,7 +33,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.loadFlutterAsset('file/path');
@@ -45,7 +45,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.loadHtmlString('html', baseUrl: 'baseUrl');
@@ -60,7 +60,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.loadRequest(
@@ -87,7 +87,7 @@ void main() {
     );
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await expectLater(
@@ -104,7 +104,7 @@ void main() {
     );
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await expectLater(webViewController.canGoBack(), completion(false));
@@ -118,7 +118,7 @@ void main() {
     );
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await expectLater(webViewController.canGoForward(), completion(true));
@@ -129,7 +129,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.goBack();
@@ -141,7 +141,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.goForward();
@@ -153,7 +153,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.reload();
@@ -165,7 +165,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.clearCache();
@@ -177,7 +177,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.clearLocalStorage();
@@ -189,7 +189,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.runJavaScript('1 + 1');
@@ -203,7 +203,7 @@ void main() {
         .thenAnswer((_) => Future<String>.value('2'));
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await expectLater(
@@ -217,7 +217,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     void onMessageReceived(JavaScriptMessage message) {}
@@ -238,7 +238,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.removeJavaScriptChannel('channel');
@@ -252,7 +252,7 @@ void main() {
         .thenAnswer((_) => Future<String>.value('myTitle'));
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await expectLater(webViewController.getTitle(), completion('myTitle'));
@@ -263,7 +263,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.scrollTo(2, 3);
@@ -275,7 +275,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.scrollBy(2, 3);
@@ -292,7 +292,7 @@ void main() {
     );
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await expectLater(
@@ -306,7 +306,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.enableZoom(false);
@@ -318,7 +318,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.setBackgroundColor(Colors.green);
@@ -330,7 +330,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.setJavaScriptMode(JavaScriptMode.disabled);
@@ -344,7 +344,7 @@ void main() {
         MockPlatformWebViewController();
 
     final WebViewController webViewController = WebViewController.fromPlatform(
-      platform: mockPlatformWebViewController,
+      mockPlatformWebViewController,
     );
 
     await webViewController.setUserAgent('userAgent');
