@@ -17,7 +17,7 @@ import 'test_camerax_library.pigeon.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('CameraInfo', () {
+  group('CameraSelector', () {
     tearDown(() => TestCameraSelectorHostApi.setup(null));
 
     test('requireLensFacingTest', () {
