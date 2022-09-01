@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:camera_android_camerax/src/camerax_library.pigeon.dart';
 import 'package:camera_android_camerax/src/camera_info.dart';
+import 'package:camera_android_camerax/src/camerax_library.pigeon.dart';
 import 'package:camera_android_camerax/src/instance_manager.dart';
 import 'package:camera_android_camerax/src/process_camera_provider.dart';
 import 'package:flutter_test/flutter_test.dart';

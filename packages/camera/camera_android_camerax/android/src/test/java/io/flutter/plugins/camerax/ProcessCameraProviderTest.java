@@ -4,12 +4,14 @@
 
 package io.flutter.plugins.camerax;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import io.flutter.plugin.common.BinaryMessenger;
 import java.util.Objects;
@@ -42,24 +44,27 @@ public class ProcessCameraProviderTest {
   @Test
   public void getInstanceTest() {
     final Context mockContext = mock(Context.class);
-    final boolean getInstanceCalled = false;
+    final GeneratedCameraXLibrary.Result<Long> mockResult =
+        mock(GeneratedCameraXLibrary.Result.class);
+    final boolean[] getInstanceCalled = {false};
     final ProcessCameraProviderHostApiImpl processCameraProviderHostApi =
         new ProcessCameraProviderHostApiImpl(
             mockBinaryMessenger, testInstanceManager, mockContext) {
           @Override
           public void getInstance(GeneratedCameraXLibrary.Result<Long> result) {
-            getInstanceCalled = true;
+            getInstanceCalled[0] = true;
           }
         };
 
-    processCameraProviderHostApi.getInstance();
-    assertTrue(getInstanceCalled);
+    processCameraProviderHostApi.getInstance(mockResult);
+    assertTrue(getInstanceCalled[0]);
   }
 
   @Test
   public void getAvailableCameraInfosTest() {
+    final Context mockContext = mock(Context.class);
     final ProcessCameraProviderHostApiImpl processCameraProviderHostApi =
-        new ProcessCameraProviderHostApiImpl(mockBinaryMessenger, testInstanceManager);
+        new ProcessCameraProviderHostApiImpl(mockBinaryMessenger, testInstanceManager, mockContext);
 
     testInstanceManager.addDartCreatedInstance(processCameraProvider, 0);
 
