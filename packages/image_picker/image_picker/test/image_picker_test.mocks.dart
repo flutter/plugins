@@ -22,8 +22,8 @@ import 'package:mockito/mockito.dart' as _i1;
 
 class _FakeLostData_0 extends _i1.Fake implements _i2.LostData {}
 
-class _FakeLostDataResponse_1 extends _i1.Fake implements _i2.LostDataResponse {
-}
+class _FakeLostDataResponse_1 extends _i1.Fake
+    implements _i2.LostDataResponse {}
 
 /// A class which mocks [ImagePickerPlatform].
 ///
