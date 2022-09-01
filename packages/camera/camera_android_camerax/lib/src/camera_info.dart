@@ -13,7 +13,7 @@ import 'java_object.dart';
 ///
 /// See https://developer.android.com/reference/androidx/camera/core/CameraInfo.
 class CameraInfo extends JavaObject {
-  /// Constructs a [CameraInfo] object.
+  /// Constructs a [CameraInfo] that is not automatically attached to a native object.
   CameraInfo.detached(
       {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
       : super.detached(
