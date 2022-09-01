@@ -1,5 +1,7 @@
-## NEXT
+## 2.2.0
 
+* Deprecates `AndroidGoogleMapsFlutter.useAndroidViewSurface` in favor of
+  [setting the flag directly in the Android implementation](https://pub.dev/packages/google_maps_flutter_android#display-mode).
 * Updates minimum Flutter version to 2.10.
 
 ## 2.1.12

@@ -50,17 +50,11 @@ This means that app will only be available for users that run Android SDK 20 or 
                android:value="YOUR KEY HERE"/>
 ```
 
-#### Hybrid Composition
+#### Display Mode
 
-To use [Hybrid Composition](https://flutter.dev/docs/development/platform-integration/platform-views)
-to render the `GoogleMap` widget on Android, set `AndroidGoogleMapsFlutter.useAndroidViewSurface` to
-true.
-
-```dart
-if (defaultTargetPlatform == TargetPlatform.android) {
-  AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
-}
-```
+The Android implementation supports multiple
+[platform view display modes](https://flutter.dev/docs/development/platform-integration/platform-views).
+For details, see [the Android README](https://pub.dev/packages/google_maps_flutter_android#display-mode).
 
 ### iOS
 

@@ -40,10 +40,11 @@ class UnknownMapObjectIdError extends Error {
 }
 
 /// Android specific settings for [GoogleMap].
-// TODO(stuartmorgan): Deprecate this in favor of pointing people who want to
-// change this to using the Android implementation Dart class directly. This
-// should be done as part of switching the default to hybrid composition.
+@Deprecated(
+    'See https://pub.dev/packages/google_maps_flutter_android#display-mode')
 class AndroidGoogleMapsFlutter {
+  @Deprecated(
+      'See https://pub.dev/packages/google_maps_flutter_android#display-mode')
   AndroidGoogleMapsFlutter._();
 
   /// Whether to render [GoogleMap] with a [AndroidViewSurface] to build the Google Maps widget.
@@ -53,8 +54,8 @@ class AndroidGoogleMapsFlutter {
   /// versions below 10. See
   /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
   /// information.
-  ///
-  /// Defaults to false.
+  @Deprecated(
+      'See https://pub.dev/packages/google_maps_flutter_android#display-mode')
   static bool get useAndroidViewSurface {
     final GoogleMapsFlutterPlatform platform =
         GoogleMapsFlutterPlatform.instance;
@@ -71,8 +72,8 @@ class AndroidGoogleMapsFlutter {
   /// versions below 10. See
   /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
   /// information.
-  ///
-  /// Defaults to false.
+  @Deprecated(
+      'See https://pub.dev/packages/google_maps_flutter_android#display-mode')
   static set useAndroidViewSurface(bool useAndroidViewSurface) {
     final GoogleMapsFlutterPlatform platform =
         GoogleMapsFlutterPlatform.instance;
