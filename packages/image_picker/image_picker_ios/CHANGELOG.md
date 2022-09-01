@@ -1,6 +1,24 @@
 ## 0.8.6
 
 * Adds `requestFullMetadata` option to `pickImage`, so images on iOS can be picked without `Photo Library Usage` permission.
+* Updates minimum Flutter version to 2.10.
+
+## 0.8.5+6
+
+* Updates description.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 0.8.5+5
+
+* Adds non-deprecated codepaths for iOS 13+.
+
+## 0.8.5+4
+
+* Suppresses warnings for pre-iOS-11 codepaths.
+
+## 0.8.5+3
+
+* Fixes 'messages.g.h' file not found.
 
 ## 0.8.5+2
 

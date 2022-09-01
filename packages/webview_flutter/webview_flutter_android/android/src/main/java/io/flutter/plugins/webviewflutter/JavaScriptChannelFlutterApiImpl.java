@@ -30,7 +30,7 @@ public class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi
   /** Passes arguments from {@link JavaScriptChannel#postMessage} to Dart. */
   public void postMessage(
       JavaScriptChannel javaScriptChannel, String messageArg, Reply<Void> callback) {
-    super.postMessage(instanceManager.getInstanceId(javaScriptChannel), messageArg, callback);
+    super.postMessage(getIdentifierForJavaScriptChannel(javaScriptChannel), messageArg, callback);
   }
 
   /**
@@ -40,11 +40,18 @@ public class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi
    * @param callback Reply callback with return value from Dart.
    */
   public void dispose(JavaScriptChannel javaScriptChannel, Reply<Void> callback) {
-    final Long instanceId = instanceManager.removeInstance(javaScriptChannel);
-    if (instanceId != null) {
-      dispose(instanceId, callback);
+    if (instanceManager.containsInstance(javaScriptChannel)) {
+      dispose(getIdentifierForJavaScriptChannel(javaScriptChannel), callback);
     } else {
       callback.reply(null);
     }
+  }
+
+  private long getIdentifierForJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
+    final Long identifier = instanceManager.getIdentifierForStrongReference(javaScriptChannel);
+    if (identifier == null) {
+      throw new IllegalStateException("Could not find identifier for JavaScriptChannel.");
+    }
+    return identifier;
   }
 }

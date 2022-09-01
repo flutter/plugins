@@ -37,7 +37,8 @@ class TestCommand extends PackageLoopingCommand {
       'This command requires "flutter" to be in your path.';
 
   @override
-  bool get includeSubpackages => true;
+  PackageLoopingType get packageLoopingType =>
+      PackageLoopingType.includeAllSubpackages;
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {

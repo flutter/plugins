@@ -1,5 +1,10 @@
 ## NEXT
 
+* Updates minimum Flutter version to 2.10.
+
+## 1.0.4
+
+* Updates references to the obsolete master branch.
 * Removes unnecessary imports.
 
 ## 1.0.3

@@ -1,5 +1,19 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 2.3.0
+
+* Adopts `plugin_platform_interface`. As a result, `isMock` is deprecated in
+  favor of the now-standard `MockPlatformInterfaceMixin`.
+
+## 2.2.0
+
+* Adds support for the `serverClientId` parameter.
+
 ## 2.1.3
 
+* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
 * Removes unnecessary imports.
 * Adds `SignInInitParameters` class to hold all sign in params, including the new `forceCodeForRefreshToken`.
 

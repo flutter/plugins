@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player_platform_interface/messages.dart';
+import 'package:video_player_platform_interface/messages.g.dart';
 import 'package:video_player_platform_interface/method_channel_video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
@@ -343,7 +345,7 @@ void main() {
                 eventType: VideoEventType.bufferingUpdate,
                 buffered: <DurationRange>[
                   DurationRange(
-                    const Duration(milliseconds: 0),
+                    Duration.zero,
                     const Duration(milliseconds: 1234),
                   ),
                   DurationRange(

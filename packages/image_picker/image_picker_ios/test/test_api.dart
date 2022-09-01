@@ -7,9 +7,14 @@
 // ignore_for_file: avoid_relative_lib_imports
 // @dart = 2.12
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
+
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+// Manually changed due to https://github.com/flutter/flutter/issues/97744
 import 'package:image_picker_ios/src/messages.g.dart';
 
 class _TestHostImagePickerApiCodec extends StandardMessageCodec {
@@ -47,7 +52,8 @@ abstract class TestHostImagePickerApi {
 
   Future<String?> pickImage(SourceSpecification source, MaxSize maxSize,
       int? imageQuality, bool requestFullMetadata);
-  Future<List<String?>?> pickMultiImage(MaxSize maxSize, int? imageQuality);
+  Future<List<String?>?> pickMultiImage(
+      MaxSize maxSize, int? imageQuality, bool requestFullMetadata);
   Future<String?> pickVideo(
       SourceSpecification source, int? maxDurationSeconds);
   static void setup(TestHostImagePickerApi? api,
@@ -95,8 +101,11 @@ abstract class TestHostImagePickerApi {
           assert(arg_maxSize != null,
               'Argument for dev.flutter.pigeon.ImagePickerApi.pickMultiImage was null, expected non-null MaxSize.');
           final int? arg_imageQuality = (args[1] as int?);
-          final List<String?>? output =
-              await api.pickMultiImage(arg_maxSize!, arg_imageQuality);
+          final bool? arg_requestFullMetadata = (args[2] as bool?);
+          assert(arg_requestFullMetadata != null,
+              'Argument for dev.flutter.pigeon.ImagePickerApi.pickMultiImage was null, expected non-null bool.');
+          final List<String?>? output = await api.pickMultiImage(
+              arg_maxSize!, arg_imageQuality, arg_requestFullMetadata!);
           return <Object?, Object?>{'result': output};
         });
       }

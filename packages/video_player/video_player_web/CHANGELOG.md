@@ -1,3 +1,18 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 2.0.12
+
+* Updates the `README` with:
+  * Information about a common known issue: "Some videos restart when using the
+  seek bar/progress bar/scrubber" (Issue [#49630](https://github.com/flutter/flutter/issues/49360))
+  * Links to the Autoplay information of all major browsers (Chrome/Edge, Firefox, Safari).
+
+## 2.0.11
+
+* Improves handling of videos with `Infinity` duration.
+
 ## 2.0.10
 
 * Minor fixes for new analysis options.

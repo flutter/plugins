@@ -40,6 +40,35 @@ void main() {
       expect(jsonMap['mimeTypes'], null);
       expect(jsonMap['macUTIs'], null);
       expect(jsonMap['webWildCards'], null);
+      expect(group.allowsAny, true);
+    });
+
+    test('allowsAny treats empty arrays the same as null', () {
+      final XTypeGroup group = XTypeGroup(
+        label: 'Any',
+        extensions: <String>[],
+        mimeTypes: <String>[],
+        macUTIs: <String>[],
+        webWildCards: <String>[],
+      );
+
+      expect(group.allowsAny, true);
+    });
+
+    test('allowsAny returns false if anything is set', () {
+      final XTypeGroup extensionOnly =
+          XTypeGroup(label: 'extensions', extensions: <String>['txt']);
+      final XTypeGroup mimeOnly =
+          XTypeGroup(label: 'mime', mimeTypes: <String>['text/plain']);
+      final XTypeGroup utiOnly =
+          XTypeGroup(label: 'utis', macUTIs: <String>['public.text']);
+      final XTypeGroup webOnly =
+          XTypeGroup(label: 'web', webWildCards: <String>['.txt']);
+
+      expect(extensionOnly.allowsAny, false);
+      expect(mimeOnly.allowsAny, false);
+      expect(utiOnly.allowsAny, false);
+      expect(webOnly.allowsAny, false);
     });
 
     test('Leading dots are removed from extensions', () {

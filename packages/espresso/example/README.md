@@ -8,7 +8,7 @@ The espresso package only runs tests on Android. The example runs on iOS, but th
 
 To run the Espresso tests:
 
-```
+```java
 flutter build apk --debug
 ./gradlew app:connectedAndroidTest
 ```

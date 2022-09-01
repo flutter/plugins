@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:async/async.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-
-import 'package:async/async.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -39,8 +37,8 @@ void main() {
       final ByteData byteData = const StandardMethodCodec()
           .encodeMethodCall(MethodCall(method, data));
       await TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
-          .handlePlatformMessage(
-              "plugins.flutter.io/google_maps_$mapId", byteData, (data) {});
+          .handlePlatformMessage('plugins.flutter.io/google_maps_$mapId',
+              byteData, (ByteData? data) {});
     }
 
     // Calls each method that uses invokeMethod with a return type other than
@@ -66,8 +64,8 @@ void main() {
         }
       });
 
-      await maps.getLatLng(ScreenCoordinate(x: 0, y: 0), mapId: mapId);
-      await maps.isMarkerInfoWindowShown(MarkerId(''), mapId: mapId);
+      await maps.getLatLng(const ScreenCoordinate(x: 0, y: 0), mapId: mapId);
+      await maps.isMarkerInfoWindowShown(const MarkerId(''), mapId: mapId);
       await maps.getZoomLevel(mapId: mapId);
       await maps.takeSnapshot(mapId: mapId);
       // Check that all the invokeMethod calls happened.
@@ -80,20 +78,20 @@ void main() {
     });
     test('markers send drag event to correct streams', () async {
       const int mapId = 1;
-      final jsonMarkerDragStartEvent = <dynamic, dynamic>{
-        "mapId": mapId,
-        "markerId": "drag-start-marker",
-        "position": <double>[1.0, 1.0]
+      final Map<dynamic, dynamic> jsonMarkerDragStartEvent = <dynamic, dynamic>{
+        'mapId': mapId,
+        'markerId': 'drag-start-marker',
+        'position': <double>[1.0, 1.0]
       };
-      final jsonMarkerDragEvent = <dynamic, dynamic>{
-        "mapId": mapId,
-        "markerId": "drag-marker",
-        "position": <double>[1.0, 1.0]
+      final Map<dynamic, dynamic> jsonMarkerDragEvent = <dynamic, dynamic>{
+        'mapId': mapId,
+        'markerId': 'drag-marker',
+        'position': <double>[1.0, 1.0]
       };
-      final jsonMarkerDragEndEvent = <dynamic, dynamic>{
-        "mapId": mapId,
-        "markerId": "drag-end-marker",
-        "position": <double>[1.0, 1.0]
+      final Map<dynamic, dynamic> jsonMarkerDragEndEvent = <dynamic, dynamic>{
+        'mapId': mapId,
+        'markerId': 'drag-end-marker',
+        'position': <double>[1.0, 1.0]
       };
 
       final MethodChannelGoogleMapsFlutter maps =
@@ -101,23 +99,24 @@ void main() {
       maps.ensureChannelInitialized(mapId);
 
       final StreamQueue<MarkerDragStartEvent> markerDragStartStream =
-          StreamQueue(maps.onMarkerDragStart(mapId: mapId));
+          StreamQueue<MarkerDragStartEvent>(
+              maps.onMarkerDragStart(mapId: mapId));
       final StreamQueue<MarkerDragEvent> markerDragStream =
-          StreamQueue(maps.onMarkerDrag(mapId: mapId));
+          StreamQueue<MarkerDragEvent>(maps.onMarkerDrag(mapId: mapId));
       final StreamQueue<MarkerDragEndEvent> markerDragEndStream =
-          StreamQueue(maps.onMarkerDragEnd(mapId: mapId));
+          StreamQueue<MarkerDragEndEvent>(maps.onMarkerDragEnd(mapId: mapId));
 
       await sendPlatformMessage(
-          mapId, "marker#onDragStart", jsonMarkerDragStartEvent);
-      await sendPlatformMessage(mapId, "marker#onDrag", jsonMarkerDragEvent);
+          mapId, 'marker#onDragStart', jsonMarkerDragStartEvent);
+      await sendPlatformMessage(mapId, 'marker#onDrag', jsonMarkerDragEvent);
       await sendPlatformMessage(
-          mapId, "marker#onDragEnd", jsonMarkerDragEndEvent);
+          mapId, 'marker#onDragEnd', jsonMarkerDragEndEvent);
 
       expect((await markerDragStartStream.next).value.value,
-          equals("drag-start-marker"));
-      expect((await markerDragStream.next).value.value, equals("drag-marker"));
+          equals('drag-start-marker'));
+      expect((await markerDragStream.next).value.value, equals('drag-marker'));
       expect((await markerDragEndStream.next).value.value,
-          equals("drag-end-marker"));
+          equals('drag-end-marker'));
     });
   });
 }

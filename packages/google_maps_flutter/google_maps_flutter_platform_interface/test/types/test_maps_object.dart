@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/maps_object.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/maps_object_updates.dart';
 
 /// A trivial TestMapsObject implementation for testing updates with.
-class TestMapsObject implements MapsObject {
+@immutable
+class TestMapsObject implements MapsObject<TestMapsObject> {
   const TestMapsObject(this.mapsId, {this.data = 1});
 
+  @override
   final MapsObjectId<TestMapsObject> mapsId;
 
   final int data;

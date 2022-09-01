@@ -1,3 +1,19 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 2.1.2
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 2.1.1
+
+* Replaces `USE_FINGERPRINT` permission with `USE_BIOMETRIC` in README and example project.
+
+## 2.1.0
+
+* Adds Windows support.
+
 ## 2.0.2
 
 * Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors

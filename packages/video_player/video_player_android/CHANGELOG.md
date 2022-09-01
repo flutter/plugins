@@ -1,3 +1,34 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+* Fixes violations of new analysis option use_named_constants.
+
+## 2.3.9
+
+* Updates ExoPlayer to 2.18.1.
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 2.3.8
+
+* Updates ExoPlayer to 2.18.0.
+
+## 2.3.7
+
+* Bumps gradle version to 7.2.1.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 2.3.6
+
+* Updates references to the obsolete master branch.
+
+## 2.3.5
+
+* Sets rotationCorrection for videos recorded in landscapeRight (https://github.com/flutter/flutter/issues/60327).
+
+## 2.3.4
+
+* Updates ExoPlayer to 2.17.1.
+
 ## 2.3.3
 
 * Removes unnecessary imports.

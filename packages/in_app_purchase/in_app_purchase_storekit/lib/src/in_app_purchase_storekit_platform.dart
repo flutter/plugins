@@ -71,11 +71,11 @@ class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
   Future<bool> buyNonConsumable({required PurchaseParam purchaseParam}) async {
     await _skPaymentQueueWrapper.addPayment(SKPaymentWrapper(
         productIdentifier: purchaseParam.productDetails.id,
-        quantity: 1,
+        quantity:
+            purchaseParam is AppStorePurchaseParam ? purchaseParam.quantity : 1,
         applicationUsername: purchaseParam.applicationUserName,
         simulatesAskToBuyInSandbox: purchaseParam is AppStorePurchaseParam &&
-            purchaseParam.simulatesAskToBuyInSandbox,
-        requestData: null));
+            purchaseParam.simulatesAskToBuyInSandbox));
 
     return true; // There's no error feedback from iOS here to return.
   }

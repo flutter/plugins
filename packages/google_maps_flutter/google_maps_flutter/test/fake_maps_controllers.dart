@@ -12,8 +12,7 @@ class FakePlatformGoogleMap {
   FakePlatformGoogleMap(int id, Map<dynamic, dynamic> params)
       : cameraPosition =
             CameraPosition.fromMap(params['initialCameraPosition']),
-        channel = MethodChannel(
-            'plugins.flutter.io/google_maps_$id', const StandardMethodCodec()) {
+        channel = MethodChannel('plugins.flutter.io/google_maps_$id') {
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options'] as Map<dynamic, dynamic>);
     updateMarkers(params);

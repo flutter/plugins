@@ -1,5 +1,40 @@
 ## NEXT
 
+* Updates minimum Flutter version to 2.10.
+
+## 2.1.12
+
+* Fixes violations of new analysis option use_named_constants.
+
+## 2.1.11
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Moves Android and iOS implementations to federated packages.
+
+## 2.1.10
+
+* Avoids map shift when scrolling on iOS.
+
+## 2.1.9
+
+* Updates integration tests to use the new inspector interface.
+* Removes obsolete test-only method for accessing a map controller's method channel.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 2.1.8
+
+* Switches to new platform interface versions of `buildView` and
+  `updateOptions`.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.1.7
+
+* Objective-C code cleanup.
+
+## 2.1.6
+
+* Fixes issue in Flutter v3.0.0 where some updates to the map don't take effect on Android.
+* Fixes iOS native unit tests on M1 devices.
 * Minor fixes for new analysis options.
 
 ## 2.1.5

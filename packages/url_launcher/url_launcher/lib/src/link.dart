@@ -130,7 +130,7 @@ class DefaultLinkDelegate extends StatelessWidget {
       );
     } else {
       FlutterError.reportError(FlutterErrorDetails(
-        exception: 'Could not launch link ${url.toString()}',
+        exception: 'Could not launch link $url',
         stack: StackTrace.current,
         library: 'url_launcher',
         context: ErrorDescription('during launching a link'),

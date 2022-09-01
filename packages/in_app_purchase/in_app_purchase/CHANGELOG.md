@@ -1,3 +1,19 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 3.0.7
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 3.0.6
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
+## 3.0.5
+
+* Updates references to the obsolete master branch.
+
 ## 3.0.4
 
 * Minor fixes for new analysis options.

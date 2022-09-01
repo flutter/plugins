@@ -23,6 +23,16 @@ import 'mocks.dart';
 
 export 'package:flutter_plugin_tools/src/common/repository_package.dart';
 
+/// The relative path from a package to the file that is used to enable
+/// README excerpting for a package.
+// This is a shared constant to ensure that both readme-check and
+// update-excerpt are looking for the same file, so that readme-check can't
+// get out of sync with what actually drives excerpting.
+const String kReadmeExcerptConfigPath = 'example/build.excerpt.yaml';
+
+const String _defaultDartConstraint = '>=2.14.0 <3.0.0';
+const String _defaultFlutterConstraint = '>=2.5.0';
+
 /// Returns the exe name that command will use when running Flutter on
 /// [platform].
 String getFlutterCommand(Platform platform) =>
@@ -97,23 +107,28 @@ RepositoryPackage createFakePlugin(
   Map<String, PlatformDetails> platformSupport =
       const <String, PlatformDetails>{},
   String? version = '0.0.1',
-  String flutterConstraint = '>=2.5.0',
+  String flutterConstraint = _defaultFlutterConstraint,
+  String dartConstraint = _defaultDartConstraint,
 }) {
-  final RepositoryPackage package = createFakePackage(name, parentDirectory,
-      isFlutter: true,
-      examples: examples,
-      extraFiles: extraFiles,
-      version: version,
-      flutterConstraint: flutterConstraint);
+  final RepositoryPackage package = createFakePackage(
+    name,
+    parentDirectory,
+    isFlutter: true,
+    examples: examples,
+    extraFiles: extraFiles,
+    version: version,
+    flutterConstraint: flutterConstraint,
+    dartConstraint: dartConstraint,
+  );
 
   createFakePubspec(
     package,
     name: name,
-    isFlutter: true,
     isPlugin: true,
     platformSupport: platformSupport,
     version: version,
     flutterConstraint: flutterConstraint,
+    dartConstraint: dartConstraint,
   );
 
   return package;
@@ -125,7 +140,7 @@ RepositoryPackage createFakePlugin(
 /// separators, of extra files to create in the package.
 ///
 /// If [includeCommonFiles] is true, common but non-critical files like
-/// CHANGELOG.md and AUTHORS will be included.
+/// CHANGELOG.md, README.md, and AUTHORS will be included.
 ///
 /// If non-null, [directoryName] will be used for the directory instead of
 /// [name].
@@ -136,7 +151,8 @@ RepositoryPackage createFakePackage(
   List<String> extraFiles = const <String>[],
   bool isFlutter = false,
   String? version = '0.0.1',
-  String flutterConstraint = '>=2.5.0',
+  String flutterConstraint = _defaultFlutterConstraint,
+  String dartConstraint = _defaultDartConstraint,
   bool includeCommonFiles = true,
   String? directoryName,
   String? publishTo,
@@ -150,13 +166,15 @@ RepositoryPackage createFakePackage(
       name: name,
       isFlutter: isFlutter,
       version: version,
-      flutterConstraint: flutterConstraint);
+      flutterConstraint: flutterConstraint,
+      dartConstraint: dartConstraint);
   if (includeCommonFiles) {
-    createFakeCHANGELOG(package, '''
+    package.changelogFile.writeAsStringSync('''
 ## $version
   * Some changes.
   ''');
-    createFakeAuthors(package);
+    package.readmeFile.writeAsStringSync('A very useful package');
+    package.authorsFile.writeAsStringSync('Google Inc.');
   }
 
   if (examples.length == 1) {
@@ -166,7 +184,8 @@ RepositoryPackage createFakePackage(
         includeCommonFiles: false,
         isFlutter: isFlutter,
         publishTo: 'none',
-        flutterConstraint: flutterConstraint);
+        flutterConstraint: flutterConstraint,
+        dartConstraint: dartConstraint);
   } else if (examples.isNotEmpty) {
     final Directory examplesDirectory = getExampleDir(package)..createSync();
     for (final String exampleName in examples) {
@@ -175,7 +194,8 @@ RepositoryPackage createFakePackage(
           includeCommonFiles: false,
           isFlutter: isFlutter,
           publishTo: 'none',
-          flutterConstraint: flutterConstraint);
+          flutterConstraint: flutterConstraint,
+          dartConstraint: dartConstraint);
     }
   }
 
@@ -188,12 +208,7 @@ RepositoryPackage createFakePackage(
   return package;
 }
 
-void createFakeCHANGELOG(RepositoryPackage package, String texts) {
-  package.changelogFile.createSync();
-  package.changelogFile.writeAsStringSync(texts);
-}
-
-/// Creates a `pubspec.yaml` file with a flutter dependency.
+/// Creates a `pubspec.yaml` file for [package].
 ///
 /// [platformSupport] is a map of platform string to the support details for
 /// that platform. If empty, no `plugin` entry will be created unless `isPlugin`
@@ -207,8 +222,8 @@ void createFakePubspec(
       const <String, PlatformDetails>{},
   String? publishTo,
   String? version,
-  String dartConstraint = '>=2.0.0 <3.0.0',
-  String flutterConstraint = '>=2.5.0',
+  String dartConstraint = _defaultDartConstraint,
+  String flutterConstraint = _defaultFlutterConstraint,
 }) {
   isPlugin |= platformSupport.isNotEmpty;
 
@@ -267,11 +282,6 @@ $pluginSection
   package.pubspecFile.writeAsStringSync(yaml);
 }
 
-void createFakeAuthors(RepositoryPackage package) {
-  package.authorsFile.createSync();
-  package.authorsFile.writeAsStringSync('Google Inc.');
-}
-
 String _pluginPlatformSection(
     String platform, PlatformDetails support, String packageName) {
   String entry = '';
@@ -319,14 +329,15 @@ String _pluginPlatformSection(
   return entry;
 }
 
-typedef ErrorHandler = void Function(Error error);
-
 /// Run the command [runner] with the given [args] and return
 /// what was printed.
 /// A custom [errorHandler] can be used to handle the runner error as desired without throwing.
 Future<List<String>> runCapturingPrint(
-    CommandRunner<void> runner, List<String> args,
-    {ErrorHandler? errorHandler}) async {
+  CommandRunner<void> runner,
+  List<String> args, {
+  Function(Error error)? errorHandler,
+  Function(Exception error)? exceptionHandler,
+}) async {
   final List<String> prints = <String>[];
   final ZoneSpecification spec = ZoneSpecification(
     print: (_, __, ___, String message) {
@@ -342,6 +353,11 @@ Future<List<String>> runCapturingPrint(
       rethrow;
     }
     errorHandler(e);
+  } on Exception catch (e) {
+    if (exceptionHandler == null) {
+      rethrow;
+    }
+    exceptionHandler(e);
   }
 
   return prints;
@@ -389,10 +405,10 @@ class RecordingProcessRunner extends ProcessRunner {
     final io.Process? process = _getProcessToReturn(executable);
     final List<String>? processStdout =
         await process?.stdout.transform(stdoutEncoding.decoder).toList();
-    final String stdout = processStdout?.join('') ?? '';
+    final String stdout = processStdout?.join() ?? '';
     final List<String>? processStderr =
         await process?.stderr.transform(stderrEncoding.decoder).toList();
-    final String stderr = processStderr?.join('') ?? '';
+    final String stderr = processStderr?.join() ?? '';
 
     final io.ProcessResult result = process == null
         ? io.ProcessResult(1, 0, '', '')

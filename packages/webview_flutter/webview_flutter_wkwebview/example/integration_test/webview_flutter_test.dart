@@ -9,6 +9,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
@@ -17,6 +19,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
+import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
 import 'package:webview_flutter_wkwebview_example/navigation_decision.dart';
 import 'package:webview_flutter_wkwebview_example/navigation_request.dart';
 import 'package:webview_flutter_wkwebview_example/web_view.dart';
@@ -47,6 +51,7 @@ Future<void> main() async {
   testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
+    final Completer<void> pageFinishedCompleter = Completer<void>();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -56,17 +61,44 @@ Future<void> main() async {
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
+          onPageFinished: pageFinishedCompleter.complete,
         ),
       ),
     );
+
     final WebViewController controller = await controllerCompleter.future;
+    await pageFinishedCompleter.future;
+
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
   });
 
+  testWidgets(
+      'withWeakRefenceTo allows encapsulating class to be garbage collected',
+      (WidgetTester tester) async {
+    final Completer<int> gcCompleter = Completer<int>();
+    final InstanceManager instanceManager = InstanceManager(
+      onWeakReferenceRemoved: gcCompleter.complete,
+    );
+
+    ClassWithCallbackClass? instance = ClassWithCallbackClass();
+    instanceManager.addHostCreatedInstance(instance.callbackClass, 0);
+    instance = null;
+
+    // Force garbage collection.
+    await IntegrationTestWidgetsFlutterBinding.instance
+        .watchPerformance(() async {
+      await tester.pumpAndSettle();
+    });
+
+    final int gcIdentifier = await gcCompleter.future;
+    expect(gcIdentifier, 0);
+  }, timeout: const Timeout(Duration(seconds: 10)));
+
   testWidgets('loadUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
+    final StreamController<String> pageLoads = StreamController<String>();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -76,13 +108,19 @@ Future<void> main() async {
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
+          onPageFinished: (String url) {
+            pageLoads.add(url);
+          },
         ),
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
+
     await controller.loadUrl(secondaryUrl);
-    final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, secondaryUrl);
+    await expectLater(
+      pageLoads.stream.firstWhere((String url) => url == secondaryUrl),
+      completion(secondaryUrl),
+    );
   });
 
   testWidgets('evaluateJavascript', (WidgetTester tester) async {
@@ -151,7 +189,7 @@ Future<void> main() async {
         Completer<WebViewController>();
     final Completer<void> pageStarted = Completer<void>();
     final Completer<void> pageLoaded = Completer<void>();
-    final List<String> messagesReceived = <String>[];
+    final Completer<String> channelCompleter = Completer<String>();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -168,7 +206,7 @@ Future<void> main() async {
             JavascriptChannel(
               name: 'Echo',
               onMessageReceived: (JavascriptMessage message) {
-                messagesReceived.add(message.message);
+                channelCompleter.complete(message.message);
               },
             ),
           },
@@ -185,9 +223,10 @@ Future<void> main() async {
     await pageStarted.future;
     await pageLoaded.future;
 
-    expect(messagesReceived, isEmpty);
+    expect(channelCompleter.isCompleted, isFalse);
     await controller.runJavascript('Echo.postMessage("hello");');
-    expect(messagesReceived, equals(<String>['hello']));
+
+    await expectLater(channelCompleter.future, completion('hello'));
   });
 
   testWidgets('resize webview', (WidgetTester tester) async {
@@ -386,8 +425,6 @@ Future<void> main() async {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );
@@ -445,8 +482,6 @@ Future<void> main() async {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );
@@ -542,7 +577,6 @@ Future<void> main() async {
               pageLoaded.complete(null);
             },
             initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-            allowsInlineMediaPlayback: false,
           ),
         ),
       );
@@ -647,8 +681,6 @@ Future<void> main() async {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );
@@ -661,7 +693,7 @@ Future<void> main() async {
       expect(isPaused, _webviewBool(true));
     });
 
-    testWidgets('Changes to initialMediaPlaybackPolocy are ignored',
+    testWidgets('Changes to initialMediaPlaybackPolicy are ignored',
         (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
@@ -716,8 +748,6 @@ Future<void> main() async {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );
@@ -1158,10 +1188,8 @@ Future<void> main() async {
       expect(controller.canGoBack(), completion(true));
       await controller.goBack();
       await pageLoaded.future;
-      expect(controller.currentUrl(), completion(primaryUrl));
+      await expectLater(controller.currentUrl(), completion(primaryUrl));
     },
-    // Flaky; see https://github.com/flutter/flutter/issues/90976
-    skip: true,
   );
 }
 
@@ -1250,4 +1278,34 @@ class ResizableWebViewState extends State<ResizableWebView> {
       ),
     );
   }
+}
+
+class CopyableObjectWithCallback with Copyable {
+  CopyableObjectWithCallback(this.callback);
+
+  final VoidCallback callback;
+
+  @override
+  CopyableObjectWithCallback copy() {
+    return CopyableObjectWithCallback(callback);
+  }
+}
+
+class ClassWithCallbackClass {
+  ClassWithCallbackClass() {
+    callbackClass = CopyableObjectWithCallback(
+      withWeakRefenceTo(
+        this,
+        (WeakReference<ClassWithCallbackClass> weakReference) {
+          return () {
+            // Weak reference to `this` in callback.
+            // ignore: unnecessary_statements
+            weakReference;
+          };
+        },
+      ),
+    );
+  }
+
+  late final CopyableObjectWithCallback callbackClass;
 }

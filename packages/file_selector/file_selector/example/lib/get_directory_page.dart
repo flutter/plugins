@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Screen that shows an example of getDirectoryPath
 class GetDirectoryPage extends StatelessWidget {
   /// Default Constructor
-  const GetDirectoryPage({Key? key}) : super(key: key);
+  GetDirectoryPage({Key? key}) : super(key: key);
+
+  final bool _isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
   Future<void> _getDirectoryPath(BuildContext context) async {
     const String confirmButtonText = 'Choose';
@@ -37,11 +40,16 @@ class GetDirectoryPage extends StatelessWidget {
           children: <Widget>[
             ElevatedButton(
               style: ElevatedButton.styleFrom(
+                // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+                // ignore: deprecated_member_use
                 primary: Colors.blue,
+                // ignore: deprecated_member_use
                 onPrimary: Colors.white,
               ),
-              child: const Text('Press to ask user to choose a directory'),
-              onPressed: () => _getDirectoryPath(context),
+              onPressed: _isIOS ? null : () => _getDirectoryPath(context),
+              child: const Text(
+                'Press to ask user to choose a directory (not supported on iOS).',
+              ),
             ),
           ],
         ),

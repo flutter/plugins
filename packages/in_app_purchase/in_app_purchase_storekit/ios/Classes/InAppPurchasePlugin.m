@@ -25,9 +25,6 @@
 
 // Callback channel to dart used for when a function from the payment queue delegate is triggered.
 @property(strong, nonatomic, readonly) FlutterMethodChannel *paymentQueueDelegateCallbackChannel;
-
-@property(strong, nonatomic, readonly) NSObject<FlutterTextureRegistry> *registry;
-@property(strong, nonatomic, readonly) NSObject<FlutterBinaryMessenger> *messenger;
 @property(strong, nonatomic, readonly) NSObject<FlutterPluginRegistrar> *registrar;
 
 @property(strong, nonatomic, readonly) FIAPReceiptManager *receiptManager;
@@ -57,8 +54,6 @@
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   self = [self initWithReceiptManager:[FIAPReceiptManager new]];
   _registrar = registrar;
-  _registry = [registrar textures];
-  _messenger = [registrar messenger];
 
   __weak typeof(self) weakSelf = self;
   _paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueue defaultQueue]
@@ -347,7 +342,7 @@
   if (@available(iOS 13.0, *)) {
     _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel
         methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
-              binaryMessenger:_messenger];
+              binaryMessenger:[_registrar messenger]];
 
     _paymentQueueDelegate = [[FIAPPaymentQueueDelegate alloc]
         initWithMethodChannel:_paymentQueueDelegateCallbackChannel];

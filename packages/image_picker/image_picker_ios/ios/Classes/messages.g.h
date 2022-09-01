@@ -49,6 +49,7 @@ NSObject<FlutterMessageCodec> *FLTImagePickerApiGetCodec(void);
                  completion:(void (^)(NSString *_Nullable, FlutterError *_Nullable))completion;
 - (void)pickMultiImageWithMaxSize:(FLTMaxSize *)maxSize
                           quality:(nullable NSNumber *)imageQuality
+                     fullMetadata:(NSNumber *)requestFullMetadata
                        completion:(void (^)(NSArray<NSString *> *_Nullable,
                                             FlutterError *_Nullable))completion;
 - (void)pickVideoWithSource:(FLTSourceSpecification *)source

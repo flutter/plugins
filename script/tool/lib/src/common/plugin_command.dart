@@ -44,7 +44,6 @@ abstract class PluginCommand extends Command<void> {
   }) : _gitDir = gitDir {
     argParser.addMultiOption(
       _packagesArg,
-      splitCommas: true,
       help:
           'Specifies which packages the command should run on (before sharding).\n',
       valueHelp: 'package1,package2,...',
@@ -192,7 +191,9 @@ abstract class PluginCommand extends Command<void> {
 
   /// Convenience accessor for List<String> arguments.
   List<String> getStringListArg(String key) {
-    return (argResults![key] as List<String>?) ?? <String>[];
+    // Clone the list so that if a caller modifies the result it won't change
+    // the actual arguments list for future queries.
+    return List<String>.from(argResults![key] as List<String>? ?? <String>[]);
   }
 
   /// If true, commands should log timing information that might be useful in

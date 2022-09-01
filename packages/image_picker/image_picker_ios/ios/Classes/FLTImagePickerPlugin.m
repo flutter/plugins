@@ -56,7 +56,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 @implementation FLTImagePickerPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FLTImagePickerPlugin *instance = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *instance = [[FLTImagePickerPlugin alloc] init];
   FLTImagePickerApiSetup(registrar.messenger, instance);
 }
 
@@ -119,8 +119,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _pickerViewController.presentationController.delegate = self;
   self.callContext = context;
 
-  BOOL requestFullMetadata = context.requestFullMetadata;
-  if (requestFullMetadata) {
+  if (context.requestFullMetadata) {
     [self checkPhotoAuthorizationForAccessLevel];
   } else {
     [self showPhotoLibraryWithPHPicker:_pickerViewController];
@@ -135,8 +134,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
   self.callContext = context;
 
-  BOOL requestFullMetadata = context.requestFullMetadata;
-
   switch (source.type) {
     case FLTSourceTypeCamera:
       [self checkCameraAuthorizationWithImagePicker:imagePickerController
@@ -144,7 +141,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       break;
     case FLTSourceTypeGallery:
       if (@available(iOS 11, *)) {
-        if (requestFullMetadata) {
+        if (context.requestFullMetadata) {
           [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
         } else {
           [self showPhotoLibraryWithImagePicker:imagePickerController];
@@ -198,12 +195,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
 - (void)pickMultiImageWithMaxSize:(nonnull FLTMaxSize *)maxSize
                           quality:(nullable NSNumber *)imageQuality
+                     fullMetadata:(NSNumber *)fullMetadata
                        completion:(nonnull void (^)(NSArray<NSString *> *_Nullable,
                                                     FlutterError *_Nullable))completion {
   FLTImagePickerMethodCallContext *context =
       [[FLTImagePickerMethodCallContext alloc] initWithResult:completion];
   context.maxSize = maxSize;
   context.imageQuality = imageQuality;
+  context.requestFullMetadata = [fullMetadata boolValue];
 
   if (@available(iOS 14, *)) {
     [self launchPHPickerWithContext:context];
@@ -245,7 +244,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 
   self.callContext = context;
-  BOOL requestFullMetadata = context.requestFullMetadata;
 
   switch (source.type) {
     case FLTSourceTypeCamera:
@@ -253,11 +251,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                              camera:[self cameraDeviceForSource:source]];
       break;
     case FLTSourceTypeGallery:
-      if (requestFullMetadata) {
-        [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
-      } else {
-        [self showPhotoLibraryWithImagePicker:imagePickerController];
-      }
+      [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
       break;
     default:
       [self sendCallResultWithError:[FlutterError errorWithCode:@"invalid_source"
@@ -576,11 +570,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *maxHeight = self.callContext.maxSize.height;
     NSNumber *imageQuality = self.callContext.imageQuality;
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
-    BOOL requestFullMetadata = _callContext.requestFullMetadata;
 
     PHAsset *originalAsset;
-    if (requestFullMetadata) {
-      // Full metadata are available only in PHAsset, which requires gallery permission
+    if (_callContext.requestFullMetadata) {
+      // Full metadata are available only in PHAsset, which requires gallery permission.
       originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     }
 
@@ -595,18 +588,38 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       // Image picked without an original asset (e.g. User took a photo directly)
       [self saveImageWithPickerInfo:info image:image imageQuality:desiredImageQuality];
     } else {
-      [[PHImageManager defaultManager]
-          requestImageDataForAsset:originalAsset
-                           options:nil
-                     resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                     UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                       // maxWidth and maxHeight are used only for GIF images.
-                       [self saveImageWithOriginalImageData:imageData
-                                                      image:image
-                                                   maxWidth:maxWidth
-                                                  maxHeight:maxHeight
-                                               imageQuality:desiredImageQuality];
-                     }];
+      void (^resultHandler)(NSData *imageData, NSString *dataUTI, NSDictionary *info) = ^(
+          NSData *_Nullable imageData, NSString *_Nullable dataUTI, NSDictionary *_Nullable info) {
+        // maxWidth and maxHeight are used only for GIF images.
+        [self saveImageWithOriginalImageData:imageData
+                                       image:image
+                                    maxWidth:maxWidth
+                                   maxHeight:maxHeight
+                                imageQuality:desiredImageQuality];
+      };
+      if (@available(iOS 13.0, *)) {
+        [[PHImageManager defaultManager]
+            requestImageDataAndOrientationForAsset:originalAsset
+                                           options:nil
+                                     resultHandler:^(NSData *_Nullable imageData,
+                                                     NSString *_Nullable dataUTI,
+                                                     CGImagePropertyOrientation orientation,
+                                                     NSDictionary *_Nullable info) {
+                                       resultHandler(imageData, dataUTI, info);
+                                     }];
+      } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [[PHImageManager defaultManager]
+            requestImageDataForAsset:originalAsset
+                             options:nil
+                       resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                       UIImageOrientation orientation,
+                                       NSDictionary *_Nullable info) {
+                         resultHandler(imageData, dataUTI, info);
+                       }];
+#pragma clang diagnostic pop
+      }
     }
   }
 }
