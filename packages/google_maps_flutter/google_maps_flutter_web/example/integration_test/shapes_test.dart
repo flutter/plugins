@@ -404,7 +404,7 @@ void main() {
       final Set<Heatmap> updatedHeatmaps = <Heatmap>{
         const Heatmap(
           heatmapId: HeatmapId('1'),
-          data: <WeightedLatLng>[WeightedLatLng(0, 0)],
+          data: <WeightedLatLng>[WeightedLatLng(LatLng(0, 0))],
         ),
       };
       controller.changeHeatmaps(updatedHeatmaps);

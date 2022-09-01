@@ -2,11 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart' show listEquals;
+import 'package:flutter/foundation.dart' show listEquals, objectRuntimeType;
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter/material.dart' show Color;
 
 import 'types.dart';
+
+/// A data point entry for a heatmap.
+///
+/// This is a geographical data point with a weight attribute.
+@immutable
+class WeightedLatLng {
+  /// Creates a [WeightedLatLng] with the specified [weight]
+  const WeightedLatLng(this.point, {this.weight = 1.0});
+
+  /// The geographical data point.
+  final LatLng point;
+
+  /// The weighting value of the data point.
+  final double weight;
+
+  /// Converts this object to something serializable in JSON.
+  Object toJson() {
+    return <Object>[point.toJson(), weight];
+  }
+
+  /// Initialize a [WeightedLatLng] from an \[location, weight\] array.
+  static WeightedLatLng? fromJson(Object? json) {
+    if (json == null) {
+      return null;
+    }
+    assert(json is List && json.length == 2);
+    final List<dynamic> list = json as List<dynamic>;
+    final LatLng latLng = LatLng.fromJson(list[0])!;
+    return WeightedLatLng(latLng, weight: list[1] as double);
+  }
+
+  @override
+  String toString() {
+    return '${objectRuntimeType(this, 'WeightedLatLng')}($point, $weight)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WeightedLatLng &&
+        other.point == point &&
+        other.weight == weight;
+  }
+
+  @override
+  int get hashCode => Object.hash(point, weight);
+}
 
 /// Uniquely identifies a [Heatmap] among [GoogleMap] heatmaps.
 ///
@@ -47,7 +93,7 @@ class Heatmap implements MapsObject<Heatmap> {
   final List<WeightedLatLng> data;
 
   /// Specifies whether heatmaps dissipate on zoom.
-  /// 
+  ///
   /// By default, the radius of influence of a data point is specified by the
   /// radius option only. When dissipating is disabled, the radius option is
   /// interpreted as a radius at zoom level 0.
@@ -59,7 +105,7 @@ class Heatmap implements MapsObject<Heatmap> {
   final HeatmapGradient? gradient;
 
   /// The maximum intensity of the heatmap.
-  /// 
+  ///
   /// By default, heatmap colors are dynamically scaled according to the
   /// greatest concentration of points at any particular pixel on the map.
   /// This property allows you to specify a fixed maximum.
@@ -165,7 +211,7 @@ class Heatmap implements MapsObject<Heatmap> {
 }
 
 /// Represents a mapping of intensity to color.
-/// 
+///
 /// Interpolates between given set of intensity and color values to produce a
 /// full mapping for the range [0, 1].
 @immutable
@@ -180,7 +226,7 @@ class HeatmapGradient {
         assert(startPoints.length > 0);
 
   /// The gradient colors.
-  /// 
+  ///
   /// Distributed along [startPoints] or uniformly depending on the platform.
   final List<Color> colors;
 

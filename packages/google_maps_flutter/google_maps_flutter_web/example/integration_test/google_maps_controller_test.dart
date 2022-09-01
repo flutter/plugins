@@ -310,10 +310,10 @@ void main() {
           const Heatmap(
             heatmapId: HeatmapId('heatmap-1'),
             data: <WeightedLatLng>[
-              WeightedLatLng(43.355114, -5.851333),
-              WeightedLatLng(43.354797, -5.851860),
-              WeightedLatLng(43.354469, -5.851318),
-              WeightedLatLng(43.354762, -5.850824),
+              WeightedLatLng(LatLng(43.355114, -5.851333)),
+              WeightedLatLng(LatLng(43.354797, -5.851860)),
+              WeightedLatLng(LatLng(43.354469, -5.851318)),
+              WeightedLatLng(LatLng(43.354762, -5.850824)),
             ],
           ),
         }, markers: <Marker>{
