@@ -7,20 +7,32 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 
+import 'webview_controller.dart';
+
 /// Displays a native WebView as a Widget.
 class WebViewWidget extends StatelessWidget {
   /// Constructs a [WebViewWidget].
+  ///
+  /// `controller` - The [WebViewController] that allows controlling the native
+  /// WebView.
+  ///
+  /// `layoutDirection` - The layout direction to use for the embedded WebView.
+  ///
+  /// `gestureRecognizers` - specifies which gestures should be consumed by the
+  /// web view. When `gestureRecognizers` is empty (default), the web view will
+  /// only handle pointer events for gestures that were not claimed by any other
+  /// gesture recognizer.
   WebViewWidget({
     Key? key,
-    required PlatformWebViewController controller,
+    required WebViewController controller,
     TextDirection layoutDirection = TextDirection.ltr,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers =
         const <Factory<OneSequenceGestureRecognizer>>{},
   }) : this.fromPlatform(
+          key: key,
           platform: PlatformWebViewWidget(
             PlatformWebViewWidgetCreationParams(
-              key: key,
-              controller: controller,
+              controller: controller.platform,
               layoutDirection: layoutDirection,
               gestureRecognizers: gestureRecognizers,
             ),
@@ -29,15 +41,15 @@ class WebViewWidget extends StatelessWidget {
 
   /// Constructs a [WebViewWidget] from creation params for a specific
   /// platform.
-  WebViewWidget.fromPlatformCreationParams(
-    PlatformWebViewWidgetCreationParams params,
-  ) : this.fromPlatform(platform: PlatformWebViewWidget(params));
+  WebViewWidget.fromPlatformCreationParams({
+    Key? key,
+    required PlatformWebViewWidgetCreationParams params,
+  }) : this.fromPlatform(key: key, platform: PlatformWebViewWidget(params));
 
   /// Constructs a [WebViewWidget] from a specific platform implementation.
-  WebViewWidget.fromPlatform({required this.platform})
-      : super(key: platform.params.key);
+  const WebViewWidget.fromPlatform({Key? key, required this.platform})
+      : super(key: key);
 
-  // TODO: This should be WebViewController! Don't submit.
   /// Implementation of [PlatformWebViewWidget] for the current platform.
   final PlatformWebViewWidget platform;
 
