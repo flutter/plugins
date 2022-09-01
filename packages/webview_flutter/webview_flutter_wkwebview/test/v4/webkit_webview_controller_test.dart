@@ -713,9 +713,10 @@ void main() {
 
       final WebKitNavigationDelegate navigationDelegate =
           WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 
@@ -764,9 +765,10 @@ void main() {
 
       final WebKitNavigationDelegate navigationDelegate =
           WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 

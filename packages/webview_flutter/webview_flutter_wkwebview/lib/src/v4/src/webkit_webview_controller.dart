@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -14,7 +15,6 @@ import '../../common/instance_manager.dart';
 import '../../common/weak_reference_utils.dart';
 import '../../foundation/foundation.dart';
 import '../../web_kit/web_kit.dart';
-import 'webkit_navigation_delegate.dart';
 import 'webkit_proxy.dart';
 
 /// Object specifying creation parameters for a [WebKitWebViewController].
@@ -306,8 +306,8 @@ class WebKitWebViewController extends PlatformWebViewController {
   Future<void> setPlatformNavigationDelegate(
     covariant WebKitNavigationDelegate handler,
   ) {
-    _onProgress = handler.onProgress;
-    return _webView.setNavigationDelegate(handler.navigationDelegate);
+    _onProgress = handler._onProgress;
+    return _webView.setNavigationDelegate(handler._navigationDelegate);
   }
 
   Future<void> _disableZoom() {
@@ -449,5 +449,173 @@ class WebKitWebViewWidget extends PlatformWebViewWidget {
           (params.controller as WebKitWebViewController)._webView),
       creationParamsCodec: const StandardMessageCodec(),
     );
+  }
+}
+
+/// An implementation of [WebResourceError] with the WebKit API.
+class WebKitWebResourceError extends WebResourceError {
+  WebKitWebResourceError._(this._nsError)
+      : super(
+          errorCode: _nsError.code,
+          description: _nsError.localizedDescription,
+          errorType: _toWebResourceErrorType(_nsError.code),
+        );
+
+  static WebResourceErrorType? _toWebResourceErrorType(int code) {
+    switch (code) {
+      case WKErrorCode.unknown:
+        return WebResourceErrorType.unknown;
+      case WKErrorCode.webContentProcessTerminated:
+        return WebResourceErrorType.webContentProcessTerminated;
+      case WKErrorCode.webViewInvalidated:
+        return WebResourceErrorType.webViewInvalidated;
+      case WKErrorCode.javaScriptExceptionOccurred:
+        return WebResourceErrorType.javaScriptExceptionOccurred;
+      case WKErrorCode.javaScriptResultTypeIsUnsupported:
+        return WebResourceErrorType.javaScriptResultTypeIsUnsupported;
+    }
+
+    return null;
+  }
+
+  /// A string representing the domain of the error.
+  String? get domain => _nsError.domain;
+
+  final NSError _nsError;
+}
+
+/// Object specifying creation parameters for a [WebKitNavigationDelegate].
+@immutable
+class WebKitNavigationDelegateCreationParams
+    extends PlatformNavigationDelegateCreationParams {
+  /// Constructs a [WebKitNavigationDelegateCreationParams].
+  const WebKitNavigationDelegateCreationParams({
+    @visibleForTesting this.webKitProxy = const WebKitProxy(),
+  });
+
+  /// Constructs a [WebKitNavigationDelegateCreationParams] using a
+  /// [PlatformNavigationDelegateCreationParams].
+  const WebKitNavigationDelegateCreationParams.fromPlatformNavigationDelegateCreationParams(
+    // Recommended placeholder to prevent being broken by platform interface.
+    // ignore: avoid_unused_constructor_parameters
+    PlatformNavigationDelegateCreationParams params, {
+    @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
+  }) : this(webKitProxy: webKitProxy);
+
+  /// Handles constructing objects and calling static methods for the WebKit
+  /// native library.
+  @visibleForTesting
+  final WebKitProxy webKitProxy;
+}
+
+/// An implementation of [PlatformNavigationDelegate] with the WebKit API.
+class WebKitNavigationDelegate extends PlatformNavigationDelegate {
+  /// Constructs a [WebKitNavigationDelegate].
+  WebKitNavigationDelegate(PlatformNavigationDelegateCreationParams params)
+      : super.implementation(params is WebKitNavigationDelegateCreationParams
+            ? params
+            : WebKitNavigationDelegateCreationParams
+                .fromPlatformNavigationDelegateCreationParams(params)) {
+    final WeakReference<WebKitNavigationDelegate> weakThis =
+        WeakReference<WebKitNavigationDelegate>(this);
+    _navigationDelegate = (params as WebKitNavigationDelegateCreationParams)
+        .webKitProxy
+        .createNavigationDelegate(
+      didFinishNavigation: (WKWebView webView, String? url) {
+        if (weakThis.target?._onPageFinished != null) {
+          weakThis.target!._onPageFinished!(url ?? '');
+        }
+      },
+      didStartProvisionalNavigation: (WKWebView webView, String? url) {
+        if (weakThis.target?._onPageStarted != null) {
+          weakThis.target!._onPageStarted!(url ?? '');
+        }
+      },
+      decidePolicyForNavigationAction: (
+        WKWebView webView,
+        WKNavigationAction action,
+      ) async {
+        if (weakThis.target?._onNavigationRequest != null) {
+          final bool allow = await weakThis.target!._onNavigationRequest!(
+            url: action.request.url,
+            isForMainFrame: action.targetFrame.isMainFrame,
+          );
+          return allow
+              ? WKNavigationActionPolicy.allow
+              : WKNavigationActionPolicy.cancel;
+        }
+        return WKNavigationActionPolicy.allow;
+      },
+      didFailNavigation: (WKWebView webView, NSError error) {
+        if (weakThis.target?._onWebResourceError != null) {
+          weakThis.target!._onWebResourceError!(
+            WebKitWebResourceError._(error),
+          );
+        }
+      },
+      didFailProvisionalNavigation: (WKWebView webView, NSError error) {
+        if (weakThis.target?._onWebResourceError != null) {
+          weakThis.target!._onWebResourceError!(
+            WebKitWebResourceError._(error),
+          );
+        }
+      },
+      webViewWebContentProcessDidTerminate: (WKWebView webView) {
+        if (weakThis.target?._onWebResourceError != null) {
+          weakThis.target!._onWebResourceError!(
+            WebKitWebResourceError._(
+              const NSError(
+                code: WKErrorCode.webContentProcessTerminated,
+                // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
+                domain: 'WKErrorDomain',
+                localizedDescription: '',
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  // Used to set `WKWebView.setNavigationDelegate` in `WebKitWebViewController`.
+  late final WKNavigationDelegate _navigationDelegate;
+
+  void Function(String url)? _onPageFinished;
+  void Function(String url)? _onPageStarted;
+  void Function(int progress)? _onProgress;
+  void Function(WebResourceError error)? _onWebResourceError;
+  FutureOr<bool> Function({required String url, required bool isForMainFrame})?
+      _onNavigationRequest;
+
+  @override
+  Future<void> setOnPageFinished(
+    void Function(String url) onPageFinished,
+  ) async {
+    _onPageFinished = onPageFinished;
+  }
+
+  @override
+  Future<void> setOnPageStarted(void Function(String url) onPageStarted) async {
+    _onPageStarted = onPageStarted;
+  }
+
+  @override
+  Future<void> setOnProgress(void Function(int progress) onProgress) async {
+    _onProgress = onProgress;
+  }
+
+  @override
+  Future<void> setOnWebResourceError(
+    void Function(WebResourceError error) onWebResourceError,
+  ) async {
+    _onWebResourceError = onWebResourceError;
+  }
+
+  @override
+  Future<void> setOnNavigationRequest(
+    FutureOr<bool> Function({required String url, required bool isForMainFrame})
+        onNavigationRequest,
+  ) async {
+    _onNavigationRequest = onNavigationRequest;
   }
 }
