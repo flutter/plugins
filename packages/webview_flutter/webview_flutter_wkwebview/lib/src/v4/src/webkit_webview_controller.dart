@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 
+import '../../common/instance_manager.dart';
 import '../../common/weak_reference_utils.dart';
 import '../../foundation/foundation.dart';
 import '../../web_kit/web_kit.dart';
@@ -50,8 +51,8 @@ class WebKitWebViewController extends PlatformWebViewController {
             ? params
             : WebKitWebViewControllerCreationParams
                 .fromPlatformWebViewControllerCreationParams(params)) {
-    webView.addObserver(
-      webView,
+    _webView.addObserver(
+      _webView,
       keyPath: 'estimatedProgress',
       options: <NSKeyValueObservingOptions>{
         NSKeyValueObservingOptions.newValue,
@@ -60,7 +61,7 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   /// The WebKit WebView being controlled.
-  late final WKWebView webView = withWeakRefenceTo(this, (
+  late final WKWebView _webView = withWeakRefenceTo(this, (
     WeakReference<WebKitWebViewController> weakReference,
   ) {
     return _webKitParams.webKitProxy.createWebView(
@@ -90,7 +91,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<void> loadFile(String absoluteFilePath) {
-    return webView.loadFileUrl(
+    return _webView.loadFileUrl(
       absoluteFilePath,
       readAccessUrl: path.dirname(absoluteFilePath),
     );
@@ -99,12 +100,12 @@ class WebKitWebViewController extends PlatformWebViewController {
   @override
   Future<void> loadFlutterAsset(String key) {
     assert(key.isNotEmpty);
-    return webView.loadFlutterAsset(key);
+    return _webView.loadFlutterAsset(key);
   }
 
   @override
   Future<void> loadHtmlString(String html, {String? baseUrl}) {
-    return webView.loadHtmlString(html, baseUrl: baseUrl);
+    return _webView.loadHtmlString(html, baseUrl: baseUrl);
   }
 
   @override
@@ -115,7 +116,7 @@ class WebKitWebViewController extends PlatformWebViewController {
       );
     }
 
-    return webView.loadRequest(NSUrlRequest(
+    return _webView.loadRequest(NSUrlRequest(
       url: params.uri.toString(),
       allHttpHeaderFields: params.headers,
       httpMethod: describeEnum(params.method),
@@ -142,8 +143,8 @@ class WebKitWebViewController extends PlatformWebViewController {
       WKUserScriptInjectionTime.atDocumentStart,
       isMainFrameOnly: false,
     );
-    webView.configuration.userContentController.addUserScript(wrapperScript);
-    return webView.configuration.userContentController.addScriptMessageHandler(
+    _webView.configuration.userContentController.addUserScript(wrapperScript);
+    return _webView.configuration.userContentController.addScriptMessageHandler(
       webKitParams._messageHandler,
       webKitParams.name,
     );
@@ -159,26 +160,26 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   @override
-  Future<String?> currentUrl() => webView.getUrl();
+  Future<String?> currentUrl() => _webView.getUrl();
 
   @override
-  Future<bool> canGoBack() => webView.canGoBack();
+  Future<bool> canGoBack() => _webView.canGoBack();
 
   @override
-  Future<bool> canGoForward() => webView.canGoForward();
+  Future<bool> canGoForward() => _webView.canGoForward();
 
   @override
-  Future<void> goBack() => webView.goBack();
+  Future<void> goBack() => _webView.goBack();
 
   @override
-  Future<void> goForward() => webView.goForward();
+  Future<void> goForward() => _webView.goForward();
 
   @override
-  Future<void> reload() => webView.reload();
+  Future<void> reload() => _webView.reload();
 
   @override
   Future<void> clearCache() {
-    return webView.configuration.websiteDataStore.removeDataOfTypes(
+    return _webView.configuration.websiteDataStore.removeDataOfTypes(
       <WKWebsiteDataType>{
         WKWebsiteDataType.memoryCache,
         WKWebsiteDataType.diskCache,
@@ -190,7 +191,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<void> clearLocalStorage() {
-    return webView.configuration.websiteDataStore.removeDataOfTypes(
+    return _webView.configuration.websiteDataStore.removeDataOfTypes(
       <WKWebsiteDataType>{WKWebsiteDataType.localStorage},
       DateTime.fromMillisecondsSinceEpoch(0),
     );
@@ -199,7 +200,7 @@ class WebKitWebViewController extends PlatformWebViewController {
   @override
   Future<void> runJavaScript(String javaScript) async {
     try {
-      await webView.evaluateJavaScript(javaScript);
+      await _webView.evaluateJavaScript(javaScript);
     } on PlatformException catch (exception) {
       // WebKit will throw an error when the type of the evaluated value is
       // unsupported. This also goes for `null` and `undefined` on iOS 14+. For
@@ -215,7 +216,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<String> runJavaScriptReturningResult(String javaScript) async {
-    final Object? result = await webView.evaluateJavaScript(javaScript);
+    final Object? result = await _webView.evaluateJavaScript(javaScript);
     if (result == null) {
       throw ArgumentError(
         'Result of JavaScript execution returned a `null` value. '
@@ -227,15 +228,15 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   /// Controls whether inline playback of HTML5 videos is allowed.
   Future<void> setAllowsInlineMediaPlayback(bool allow) {
-    return webView.configuration.setAllowsInlineMediaPlayback(allow);
+    return _webView.configuration.setAllowsInlineMediaPlayback(allow);
   }
 
   @override
-  Future<String?> getTitle() => webView.getTitle();
+  Future<String?> getTitle() => _webView.getTitle();
 
   @override
   Future<void> scrollTo(int x, int y) {
-    return webView.scrollView.setContentOffset(Point<double>(
+    return _webView.scrollView.setContentOffset(Point<double>(
       x.toDouble(),
       y.toDouble(),
     ));
@@ -243,7 +244,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<void> scrollBy(int x, int y) {
-    return webView.scrollView.scrollBy(Point<double>(
+    return _webView.scrollView.scrollBy(Point<double>(
       x.toDouble(),
       y.toDouble(),
     ));
@@ -251,7 +252,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<Point<int>> getScrollPosition() async {
-    final Point<double> offset = await webView.scrollView.getContentOffset();
+    final Point<double> offset = await _webView.scrollView.getContentOffset();
     return Point<int>(offset.x.round(), offset.y.round());
   }
 
@@ -260,15 +261,15 @@ class WebKitWebViewController extends PlatformWebViewController {
   // 4.0.0.
   @override
   Future<void> enableGestureNavigation(bool enabled) {
-    return webView.setAllowsBackForwardNavigationGestures(enabled);
+    return _webView.setAllowsBackForwardNavigationGestures(enabled);
   }
 
   @override
   Future<void> setBackgroundColor(Color color) {
     return Future.wait(<Future<void>>[
-      webView.scrollView.setBackgroundColor(color),
-      webView.setOpaque(false),
-      webView.setBackgroundColor(Colors.transparent),
+      _webView.scrollView.setBackgroundColor(color),
+      _webView.setOpaque(false),
+      _webView.setBackgroundColor(Colors.transparent),
     ]);
   }
 
@@ -276,15 +277,15 @@ class WebKitWebViewController extends PlatformWebViewController {
   Future<void> setJavaScriptMode(JavaScriptMode javaScriptMode) {
     switch (javaScriptMode) {
       case JavaScriptMode.disabled:
-        return webView.configuration.preferences.setJavaScriptEnabled(false);
+        return _webView.configuration.preferences.setJavaScriptEnabled(false);
       case JavaScriptMode.unrestricted:
-        return webView.configuration.preferences.setJavaScriptEnabled(true);
+        return _webView.configuration.preferences.setJavaScriptEnabled(true);
     }
   }
 
   @override
   Future<void> setUserAgent(String? userAgent) {
-    return webView.setCustomUserAgent(userAgent);
+    return _webView.setCustomUserAgent(userAgent);
   }
 
   @override
@@ -306,7 +307,7 @@ class WebKitWebViewController extends PlatformWebViewController {
     covariant WebKitNavigationDelegate handler,
   ) {
     _onProgress = handler.onProgress;
-    return webView.setNavigationDelegate(handler.navigationDelegate);
+    return _webView.setNavigationDelegate(handler.navigationDelegate);
   }
 
   Future<void> _disableZoom() {
@@ -319,7 +320,7 @@ class WebKitWebViewController extends PlatformWebViewController {
       WKUserScriptInjectionTime.atDocumentEnd,
       isMainFrameOnly: true,
     );
-    return webView.configuration.userContentController
+    return _webView.configuration.userContentController
         .addUserScript(userScript);
   }
 
@@ -329,12 +330,12 @@ class WebKitWebViewController extends PlatformWebViewController {
   // workaround could interfere with exposing support for custom scripts from
   // applications.
   Future<void> _resetUserScripts({String? removedJavaScriptChannel}) async {
-    webView.configuration.userContentController.removeAllUserScripts();
+    _webView.configuration.userContentController.removeAllUserScripts();
     // TODO(bparrishMines): This can be replaced with
     // `removeAllScriptMessageHandlers` once Dart supports runtime version
     // checking. (e.g. The equivalent to @availability in Objective-C.)
     _javaScriptChannelParams.keys.forEach(
-      webView.configuration.userContentController.removeScriptMessageHandler,
+      _webView.configuration.userContentController.removeScriptMessageHandler,
     );
 
     _javaScriptChannelParams.remove(removedJavaScriptChannel);
@@ -390,4 +391,63 @@ class WebKitJavaScriptChannelParams extends JavaScriptChannelParams {
         );
 
   final WKScriptMessageHandler _messageHandler;
+}
+
+/// Object specifying creation parameters for a [WebKitWebViewWidget].
+@immutable
+class WebKitWebViewWidgetCreationParams
+    extends PlatformWebViewWidgetCreationParams {
+  /// Constructs a [WebKitWebViewWidgetCreationParams].
+  WebKitWebViewWidgetCreationParams({
+    super.key,
+    required super.controller,
+    super.layoutDirection,
+    super.gestureRecognizers,
+    @visibleForTesting InstanceManager? instanceManager,
+  }) : _instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+
+  /// Constructs a [WebKitWebViewWidgetCreationParams] using a
+  /// [PlatformWebViewWidgetCreationParams].
+  WebKitWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
+    PlatformWebViewWidgetCreationParams params, {
+    InstanceManager? instanceManager,
+  }) : this(
+          key: params.key,
+          controller: params.controller,
+          layoutDirection: params.layoutDirection,
+          gestureRecognizers: params.gestureRecognizers,
+          instanceManager: instanceManager,
+        );
+
+  // Maintains instances used to communicate with the native objects they
+  // represent.
+  final InstanceManager _instanceManager;
+}
+
+/// An implementation of [PlatformWebViewWidget] with the WebKit api.
+class WebKitWebViewWidget extends PlatformWebViewWidget {
+  /// Constructs a [WebKitWebViewWidget].
+  WebKitWebViewWidget(PlatformWebViewWidgetCreationParams params)
+      : super.implementation(
+          params is WebKitWebViewWidgetCreationParams
+              ? params
+              : WebKitWebViewWidgetCreationParams
+                  .fromPlatformWebViewWidgetCreationParams(params),
+        );
+
+  WebKitWebViewWidgetCreationParams get _webKitParams =>
+      params as WebKitWebViewWidgetCreationParams;
+
+  @override
+  Widget build(BuildContext context) {
+    return UiKitView(
+      viewType: 'plugins.flutter.io/webview',
+      onPlatformViewCreated: (_) {},
+      layoutDirection: params.layoutDirection,
+      gestureRecognizers: params.gestureRecognizers,
+      creationParams: _webKitParams._instanceManager.getIdentifier(
+          (params.controller as WebKitWebViewController)._webView),
+      creationParamsCodec: const StandardMessageCodec(),
+    );
+  }
 }

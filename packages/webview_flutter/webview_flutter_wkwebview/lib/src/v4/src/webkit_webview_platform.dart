@@ -7,7 +7,6 @@ import 'package:webview_flutter_wkwebview/src/v4/src/webkit_webview_cookie_manag
 
 import 'webkit_navigation_delegate.dart';
 import 'webkit_webview_controller.dart';
-import 'webkit_webview_widget.dart';
 
 /// Implementation of [WebViewPlatform] using the WebKit API.
 class WebKitWebViewPlatform extends WebViewPlatform {
