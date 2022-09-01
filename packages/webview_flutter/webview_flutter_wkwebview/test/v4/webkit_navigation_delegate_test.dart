@@ -18,9 +18,10 @@ void main() {
   group('WebKitNavigationDelegate', () {
     test('setOnPageFinished', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 
@@ -37,9 +38,10 @@ void main() {
 
     test('setOnPageStarted', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 
@@ -57,9 +59,10 @@ void main() {
 
     test('onWebResourceError from didFailNavigation', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 
@@ -87,9 +90,10 @@ void main() {
 
     test('onWebResourceError from didFailProvisionalNavigation', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 
@@ -118,9 +122,10 @@ void main() {
 
     test('onWebResourceError from webViewWebContentProcessDidTerminate', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 
@@ -147,9 +152,10 @@ void main() {
 
     test('onNavigationRequest from decidePolicyForNavigationAction', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 
