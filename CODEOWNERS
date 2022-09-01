@@ -15,7 +15,7 @@ packages/local_auth/**                                   @stuartmorgan
 packages/path_provider/**                                @gaaclarke
 packages/plugin_platform_interface/**                    @stuartmorgan
 packages/quick_actions/**                                @stuartmorgan
-packages/shared_preferences/**                           @gaaclarke
+packages/shared_preferences/**                           @tarrinneal
 packages/url_launcher/**                                 @stuartmorgan
 packages/video_player/**                                 @gaaclarke
 packages/webview_flutter/**                              @bparrishMines

@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
             const OpenMultipleImagesPage(),
         '/open/text': (BuildContext context) => const OpenTextPage(),
         '/save/text': (BuildContext context) => SaveTextPage(),
-        '/directory': (BuildContext context) => const GetDirectoryPage(),
+        '/directory': (BuildContext context) => GetDirectoryPage(),
       },
     );
   }

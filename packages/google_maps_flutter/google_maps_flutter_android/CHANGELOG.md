@@ -2,6 +2,7 @@
 
 * Switches the default for `useAndroidViewSurface` to true, and adds
   information about the current mode behaviors to the README.
+* Updates minimum Flutter version to 2.10.
 
 ## 2.2.0
 

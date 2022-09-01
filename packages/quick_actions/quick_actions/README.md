@@ -47,3 +47,8 @@ quick action.
 
 \* The plugin will compile and run on SDK 16+, but will be a no-op below SDK 25
 (Android 7.1).
+
+If the drawables used as icons are not referenced other than in your Dart code,
+you may need to
+[explicitly mark them to be kept](https://developer.android.com/studio/build/shrink-code#keep-resources)
+to ensure that they will be available for use in release builds.
