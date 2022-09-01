@@ -59,10 +59,6 @@ class LatLng {
 
   @override
   int get hashCode => Object.hash(latitude, longitude);
-
-  /// Create a [WeightedLatLng] from this [LatLng] with the specified [weight].
-  WeightedLatLng weighted([double weight = 1.0]) =>
-      WeightedLatLng(latitude, longitude, weight: weight);
 }
 
 /// A latitude/longitude aligned rectangle.
@@ -144,6 +140,7 @@ class LatLngBounds {
 }
 
 /// A data point entry for a heatmap.
+/// 
 /// This is a geographical data point with a weight attribute.
 class WeightedLatLng extends LatLng {
   /// Creates a [WeightedLatLng] with the specified [weight]

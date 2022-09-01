@@ -28,7 +28,6 @@ class Heatmap implements MapsObject<Heatmap> {
     this.dissipating = true,
     this.gradient,
     this.maxIntensity,
-    // Default is 0.6 on web, 0.7 on Android and iOS.
     this.opacity = 0.7,
     this.radius = 20,
     this.minimumZoomIntensity = 0,
@@ -47,10 +46,11 @@ class Heatmap implements MapsObject<Heatmap> {
   /// The data points to display.
   final List<WeightedLatLng> data;
 
-  /// Specifies whether heatmaps dissipate on zoom. By default, the radius of
-  /// influence of a data point is specified by the radius option only. When
-  /// dissipating is disabled, the radius option is interpreted as a radius at
-  /// zoom level 0.
+  /// Specifies whether heatmaps dissipate on zoom.
+  /// 
+  /// By default, the radius of influence of a data point is specified by the
+  /// radius option only. When dissipating is disabled, the radius option is
+  /// interpreted as a radius at zoom level 0.
   ///
   /// Web only.
   final bool dissipating;
@@ -58,10 +58,11 @@ class Heatmap implements MapsObject<Heatmap> {
   /// The color gradient of the heatmap
   final HeatmapGradient? gradient;
 
-  /// The maximum intensity of the heatmap. By default, heatmap colors are
-  /// dynamically scaled according to the greatest concentration of points at
-  /// any particular pixel on the map. This property allows you to specify a
-  /// fixed maximum.
+  /// The maximum intensity of the heatmap.
+  /// 
+  /// By default, heatmap colors are dynamically scaled according to the
+  /// greatest concentration of points at any particular pixel on the map.
+  /// This property allows you to specify a fixed maximum.
   ///
   /// Web and Android only.
   final double? maxIntensity;
@@ -163,8 +164,10 @@ class Heatmap implements MapsObject<Heatmap> {
   int get hashCode => heatmapId.hashCode;
 }
 
-/// Represents a mapping of intensity to color.  Interpolates between given set
-/// intensity and color values to produce a full mapping for the range [0, 1].
+/// Represents a mapping of intensity to color.
+/// 
+/// Interpolates between given set of intensity and color values to produce a
+/// full mapping for the range [0, 1].
 @immutable
 class HeatmapGradient {
   /// Creates a new [HeatmapGradient] object.
@@ -176,7 +179,9 @@ class HeatmapGradient {
         assert(colors.length > 0),
         assert(startPoints.length > 0);
 
-  /// The specific colors for the specific intensities specified by startPoints.
+  /// The gradient colors.
+  /// 
+  /// Distributed along [startPoints] or uniformly depending on the platform.
   final List<Color> colors;
 
   /// The intensities which will be the specific colors specified in colors.
