@@ -25,3 +25,8 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   mockito: ^5.3.0
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  google_maps_flutter_platform_interface:
+    path: ../../google_maps_flutter_platform_interface

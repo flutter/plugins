@@ -19,15 +19,22 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  google_maps_flutter_android:
-    path: ../google_maps_flutter_android
-  google_maps_flutter_ios:
-    path: ../google_maps_flutter_ios
-  google_maps_flutter_platform_interface:
-    path: ../google_maps_flutter_platform_interface
+  google_maps_flutter_android: ^2.1.10
+  google_maps_flutter_ios: ^2.1.10
+  google_maps_flutter_platform_interface: ^2.2.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   plugin_platform_interface: ^2.0.0
   stream_transform: ^2.0.0
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  google_maps_flutter_android:
+    path: ../../google_maps_flutter/google_maps_flutter_android
+  google_maps_flutter_ios:
+    path: ../../google_maps_flutter/google_maps_flutter_ios
+  google_maps_flutter_platform_interface:
+    path: ../../google_maps_flutter/google_maps_flutter_platform_interface
