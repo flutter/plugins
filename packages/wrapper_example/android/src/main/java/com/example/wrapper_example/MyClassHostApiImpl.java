@@ -1,9 +1,7 @@
 package com.example.wrapper_example;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
 import com.example.wrapper_example.example_library.MyClass;
 import com.example.wrapper_example.example_library.MyOtherClass;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -47,7 +45,10 @@ public class MyClassHostApiImpl implements GeneratedExampleLibraryApis.MyClassHo
     this(binaryMessenger, instanceManager, new MyClassProxy());
   }
 
-  public MyClassHostApiImpl(BinaryMessenger binaryMessenger, InstanceManager instanceManager, @VisibleForTesting MyClassProxy myClassProxy) {
+  public MyClassHostApiImpl(
+      BinaryMessenger binaryMessenger,
+      InstanceManager instanceManager,
+      @VisibleForTesting MyClassProxy myClassProxy) {
     this.binaryMessenger = binaryMessenger;
     this.instanceManager = instanceManager;
     this.myClassProxy = myClassProxy;

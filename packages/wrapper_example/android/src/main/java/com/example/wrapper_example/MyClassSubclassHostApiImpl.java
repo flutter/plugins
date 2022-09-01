@@ -1,13 +1,12 @@
 package com.example.wrapper_example;
 
 import androidx.annotation.NonNull;
-
 import com.example.wrapper_example.example_library.MyClassSubclass;
 import com.example.wrapper_example.example_library.MyOtherClass;
-
 import io.flutter.plugin.common.BinaryMessenger;
 
-public class MyClassSubclassHostApiImpl implements GeneratedExampleLibraryApis.MyClassSubclassHostApi {
+public class MyClassSubclassHostApiImpl
+    implements GeneratedExampleLibraryApis.MyClassSubclassHostApi {
   private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
 
@@ -29,7 +28,8 @@ public class MyClassSubclassHostApiImpl implements GeneratedExampleLibraryApis.M
     }
   }
 
-  public MyClassSubclassHostApiImpl(BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+  public MyClassSubclassHostApiImpl(
+      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     this.binaryMessenger = binaryMessenger;
     this.instanceManager = instanceManager;
   }
