@@ -340,8 +340,9 @@ visualization.HeatmapLayerOptions _heatmapOptionsFromHeatmap(
             )
             .toList()
         ..dissipating = heatmap.dissipating
-        ..gradient =
-            heatmap.gradient?.colors.map(_getCssColorWithAlpha).toList()
+        ..gradient = heatmap.gradient?.colors
+            .map((HeatmapGradientColor e) => _getCssColorWithAlpha(e.color))
+            .toList()
         ..maxIntensity = heatmap.maxIntensity
         ..opacity = heatmap.opacity
         ..radius = heatmap.radius;

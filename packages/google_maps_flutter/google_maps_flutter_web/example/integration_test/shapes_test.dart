@@ -444,8 +444,9 @@ void main() {
         Heatmap(
           heatmapId: const HeatmapId('1'),
           gradient: HeatmapGradient(
-            colors: const <Color>[Color(0xFFFABADA)],
-            startPoints: const <double>[0],
+            const <HeatmapGradientColor>[
+              HeatmapGradientColor(Color(0xFFFABADA), 0)
+            ],
           ),
         ),
       };

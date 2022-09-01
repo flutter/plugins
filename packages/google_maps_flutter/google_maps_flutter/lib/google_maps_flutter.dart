@@ -30,6 +30,7 @@ export 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
         CircleId,
         Heatmap,
         HeatmapGradient,
+        HeatmapGradientColor,
         HeatmapId,
         InfoWindow,
         JointType,

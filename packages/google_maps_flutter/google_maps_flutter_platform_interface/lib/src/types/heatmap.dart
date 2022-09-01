@@ -8,52 +8,6 @@ import 'package:flutter/material.dart' show Color;
 
 import 'types.dart';
 
-/// A data point entry for a heatmap.
-///
-/// This is a geographical data point with a weight attribute.
-@immutable
-class WeightedLatLng {
-  /// Creates a [WeightedLatLng] with the specified [weight]
-  const WeightedLatLng(this.point, {this.weight = 1.0});
-
-  /// The geographical data point.
-  final LatLng point;
-
-  /// The weighting value of the data point.
-  final double weight;
-
-  /// Converts this object to something serializable in JSON.
-  Object toJson() {
-    return <Object>[point.toJson(), weight];
-  }
-
-  /// Initialize a [WeightedLatLng] from an \[location, weight\] array.
-  static WeightedLatLng? fromJson(Object? json) {
-    if (json == null) {
-      return null;
-    }
-    assert(json is List && json.length == 2);
-    final List<dynamic> list = json as List<dynamic>;
-    final LatLng latLng = LatLng.fromJson(list[0])!;
-    return WeightedLatLng(latLng, weight: list[1] as double);
-  }
-
-  @override
-  String toString() {
-    return '${objectRuntimeType(this, 'WeightedLatLng')}($point, $weight)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is WeightedLatLng &&
-        other.point == point &&
-        other.weight == weight;
-  }
-
-  @override
-  int get hashCode => Object.hash(point, weight);
-}
-
 /// Uniquely identifies a [Heatmap] among [GoogleMap] heatmaps.
 ///
 /// This does not have to be globally unique, only unique among the list.
@@ -210,6 +164,52 @@ class Heatmap implements MapsObject<Heatmap> {
   int get hashCode => heatmapId.hashCode;
 }
 
+/// A data point entry for a heatmap.
+///
+/// This is a geographical data point with a weight attribute.
+@immutable
+class WeightedLatLng {
+  /// Creates a [WeightedLatLng] with the specified [weight]
+  const WeightedLatLng(this.point, {this.weight = 1.0});
+
+  /// The geographical data point.
+  final LatLng point;
+
+  /// The weighting value of the data point.
+  final double weight;
+
+  /// Converts this object to something serializable in JSON.
+  Object toJson() {
+    return <Object>[point.toJson(), weight];
+  }
+
+  /// Initialize a [WeightedLatLng] from an \[location, weight\] array.
+  static WeightedLatLng? fromJson(Object? json) {
+    if (json == null) {
+      return null;
+    }
+    assert(json is List && json.length == 2);
+    final List<dynamic> list = json as List<dynamic>;
+    final LatLng latLng = LatLng.fromJson(list[0])!;
+    return WeightedLatLng(latLng, weight: list[1] as double);
+  }
+
+  @override
+  String toString() {
+    return '${objectRuntimeType(this, 'WeightedLatLng')}($point, $weight)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WeightedLatLng &&
+        other.point == point &&
+        other.weight == weight;
+  }
+
+  @override
+  int get hashCode => Object.hash(point, weight);
+}
+
 /// Represents a mapping of intensity to color.
 ///
 /// Interpolates between given set of intensity and color values to produce a
@@ -217,23 +217,15 @@ class Heatmap implements MapsObject<Heatmap> {
 @immutable
 class HeatmapGradient {
   /// Creates a new [HeatmapGradient] object.
-  const HeatmapGradient({
-    required this.colors,
-    required this.startPoints,
+  const HeatmapGradient(
+    this.colors, {
     this.colorMapSize = 256,
-  })  : assert(colors.length == startPoints.length),
-        assert(colors.length > 0),
-        assert(startPoints.length > 0);
+  }) : assert(colors.length > 0);
 
   /// The gradient colors.
   ///
-  /// Distributed along [startPoints] or uniformly depending on the platform.
-  final List<Color> colors;
-
-  /// The intensities which will be the specific colors specified in colors.
-  ///
-  /// Android and iOS only.
-  final List<double> startPoints;
+  /// Distributed along [startPoint]s or uniformly depending on the platform.
+  final List<HeatmapGradientColor> colors;
 
   /// Number of entries in the generated color map.
   ///
@@ -243,13 +235,11 @@ class HeatmapGradient {
   /// Creates a new [HeatmapGradient] object whose values are the same as this
   /// instance, unless overwritten by the specified parameters.
   HeatmapGradient copyWith({
-    List<Color>? colorsParam,
-    List<double>? startPointsParam,
+    List<HeatmapGradientColor>? colorsParam,
     int? colorMapSizeParam,
   }) {
     return HeatmapGradient(
-      colors: colorsParam ?? colors,
-      startPoints: startPointsParam ?? startPoints,
+      colorsParam ?? colors,
       colorMapSize: colorMapSizeParam ?? colorMapSize,
     );
   }
@@ -257,8 +247,7 @@ class HeatmapGradient {
   /// Creates a new [HeatmapGradient] object whose values are the same as this
   /// instance.
   HeatmapGradient clone() => copyWith(
-        colorsParam: List<Color>.of(colors),
-        startPointsParam: List<double>.of(startPoints),
+        colorsParam: List<HeatmapGradientColor>.of(colors),
       );
 
   /// Converts this object to something serializable in JSON.
@@ -271,8 +260,10 @@ class HeatmapGradient {
       }
     }
 
-    addIfPresent('colors', colors.map((Color e) => e.value).toList());
-    addIfPresent('startPoints', startPoints);
+    addIfPresent('colors',
+        colors.map((HeatmapGradientColor e) => e.color.value).toList());
+    addIfPresent('startPoints',
+        colors.map((HeatmapGradientColor e) => e.startPoint).toList());
     addIfPresent('colorMapSize', colorMapSize);
 
     return json;
@@ -288,10 +279,54 @@ class HeatmapGradient {
     }
     return other is HeatmapGradient &&
         listEquals(colors, other.colors) &&
-        listEquals(startPoints, other.startPoints) &&
         colorMapSize == other.colorMapSize;
   }
 
   @override
-  int get hashCode => Object.hash(colors, startPoints, colorMapSize);
+  int get hashCode => Object.hash(colors, colorMapSize);
+}
+
+/// A [Color] with a [startPoint] for use in a [HeatmapGradient].
+@immutable
+class HeatmapGradientColor {
+  /// Creates a new [HeatmapGradientColor] object.
+  const HeatmapGradientColor(this.color, this.startPoint);
+
+  /// The color for this portion of the gradient.
+  final Color color;
+
+  /// The start point of this color.
+  final double startPoint;
+
+  /// Creates a new [HeatmapGradientColor] object whose values are the same as
+  /// this instance, unless overwritten by the specified parameters.
+  HeatmapGradientColor copyWith({
+    Color? colorParam,
+    double? startPointParam,
+  }) {
+    return HeatmapGradientColor(
+      colorParam ?? color,
+      startPointParam ?? startPoint,
+    );
+  }
+
+  /// Creates a new [HeatmapGradientColor] object whose values are the same as
+  /// this instance.
+  HeatmapGradientColor clone() => copyWith();
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is HeatmapGradientColor &&
+        color == other.color &&
+        startPoint == other.startPoint;
+  }
+
+  @override
+  int get hashCode => Object.hash(color, startPoint);
 }

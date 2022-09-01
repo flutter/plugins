@@ -90,24 +90,34 @@ class HeatmapBodyState extends State<HeatmapBody> {
                     heatmapId: const HeatmapId('test'),
                     data: enabledPoints,
                     gradient: HeatmapGradient(
-                      colors: <Color>[
+                      <HeatmapGradientColor>[
                         // Web and Android need a first color with 0 alpha.
                         // On iOS, this causes rendering issues.
                         if (!(defaultTargetPlatform == TargetPlatform.iOS))
-                          const Color.fromARGB(0, 0, 255, 255),
-                        const Color.fromARGB(255, 0, 255, 255),
-                        const Color.fromARGB(255, 0, 63, 255),
-                        const Color.fromARGB(255, 0, 0, 191),
-                        const Color.fromARGB(255, 63, 0, 91),
-                        const Color.fromARGB(255, 255, 0, 0),
-                      ],
-                      startPoints: <double>[
-                        if (!(defaultTargetPlatform == TargetPlatform.iOS)) 0,
-                        0.2,
-                        0.4,
-                        0.6,
-                        0.8,
-                        1.0,
+                          const HeatmapGradientColor(
+                            Color.fromARGB(0, 0, 255, 255),
+                            0,
+                          ),
+                        const HeatmapGradientColor(
+                          Color.fromARGB(255, 0, 255, 255),
+                          0.2,
+                        ),
+                        const HeatmapGradientColor(
+                          Color.fromARGB(255, 0, 63, 255),
+                          0.4,
+                        ),
+                        const HeatmapGradientColor(
+                          Color.fromARGB(255, 0, 0, 191),
+                          0.6,
+                        ),
+                        const HeatmapGradientColor(
+                          Color.fromARGB(255, 63, 0, 91),
+                          0.8,
+                        ),
+                        const HeatmapGradientColor(
+                          Color.fromARGB(255, 255, 0, 0),
+                          1,
+                        ),
                       ],
                     ),
                     maxIntensity: 1,
