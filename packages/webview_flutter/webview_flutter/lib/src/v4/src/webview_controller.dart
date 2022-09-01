@@ -17,20 +17,18 @@ import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_i
 class WebViewController {
   /// Constructs a [WebViewController].
   WebViewController()
-      : this.fromPlatform(
-          platform: PlatformWebViewController(
-            const PlatformWebViewControllerCreationParams(),
-          ),
+      : this.fromPlatformCreationParams(
+          const PlatformWebViewControllerCreationParams(),
         );
 
   /// Constructs a [WebViewController] from creation params for a specific
   /// platform.
   WebViewController.fromPlatformCreationParams(
     PlatformWebViewControllerCreationParams params,
-  ) : this.fromPlatform(platform: PlatformWebViewController(params));
+  ) : this.fromPlatform(PlatformWebViewController(params));
 
   /// Constructs a [WebViewController] from a specific platform implementation.
-  WebViewController.fromPlatform({required this.platform});
+  WebViewController.fromPlatform(this.platform);
 
   /// Implementation of [PlatformWebViewController] for the current platform.
   final PlatformWebViewController platform;
