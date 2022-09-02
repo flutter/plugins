@@ -131,8 +131,6 @@ class Camera
 
   /** An additional thread for running tasks that shouldn't block the UI. */
   private HandlerThread backgroundHandlerThread;
-  /** True when backgroundHandlerThread is in the process of being stopped. */
-  private boolean stoppingBackgroundHandlerThread = false;
 
   private CameraDeviceWrapper cameraDevice;
   private CameraCaptureSession captureSession;
@@ -671,16 +669,11 @@ class Camera
 
   /** Stops the background thread and its {@link Handler}. */
   public void stopBackgroundThread() {
-    if (stoppingBackgroundHandlerThread) {
-      return;
-    }
     if (backgroundHandlerThread != null) {
-      stoppingBackgroundHandlerThread = true;
       backgroundHandlerThread.quitSafely();
     }
     backgroundHandlerThread = null;
     backgroundHandler = null;
-    stoppingBackgroundHandlerThread = false;
   }
 
   /** Start capturing a picture, doing autofocus first. */
