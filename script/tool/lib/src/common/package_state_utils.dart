@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
+import 'package:flutter_plugin_tools/src/common/git_version_finder.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
@@ -44,11 +45,15 @@ class PackageChangeState {
 /// and `getRelativePosixPath(package.directory, gitDir.path)` respectively;
 /// they are arguments mainly to allow for caching the changed paths for an
 /// entire command run.
-PackageChangeState checkPackageChangeState(
+///
+/// If [git] is provided, [changedPaths] must be repository-relative
+/// paths, and change type detection can use file diffs in addition to paths.
+Future<PackageChangeState> checkPackageChangeState(
   RepositoryPackage package, {
   required List<String> changedPaths,
   required String relativePackagePath,
-}) {
+  GitVersionFinder? git,
+}) async {
   final String packagePrefix = relativePackagePath.endsWith('/')
       ? relativePackagePath
       : '$relativePackagePath/';
@@ -77,7 +82,7 @@ PackageChangeState checkPackageChangeState(
 
     if (!needsVersionChange) {
       // Developer-only changes don't need version changes or changelog changes.
-      if (_isDevChange(components)) {
+      if (await _isDevChange(components, git: git, repoPath: path)) {
         continue;
       }
 
@@ -157,11 +162,43 @@ bool _isUnpublishedExampleChange(
 }
 
 // True if the change is only relevant to people working on the plugin.
-bool _isDevChange(List<String> pathComponents) {
+Future<bool> _isDevChange(List<String> pathComponents,
+    {GitVersionFinder? git, String? repoPath}) async {
   return _isTestChange(pathComponents) ||
       // The top-level "tool" directory is for non-client-facing utility
       // code, such as test scripts.
       pathComponents.first == 'tool' ||
       // Ignoring lints doesn't affect clients.
-      pathComponents.contains('lint-baseline.xml');
+      pathComponents.contains('lint-baseline.xml') ||
+      await _isGradleTestDependencyChange(pathComponents,
+          git: git, repoPath: repoPath);
+}
+
+Future<bool> _isGradleTestDependencyChange(List<String> pathComponents,
+    {GitVersionFinder? git, String? repoPath}) async {
+  if (git == null) {
+    return false;
+  }
+  if (pathComponents.last != 'build.gradle') {
+    return false;
+  }
+  final List<String> diff = await git.getDiffContents(targetPath: repoPath);
+  final RegExp changeLine = RegExp(r'[+-] ');
+  final RegExp testDependencyLine =
+      RegExp(r'[+-]\s*(?:androidT|t)estImplementation\s');
+  bool foundTestDependencyChange = false;
+  for (final String line in diff) {
+    if (!changeLine.hasMatch(line) ||
+        line.startsWith('--- ') ||
+        line.startsWith('+++ ')) {
+      continue;
+    }
+    if (!testDependencyLine.hasMatch(line)) {
+      return false;
+    }
+    foundTestDependencyChange = true;
+  }
+  // Only return true if a test dependency change was found, as a failsafe
+  // against having the wrong (e.g., incorrectly empty) diff output.
+  return foundTestDependencyChange;
 }

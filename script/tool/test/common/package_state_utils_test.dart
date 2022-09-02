@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common/git_version_finder.dart';
 import 'package:flutter_plugin_tools/src/common/package_state_utils.dart';
+import 'package:test/fake.dart';
 import 'package:test/test.dart';
 
 import '../util.dart';
@@ -26,7 +28,7 @@ void main() {
         'packages/a_package/lib/plugin.dart',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_package');
 
@@ -43,7 +45,7 @@ void main() {
         'packages/a_package/lib/plugin.dart',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_package/');
 
@@ -67,7 +69,7 @@ void main() {
         'packages/a_plugin/CHANGELOG.md',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_plugin/');
 
@@ -85,7 +87,7 @@ void main() {
         'packages/a_plugin/lib/foo/tool/tool_thing.dart',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_plugin/');
 
@@ -103,7 +105,7 @@ void main() {
         'packages/a_plugin/example/lib/main.dart',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_plugin/');
 
@@ -121,7 +123,7 @@ void main() {
         'packages/a_plugin/example/main.dart',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_plugin/');
 
@@ -138,7 +140,7 @@ void main() {
         'packages/a_plugin/example/README.md',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_plugin/');
 
@@ -156,7 +158,7 @@ void main() {
         'packages/a_plugin/example/example.md',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_plugin/');
 
@@ -178,7 +180,7 @@ void main() {
         'packages/a_plugin/example/README.md',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_plugin/');
 
@@ -198,7 +200,7 @@ void main() {
         'packages/a_plugin/example/README.md',
       ];
 
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: changedFiles,
           relativePackagePath: 'packages/a_plugin/');
 
@@ -206,5 +208,121 @@ void main() {
       expect(state.needsVersionChange, false);
       expect(state.needsChangelogChange, true);
     });
+
+    test(
+        'does not requires changelog or version change for build.gradle '
+        'test-dependency-only changes', () async {
+      final RepositoryPackage package =
+          createFakePlugin('a_plugin', packagesDir);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/android/build.gradle',
+      ];
+
+      final GitVersionFinder git = FakeGitVersionFinder(<String, List<String>>{
+        'packages/a_plugin/android/build.gradle': <String>[
+          "-  androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'",
+          "-  testImplementation 'junit:junit:4.10.0'",
+          "+  androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'",
+          "+  testImplementation 'junit:junit:4.13.2'",
+        ]
+      });
+
+      final PackageChangeState state = await checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/',
+          git: git);
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, false);
+      expect(state.needsChangelogChange, false);
+    });
+
+    test('requires changelog or version change for other build.gradle changes',
+        () async {
+      final RepositoryPackage package =
+          createFakePlugin('a_plugin', packagesDir);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/android/build.gradle',
+      ];
+
+      final GitVersionFinder git = FakeGitVersionFinder(<String, List<String>>{
+        'packages/a_plugin/android/build.gradle': <String>[
+          "-  androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'",
+          "-  testImplementation 'junit:junit:4.10.0'",
+          "+  androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'",
+          "+  testImplementation 'junit:junit:4.13.2'",
+          "-  implementation 'com.google.android.gms:play-services-maps:18.0.0'",
+          "+  implementation 'com.google.android.gms:play-services-maps:18.0.2'",
+        ]
+      });
+
+      final PackageChangeState state = await checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/',
+          git: git);
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
+    });
+
+    test(
+        'requires changelog or version change if build.gradle diffs cannot '
+        'be checked', () async {
+      final RepositoryPackage package =
+          createFakePlugin('a_plugin', packagesDir);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/android/build.gradle',
+      ];
+
+      final PackageChangeState state = await checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/');
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
+    });
+
+    test(
+        'requires changelog or version change if build.gradle diffs cannot '
+        'be determined', () async {
+      final RepositoryPackage package =
+          createFakePlugin('a_plugin', packagesDir);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/android/build.gradle',
+      ];
+
+      final GitVersionFinder git = FakeGitVersionFinder(<String, List<String>>{
+        'packages/a_plugin/android/build.gradle': <String>[]
+      });
+
+      final PackageChangeState state = await checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/',
+          git: git);
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
+    });
   });
+}
+
+class FakeGitVersionFinder extends Fake implements GitVersionFinder {
+  FakeGitVersionFinder(this.fileDiffs);
+
+  final Map<String, List<String>> fileDiffs;
+
+  @override
+  Future<List<String>> getDiffContents({
+    String? targetPath,
+    bool includeUncommitted = false,
+  }) async {
+    return fileDiffs[targetPath]!;
+  }
 }

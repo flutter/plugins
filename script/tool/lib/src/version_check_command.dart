@@ -569,7 +569,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     final String relativePackagePath =
         getRelativePosixPath(package.directory, from: gitRoot);
 
-    final PackageChangeState state = checkPackageChangeState(package,
+    final PackageChangeState state = await checkPackageChangeState(package,
         changedPaths: _changedFiles, relativePackagePath: relativePackagePath);
 
     if (!state.hasChanges) {
