@@ -570,7 +570,9 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
         getRelativePosixPath(package.directory, from: gitRoot);
 
     final PackageChangeState state = await checkPackageChangeState(package,
-        changedPaths: _changedFiles, relativePackagePath: relativePackagePath);
+        changedPaths: _changedFiles,
+        relativePackagePath: relativePackagePath,
+        git: await retrieveVersionFinder());
 
     if (!state.hasChanges) {
       return null;
@@ -595,7 +597,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       }
     }
 
-    if (!state.hasChangelogChange) {
+    if (!state.hasChangelogChange && state.needsChangelogChange) {
       if (_prLabels.contains(_missingChangelogChangeOverrideLabel)) {
         logWarning('Ignoring lack of CHANGELOG update due to the '
             '"$_missingChangelogChangeOverrideLabel" label.');

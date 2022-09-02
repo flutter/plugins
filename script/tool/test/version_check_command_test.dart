@@ -1085,6 +1085,47 @@ packages/plugin/example/lib/foo.dart
         );
       });
 
+      // This test ensures that Dependabot Gradle changes to test-only files
+      // aren't flagged by the version check.
+      test(
+          'allows missing CHANGELOG and version change for test-only Gradle changes',
+          () async {
+        final RepositoryPackage plugin =
+            createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+        const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+        plugin.changelogFile.writeAsStringSync(changelog);
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.0.0'),
+        ];
+        processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+          // File list.
+          MockProcess(stdout: '''
+packages/plugin/android/build.gradle
+'''),
+          // build.gradle diff
+          MockProcess(stdout: '''
+-  androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+-  testImplementation 'junit:junit:4.10.0'
++  androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
++  testImplementation 'junit:junit:4.13.2'
+'''),
+        ];
+
+        final List<String> output =
+            await _runWithMissingChangeDetection(<String>[]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+          ]),
+        );
+      });
+
       group('dependabot', () {
         test('throws if a nonexistent change description file is specified',
             () async {
