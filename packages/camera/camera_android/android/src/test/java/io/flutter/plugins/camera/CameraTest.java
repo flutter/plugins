@@ -839,8 +839,6 @@ public class CameraTest {
 
   @Test
   public void stopBackgroundThread_cancelsDuplicateCalls() throws InterruptedException {
-    TestUtils.setPrivateField(camera, "stoppingBackgroundHandlerThread", true);
-
     camera.startBackgroundThread();
     camera.stopBackgroundThread();
 
@@ -850,8 +848,6 @@ public class CameraTest {
 
   @Test
   public void stopBackgroundThread_proceedsWithoutDuplicateCall() throws InterruptedException {
-    TestUtils.setPrivateField(camera, "stoppingBackgroundHandlerThread", false);
-
     camera.startBackgroundThread();
     camera.stopBackgroundThread();
 
