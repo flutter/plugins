@@ -22,6 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
+    // CameraX dependencies require compilation against version 33 or later.
     compileSdkVersion 33
 
     compileOptions {
@@ -43,7 +44,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-inline:4.7.0'
-    testImplementation 'androidx.test:core:1.3.0'
+    testImplementation 'androidx.test:core:1.4.0'
 }
     testOptions {
         unitTests.includeAndroidResources = true
