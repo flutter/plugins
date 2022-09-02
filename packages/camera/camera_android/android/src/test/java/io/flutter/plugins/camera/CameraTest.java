@@ -838,16 +838,7 @@ public class CameraTest {
   }
 
   @Test
-  public void stopBackgroundThread_cancelsDuplicateCalls() throws InterruptedException {
-    camera.startBackgroundThread();
-    camera.stopBackgroundThread();
-
-    verify(mockHandlerThread, never()).quitSafely();
-    verify(mockHandlerThread, never()).join();
-  }
-
-  @Test
-  public void stopBackgroundThread_proceedsWithoutDuplicateCall() throws InterruptedException {
+  public void stopBackgroundThread_quitsSafely() throws InterruptedException {
     camera.startBackgroundThread();
     camera.stopBackgroundThread();
 
