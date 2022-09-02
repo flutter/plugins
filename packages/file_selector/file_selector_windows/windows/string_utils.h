@@ -11,10 +11,10 @@
 namespace file_selector_windows {
 
 // Converts the given UTF-16 string to UTF-8.
-std::string Utf8FromUtf16(const std::wstring& utf16_string);
+std::string Utf8FromUtf16(std::wstring_view utf16_string);
 
 // Converts the given UTF-8 string to UTF-16.
-std::wstring Utf16FromUtf8(const std::string& utf8_string);
+std::wstring Utf16FromUtf8(std::string_view utf8_string);
 
 }  // namespace file_selector_windows
 

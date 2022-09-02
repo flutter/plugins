@@ -4,6 +4,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/painting.dart';
 
 import '../platform_webview_controller.dart';
 
@@ -21,26 +22,26 @@ import '../platform_webview_controller.dart';
 /// changes.
 ///
 /// ```dart
-/// class WKWebViewWidgetCreationParams extends PlatformWebViewWidgetCreationParams {
-///   WKWebViewWidgetCreationParams._(
-///     // This parameter prevents breaking changes later.
-///     // ignore: avoid_unused_constructor_parameters
+/// class AndroidWebViewWidgetCreationParams
+///     extends PlatformWebViewWidgetCreationParams {
+///   AndroidWebViewWidgetCreationParams({
+///     super.key,
+///     super.layoutDirection,
+///     super.gestureRecognizers,
+///     this.platformSpecificFieldExample,
+///   });
+///
+///   WKWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
 ///     PlatformWebViewWidgetCreationParams params, {
-///     this.domain,
-///   }) : super(
+///     Object? platformSpecificFieldExample,
+///   }) : this(
 ///           key: params.key,
-///           controller: params.controller,
+///           layoutDirection: params.layoutDirection,
 ///           gestureRecognizers: params.gestureRecognizers,
+///           platformSpecificFieldExample: platformSpecificFieldExample,
 ///         );
 ///
-///   factory WKWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
-///     PlatformWebViewWidgetCreationParams params, {
-///     String? domain,
-///   }) {
-///     return WKWebViewWidgetCreationParams._(params, domain: domain);
-///   }
-///
-///   final String? domain;
+///   final Object? platformSpecificFieldExample;
 /// }
 /// ```
 /// {@end-tool}
@@ -50,6 +51,7 @@ class PlatformWebViewWidgetCreationParams {
   const PlatformWebViewWidgetCreationParams({
     this.key,
     required this.controller,
+    this.layoutDirection = TextDirection.ltr,
     this.gestureRecognizers = const <Factory<OneSequenceGestureRecognizer>>{},
   });
 
@@ -63,6 +65,9 @@ class PlatformWebViewWidgetCreationParams {
   /// The [PlatformWebViewController] that allows controlling the native web
   /// view.
   final PlatformWebViewController controller;
+
+  /// The layout direction to use for the embedded WebView.
+  final TextDirection layoutDirection;
 
   /// The `gestureRecognizers` specifies which gestures should be consumed by the
   /// web view.

@@ -112,6 +112,20 @@ void main() {
         'scopes': <String>['two', 'scopes'],
         'signInOption': 'SignInOption.games',
         'clientId': 'fakeClientId',
+        'forceCodeForRefreshToken': false,
+      }),
+      () {
+        googleSignIn.initWithParams(const SignInInitParameters(
+            hostedDomain: 'example.com',
+            scopes: <String>['two', 'scopes'],
+            signInOption: SignInOption.games,
+            clientId: 'fakeClientId',
+            forceCodeForRefreshToken: true));
+      }: isMethodCall('init', arguments: <String, dynamic>{
+        'hostedDomain': 'example.com',
+        'scopes': <String>['two', 'scopes'],
+        'signInOption': 'SignInOption.games',
+        'clientId': 'fakeClientId',
         'forceCodeForRefreshToken': true,
       }),
       () {

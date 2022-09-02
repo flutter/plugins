@@ -28,8 +28,8 @@ class _FakeWebStorage_1 extends _i1.Fake implements _i2.WebStorage {}
 
 class _FakeWebView_2 extends _i1.Fake implements _i2.WebView {}
 
-class _FakeDownloadListener_3 extends _i1.Fake implements _i2.DownloadListener {
-}
+class _FakeDownloadListener_3 extends _i1.Fake
+    implements _i2.DownloadListener {}
 
 class _FakeJavascriptChannelRegistry_4 extends _i1.Fake
     implements _i3.JavascriptChannelRegistry {}
@@ -64,7 +64,6 @@ class MockFlutterAssetManager extends _i1.Mock
 /// A class which mocks [WebSettings].
 ///
 /// See the documentation for Mockito's code generation for more information.
-// ignore: must_be_immutable
 class MockWebSettings extends _i1.Mock implements _i2.WebSettings {
   MockWebSettings() {
     _i1.throwOnMissingStub(this);
@@ -140,7 +139,6 @@ class MockWebSettings extends _i1.Mock implements _i2.WebSettings {
 /// A class which mocks [WebStorage].
 ///
 /// See the documentation for Mockito's code generation for more information.
-// ignore: must_be_immutable
 class MockWebStorage extends _i1.Mock implements _i2.WebStorage {
   MockWebStorage() {
     _i1.throwOnMissingStub(this);
@@ -159,7 +157,6 @@ class MockWebStorage extends _i1.Mock implements _i2.WebStorage {
 /// A class which mocks [WebView].
 ///
 /// See the documentation for Mockito's code generation for more information.
-// ignore: must_be_immutable
 class MockWebView extends _i1.Mock implements _i2.WebView {
   MockWebView() {
     _i1.throwOnMissingStub(this);

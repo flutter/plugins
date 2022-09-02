@@ -124,7 +124,7 @@ class BillingClient {
   ///
   /// This triggers the destruction of the `BillingClient` instance in Java.
   Future<void> endConnection() async {
-    return channel.invokeMethod<void>('BillingClient#endConnection()', null);
+    return channel.invokeMethod<void>('BillingClient#endConnection()');
   }
 
   /// Returns a list of [SkuDetailsWrapper]s that have [SkuDetailsWrapper.sku]

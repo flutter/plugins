@@ -21,6 +21,11 @@
 
 - (void)setStreamHandler:(NSObject<FlutterStreamHandler> *)handler
               completion:(void (^)(void))completion {
+  // WARNING: Should not use weak self, because FLTThreadSafeEventChannel is a local variable
+  // (retained within call stack, but not in the heap). FLTEnsureToRunOnMainQueue may trigger a
+  // context switch (when calling from background thread), in which case using weak self will always
+  // result in a nil self. Alternative to using strong self, we can also create a local strong
+  // variable to be captured by this block.
   FLTEnsureToRunOnMainQueue(^{
     [self.channel setStreamHandler:handler];
     completion();

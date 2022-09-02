@@ -161,7 +161,7 @@ class PathProviderWindows extends PathProviderPlatform {
         if (hr == E_INVALIDARG || hr == E_FAIL) {
           throw WindowsException(hr);
         }
-        return Future<String?>.value(null);
+        return Future<String?>.value();
       }
 
       final String path = pathPtrPtr.value.toDartString();

@@ -31,13 +31,17 @@
     self.completionHandler(nil, error);
     return;
   }
+  __weak typeof(self) weakSelf = self;
   dispatch_async(self.ioQueue, ^{
+    typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+
     NSData *data = photoDataProvider();
     NSError *ioError;
-    if ([data writeToFile:self.path options:NSDataWritingAtomic error:&ioError]) {
-      self.completionHandler(self.path, nil);
+    if ([data writeToFile:strongSelf.path options:NSDataWritingAtomic error:&ioError]) {
+      strongSelf.completionHandler(self.path, nil);
     } else {
-      self.completionHandler(nil, ioError);
+      strongSelf.completionHandler(nil, ioError);
     }
   });
 }

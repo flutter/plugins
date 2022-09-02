@@ -35,7 +35,7 @@ class PackageChangeState {
 /// [changedPaths] should be a list of POSIX-style paths from a common root,
 /// and [relativePackagePath] should be the path to [package] from that same
 /// root. Commonly these will come from `gitVersionFinder.getChangedFiles()`
-/// and `getRelativePoixPath(package.directory, gitDir.path)` respectively;
+/// and `getRelativePosixPath(package.directory, gitDir.path)` respectively;
 /// they are arguments mainly to allow for caching the changed paths for an
 /// entire command run.
 PackageChangeState checkPackageChangeState(

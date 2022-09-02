@@ -20,8 +20,9 @@
 }
 
 - (void)invokeMethod:(NSString *)method arguments:(id)arguments {
+  __weak typeof(self) weakSelf = self;
   FLTEnsureToRunOnMainQueue(^{
-    [self.channel invokeMethod:method arguments:arguments];
+    [weakSelf.channel invokeMethod:method arguments:arguments];
   });
 }
 

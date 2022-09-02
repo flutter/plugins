@@ -1,4 +1,8 @@
-## 5.4.1
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 5.5.0
 
 * Adds override for `GoogleSignInPlatform.initWithParams`.
 

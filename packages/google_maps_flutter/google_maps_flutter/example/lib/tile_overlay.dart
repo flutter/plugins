@@ -137,11 +137,9 @@ class _DebugTileProvider implements TileProvider {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout(
-      minWidth: 0.0,
       maxWidth: width.toDouble(),
     );
-    const Offset offset = Offset(0, 0);
-    textPainter.paint(canvas, offset);
+    textPainter.paint(canvas, Offset.zero);
     canvas.drawRect(
         Rect.fromLTRB(0, 0, width.toDouble(), width.toDouble()), boxPaint);
     final ui.Picture picture = recorder.endRecording();

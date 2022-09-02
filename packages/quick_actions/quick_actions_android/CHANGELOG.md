@@ -1,4 +1,15 @@
-## 0.6.1 
+## 1.0.0
+
+* Updates version to 1.0 to reflect current status.
+* Updates minimum Flutter version to 2.10.
+* Updates mockito-core to 4.6.1.
+* Removes deprecated FieldSetter from QuickActionsTest.
+
+## 0.6.2
+
+* Updates gradle version to 7.2.1.
+
+## 0.6.1
 
 * Allows Android to trigger quick actions without restarting the app.
 
