@@ -209,7 +209,7 @@ class WebView extends StatefulWidget {
 
   /// A Boolean value that determines whether pressing a link displays a preview of the destination for the link.
   ///
-  /// This only works on iOS.
+  /// Not supported on all platforms.
   ///
   /// By default `allowsLinkPreview` is true, to match the default on iOS.
   final bool allowsLinkPreview;
