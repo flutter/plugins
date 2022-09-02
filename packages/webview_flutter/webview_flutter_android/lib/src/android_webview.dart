@@ -13,6 +13,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show BinaryMessenger;
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
 import 'android_webview.pigeon.dart';
@@ -22,17 +23,36 @@ import 'instance_manager.dart';
 /// Root of the Java class hierarchy.
 ///
 /// See https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html.
-abstract class JavaObject with Copyable {
+class JavaObject with Copyable {
   /// Constructs a [JavaObject] without creating the associated Java object.
   ///
   /// This should only be used by subclasses created by this library or to
   /// create copies.
-  JavaObject.detached();
+  JavaObject.detached({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _api = JavaObjectHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
 
   /// Global instance of [InstanceManager].
   static final InstanceManager globalInstanceManager = InstanceManager(
     onWeakReferenceRemoved: (_) {},
   );
+
+  /// Pigeon Host Api implementation for [JavaObject].
+  final JavaObjectHostApiImpl _api;
+
+  /// Release the reference to a native Java instance.
+  static void dispose(JavaObject instance) {
+    instance._api.instanceManager.removeWeakReference(instance);
+  }
+
+  @override
+  JavaObject copy() {
+    return JavaObject.detached();
+  }
 }
 
 /// An Android View that displays web pages.

@@ -4,19 +4,12 @@ The macOS implementation of [`file_selector`][1].
 
 ## Usage
 
-### Importing the package
-
-This implementation has not yet been endorsed, meaning that you need to
-[depend on `file_selector_macos`][2] in addition to
-[depending on `file_selector`][3].
-
-Once your pubspec includes the macOS implementation, you can use the
-`file_selector` APIs normally. You should not use the `file_selector_macos`
-APIs directly.
+This package is [endorsed][2], which means you can simply use `file_selector`
+normally. This package will be automatically included in your app when you do.
 
 ### Entitlements
 
-You will need to [add an entitlement][4] for either read-only access:
+You will need to [add an entitlement][3] for either read-only access:
 ```xml
 	<key>com.apple.security.files.user-selected.read-only</key>
 	<true/>
@@ -29,6 +22,5 @@ or read/write access:
 depending on your use case.
 
 [1]: https://pub.dev/packages/file_selector
-[2]: https://pub.dev/packages/file_selector_macos/install
-[3]: https://pub.dev/packages/file_selector/install
-[4]: https://flutter.dev/desktop#entitlements-and-the-app-sandbox
+[2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
+[3]: https://flutter.dev/desktop#entitlements-and-the-app-sandbox

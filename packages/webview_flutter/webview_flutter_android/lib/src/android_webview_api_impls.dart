@@ -36,11 +36,14 @@ WebResourceError _toWebResourceError(WebResourceErrorData data) {
 class AndroidWebViewFlutterApis {
   /// Creates a [AndroidWebViewFlutterApis].
   AndroidWebViewFlutterApis({
+    JavaObjectFlutterApiImpl? javaObjectFlutterApi,
     DownloadListenerFlutterApiImpl? downloadListenerFlutterApi,
     WebViewClientFlutterApiImpl? webViewClientFlutterApi,
     WebChromeClientFlutterApiImpl? webChromeClientFlutterApi,
     JavaScriptChannelFlutterApiImpl? javaScriptChannelFlutterApi,
   }) {
+    this.javaObjectFlutterApi =
+        javaObjectFlutterApi ?? JavaObjectFlutterApiImpl();
     this.downloadListenerFlutterApi =
         downloadListenerFlutterApi ?? DownloadListenerFlutterApiImpl();
     this.webViewClientFlutterApi =
@@ -58,6 +61,9 @@ class AndroidWebViewFlutterApis {
   /// This should only be changed for testing purposes.
   static AndroidWebViewFlutterApis instance = AndroidWebViewFlutterApis();
 
+  /// Handles callbacks methods for the native Java Object class.
+  late final JavaObjectFlutterApi javaObjectFlutterApi;
+
   /// Flutter Api for [DownloadListener].
   late final DownloadListenerFlutterApiImpl downloadListenerFlutterApi;
 
@@ -73,12 +79,47 @@ class AndroidWebViewFlutterApis {
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
     if (!_haveBeenSetUp) {
+      JavaObjectFlutterApi.setup(javaObjectFlutterApi);
       DownloadListenerFlutterApi.setup(downloadListenerFlutterApi);
       WebViewClientFlutterApi.setup(webViewClientFlutterApi);
       WebChromeClientFlutterApi.setup(webChromeClientFlutterApi);
       JavaScriptChannelFlutterApi.setup(javaScriptChannelFlutterApi);
       _haveBeenSetUp = true;
     }
+  }
+}
+
+/// Handles methods calls to the native Java Object class.
+class JavaObjectHostApiImpl extends JavaObjectHostApi {
+  /// Constructs a [JavaObjectHostApiImpl].
+  JavaObjectHostApiImpl({
+    this.binaryMessenger,
+    InstanceManager? instanceManager,
+  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Receives binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
+
+  /// Maintains instances stored to communicate with native language objects.
+  final InstanceManager instanceManager;
+}
+
+/// Handles callbacks methods for the native Java Object class.
+class JavaObjectFlutterApiImpl implements JavaObjectFlutterApi {
+  /// Constructs a [JavaObjectFlutterApiImpl].
+  JavaObjectFlutterApiImpl({InstanceManager? instanceManager})
+      : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+
+  /// Maintains instances stored to communicate with native language objects.
+  final InstanceManager instanceManager;
+
+  @override
+  void dispose(int identifier) {
+    instanceManager.remove(identifier);
   }
 }
 

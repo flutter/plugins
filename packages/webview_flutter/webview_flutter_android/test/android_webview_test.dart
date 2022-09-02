@@ -18,6 +18,7 @@ import 'test_android_webview.pigeon.dart';
   DownloadListener,
   JavaScriptChannel,
   TestDownloadListenerHostApi,
+  TestJavaObjectHostApi,
   TestJavaScriptChannelHostApi,
   TestWebChromeClientHostApi,
   TestWebSettingsHostApi,
@@ -33,6 +34,58 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Android WebView', () {
+    group('JavaObject', () {
+      late MockTestJavaObjectHostApi mockPlatformHostApi;
+
+      setUp(() {
+        mockPlatformHostApi = MockTestJavaObjectHostApi();
+        TestJavaObjectHostApi.setup(mockPlatformHostApi);
+      });
+
+      tearDown(() {
+        TestJavaObjectHostApi.setup(null);
+      });
+
+      test('JavaObject.dispose', () async {
+        int? callbackIdentifier;
+        final InstanceManager instanceManager = InstanceManager(
+          onWeakReferenceRemoved: (int identifier) {
+            callbackIdentifier = identifier;
+          },
+        );
+
+        final JavaObject object = JavaObject.detached(
+          instanceManager: instanceManager,
+        );
+        instanceManager.addHostCreatedInstance(object, 0);
+
+        JavaObject.dispose(object);
+
+        expect(callbackIdentifier, 0);
+      });
+
+      test('JavaObjectFlutterApi.dispose', () {
+        final InstanceManager instanceManager = InstanceManager(
+          onWeakReferenceRemoved: (_) {},
+        );
+
+        final JavaObject object = JavaObject.detached(
+          instanceManager: instanceManager,
+        );
+        instanceManager.addHostCreatedInstance(object, 0);
+        instanceManager.removeWeakReference(object);
+
+        expect(instanceManager.containsIdentifier(0), isTrue);
+
+        final JavaObjectFlutterApiImpl flutterApi = JavaObjectFlutterApiImpl(
+          instanceManager: instanceManager,
+        );
+        flutterApi.dispose(0);
+
+        expect(instanceManager.containsIdentifier(0), isFalse);
+      });
+    });
+
     group('WebView', () {
       late MockTestWebViewHostApi mockPlatformHostApi;
 
