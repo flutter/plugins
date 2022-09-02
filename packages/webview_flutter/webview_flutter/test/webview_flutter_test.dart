@@ -1114,6 +1114,58 @@ void main() {
     });
   });
 
+  group('allowsLinkPreview', () {
+    testWidgets('defaults to true', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.webSettings!.allowsLinkPreview, true);
+    });
+
+    testWidgets('can be disabled', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        allowsLinkPreview: false,
+      ));
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.webSettings!.allowsLinkPreview, false);
+    });
+
+    testWidgets('can be changed', (WidgetTester tester) async {
+      final GlobalKey key = GlobalKey();
+      await tester.pumpWidget(WebView(key: key));
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        allowsLinkPreview: false,
+      ));
+
+      final WebSettings enabledSettings =
+          verify(mockWebViewPlatformController.updateSettings(captureAny))
+              .captured
+              .last as WebSettings;
+      expect(enabledSettings.allowsLinkPreview, false);
+
+      await tester.pumpWidget(WebView(
+        key: key,
+      ));
+
+      final WebSettings disabledSettings =
+          verify(mockWebViewPlatformController.updateSettings(captureAny))
+              .captured
+              .last as WebSettings;
+      expect(disabledSettings.debuggingEnabled, true);
+    });
+  });
+
   group('Custom platform implementation', () {
     setUp(() {
       WebView.platform = MyWebViewPlatform();
