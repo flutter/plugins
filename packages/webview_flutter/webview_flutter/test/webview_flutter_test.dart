@@ -1127,7 +1127,6 @@ void main() {
         const WebView(
           initialUrl: 'https://youtube.com',
           gestureNavigationEnabled: true,
-          allowsLinkPreview: false,
         ),
       );
 
@@ -1144,7 +1143,7 @@ void main() {
               debuggingEnabled: false,
               userAgent: const WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
-              allowsLinkPreview: false,
+              allowsLinkPreview: true,
               zoomEnabled: true,
             ),
           )));
