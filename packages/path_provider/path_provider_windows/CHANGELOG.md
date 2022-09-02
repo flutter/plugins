@@ -1,7 +1,7 @@
 ## 2.1.3
 
 * Updates minimum Flutter version to 2.10.
-* Allow `package:win32` 3.x to be used.
+* Adds compatibility with `package:win32` 3.x.
 
 ## 2.1.2
 
