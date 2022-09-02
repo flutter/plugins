@@ -1,4 +1,4 @@
-## 0.10.1
+## 0.10.0+2
 
 * Removes call to `join` on the camera's background `HandlerThread`.
 
