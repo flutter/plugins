@@ -32,6 +32,7 @@ void main() {
 
       expect(state.hasChanges, true);
       expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
     });
 
     test('handles trailing slash on package path', () async {
@@ -48,10 +49,12 @@ void main() {
 
       expect(state.hasChanges, true);
       expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
       expect(state.hasChangelogChange, false);
     });
 
-    test('does not report version change exempt changes', () async {
+    test('does not flag version- and changelog-change-exempt changes',
+        () async {
       final RepositoryPackage package =
           createFakePlugin('a_plugin', packagesDir);
 
@@ -70,6 +73,7 @@ void main() {
 
       expect(state.hasChanges, true);
       expect(state.needsVersionChange, false);
+      expect(state.needsChangelogChange, false);
       expect(state.hasChangelogChange, true);
     });
 
@@ -87,11 +91,13 @@ void main() {
 
       expect(state.hasChanges, true);
       expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
     });
 
-    test('requires a version change for example main', () async {
-      final RepositoryPackage package =
-          createFakePlugin('a_plugin', packagesDir);
+    test('requires a version change for example/lib/main.dart', () async {
+      final RepositoryPackage package = createFakePlugin(
+          'a_plugin', packagesDir,
+          extraFiles: <String>['example/lib/main.dart']);
 
       const List<String> changedFiles = <String>[
         'packages/a_plugin/example/lib/main.dart',
@@ -103,6 +109,25 @@ void main() {
 
       expect(state.hasChanges, true);
       expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
+    });
+
+    test('requires a version change for example/main.dart', () async {
+      final RepositoryPackage package = createFakePlugin(
+          'a_plugin', packagesDir,
+          extraFiles: <String>['example/main.dart']);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/example/main.dart',
+      ];
+
+      final PackageChangeState state = checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/');
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
     });
 
     test('requires a version change for example readme.md', () async {
@@ -119,14 +144,16 @@ void main() {
 
       expect(state.hasChanges, true);
       expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
     });
 
-    test('requires a version change for example example.md', () async {
-      final RepositoryPackage package =
-          createFakePlugin('a_plugin', packagesDir);
+    test('requires a version change for example/example.md', () async {
+      final RepositoryPackage package = createFakePlugin(
+          'a_plugin', packagesDir,
+          extraFiles: <String>['example/example.md']);
 
       const List<String> changedFiles = <String>[
-        'packages/a_plugin/example/lib/example.md',
+        'packages/a_plugin/example/example.md',
       ];
 
       final PackageChangeState state = checkPackageChangeState(package,
@@ -135,6 +162,49 @@ void main() {
 
       expect(state.hasChanges, true);
       expect(state.needsVersionChange, true);
+      expect(state.needsChangelogChange, true);
+    });
+
+    test(
+        'requires a changelog change but no version change for '
+        'lower-priority examples when example.md is present', () async {
+      final RepositoryPackage package = createFakePlugin(
+          'a_plugin', packagesDir,
+          extraFiles: <String>['example/example.md']);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/example/lib/main.dart',
+        'packages/a_plugin/example/main.dart',
+        'packages/a_plugin/example/README.md',
+      ];
+
+      final PackageChangeState state = checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/');
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, false);
+      expect(state.needsChangelogChange, true);
+    });
+
+    test(
+        'requires a changelog change but no version change for README.md when '
+        'code example is present', () async {
+      final RepositoryPackage package = createFakePlugin(
+          'a_plugin', packagesDir,
+          extraFiles: <String>['example/lib/main.dart']);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/example/README.md',
+      ];
+
+      final PackageChangeState state = checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/');
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, false);
+      expect(state.needsChangelogChange, true);
     });
   });
 }
