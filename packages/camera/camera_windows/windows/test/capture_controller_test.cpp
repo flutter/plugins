@@ -294,7 +294,52 @@ TEST(CaptureController, InitCaptureEngineReportsFailure) {
   EXPECT_CALL(*texture_registrar, UnregisterTexture).Times(0);
   EXPECT_CALL(*camera, OnCreateCaptureEngineSucceeded).Times(0);
   EXPECT_CALL(*camera,
-              OnCreateCaptureEngineFailed(Eq("Failed to create camera")))
+              OnCreateCaptureEngineFailed(Eq(CameraResult::kError),
+                                          Eq("Failed to create camera")))
+      .Times(1);
+
+  bool result = capture_controller->InitCaptureDevice(
+      texture_registrar.get(), MOCK_DEVICE_ID, true, ResolutionPreset::kAuto);
+
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(engine->initialized_);
+
+  capture_controller = nullptr;
+  camera = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+}
+
+TEST(CaptureController, InitCaptureEngineReportsAccessDenied) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  ComPtr<MockMediaSource> video_source = new MockMediaSource();
+  ComPtr<MockMediaSource> audio_source = new MockMediaSource();
+
+  capture_controller->SetCaptureEngine(
+      reinterpret_cast<IMFCaptureEngine*>(engine.Get()));
+  capture_controller->SetVideoSource(
+      reinterpret_cast<IMFMediaSource*>(video_source.Get()));
+  capture_controller->SetAudioSource(
+      reinterpret_cast<IMFMediaSource*>(audio_source.Get()));
+
+  // Cause initialization to fail
+  EXPECT_CALL(*engine.Get(), Initialize)
+      .Times(1)
+      .WillOnce(Return(E_ACCESSDENIED));
+
+  EXPECT_CALL(*texture_registrar, RegisterTexture).Times(0);
+  EXPECT_CALL(*texture_registrar, UnregisterTexture).Times(0);
+  EXPECT_CALL(*camera, OnCreateCaptureEngineSucceeded).Times(0);
+  EXPECT_CALL(*camera,
+              OnCreateCaptureEngineFailed(Eq(CameraResult::kAccessDenied),
+                                          Eq("Failed to create camera")))
       .Times(1);
 
   bool result = capture_controller->InitCaptureDevice(
@@ -324,12 +369,42 @@ TEST(CaptureController, ReportsInitializedErrorEvent) {
                             engine.Get(), camera.get(), mock_texture_id);
 
   EXPECT_CALL(*camera, OnCreateCaptureEngineFailed(
+                           Eq(CameraResult::kError),
                            Eq("Failed to initialize capture engine")))
       .Times(1);
   EXPECT_CALL(*camera, OnCreateCaptureEngineSucceeded).Times(0);
 
   // Send initialization failed event
   engine->CreateFakeEvent(E_FAIL, MF_CAPTURE_ENGINE_INITIALIZED);
+
+  capture_controller = nullptr;
+  camera = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+}
+
+TEST(CaptureController, ReportsInitializedAccessDeniedEvent) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  int64_t mock_texture_id = 1234;
+
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  EXPECT_CALL(*camera, OnCreateCaptureEngineFailed(
+                           Eq(CameraResult::kAccessDenied),
+                           Eq("Failed to initialize capture engine")))
+      .Times(1);
+  EXPECT_CALL(*camera, OnCreateCaptureEngineSucceeded).Times(0);
+
+  // Send initialization failed event
+  engine->CreateFakeEvent(E_ACCESSDENIED, MF_CAPTURE_ENGINE_INITIALIZED);
 
   capture_controller = nullptr;
   camera = nullptr;
@@ -351,11 +426,39 @@ TEST(CaptureController, ReportsCaptureEngineErrorEvent) {
   MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
                             engine.Get(), camera.get(), mock_texture_id);
 
-  EXPECT_CALL(*(camera.get()), OnCaptureError(Eq("Unspecified error")))
+  EXPECT_CALL(*(camera.get()),
+              OnCaptureError(Eq(CameraResult::kError), Eq("Unspecified error")))
       .Times(1);
 
   // Send error event.
   engine->CreateFakeEvent(E_FAIL, MF_CAPTURE_ENGINE_ERROR);
+
+  capture_controller = nullptr;
+  camera = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+}
+
+TEST(CaptureController, ReportsCaptureEngineAccessDeniedEvent) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  int64_t mock_texture_id = 1234;
+
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  EXPECT_CALL(*(camera.get()), OnCaptureError(Eq(CameraResult::kAccessDenied),
+                                              Eq("Access is denied.")))
+      .Times(1);
+
+  // Send error event.
+  engine->CreateFakeEvent(E_ACCESSDENIED, MF_CAPTURE_ENGINE_ERROR);
 
   capture_controller = nullptr;
   camera = nullptr;
@@ -477,7 +580,8 @@ TEST(CaptureController, ReportsStartPreviewError) {
   EXPECT_CALL(*engine.Get(), StopPreview).Times(0);
   EXPECT_CALL(*camera, OnStartPreviewSucceeded).Times(0);
   EXPECT_CALL(*camera,
-              OnStartPreviewFailed(Eq("Failed to start video preview")))
+              OnStartPreviewFailed(Eq(CameraResult::kError),
+                                   Eq("Failed to start video preview")))
       .Times(1);
 
   capture_controller->StartPreview();
@@ -515,6 +619,45 @@ TEST(CaptureController, IgnoresStartPreviewErrorEvent) {
   camera = nullptr;
   texture_registrar = nullptr;
   engine = nullptr;
+}
+
+TEST(CaptureController, ReportsStartPreviewAccessDenied) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  int64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to start preview
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+  MockAvailableMediaTypes(engine.Get(), capture_source.Get(), 1, 1);
+
+  // Cause start preview to fail
+  EXPECT_CALL(*engine.Get(), GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW, _))
+      .Times(1)
+      .WillOnce(Return(E_ACCESSDENIED));
+
+  EXPECT_CALL(*engine.Get(), StartPreview).Times(0);
+  EXPECT_CALL(*engine.Get(), StopPreview).Times(0);
+  EXPECT_CALL(*camera, OnStartPreviewSucceeded).Times(0);
+  EXPECT_CALL(*camera,
+              OnStartPreviewFailed(Eq(CameraResult::kAccessDenied),
+                                   Eq("Failed to start video preview")))
+      .Times(1);
+
+  capture_controller->StartPreview();
+
+  capture_controller = nullptr;
+  engine = nullptr;
+  camera = nullptr;
+  texture_registrar = nullptr;
 }
 
 TEST(CaptureController, StartRecordSuccess) {
@@ -584,7 +727,49 @@ TEST(CaptureController, ReportsStartRecordError) {
   EXPECT_CALL(*engine.Get(), StopRecord).Times(0);
   EXPECT_CALL(*camera, OnStartRecordSucceeded).Times(0);
   EXPECT_CALL(*camera,
-              OnStartRecordFailed(Eq("Failed to start video recording")))
+              OnStartRecordFailed(Eq(CameraResult::kError),
+                                  Eq("Failed to start video recording")))
+      .Times(1);
+
+  capture_controller->StartRecord("mock_path", -1);
+
+  capture_controller = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+  camera = nullptr;
+}
+
+TEST(CaptureController, ReportsStartRecordAccessDenied) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  int64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to start preview
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+
+  // Prepare fake media types
+  MockAvailableMediaTypes(engine.Get(), capture_source.Get(), 1, 1);
+
+  // Cause start record to fail
+  EXPECT_CALL(*engine.Get(), GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_RECORD, _))
+      .Times(1)
+      .WillOnce(Return(E_ACCESSDENIED));
+
+  EXPECT_CALL(*engine.Get(), StartRecord).Times(0);
+  EXPECT_CALL(*engine.Get(), StopRecord).Times(0);
+  EXPECT_CALL(*camera, OnStartRecordSucceeded).Times(0);
+  EXPECT_CALL(*camera,
+              OnStartRecordFailed(Eq(CameraResult::kAccessDenied),
+                                  Eq("Failed to start video recording")))
       .Times(1);
 
   capture_controller->StartRecord("mock_path", -1);
@@ -644,9 +829,76 @@ TEST(CaptureController, ReportsStartRecordErrorEvent) {
 
   // Send a start record failed event
   EXPECT_CALL(*camera, OnStartRecordSucceeded).Times(0);
-  EXPECT_CALL(*camera, OnStartRecordFailed(Eq("Unspecified error"))).Times(1);
+  EXPECT_CALL(*camera, OnStartRecordFailed(Eq(CameraResult::kError),
+                                           Eq("Unspecified error")))
+      .Times(1);
 
   engine->CreateFakeEvent(E_FAIL, MF_CAPTURE_ENGINE_RECORD_STARTED);
+
+  // Destructor shouldn't attempt to stop the recording that failed to start.
+  EXPECT_CALL(*engine.Get(), StopRecord).Times(0);
+
+  capture_controller = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+  camera = nullptr;
+  record_sink = nullptr;
+}
+
+TEST(CaptureController, ReportsStartRecordAccessDeniedEvent) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  int64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to start preview
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+
+  // Prepare fake media types
+  MockAvailableMediaTypes(engine.Get(), capture_source.Get(), 1, 1);
+
+  // Start record
+  ComPtr<MockCaptureRecordSink> record_sink = new MockCaptureRecordSink();
+  std::string mock_path_to_video = "mock_path_to_video";
+
+  EXPECT_CALL(*engine.Get(), StartRecord()).Times(1).WillOnce(Return(S_OK));
+
+  EXPECT_CALL(*engine.Get(), GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_RECORD, _))
+      .Times(1)
+      .WillOnce([src_sink = record_sink](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
+                                         IMFCaptureSink** target_sink) {
+        *target_sink = src_sink.Get();
+        src_sink->AddRef();
+        return S_OK;
+      });
+
+  EXPECT_CALL(*record_sink.Get(), RemoveAllStreams)
+      .Times(1)
+      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*record_sink.Get(), AddStream)
+      .Times(2)
+      .WillRepeatedly(Return(S_OK));
+  EXPECT_CALL(*record_sink.Get(), SetOutputFileName)
+      .Times(1)
+      .WillOnce(Return(S_OK));
+
+  // Send a start record failed event
+  capture_controller->StartRecord(mock_path_to_video, -1);
+
+  EXPECT_CALL(*camera, OnStartRecordSucceeded).Times(0);
+  EXPECT_CALL(*camera, OnStartRecordFailed(Eq(CameraResult::kAccessDenied),
+                                           Eq("Access is denied.")))
+      .Times(1);
+
+  engine->CreateFakeEvent(E_ACCESSDENIED, MF_CAPTURE_ENGINE_RECORD_STARTED);
 
   // Destructor shouldn't attempt to stop the recording that failed to start.
   EXPECT_CALL(*engine.Get(), StopRecord).Times(0);
@@ -734,7 +986,52 @@ TEST(CaptureController, ReportsStopRecordError) {
       .WillOnce(Return(E_FAIL));
 
   EXPECT_CALL(*camera, OnStopRecordSucceeded).Times(0);
-  EXPECT_CALL(*camera, OnStopRecordFailed(Eq("Failed to stop video recording")))
+  EXPECT_CALL(*camera, OnStopRecordFailed(Eq(CameraResult::kError),
+                                          Eq("Failed to stop video recording")))
+      .Times(1);
+
+  capture_controller->StopRecord();
+
+  capture_controller = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+  camera = nullptr;
+  record_sink = nullptr;
+}
+
+TEST(CaptureController, ReportsStopRecordAccessDenied) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  int64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to start preview
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+
+  // Prepare fake media types
+  MockAvailableMediaTypes(engine.Get(), capture_source.Get(), 1, 1);
+
+  // Start record
+  ComPtr<MockCaptureRecordSink> record_sink = new MockCaptureRecordSink();
+  MockRecordStart(capture_controller.get(), engine.Get(), record_sink.Get(),
+                  camera.get(), "mock_path_to_video");
+
+  // Cause stop record to fail
+  EXPECT_CALL(*(engine.Get()), StopRecord(true, false))
+      .Times(1)
+      .WillOnce(Return(E_ACCESSDENIED));
+
+  EXPECT_CALL(*camera, OnStopRecordSucceeded).Times(0);
+  EXPECT_CALL(*camera, OnStopRecordFailed(Eq(CameraResult::kAccessDenied),
+                                          Eq("Failed to stop video recording")))
       .Times(1);
 
   capture_controller->StopRecord();
@@ -774,9 +1071,52 @@ TEST(CaptureController, ReportsStopRecordErrorEvent) {
 
   // Send a stop record failure event
   EXPECT_CALL(*camera, OnStopRecordSucceeded).Times(0);
-  EXPECT_CALL(*camera, OnStopRecordFailed(Eq("Unspecified error"))).Times(1);
+  EXPECT_CALL(*camera, OnStopRecordFailed(Eq(CameraResult::kError),
+                                          Eq("Unspecified error")))
+      .Times(1);
 
   engine->CreateFakeEvent(E_FAIL, MF_CAPTURE_ENGINE_RECORD_STOPPED);
+
+  capture_controller = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+  camera = nullptr;
+  record_sink = nullptr;
+}
+
+TEST(CaptureController, ReportsStopRecordAccessDeniedEvent) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  int64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to start preview
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+
+  // Prepare fake media types
+  MockAvailableMediaTypes(engine.Get(), capture_source.Get(), 1, 1);
+
+  // Start record
+  ComPtr<MockCaptureRecordSink> record_sink = new MockCaptureRecordSink();
+  std::string mock_path_to_video = "mock_path_to_video";
+  MockRecordStart(capture_controller.get(), engine.Get(), record_sink.Get(),
+                  camera.get(), mock_path_to_video);
+
+  // Send a stop record failure event
+  EXPECT_CALL(*camera, OnStopRecordSucceeded).Times(0);
+  EXPECT_CALL(*camera, OnStopRecordFailed(Eq(CameraResult::kAccessDenied),
+                                          Eq("Access is denied.")))
+      .Times(1);
+
+  engine->CreateFakeEvent(E_ACCESSDENIED, MF_CAPTURE_ENGINE_RECORD_STOPPED);
 
   capture_controller = nullptr;
   texture_registrar = nullptr;
@@ -856,7 +1196,52 @@ TEST(CaptureController, ReportsTakePictureError) {
   EXPECT_CALL(*(engine.Get()), TakePhoto).Times(1).WillOnce(Return(E_FAIL));
 
   EXPECT_CALL(*camera, OnTakePictureSucceeded).Times(0);
-  EXPECT_CALL(*camera, OnTakePictureFailed(Eq("Failed to take photo")))
+  EXPECT_CALL(*camera, OnTakePictureFailed(Eq(CameraResult::kError),
+                                           Eq("Failed to take photo")))
+      .Times(1);
+
+  capture_controller->TakePicture("mock_path_to_photo");
+
+  capture_controller = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+  camera = nullptr;
+  photo_sink = nullptr;
+}
+
+TEST(CaptureController, ReportsTakePictureAccessDenied) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  int64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to take picture
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+
+  // Prepare fake media types
+  MockAvailableMediaTypes(engine.Get(), capture_source.Get(), 1, 1);
+
+  ComPtr<MockCapturePhotoSink> photo_sink = new MockCapturePhotoSink();
+
+  // Initialize photo sink
+  MockPhotoSink(engine.Get(), photo_sink.Get());
+
+  // Cause take picture to fail.
+  EXPECT_CALL(*(engine.Get()), TakePhoto)
+      .Times(1)
+      .WillOnce(Return(E_ACCESSDENIED));
+
+  EXPECT_CALL(*camera, OnTakePictureSucceeded).Times(0);
+  EXPECT_CALL(*camera, OnTakePictureFailed(Eq(CameraResult::kAccessDenied),
+                                           Eq("Failed to take photo")))
       .Times(1);
 
   capture_controller->TakePicture("mock_path_to_photo");
@@ -900,9 +1285,56 @@ TEST(CaptureController, ReportsPhotoTakenErrorEvent) {
 
   // Send take picture failed event
   EXPECT_CALL(*camera, OnTakePictureSucceeded).Times(0);
-  EXPECT_CALL(*camera, OnTakePictureFailed(Eq("Unspecified error"))).Times(1);
+  EXPECT_CALL(*camera, OnTakePictureFailed(Eq(CameraResult::kError),
+                                           Eq("Unspecified error")))
+      .Times(1);
 
   engine->CreateFakeEvent(E_FAIL, MF_CAPTURE_ENGINE_PHOTO_TAKEN);
+
+  capture_controller = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+  camera = nullptr;
+  photo_sink = nullptr;
+}
+
+TEST(CaptureController, ReportsPhotoTakenAccessDeniedEvent) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  int64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to take picture
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+
+  // Prepare fake media types
+  MockAvailableMediaTypes(engine.Get(), capture_source.Get(), 1, 1);
+
+  ComPtr<MockCapturePhotoSink> photo_sink = new MockCapturePhotoSink();
+
+  // Initialize photo sink
+  MockPhotoSink(engine.Get(), photo_sink.Get());
+
+  // Request photo
+  std::string mock_path_to_photo = "mock_path_to_photo";
+  EXPECT_CALL(*(engine.Get()), TakePhoto()).Times(1).WillOnce(Return(S_OK));
+  capture_controller->TakePicture(mock_path_to_photo);
+
+  // Send take picture failed event
+  EXPECT_CALL(*camera, OnTakePictureSucceeded).Times(0);
+  EXPECT_CALL(*camera, OnTakePictureFailed(Eq(CameraResult::kAccessDenied),
+                                           Eq("Access is denied.")))
+      .Times(1);
+
+  engine->CreateFakeEvent(E_ACCESSDENIED, MF_CAPTURE_ENGINE_PHOTO_TAKEN);
 
   capture_controller = nullptr;
   texture_registrar = nullptr;
@@ -963,7 +1395,8 @@ TEST(CaptureController, PausePreviewFailsIfPreviewNotStarted) {
                             engine.Get(), camera.get(), mock_texture_id);
 
   // Pause preview fails if not started
-  EXPECT_CALL(*camera, OnPausePreviewFailed(Eq("Preview not started")))
+  EXPECT_CALL(*camera, OnPausePreviewFailed(Eq(CameraResult::kError),
+                                            Eq("Preview not started")))
       .Times(1);
 
   capture_controller->PausePreview();
@@ -989,7 +1422,8 @@ TEST(CaptureController, ResumePreviewFailsIfPreviewNotStarted) {
                             engine.Get(), camera.get(), mock_texture_id);
 
   // Resume preview fails if not started.
-  EXPECT_CALL(*camera, OnResumePreviewFailed(Eq("Preview not started")))
+  EXPECT_CALL(*camera, OnResumePreviewFailed(Eq(CameraResult::kError),
+                                             Eq("Preview not started")))
       .Times(1);
 
   capture_controller->ResumePreview();

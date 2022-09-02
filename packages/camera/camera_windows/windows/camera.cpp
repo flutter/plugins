@@ -16,6 +16,25 @@ constexpr char kVideoRecordedEvent[] = "video_recorded";
 constexpr char kCameraClosingEvent[] = "camera_closing";
 constexpr char kErrorEvent[] = "error";
 
+// Camera error codes
+constexpr char kCameraAccessDenied[] = "CameraAccessDenied";
+constexpr char kCameraError[] = "camera_error";
+constexpr char kPluginDisposed[] = "plugin_disposed";
+
+std::string GetErrorCode(CameraResult result) {
+  assert(result != CameraResult::kSuccess);
+
+  switch (result) {
+    case CameraResult::kAccessDenied:
+      return kCameraAccessDenied;
+
+    case CameraResult::kSuccess:
+    case CameraResult::kError:
+    default:
+      return kCameraError;
+  }
+}
+
 CameraImpl::CameraImpl(const std::string& device_id)
     : device_id_(device_id), Camera(device_id) {}
 
@@ -24,7 +43,7 @@ CameraImpl::~CameraImpl() {
   OnCameraClosing();
 
   capture_controller_ = nullptr;
-  SendErrorForPendingResults("plugin_disposed",
+  SendErrorForPendingResults(kPluginDisposed,
                              "Plugin disposed before request was handled");
 }
 
@@ -121,11 +140,13 @@ void CameraImpl::OnCreateCaptureEngineSucceeded(int64_t texture_id) {
   }
 }
 
-void CameraImpl::OnCreateCaptureEngineFailed(const std::string& error) {
+void CameraImpl::OnCreateCaptureEngineFailed(CameraResult result,
+                                             const std::string& error) {
   auto pending_result =
       GetPendingResultByType(PendingResultType::kCreateCamera);
   if (pending_result) {
-    pending_result->Error("camera_error", error);
+    std::string error_code = GetErrorCode(result);
+    pending_result->Error(error_code, error);
   }
 }
 
@@ -141,10 +162,12 @@ void CameraImpl::OnStartPreviewSucceeded(int32_t width, int32_t height) {
   }
 };
 
-void CameraImpl::OnStartPreviewFailed(const std::string& error) {
+void CameraImpl::OnStartPreviewFailed(CameraResult result,
+                                      const std::string& error) {
   auto pending_result = GetPendingResultByType(PendingResultType::kInitialize);
   if (pending_result) {
-    pending_result->Error("camera_error", error);
+    std::string error_code = GetErrorCode(result);
+    pending_result->Error(error_code, error);
   }
 };
 
@@ -156,11 +179,13 @@ void CameraImpl::OnResumePreviewSucceeded() {
   }
 }
 
-void CameraImpl::OnResumePreviewFailed(const std::string& error) {
+void CameraImpl::OnResumePreviewFailed(CameraResult result,
+                                       const std::string& error) {
   auto pending_result =
       GetPendingResultByType(PendingResultType::kResumePreview);
   if (pending_result) {
-    pending_result->Error("camera_error", error);
+    std::string error_code = GetErrorCode(result);
+    pending_result->Error(error_code, error);
   }
 }
 
@@ -172,11 +197,13 @@ void CameraImpl::OnPausePreviewSucceeded() {
   }
 }
 
-void CameraImpl::OnPausePreviewFailed(const std::string& error) {
+void CameraImpl::OnPausePreviewFailed(CameraResult result,
+                                      const std::string& error) {
   auto pending_result =
       GetPendingResultByType(PendingResultType::kPausePreview);
   if (pending_result) {
-    pending_result->Error("camera_error", error);
+    std::string error_code = GetErrorCode(result);
+    pending_result->Error(error_code, error);
   }
 }
 
@@ -187,10 +214,12 @@ void CameraImpl::OnStartRecordSucceeded() {
   }
 };
 
-void CameraImpl::OnStartRecordFailed(const std::string& error) {
+void CameraImpl::OnStartRecordFailed(CameraResult result,
+                                     const std::string& error) {
   auto pending_result = GetPendingResultByType(PendingResultType::kStartRecord);
   if (pending_result) {
-    pending_result->Error("camera_error", error);
+    std::string error_code = GetErrorCode(result);
+    pending_result->Error(error_code, error);
   }
 };
 
@@ -201,10 +230,12 @@ void CameraImpl::OnStopRecordSucceeded(const std::string& file_path) {
   }
 };
 
-void CameraImpl::OnStopRecordFailed(const std::string& error) {
+void CameraImpl::OnStopRecordFailed(CameraResult result,
+                                    const std::string& error) {
   auto pending_result = GetPendingResultByType(PendingResultType::kStopRecord);
   if (pending_result) {
-    pending_result->Error("camera_error", error);
+    std::string error_code = GetErrorCode(result);
+    pending_result->Error(error_code, error);
   }
 };
 
@@ -215,11 +246,13 @@ void CameraImpl::OnTakePictureSucceeded(const std::string& file_path) {
   }
 };
 
-void CameraImpl::OnTakePictureFailed(const std::string& error) {
+void CameraImpl::OnTakePictureFailed(CameraResult result,
+                                     const std::string& error) {
   auto pending_take_picture_result =
       GetPendingResultByType(PendingResultType::kTakePicture);
   if (pending_take_picture_result) {
-    pending_take_picture_result->Error("camera_error", error);
+    std::string error_code = GetErrorCode(result);
+    pending_take_picture_result->Error(error_code, error);
   }
 };
 
@@ -238,9 +271,10 @@ void CameraImpl::OnVideoRecordSucceeded(const std::string& file_path,
   }
 }
 
-void CameraImpl::OnVideoRecordFailed(const std::string& error){};
+void CameraImpl::OnVideoRecordFailed(CameraResult result,
+                                     const std::string& error){};
 
-void CameraImpl::OnCaptureError(const std::string& error) {
+void CameraImpl::OnCaptureError(CameraResult result, const std::string& error) {
   if (messenger_ && camera_id_ >= 0) {
     auto channel = GetMethodChannel();
 
@@ -250,7 +284,8 @@ void CameraImpl::OnCaptureError(const std::string& error) {
     channel->InvokeMethod(kErrorEvent, std::move(message_data));
   }
 
-  SendErrorForPendingResults("capture_error", error);
+  std::string error_code = GetErrorCode(result);
+  SendErrorForPendingResults(error_code, error);
 }
 
 void CameraImpl::OnCameraClosing() {

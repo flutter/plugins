@@ -74,7 +74,6 @@ class PublishPluginCommand extends PackageLoopingCommand {
       help:
           'Release all packages that contains pubspec changes at the current commit compares to the base-sha.\n'
           'The --packages option is ignored if this is on.',
-      defaultsTo: false,
     );
     argParser.addFlag(
       _dryRunFlag,
@@ -82,14 +81,10 @@ class PublishPluginCommand extends PackageLoopingCommand {
           'Skips the real `pub publish` and `git tag` commands and assumes both commands are successful.\n'
           'This does not run `pub publish --dry-run`.\n'
           'If you want to run the command with `pub publish --dry-run`, use `pub-publish-flags=--dry-run`',
-      defaultsTo: false,
-      negatable: true,
     );
     argParser.addFlag(_skipConfirmationFlag,
         help: 'Run the command without asking for Y/N inputs.\n'
-            'This command will add a `--force` flag to the `pub publish` command if it is not added with $_pubFlagsOption\n',
-        defaultsTo: false,
-        negatable: true);
+            'This command will add a `--force` flag to the `pub publish` command if it is not added with $_pubFlagsOption\n');
   }
 
   static const String _pubFlagsOption = 'pub-publish-flags';

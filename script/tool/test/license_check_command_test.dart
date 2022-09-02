@@ -200,7 +200,7 @@ void main() {
     test('handles the comment styles for all supported languages', () async {
       final File fileA = root.childFile('file_a.cc');
       fileA.createSync();
-      _writeLicense(fileA, comment: '// ');
+      _writeLicense(fileA);
       final File fileB = root.childFile('file_b.sh');
       fileB.createSync();
       _writeLicense(fileB, comment: '# ');

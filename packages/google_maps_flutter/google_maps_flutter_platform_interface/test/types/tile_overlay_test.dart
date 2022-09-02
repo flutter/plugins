@@ -35,7 +35,6 @@ void main() {
       const TileOverlay tileOverlay = TileOverlay(
           tileOverlayId: TileOverlayId('id'),
           fadeIn: false,
-          tileProvider: null,
           transparency: 0.1,
           zIndex: 1,
           visible: false,
@@ -91,7 +90,6 @@ void main() {
       const TileOverlay tileOverlayDifferentProvider = TileOverlay(
           tileOverlayId: TileOverlayId('id1'),
           fadeIn: false,
-          tileProvider: null,
           transparency: 0.1,
           zIndex: 1,
           visible: false,

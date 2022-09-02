@@ -1,10 +1,25 @@
+## 0.9.3
+
+* Raises minimum `compileSdkVersion` to 32 for the `all-plugins-app` command.
+
+## 0.9.2
+
+* Adds checking of `code-excerpt` configuration to `readme-check`, to validate
+  that if the excerpting tags are added to a README they are actually being
+  used.
+
+## 0.9.1
+
+* Adds a `--downgrade` flag to `analyze` for analyzing with the oldest possible
+  versions of packages.
+
 ## 0.9.0
 
 * Replaces PR-description-based version/changelog/breaking change check
   overrides in `version-check` with label-based overrides using a new
   `pr-labels` flag, since we don't actually have reliable access to the
   PR description in checks.
-  
+
 ## 0.8.10
 
 - Adds a new `remove-dev-dependencies` command to remove `dev_dependencies`

@@ -45,7 +45,6 @@ class PreviewHandler {
 
   // Initializes preview sink and requests capture engine to start previewing.
   // Sets preview state to: starting.
-  // Returns false if recording cannot be started.
   //
   // capture_engine:  A pointer to capture engine instance. Used to start
   //                  the actual recording.
@@ -53,16 +52,15 @@ class PreviewHandler {
   //                  for the actual video capture media type.
   // sample_callback: A pointer to capture engine listener.
   //                  This is set as sample callback for preview sink.
-  bool StartPreview(IMFCaptureEngine* capture_engine,
-                    IMFMediaType* base_media_type,
-                    CaptureEngineListener* sample_callback);
+  HRESULT StartPreview(IMFCaptureEngine* capture_engine,
+                       IMFMediaType* base_media_type,
+                       CaptureEngineListener* sample_callback);
 
   // Stops existing recording.
-  // Returns false if recording cannot be stopped.
   //
   // capture_engine:  A pointer to capture engine instance. Used to stop
   //                  the ongoing recording.
-  bool StopPreview(IMFCaptureEngine* capture_engine);
+  HRESULT StopPreview(IMFCaptureEngine* capture_engine);
 
   // Set the preview handler recording state to: paused.
   bool PausePreview();

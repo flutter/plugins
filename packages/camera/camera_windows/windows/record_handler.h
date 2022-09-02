@@ -45,7 +45,6 @@ class RecordHandler {
   // Initializes record sink and requests capture engine to start recording.
   //
   // Sets record state to: starting.
-  // Returns false if recording cannot be started.
   //
   // file_path:       A string that hold file path for video capture.
   // max_duration:    A int64 value of maximun recording duration.
@@ -55,16 +54,15 @@ class RecordHandler {
   //                  the actual recording.
   // base_media_type: A pointer to base media type used as a base
   //                  for the actual video capture media type.
-  bool StartRecord(const std::string& file_path, int64_t max_duration,
-                   IMFCaptureEngine* capture_engine,
-                   IMFMediaType* base_media_type);
+  HRESULT StartRecord(const std::string& file_path, int64_t max_duration,
+                      IMFCaptureEngine* capture_engine,
+                      IMFMediaType* base_media_type);
 
   // Stops existing recording.
-  // Returns false if recording cannot be stopped.
   //
   // capture_engine:  A pointer to capture engine instance. Used to stop
   //                  the ongoing recording.
-  bool StopRecord(IMFCaptureEngine* capture_engine);
+  HRESULT StopRecord(IMFCaptureEngine* capture_engine);
 
   // Set the record handler recording state to: running.
   void OnRecordStarted();

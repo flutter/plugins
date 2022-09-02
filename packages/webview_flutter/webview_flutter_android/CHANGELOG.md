@@ -1,3 +1,22 @@
+## 2.10.0
+
+* Bumps webkit from 1.0.0 to 1.5.0.
+* Raises minimum `compileSdkVersion` to 32.
+
+## 2.9.5
+
+* Adds dispose methods for HostApi and FlutterApi of JavaObject.
+
+## 2.9.4
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Bumps gradle from 7.2.1 to 7.2.2.
+
+## 2.9.3
+
+* Updates the Dart InstanceManager to take a listener for when an object is garbage collected.
+  See https://github.com/flutter/flutter/issues/107199.
+
 ## 2.9.2
 
 * Updates the Java InstanceManager to take a listener for when an object is garbage collected.

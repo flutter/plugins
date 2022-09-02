@@ -58,6 +58,6 @@ abstract class VideoPlayerApi {
 }
 
 void configurePigeon(PigeonOptions opts) {
-  opts.dartOut = 'lib/messages.dart';
+  opts.dartOut = 'lib/messages.g.dart';
   opts.dartTestOut = 'test/test.dart';
 }

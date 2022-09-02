@@ -187,6 +187,33 @@ void main() {
     );
   });
 
+  test('downgrades first when requested', () async {
+    final RepositoryPackage plugin = createFakePlugin('a', packagesDir);
+
+    await runCapturingPrint(runner, <String>['analyze', '--downgrade']);
+
+    expect(
+      processRunner.recordedCalls,
+      orderedEquals(<ProcessCall>[
+        ProcessCall(
+          'flutter',
+          const <String>['pub', 'downgrade'],
+          plugin.path,
+        ),
+        ProcessCall(
+          'flutter',
+          const <String>['pub', 'get'],
+          plugin.path,
+        ),
+        ProcessCall(
+          'dart',
+          const <String>['analyze', '--fatal-infos'],
+          plugin.path,
+        ),
+      ]),
+    );
+  });
+
   group('verifies analysis settings', () {
     test('fails analysis_options.yaml', () async {
       createFakePlugin('foo', packagesDir,
@@ -308,6 +335,28 @@ void main() {
       output,
       containsAllInOrder(<Matcher>[
         contains('Unable to get dependencies'),
+      ]),
+    );
+  });
+
+  test('fails if "pub downgrade" fails', () async {
+    createFakePlugin('foo', packagesDir);
+
+    processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+      MockProcess(exitCode: 1) // flutter pub downgrade
+    ];
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['analyze', '--downgrade'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('Unable to downgrade dependencies'),
       ]),
     );
   });

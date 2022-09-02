@@ -1,3 +1,12 @@
+## 2.4.7
+
+* Updates README via code excerpts.
+* Fixes violations of new analysis option use_named_constants.
+
+## 2.4.6
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 2.4.5
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).

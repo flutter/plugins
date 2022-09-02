@@ -24,7 +24,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('CameraService', () {
-    const int cameraId = 0;
+    const int cameraId = 1;
 
     late Window window;
     late Navigator navigator;
