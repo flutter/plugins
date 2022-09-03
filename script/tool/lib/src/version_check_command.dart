@@ -115,8 +115,6 @@ class VersionCheckCommand extends PackageLoopingCommand {
       help: 'Whether the version check should run against the version on pub.\n'
           'Defaults to false, which means the version check only run against '
           'the previous version in code.',
-      defaultsTo: false,
-      negatable: true,
     );
     argParser.addOption(_changeDescriptionFile,
         help: 'The path to a file containing the description of the change '

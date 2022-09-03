@@ -21,20 +21,25 @@
 
 - (void)registerTexture:(NSObject<FlutterTexture> *)texture
              completion:(void (^)(int64_t))completion {
+  __weak typeof(self) weakSelf = self;
   FLTEnsureToRunOnMainQueue(^{
-    completion([self.registry registerTexture:texture]);
+    typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+    completion([strongSelf.registry registerTexture:texture]);
   });
 }
 
 - (void)textureFrameAvailable:(int64_t)textureId {
+  __weak typeof(self) weakSelf = self;
   FLTEnsureToRunOnMainQueue(^{
-    [self.registry textureFrameAvailable:textureId];
+    [weakSelf.registry textureFrameAvailable:textureId];
   });
 }
 
 - (void)unregisterTexture:(int64_t)textureId {
+  __weak typeof(self) weakSelf = self;
   FLTEnsureToRunOnMainQueue(^{
-    [self.registry unregisterTexture:textureId];
+    [weakSelf.registry unregisterTexture:textureId];
   });
 }
 

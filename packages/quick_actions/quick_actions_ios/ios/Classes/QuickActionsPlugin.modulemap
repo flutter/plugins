@@ -6,5 +6,6 @@ framework module quick_actions_ios {
 
   explicit module Test {
     header "FLTQuickActionsPlugin_Test.h"
+    header "FLTShortcutStateManager.h"
   }
 }

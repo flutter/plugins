@@ -83,7 +83,6 @@ class _MyAppState extends State<MyApp> {
       authenticated = await auth.authenticate(
         localizedReason: 'Let OS determine authentication method',
         options: const AuthenticationOptions(
-          useErrorDialogs: true,
           stickyAuth: true,
         ),
       );
@@ -117,7 +116,6 @@ class _MyAppState extends State<MyApp> {
         localizedReason:
             'Scan your fingerprint (or face or whatever) to authenticate',
         options: const AuthenticationOptions(
-          useErrorDialogs: true,
           stickyAuth: true,
           biometricOnly: true,
         ),

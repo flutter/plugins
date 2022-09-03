@@ -22,8 +22,8 @@ import 'test_android_webview.pigeon.dart' as _i5;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-class _FakeDownloadListener_0 extends _i1.Fake implements _i2.DownloadListener {
-}
+class _FakeDownloadListener_0 extends _i1.Fake
+    implements _i2.DownloadListener {}
 
 class _FakeJavaScriptChannel_1 extends _i1.Fake
     implements _i2.JavaScriptChannel {}
@@ -111,6 +111,21 @@ class MockTestDownloadListenerHostApi extends _i1.Mock
   @override
   void create(int? instanceId) =>
       super.noSuchMethod(Invocation.method(#create, [instanceId]),
+          returnValueForMissingStub: null);
+}
+
+/// A class which mocks [TestJavaObjectHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestJavaObjectHostApi extends _i1.Mock
+    implements _i5.TestJavaObjectHostApi {
+  MockTestJavaObjectHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  void dispose(int? identifier) =>
+      super.noSuchMethod(Invocation.method(#dispose, [identifier]),
           returnValueForMissingStub: null);
 }
 

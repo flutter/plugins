@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 2.1.2
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 2.1.1
 
 * Updates dependency version of `package:win32` to 2.1.0.

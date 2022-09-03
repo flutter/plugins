@@ -455,7 +455,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// finished.
   Future<void> play() async {
     if (value.position == value.duration) {
-      await seekTo(const Duration());
+      await seekTo(Duration.zero);
     }
     value = value.copyWith(isPlaying: true);
     await _applyPlayPause();
@@ -558,8 +558,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     if (position > value.duration) {
       position = value.duration;
-    } else if (position < const Duration()) {
-      position = const Duration();
+    } else if (position < Duration.zero) {
+      position = Duration.zero;
     }
     await _videoPlayerPlatform.seekTo(_textureId, position);
     _updatePosition(position);
@@ -801,7 +801,7 @@ class _VideoPlayerWithRotation extends StatelessWidget {
 /// Used to configure the [VideoProgressIndicator] widget's colors for how it
 /// describes the video's status.
 ///
-/// The widget uses default colors that are customizeable through this class.
+/// The widget uses default colors that are customizable through this class.
 class VideoProgressColors {
   /// Any property can be set to any color. They each have defaults.
   ///
@@ -1007,7 +1007,6 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       );
     } else {
       progressIndicator = LinearProgressIndicator(
-        value: null,
         valueColor: AlwaysStoppedAnimation<Color>(colors.playedColor),
         backgroundColor: colors.backgroundColor,
       );

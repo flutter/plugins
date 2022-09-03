@@ -18,7 +18,6 @@ void main() {
     test('Can be created', () {
       const CameraValue cameraValue = CameraValue(
         isInitialized: false,
-        errorDescription: null,
         previewSize: Size(10, 10),
         isRecordingPaused: false,
         isRecordingVideo: false,
@@ -32,7 +31,6 @@ void main() {
         lockedCaptureOrientation: DeviceOrientation.portraitUp,
         recordingOrientation: DeviceOrientation.portraitUp,
         focusPointSupported: true,
-        isPreviewPaused: false,
         previewPauseOrientation: DeviceOrientation.portraitUp,
       );
 
@@ -129,7 +127,6 @@ void main() {
     test('toString() works as expected', () {
       const CameraValue cameraValue = CameraValue(
           isInitialized: false,
-          errorDescription: null,
           previewSize: Size(10, 10),
           isRecordingPaused: false,
           isRecordingVideo: false,

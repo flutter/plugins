@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 2.0.7
 
 * Bumps gradle from 3.5.0 to 7.2.1.

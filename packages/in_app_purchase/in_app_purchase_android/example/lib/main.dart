@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
@@ -22,6 +21,7 @@ void main() {
   runApp(_MyApp());
 }
 
+// To try without auto-consume, change `true` to `false` here.
 const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
@@ -186,7 +186,9 @@ class _MyAppState extends State<_MyApp> {
     }
     final Widget storeHeader = ListTile(
       leading: Icon(_isAvailable ? Icons.check : Icons.block,
-          color: _isAvailable ? Colors.green : ThemeData.light().errorColor),
+          color: _isAvailable
+              ? Colors.green
+              : ThemeData.light().colorScheme.error),
       title:
           Text('The store is ${_isAvailable ? 'available' : 'unavailable'}.'),
     );
@@ -197,7 +199,7 @@ class _MyAppState extends State<_MyApp> {
         const Divider(),
         ListTile(
           title: Text('Not connected',
-              style: TextStyle(color: ThemeData.light().errorColor)),
+              style: TextStyle(color: ThemeData.light().colorScheme.error)),
           subtitle: const Text(
               'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'),
         ),
@@ -221,7 +223,7 @@ class _MyAppState extends State<_MyApp> {
     if (_notFoundIds.isNotEmpty) {
       productList.add(ListTile(
           title: Text('[${_notFoundIds.join(", ")}] not found',
-              style: TextStyle(color: ThemeData.light().errorColor)),
+              style: TextStyle(color: ThemeData.light().colorScheme.error)),
           subtitle: const Text(
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
@@ -282,7 +284,6 @@ class _MyAppState extends State<_MyApp> {
                       final GooglePlayPurchaseParam purchaseParam =
                           GooglePlayPurchaseParam(
                               productDetails: productDetails,
-                              applicationUserName: null,
                               changeSubscriptionParam: oldSubscription != null
                                   ? ChangeSubscriptionParam(
                                       oldPurchaseDetails: oldSubscription,
@@ -292,7 +293,8 @@ class _MyAppState extends State<_MyApp> {
                       if (productDetails.id == _kConsumableId) {
                         _inAppPurchasePlatform.buyConsumable(
                             purchaseParam: purchaseParam,
-                            autoConsume: _kAutoConsume || Platform.isIOS);
+                            // ignore: avoid_redundant_argument_values
+                            autoConsume: _kAutoConsume);
                       } else {
                         _inAppPurchasePlatform.buyNonConsumable(
                             purchaseParam: purchaseParam);

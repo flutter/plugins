@@ -22,6 +22,28 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   GoogleMapsFlutterPlatform.instance.enableDebugInspection();
 
+  // Repeatedly checks an asynchronous value against a test condition, waiting
+  // one frame between each check, returing the value if it passes the predicate
+  // before [maxTries] is reached.
+  //
+  // Returns null if the predicate is never satisfied.
+  //
+  // This is useful for cases where the Maps SDK has some internally
+  // asynchronous operation that we don't have visibility into (e.g., native UI
+  // animations).
+  Future<T?> waitForValueMatchingPredicate<T>(WidgetTester tester,
+      Future<T> Function() getValue, bool Function(T) predicate,
+      {int maxTries = 100}) async {
+    for (int i = 0; i < maxTries; i++) {
+      final T value = await getValue();
+      if (predicate(value)) {
+        return value;
+      }
+      await tester.pump();
+    }
+    return null;
+  }
+
   testWidgets('testCompassToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<int> mapIdCompleter = Completer<int>();
@@ -48,7 +70,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        compassEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -86,7 +107,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        mapToolbarEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -204,7 +224,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        zoomGesturesEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -266,7 +285,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        liteModeEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -323,7 +341,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        rotateGesturesEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -363,7 +380,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        tiltGesturesEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -402,7 +418,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        scrollGesturesEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -488,12 +503,13 @@ void main() {
     final GoogleMapController mapController =
         await mapControllerCompleter.future;
 
+    // Wait for the visible region to be non-zero.
     final LatLngBounds firstVisibleRegion =
-        await mapController.getVisibleRegion();
-
-    expect(firstVisibleRegion, isNotNull);
-    expect(firstVisibleRegion.southwest, isNotNull);
-    expect(firstVisibleRegion.northeast, isNotNull);
+        await waitForValueMatchingPredicate<LatLngBounds>(
+                tester,
+                () => mapController.getVisibleRegion(),
+                (LatLngBounds bounds) => bounds != zeroLatLngBounds) ??
+            zeroLatLngBounds;
     expect(firstVisibleRegion, isNot(zeroLatLngBounds));
     expect(firstVisibleRegion.contains(_kInitialMapCenter), isTrue);
 
@@ -524,9 +540,6 @@ void main() {
     final LatLngBounds secondVisibleRegion =
         await mapController.getVisibleRegion();
 
-    expect(secondVisibleRegion, isNotNull);
-    expect(secondVisibleRegion.southwest, isNotNull);
-    expect(secondVisibleRegion.northeast, isNotNull);
     expect(secondVisibleRegion, isNot(zeroLatLngBounds));
 
     expect(firstVisibleRegion, isNot(secondVisibleRegion));
@@ -560,7 +573,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        trafficEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -580,7 +592,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        buildingsEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -605,8 +616,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        myLocationButtonEnabled: true,
-        myLocationEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -626,7 +635,6 @@ void main() {
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         myLocationButtonEnabled: false,
-        myLocationEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -649,7 +657,6 @@ void main() {
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         myLocationButtonEnabled: false,
-        myLocationEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -674,8 +681,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        myLocationButtonEnabled: true,
-        myLocationEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -921,7 +926,13 @@ void main() {
     expect(iwVisibleStatus, false);
 
     await controller.showMarkerInfoWindow(marker.markerId);
-    iwVisibleStatus = await controller.isMarkerInfoWindowShown(marker.markerId);
+    // The Maps SDK doesn't always return true for whether it is shown
+    // immediately after showing it, so wait for it to report as shown.
+    iwVisibleStatus = await waitForValueMatchingPredicate<bool>(
+            tester,
+            () => controller.isMarkerInfoWindowShown(marker.markerId),
+            (bool visible) => visible) ??
+        false;
     expect(iwVisibleStatus, true);
 
     await controller.hideMarkerInfoWindow(marker.markerId);
@@ -976,9 +987,7 @@ void main() {
         tileOverlayId: const TileOverlayId('tile_overlay_1'),
         tileProvider: _DebugTileProvider(),
         zIndex: 2,
-        visible: true,
         transparency: 0.2,
-        fadeIn: true,
       );
 
       final TileOverlay tileOverlay2 = TileOverlay(
@@ -1035,18 +1044,14 @@ void main() {
         tileOverlayId: const TileOverlayId('tile_overlay_1'),
         tileProvider: _DebugTileProvider(),
         zIndex: 2,
-        visible: true,
         transparency: 0.2,
-        fadeIn: true,
       );
 
       final TileOverlay tileOverlay2 = TileOverlay(
         tileOverlayId: const TileOverlayId('tile_overlay_2'),
         tileProvider: _DebugTileProvider(),
         zIndex: 3,
-        visible: true,
         transparency: 0.5,
-        fadeIn: true,
       );
       await tester.pumpWidget(
         Directionality(
@@ -1115,9 +1120,7 @@ void main() {
         tileOverlayId: const TileOverlayId('tile_overlay_1'),
         tileProvider: _DebugTileProvider(),
         zIndex: 2,
-        visible: true,
         transparency: 0.2,
-        fadeIn: true,
       );
 
       await tester.pumpWidget(
@@ -1189,11 +1192,9 @@ class _DebugTileProvider implements TileProvider {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout(
-      minWidth: 0.0,
       maxWidth: width.toDouble(),
     );
-    const Offset offset = Offset(0, 0);
-    textPainter.paint(canvas, offset);
+    textPainter.paint(canvas, Offset.zero);
     canvas.drawRect(
         Rect.fromLTRB(0, 0, width.toDouble(), width.toDouble()), boxPaint);
     final ui.Picture picture = recorder.endRecording();

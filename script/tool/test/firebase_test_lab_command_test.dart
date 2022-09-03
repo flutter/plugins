@@ -174,7 +174,7 @@ public class MainActivityTest {
               '/packages/plugin1/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab_staging --results-dir=plugins_android_test/plugin1/buildId/testRunId/example/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_cirrus_testlab --results-dir=plugins_android_test/plugin1/buildId/testRunId/example/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin1/example'),
           ProcessCall(
@@ -188,7 +188,7 @@ public class MainActivityTest {
               '/packages/plugin2/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab_staging --results-dir=plugins_android_test/plugin2/buildId/testRunId/example/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_cirrus_testlab --results-dir=plugins_android_test/plugin2/buildId/testRunId/example/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin2/example'),
         ]),
@@ -255,7 +255,7 @@ public class MainActivityTest {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab_staging --results-dir=plugins_android_test/plugin/buildId/testRunId/example/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_cirrus_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin/example'),
           ProcessCall(
@@ -265,7 +265,7 @@ public class MainActivityTest {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab_staging --results-dir=plugins_android_test/plugin/buildId/testRunId/example/1/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_cirrus_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example/1/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin/example'),
         ]),
@@ -320,7 +320,7 @@ public class MainActivityTest {
               '/packages/plugin/example/example1/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab_staging --results-dir=plugins_android_test/plugin/buildId/testRunId/example1/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_cirrus_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example1/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin/example/example1'),
           ProcessCall(
@@ -330,7 +330,7 @@ public class MainActivityTest {
               '/packages/plugin/example/example2/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab_staging --results-dir=plugins_android_test/plugin/buildId/testRunId/example2/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_cirrus_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example2/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin/example/example2'),
         ]),
@@ -613,7 +613,7 @@ public class MainActivityTest {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab_staging --results-dir=plugins_android_test/plugin/buildId/testRunId/example/0/ --device model=redfin,version=30'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_cirrus_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example/0/ --device model=redfin,version=30'
                   .split(' '),
               '/packages/plugin/example'),
         ]),
@@ -785,7 +785,7 @@ public class MainActivityTest {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab_staging --results-dir=plugins_android_test/plugin/buildId/testRunId/example/0/ --device model=redfin,version=30'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_cirrus_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example/0/ --device model=redfin,version=30'
                   .split(' '),
               '/packages/plugin/example'),
         ]),

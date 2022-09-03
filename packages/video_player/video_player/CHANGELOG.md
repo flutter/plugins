@@ -1,3 +1,12 @@
+## 2.4.7
+
+* Updates README via code excerpts.
+* Fixes violations of new analysis option use_named_constants.
+
+## 2.4.6
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 2.4.6
 
 * VideoPlayerController.file added http headers,to fix m3u8 access

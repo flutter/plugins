@@ -1440,9 +1440,7 @@ void main() {
 
       test('Request full metadata argument defaults to true', () async {
         returnValue = <dynamic>['0', '1'];
-        await picker.getMultiImageWithOptions(
-          options: const MultiImagePickerOptions(),
-        );
+        await picker.getMultiImageWithOptions();
 
         expect(
           log,
