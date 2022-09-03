@@ -344,6 +344,19 @@ void main() {
         expect(fakeVideoPlayerPlatform.dataSources[0].uri, 'file://a.avi');
       });
 
+      test('file with headers (m3u8)', () async {
+        final VideoPlayerController controller = VideoPlayerController.file(
+          File('a.avi'),
+          httpHeaders: <String, String>{'Authorization': 'Bearer token'},
+        );
+        await controller.initialize();
+
+        expect(fakeVideoPlayerPlatform.dataSources[0].uri, 'file://a.avi');
+        expect(
+          fakeVideoPlayerPlatform.dataSources[0].httpHeaders,
+          <String, String>{'Authorization': 'Bearer token'},
+        );
+      });
       test('successful initialize on controller with error clears error',
           () async {
         final VideoPlayerController controller = VideoPlayerController.network(

@@ -223,9 +223,12 @@ void main() {
         'plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
-          platformLinux: const PlatformDetails(PlatformSupport.inline, hasDartCode: true),
-          platformMacOS: const PlatformDetails(PlatformSupport.inline, hasDartCode: true),
-          platformWindows: const PlatformDetails(PlatformSupport.inline, hasDartCode: true),
+          platformLinux:
+              const PlatformDetails(PlatformSupport.inline, hasDartCode: true),
+          platformMacOS:
+              const PlatformDetails(PlatformSupport.inline, hasDartCode: true),
+          platformWindows:
+              const PlatformDetails(PlatformSupport.inline, hasDartCode: true),
         },
       );
 

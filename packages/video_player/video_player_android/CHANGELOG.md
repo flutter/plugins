@@ -3,15 +3,15 @@
 * Updates minimum Flutter version to 2.10.
 * Fixes violations of new analysis option use_named_constants.
 
+## 2.4.0
+
+* Made DefaultHttpDataSource the default
+* Made passing the user-agent in http headers changes the default exo player agent
+
 ## 2.3.9
 
 * Updates ExoPlayer to 2.18.1.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
-
-## 2.3.9
-
-* Made DefaultHttpDataSource the default
-* Made passing the user-agent in http headers changes the default exo player agent
 
 ## 2.3.8
 

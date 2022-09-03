@@ -176,6 +176,18 @@ void main() {
       expect(textureId, 3);
     });
 
+    test('create with file (some headers)', () async {
+      final int? textureId = await player.create(DataSource(
+        sourceType: DataSourceType.file,
+        uri: 'someUri',
+        httpHeaders: <String, String>{'Authorization': 'Bearer token'},
+      ));
+      expect(log.log.last, 'create');
+      expect(log.createMessage?.uri, 'someUri');
+      expect(log.createMessage?.httpHeaders,
+          <String, String>{'Authorization': 'Bearer token'});
+      expect(textureId, 3);
+    });
     test('setLooping', () async {
       await player.setLooping(1, true);
       expect(log.log.last, 'setLooping');
