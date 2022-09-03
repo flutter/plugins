@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.util.Log;
 
 final class VideoPlayer {
   private static final String FORMAT_SS = "ss";
@@ -59,8 +58,7 @@ final class VideoPlayer {
 
   private final String USER_AGENT = "User-Agent";
 
-  @VisibleForTesting
-  boolean isInitialized = false;
+  @VisibleForTesting boolean isInitialized = false;
 
   private final VideoPlayerOptions options;
 
@@ -84,22 +82,25 @@ final class VideoPlayer {
     DefaultHttpDataSource.Factory httpDataSourceFactory;
     if (httpHeaders != null && !httpHeaders.isEmpty()) {
       if (httpHeaders.containsKey(USER_AGENT)) {
-        httpDataSourceFactory = new DefaultHttpDataSource.Factory()
-            .setUserAgent(httpHeaders.get(USER_AGENT))
-            .setAllowCrossProtocolRedirects(true);
+        httpDataSourceFactory =
+            new DefaultHttpDataSource.Factory()
+                .setUserAgent(httpHeaders.get(USER_AGENT))
+                .setAllowCrossProtocolRedirects(true);
       } else {
-        httpDataSourceFactory = new DefaultHttpDataSource.Factory()
-            .setUserAgent("ExoPlayer")
-            .setAllowCrossProtocolRedirects(true);
+        httpDataSourceFactory =
+            new DefaultHttpDataSource.Factory()
+                .setUserAgent("ExoPlayer")
+                .setAllowCrossProtocolRedirects(true);
       }
 
       httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
       dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
     } else {
-      httpDataSourceFactory = new DefaultHttpDataSource.Factory()
-            .setUserAgent("ExoPlayer")
-            .setAllowCrossProtocolRedirects(true);
-      dataSourceFactory = new DefaultDataSource.Factory(context,httpDataSourceFactory);
+      httpDataSourceFactory =
+          new DefaultHttpDataSource.Factory()
+              .setUserAgent("ExoPlayer")
+              .setAllowCrossProtocolRedirects(true);
+      dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
     }
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
@@ -161,13 +162,11 @@ final class VideoPlayer {
     switch (type) {
       case C.CONTENT_TYPE_SS:
         return new SsMediaSource.Factory(
-            new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-            mediaDataSourceFactory)
+                new DefaultSsChunkSource.Factory(mediaDataSourceFactory), mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
       case C.CONTENT_TYPE_DASH:
         return new DashMediaSource.Factory(
-            new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-            mediaDataSourceFactory)
+                new DefaultDashChunkSource.Factory(mediaDataSourceFactory), mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
       case C.CONTENT_TYPE_HLS:
         return new HlsMediaSource.Factory(mediaDataSourceFactory)
@@ -175,9 +174,10 @@ final class VideoPlayer {
       case C.CONTENT_TYPE_OTHER:
         return new ProgressiveMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
-      default: {
-        throw new IllegalStateException("Unsupported type: " + type);
-      }
+      default:
+        {
+          throw new IllegalStateException("Unsupported type: " + type);
+        }
     }
   }
 
