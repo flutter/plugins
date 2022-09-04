@@ -19,7 +19,7 @@ dependencies:
   flutter:
     sdk: flutter
   path: ^1.8.0
-  webview_flutter_platform_interface: ^1.9.0
+  webview_flutter_platform_interface: ^1.9.3
 
 dev_dependencies:
   build_runner: ^2.1.5
