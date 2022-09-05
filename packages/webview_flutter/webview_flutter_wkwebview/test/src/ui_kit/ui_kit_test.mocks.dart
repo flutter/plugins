@@ -135,6 +135,10 @@ class MockTestWKWebViewHostApi extends _i1.Mock
               #setAllowsBackForwardNavigationGestures, [identifier, allow]),
           returnValueForMissingStub: null);
   @override
+  void setAllowsLinkPreview(int? identifier, bool? allow) => super.noSuchMethod(
+      Invocation.method(#setAllowsLinkPreview, [identifier, allow]),
+      returnValueForMissingStub: null);
+  @override
   void setCustomUserAgent(int? identifier, String? userAgent) =>
       super.noSuchMethod(
           Invocation.method(#setCustomUserAgent, [identifier, userAgent]),

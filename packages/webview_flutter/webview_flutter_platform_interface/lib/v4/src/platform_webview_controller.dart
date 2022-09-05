@@ -243,6 +243,12 @@ abstract class PlatformWebViewController extends PlatformInterface {
         'enableGestureNavigation is not implemented on the current platform');
   }
 
+  /// Whether to allow link previews on supported platforms.
+  Future<void> enableLinkPreview(bool enabled) {
+    throw UnimplementedError(
+        'enableLinkPreview is not implemented on the current platform');
+  }
+
   /// Whhether to support zooming using its on-screen zoom controls and gestures.
   Future<void> enableZoom(bool enabled) {
     throw UnimplementedError(

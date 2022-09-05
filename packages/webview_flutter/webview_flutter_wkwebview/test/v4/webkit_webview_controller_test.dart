@@ -320,6 +320,17 @@ void main() {
       verify(mockWebView.setAllowsBackForwardNavigationGestures(true));
     });
 
+    test('enableLinkPreview', () async {
+      final MockWKWebView mockWebView = MockWKWebView();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        createMockWebView: (_, {dynamic observeValue}) => mockWebView,
+      );
+
+      await controller.enableLinkPreview(true);
+      verify(mockWebView.setAllowsLinkPreview(true));
+    });
+
     test('runJavaScriptReturningResult', () {
       final MockWKWebView mockWebView = MockWKWebView();
 

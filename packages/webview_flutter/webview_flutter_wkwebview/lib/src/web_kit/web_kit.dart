@@ -1027,6 +1027,18 @@ class WKWebView extends UIView {
     );
   }
 
+  /// A Boolean value that determines whether pressing a link displays a preview of the destination for the link.
+  ///
+  /// In iOS, this property is available on devices that support 3D Touch. In iOS 10 and later, the default value is true; in previous versions of iOS, the default value is false.
+  ///
+  /// Sets [WKWebView.allowsLinkPreview](https://developer.apple.com/documentation/webkit/wkwebview/1415000-allowslinkpreview?language=objc).
+  Future<void> setAllowsLinkPreview(bool allow) {
+    return _webViewApi.setAllowsLinkPreviewForInstances(
+      this,
+      allow,
+    );
+  }
+
   /// The custom user agent string.
   ///
   /// The default value of this property is null.

@@ -265,6 +265,11 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   @override
+  Future<void> enableLinkPreview(bool enabled) {
+    return _webView.setAllowsLinkPreview(enabled);
+  }
+
+  @override
   Future<void> setBackgroundColor(Color color) {
     return Future.wait(<Future<void>>[
       _webView.scrollView.setBackgroundColor(color),

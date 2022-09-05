@@ -570,6 +570,9 @@ abstract class WKWebViewHostApi {
   @ObjCSelector('setAllowsBackForwardForWebViewWithIdentifier:isAllowed:')
   void setAllowsBackForwardNavigationGestures(int identifier, bool allow);
 
+  @ObjCSelector('setAllowsLinkPreview:isAllowed:')
+  void setAllowsLinkPreview(int identifier, bool allow);
+
   @ObjCSelector('setUserAgentForWebViewWithIdentifier:userAgent:')
   void setCustomUserAgent(int identifier, String? userAgent);
 

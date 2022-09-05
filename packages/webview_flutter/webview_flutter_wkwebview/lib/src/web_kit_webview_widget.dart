@@ -247,6 +247,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     if (allowsInlineMediaPlayback != null) {
       configuration.setAllowsInlineMediaPlayback(allowsInlineMediaPlayback);
     }
+    if (allowsInlineMediaPlayback != null) {
+      configuration.setAllowsInlineMediaPlayback(allowsInlineMediaPlayback);
+    }
 
     late final bool requiresUserAction;
     switch (autoMediaPlaybackPolicy) {
@@ -421,6 +424,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       if (setting.gestureNavigationEnabled != null)
         webView.setAllowsBackForwardNavigationGestures(
           setting.gestureNavigationEnabled!,
+        ),
+      if (setting.allowsLinkPreview != null)
+        webView.setAllowsLinkPreview(
+          setting.allowsLinkPreview!,
         ),
     ]);
   }

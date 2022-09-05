@@ -980,6 +980,17 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     );
   }
 
+  /// Calls [setAllowsLinkPreview] with the ids of the provided object instances.
+  Future<void> setAllowsLinkPreviewForInstances(
+    WKWebView instance,
+    bool allow,
+  ) {
+    return setAllowsLinkPreview(
+      instanceManager.getIdentifier(instance)!,
+      allow,
+    );
+  }
+
   /// Calls [setCustomUserAgent] with the ids of the provided object instances.
   Future<void> setCustomUserAgentForInstances(
     WKWebView instance,

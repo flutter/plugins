@@ -816,6 +816,13 @@ void main() {
           false,
         ));
       });
+      test('setAllowsLinkPreview', () {
+        webView.setAllowsLinkPreview(false);
+        verify(mockPlatformHostApi.setAllowsLinkPreview(
+          webViewInstanceId,
+          false,
+        ));
+      });
 
       test('customUserAgent', () {
         webView.setCustomUserAgent('hello');
