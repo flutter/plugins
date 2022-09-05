@@ -26,6 +26,11 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 * `NSCameraUsageDescription` - describe why your app needs access to the camera. This is called _Privacy - Camera Usage Description_ in the visual editor.
 * `NSMicrophoneUsageDescription` - describe why your app needs access to the microphone, if you intend to record videos. This is called _Privacy - Microphone Usage Description_ in the visual editor.
 
+Starting with version **0.8.6**, picking (multiple) images from gallery on iOS
+doesn't require additional permissions on iOS 11 or higher, if some additional
+metadata can be skipped. It can be achieved by setting `requestFullMetadata` flag
+to `false`.
+
 ### Android
 
 Starting with version **0.8.1** the Android implementation support to pick (multiple) images on Android 4.3 or higher.

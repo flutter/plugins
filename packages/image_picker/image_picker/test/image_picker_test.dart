@@ -246,7 +246,7 @@ void main() {
           ));
         });
 
-        test('Full metadata argument defaults to true', () async {
+        test('full metadata argument defaults to true', () async {
           final ImagePicker picker = ImagePicker();
           await picker.pickImage(source: ImageSource.gallery);
 
@@ -551,7 +551,7 @@ void main() {
           expect(await picker.pickMultiImage(), isEmpty);
         });
 
-        test('Full metadata argument defaults to true', () async {
+        test('full metadata argument defaults to true', () async {
           final ImagePicker picker = ImagePicker();
           await picker.pickMultiImage();
 
