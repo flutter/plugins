@@ -262,16 +262,16 @@
   [[self webViewForIdentifier:identifier] setAllowsBackForwardNavigationGestures:allow.boolValue];
 }
 
-- (void)
-    setAllowsLinkPreviewWebViewWithIdentifier:(nonnull NSNumber *)identifier
-                                       isAllowed:(nonnull NSNumber *)allow
-                                           error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
-                                                     error {
+- (void)setAllowsLinkPreviewWebViewWithIdentifier:(nonnull NSNumber *)identifier
+                                        isAllowed:(nonnull NSNumber *)allow
+                                            error:
+                                                (FlutterError *_Nullable __autoreleasing *_Nonnull)
+                                                    error {
   [[self webViewForIdentifier:identifier] setAllowsLinkPreview:allow.boolValue];
 }
 
 - (void)
-setNavigationDelegateForWebViewWithIdentifier:(nonnull NSNumber *)identifier
+    setNavigationDelegateForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                delegateIdentifier:(nullable NSNumber *)navigationDelegateIdentifier
                                             error:
                                                 (FlutterError *_Nullable __autoreleasing *_Nonnull)
