@@ -265,7 +265,7 @@ class WebView extends StatefulWidget {
   ///
   /// Not supported on all platforms.
   ///
-  /// By default `allowsLinkPreview` is true, to match the default on iOS.
+  /// By default `allowsLinkPreview` is true.
   final bool allowsLinkPreview;
 
   /// The value used for the HTTP User-Agent: request header.
