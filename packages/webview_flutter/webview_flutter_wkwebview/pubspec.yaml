@@ -19,7 +19,10 @@ dependencies:
   flutter:
     sdk: flutter
   path: ^1.8.0
-  # FOR TESTING ONLY. DO NOT MERGE.
+  webview_flutter_platform_interface: ^1.9.3
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
   webview_flutter_platform_interface:
     path: ../webview_flutter_platform_interface
 
