@@ -27,6 +27,5 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  # Mockito 5.3.0 seems incompatible with build_runner 2.2.0. It's missing the
-  mockito: 5.2.0
+  mockito: ^5.2.0
   pigeon: ^4.0.2
