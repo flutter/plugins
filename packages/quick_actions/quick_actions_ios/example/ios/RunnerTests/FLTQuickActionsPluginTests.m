@@ -25,9 +25,7 @@
 
   FLTShortcutStateManager *mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
 
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
-                                shortcutStateManager:mockShortcutStateManager];
+  QuickActionsPlugin *plugin = [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class]) shortcutStateManager:mockShortcutStateManager];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"result block must be called."];
   [plugin handleMethodCall:call
@@ -44,8 +42,8 @@
   FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"clearShortcutItems"
                                                               arguments:nil];
   FLTShortcutStateManager *mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
                                 shortcutStateManager:mockShortcutStateManager];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"result block must be called."];
@@ -62,8 +60,8 @@
   FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"getLaunchAction"
                                                               arguments:nil];
 
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
                                 shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"result block must be called."];
@@ -78,8 +76,8 @@
 - (void)testHandleMethodCall_nonExistMethods {
   FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"nonExist" arguments:nil];
 
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
                                 shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"result must be called."];
@@ -96,8 +94,8 @@
 
 - (void)testApplicationPerformActionForShortcutItem {
   id mockChannel = OCMClassMock([FlutterMethodChannel class]);
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:mockChannel
                                 shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
 
   UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
@@ -117,8 +115,8 @@
 
 - (void)testApplicationDidFinishLaunchingWithOptions_launchWithShortcut {
   id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
                                 shortcutStateManager:mockShortcutStateManager];
 
   UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
@@ -137,8 +135,8 @@
 }
 
 - (void)testApplicationDidFinishLaunchingWithOptions_launchWithoutShortcut {
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
                                 shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
   BOOL launchResult = [plugin application:[UIApplication sharedApplication]
             didFinishLaunchingWithOptions:@{}];
@@ -149,8 +147,8 @@
 - (void)testApplicationDidBecomeActive_launchWithoutShortcut {
   id mockChannel = OCMClassMock([FlutterMethodChannel class]);
   id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:mockChannel
                                 shortcutStateManager:mockShortcutStateManager];
 
   [plugin application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:@{}];
@@ -161,8 +159,8 @@
 - (void)testApplicationDidBecomeActive_launchWithShortcut {
   id mockChannel = OCMClassMock([FlutterMethodChannel class]);
   id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:mockChannel
                                 shortcutStateManager:mockShortcutStateManager];
 
   UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
@@ -182,8 +180,8 @@
 - (void)testApplicationDidBecomeActive_launchWithShortcut_becomeActiveTwice {
   id mockChannel = OCMClassMock([FlutterMethodChannel class]);
   id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
-  FLTQuickActionsPlugin *plugin =
-      [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:mockChannel
                                 shortcutStateManager:mockShortcutStateManager];
 
   UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]

@@ -20,6 +20,7 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
   /// The type of the shortcut item selected when launching the app.
   private var launchingShortcutType: String? = nil
 
+  // TODO: (hellohuanlin) remove `@objc` attribute after migrating tests to Swift.
   @objc
   public init(
     channel: FlutterMethodChannel,
@@ -29,7 +30,6 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
     self.shortcutStateManager = shortcutStateManager
   }
 
-  @objc
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "setShortcutItems":
@@ -48,13 +48,11 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
     }
   }
 
-  @objc
   public func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) -> Bool {
     handleShortcut(shortcutItem.type)
     return true
   }
 
-  @objc
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
     if let shortcutItem = launchOptions[UIApplication.LaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
       // Keep hold of the shortcut type and handle it in the
