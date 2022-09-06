@@ -5,27 +5,90 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:webview_flutter/src/v4/src/webview_cookie_manager.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:webview_flutter/src/v4/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 
-import 'webview_cookie_manager_test.mocks.dart';
+import 'navigation_delegate_test.mocks.dart';
 
-@GenerateMocks(<Type>[PlatformNavigationDelegate])
+@GenerateMocks(<Type>[WebViewPlatform, PlatformNavigationDelegate])
 void main() {
   group('NavigationDelegate', () {
+    test('onNavigationRequest', () async {
+      WebViewPlatform.instance = TestWebViewPlatform();
+
+      bool onNavigationRequest({
+        required String url,
+        required bool isForMainFrame,
+      }) {
+        return false;
+      }
+
+      final NavigationDelegate delegate = NavigationDelegate(
+        onNavigationRequest: onNavigationRequest,
+      );
+
+      verify(delegate.platform.setOnNavigationRequest(onNavigationRequest));
+    });
+
     test('onPageStarted', () async {
-      final MockPlatformWebViewCookieManager mockPlatformWebViewCookieManager =
-          MockPlatformWebViewCookieManager();
-      when(mockPlatformWebViewCookieManager.clearCookies()).thenAnswer(
-        (_) => Future<bool>.value(false),
+      WebViewPlatform.instance = TestWebViewPlatform();
+
+      void onPageStarted(String url) {}
+
+      final NavigationDelegate delegate = NavigationDelegate(
+        onPageStarted: onPageStarted,
       );
 
-      final WebViewCookieManager cookieManager =
-          WebViewCookieManager.fromPlatform(
-        mockPlatformWebViewCookieManager,
+      verify(delegate.platform.setOnPageStarted(onPageStarted));
+    });
+
+    test('onPageFinished', () async {
+      WebViewPlatform.instance = TestWebViewPlatform();
+
+      void onPageFinished(String url) {}
+
+      final NavigationDelegate delegate = NavigationDelegate(
+        onPageFinished: onPageFinished,
       );
 
-      await expectLater(cookieManager.clearCookies(), completion(false));
+      verify(delegate.platform.setOnPageFinished(onPageFinished));
+    });
+
+    test('onProgress', () async {
+      WebViewPlatform.instance = TestWebViewPlatform();
+
+      void onProgress(int progress) {}
+
+      final NavigationDelegate delegate = NavigationDelegate(
+        onProgress: onProgress,
+      );
+
+      verify(delegate.platform.setOnProgress(onProgress));
+    });
+
+    test('onWebResourceError', () async {
+      WebViewPlatform.instance = TestWebViewPlatform();
+
+      void onWebResourceError(WebResourceError error) {}
+
+      final NavigationDelegate delegate = NavigationDelegate(
+        onWebResourceError: onWebResourceError,
+      );
+
+      verify(delegate.platform.setOnWebResourceError(onWebResourceError));
     });
   });
 }
+
+class TestWebViewPlatform extends WebViewPlatform {
+  @override
+  PlatformNavigationDelegate createPlatformNavigationDelegate(
+    PlatformNavigationDelegateCreationParams params,
+  ) {
+    return TestMockPlatformNavigationDelegate();
+  }
+}
+
+class TestMockPlatformNavigationDelegate extends MockPlatformNavigationDelegate
+    with MockPlatformInterfaceMixin {}

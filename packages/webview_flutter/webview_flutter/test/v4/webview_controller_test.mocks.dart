@@ -39,6 +39,13 @@ class _FakePoint_1<T extends num> extends _i1.SmartFake
       : super(parent, parentInvocation);
 }
 
+class _FakePlatformNavigationDelegateCreationParams_2 extends _i1.SmartFake
+    implements _i2.PlatformNavigationDelegateCreationParams {
+  _FakePlatformNavigationDelegateCreationParams_2(
+      Object parent, Invocation parentInvocation)
+      : super(parent, parentInvocation);
+}
+
 /// A class which mocks [PlatformWebViewController].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -200,4 +207,58 @@ class MockPlatformWebViewController extends _i1.Mock
       Invocation.method(#setUserAgent, [userAgent]),
       returnValue: _i5.Future<void>.value(),
       returnValueForMissingStub: _i5.Future<void>.value()) as _i5.Future<void>);
+}
+
+/// A class which mocks [PlatformNavigationDelegate].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockPlatformNavigationDelegate extends _i1.Mock
+    implements _i6.PlatformNavigationDelegate {
+  MockPlatformNavigationDelegate() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.PlatformNavigationDelegateCreationParams get params =>
+      (super.noSuchMethod(Invocation.getter(#params),
+              returnValue: _FakePlatformNavigationDelegateCreationParams_2(
+                  this, Invocation.getter(#params)))
+          as _i2.PlatformNavigationDelegateCreationParams);
+  @override
+  _i5.Future<void> setOnNavigationRequest(
+          _i5.FutureOr<bool> Function(
+                  {required bool isForMainFrame, required String url})?
+              onNavigationRequest) =>
+      (super.noSuchMethod(
+              Invocation.method(#setOnNavigationRequest, [onNavigationRequest]),
+              returnValue: _i5.Future<void>.value(),
+              returnValueForMissingStub: _i5.Future<void>.value())
+          as _i5.Future<void>);
+  @override
+  _i5.Future<void> setOnPageStarted(void Function(String)? onPageStarted) =>
+      (super.noSuchMethod(Invocation.method(#setOnPageStarted, [onPageStarted]),
+              returnValue: _i5.Future<void>.value(),
+              returnValueForMissingStub: _i5.Future<void>.value())
+          as _i5.Future<void>);
+  @override
+  _i5.Future<void> setOnPageFinished(void Function(String)? onPageFinished) =>
+      (super.noSuchMethod(
+              Invocation.method(#setOnPageFinished, [onPageFinished]),
+              returnValue: _i5.Future<void>.value(),
+              returnValueForMissingStub: _i5.Future<void>.value())
+          as _i5.Future<void>);
+  @override
+  _i5.Future<void> setOnProgress(void Function(int)? onProgress) =>
+      (super.noSuchMethod(Invocation.method(#setOnProgress, [onProgress]),
+              returnValue: _i5.Future<void>.value(),
+              returnValueForMissingStub: _i5.Future<void>.value())
+          as _i5.Future<void>);
+  @override
+  _i5.Future<void> setOnWebResourceError(
+          void Function(_i2.WebResourceError)? onWebResourceError) =>
+      (super.noSuchMethod(
+              Invocation.method(#setOnWebResourceError, [onWebResourceError]),
+              returnValue: _i5.Future<void>.value(),
+              returnValueForMissingStub: _i5.Future<void>.value())
+          as _i5.Future<void>);
 }
