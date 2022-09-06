@@ -1,4 +1,5 @@
-## NEXT
+## 1.9.4
+
 * Adds support for the `allowsLinkPreview` property on iOS.
 
 ## 1.9.3

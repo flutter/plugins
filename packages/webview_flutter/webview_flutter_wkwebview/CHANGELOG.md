@@ -1,5 +1,6 @@
-## NEXT
+## 2.9.4
 
+* Adds support for the `allowsLinkPreview` property on iOS.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 
 ## 2.9.3
@@ -11,7 +12,6 @@
 
 * Fixes crash when an Objective-C object in `FWFInstanceManager` is released, but the dealloc
   callback is no longer available.
-* Adds support for the `allowsLinkPreview` property on iOS.
 
 ## 2.9.1
 
