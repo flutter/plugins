@@ -84,7 +84,14 @@ class NavigationDelegate {
   /// Implementation of [PlatformNavigationDelegate] for the current platform.
   final PlatformNavigationDelegate platform;
 
-  /// Invoked when a navigation request is pending.
+  /// Invoked when a decision for a navigation request is pending.
+  ///
+  /// When a navigation is initiated by the WebView (e.g when a user clicks a
+  /// link) this delegate is called and has to decide how to proceed with the
+  /// navigation.
+  ///
+  /// *Important*: Some platforms may also trigger this callback from calls to
+  /// [WebViewController.loadRequest].
   final FutureOr<bool> Function({
     required String url,
     required bool isForMainFrame,
