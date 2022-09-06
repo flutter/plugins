@@ -5,6 +5,7 @@
 library webview_flutter;
 
 export 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart'
-    show WebViewCookie;
+    show JavaScriptMessage, LoadRequestMethod, WebViewCookie;
 
+export 'src/webview_controller.dart';
 export 'src/webview_cookie_manager.dart';
