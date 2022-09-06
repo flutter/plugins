@@ -17,6 +17,12 @@ flutter/packages.)
 
 The commands in tools require the Flutter-bundled version of Dart to be the first `dart` loaded in the path.
 
+### Extra Setup
+
+When updating sample code excerpts (`update-excerpts`) for the README.md files,
+there is some [extra setup for
+submodules](#update-readmemd-from-example-sources) that is necessary.
+
 ### From Source (flutter/plugins only)
 
 Set up:
