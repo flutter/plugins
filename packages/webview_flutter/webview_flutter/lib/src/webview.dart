@@ -261,7 +261,7 @@ class WebView extends StatefulWidget {
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
 
-  /// A Boolean value that determines whether pressing a link displays a preview of the destination for the link.
+  /// Whether pressing a link displays a preview of the destination for the link.
   ///
   /// Not supported on all platforms.
   ///
