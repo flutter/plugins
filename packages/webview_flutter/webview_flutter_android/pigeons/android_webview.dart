@@ -141,6 +141,8 @@ abstract class WebViewHostApi {
 
   int getScrollY(int instanceId);
 
+  List<int> getScrollPosition(int instanceId);
+
   void setWebContentsDebuggingEnabled(bool enabled);
 
   void setWebViewClient(int instanceId, int webViewClientInstanceId);

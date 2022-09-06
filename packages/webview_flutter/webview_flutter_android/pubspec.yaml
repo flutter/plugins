@@ -22,10 +22,11 @@ dependencies:
   webview_flutter_platform_interface: ^1.8.0
 
 dev_dependencies:
-  build_runner: ^2.1.4
+  build_runner: ^2.0.0
   flutter_driver:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  mockito: ^5.1.0
-  pigeon: ^3.0.3
+  # Mockito 5.3.0 seems incompatible with build_runner 2.2.0. It's missing the
+  mockito: 5.2.0
+  pigeon: ^4.0.2
