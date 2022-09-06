@@ -13,7 +13,7 @@ flutter:
     implements: quick_actions
     platforms:
       ios:
-        pluginClass: FLTQuickActionsPlugin
+        pluginClass: QuickActionsPlugin
         dartPluginClass: QuickActionsIos
 
 dependencies:

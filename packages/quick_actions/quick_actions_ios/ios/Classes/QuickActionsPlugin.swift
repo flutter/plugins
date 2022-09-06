@@ -16,26 +16,30 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
   }
 
   private let channel: FlutterMethodChannel
-  private let shortcutService: FLTShortcutStateManager
+  private let shortcutStateManager: FLTShortcutStateManager
+  /// The type of the shortcut item selected when launching the app.
+  private var launchingShortcutType: String? = nil
 
   @objc
   public init(
     channel: FlutterMethodChannel,
-    shortcutService: FLTShortcutStateManager = FLTShortcutStateManager())
+    shortcutStateManager: FLTShortcutStateManager = FLTShortcutStateManager())
   {
     self.channel = channel
-    self.shortcutService = shortcutService
+    self.shortcutStateManager = shortcutStateManager
   }
 
   @objc
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "setShortcutItems":
-      let items = call.arguments as? [[String:Any]] ?? []
-      shortcutService.setShortcutItems(items)
+      guard let items = call.arguments as? [[String:Any]] else {
+        preconditionFailure("The argument must be a list of dictionaries")
+      }
+      shortcutStateManager.setShortcutItems(items)
       result(nil)
     case "clearShortcutItems":
-      shortcutService.setShortcutItems([])
+      shortcutStateManager.setShortcutItems([])
       result(nil)
     case "getLaunchAction":
       result(nil)
@@ -44,24 +48,33 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
     }
   }
 
+  @objc
   public func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) -> Bool {
     handleShortcut(shortcutItem.type)
     return true
   }
 
+  @objc
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
-    let shortcutItem = launchOptions[UIApplication.LaunchOptionsKey.shortcutItem]
-    if let shortcutItem = shortcutItem as? UIApplicationShortcutItem {
-      self.shortcutService.launchingShortcutType = shortcutItem.type
+    if let shortcutItem = launchOptions[UIApplication.LaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
+      // Keep hold of the shortcut type and handle it in the
+      // `applicationDidBecomeActure:` method once the Dart MethodChannel
+      // is initialized.
+      launchingShortcutType = shortcutItem.type
+
+      // Return false to indicate we handled the quick action to ensure
+      // the `application:performActionFor:` method is not called (as
+      // per Apple's documentation:
+      // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622935-application?language=objc).
       return false
     }
     return true
   }
 
   public func applicationDidBecomeActive(_ application: UIApplication) {
-    if let shortcutType = shortcutService.launchingShortcutType {
+    if let shortcutType = launchingShortcutType {
       handleShortcut(shortcutType)
-      shortcutService.launchingShortcutType = nil
+      launchingShortcutType = nil
     }
   }
 
