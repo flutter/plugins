@@ -20,6 +20,7 @@ import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeCli
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientImpl;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.InputAwareWebViewPlatformView;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
+import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.After;
 import org.junit.Before;
@@ -310,6 +311,13 @@ public class WebViewTest {
   public void getScrollY() {
     when(mockWebView.getScrollY()).thenReturn(23);
     assertEquals((long) testHostApiImpl.getScrollY(0L), 23);
+  }
+
+  @Test
+  public void getScrollPosition() {
+    when(mockWebView.getScrollX()).thenReturn(1);
+    when(mockWebView.getScrollY()).thenReturn(2);
+    assertEquals(testHostApiImpl.getScrollPosition(0L), Arrays.asList(1L, 2L));
   }
 
   @Test

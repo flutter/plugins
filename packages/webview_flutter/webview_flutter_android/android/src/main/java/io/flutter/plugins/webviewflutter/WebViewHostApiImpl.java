@@ -19,8 +19,11 @@ import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadLis
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.ReleasableWebViewClient;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Host api implementation for {@link WebView}.
@@ -454,6 +457,13 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public Long getScrollY(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     return (long) webView.getScrollY();
+  }
+
+  @NonNull
+  @Override
+  public List<Long> getScrollPosition(@NonNull Long instanceId) {
+    final WebView webView = Objects.requireNonNull(instanceManager.getInstance(instanceId));
+    return Arrays.asList((long) webView.getScrollX(), (long) webView.getScrollY());
   }
 
   @Override
