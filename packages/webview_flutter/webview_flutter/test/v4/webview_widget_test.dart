@@ -39,7 +39,7 @@ void main() {
           MockPlatformWebViewController();
       final WebViewController webViewController =
           WebViewController.fromPlatform(
-        platform: mockPlatformWebViewController,
+        mockPlatformWebViewController,
       );
 
       final WebViewWidget webViewWidget = WebViewWidget(
