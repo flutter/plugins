@@ -22,7 +22,7 @@ void main() {
 
       final WebViewCookieManager cookieManager =
           WebViewCookieManager.fromPlatform(
-        platform: mockPlatformWebViewCookieManager,
+        mockPlatformWebViewCookieManager,
       );
 
       await expectLater(cookieManager.clearCookies(), completion(false));
@@ -34,7 +34,7 @@ void main() {
 
       final WebViewCookieManager cookieManager =
           WebViewCookieManager.fromPlatform(
-        platform: mockPlatformWebViewCookieManager,
+        mockPlatformWebViewCookieManager,
       );
 
       const WebViewCookie cookie = WebViewCookie(
