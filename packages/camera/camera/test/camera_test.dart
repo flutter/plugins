@@ -697,7 +697,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -742,7 +741,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -787,7 +785,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -1219,7 +1216,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -1285,7 +1281,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -1339,7 +1334,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 
@@ -1385,7 +1379,6 @@ void main() {
         PlatformException(
           code: 'TEST_ERROR',
           message: 'This is a test error message',
-          details: null,
         ),
       );
 

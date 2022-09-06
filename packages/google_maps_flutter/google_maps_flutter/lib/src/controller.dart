@@ -35,20 +35,6 @@ class GoogleMapController {
     );
   }
 
-  /// Used to communicate with the native platform.
-  ///
-  /// Accessible only for testing.
-  // TODO(dit): Remove this getter, https://github.com/flutter/flutter/issues/55504.
-  @visibleForTesting
-  MethodChannel? get channel {
-    if (GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter) {
-      return (GoogleMapsFlutterPlatform.instance
-              as MethodChannelGoogleMapsFlutter)
-          .channel(mapId);
-    }
-    return null;
-  }
-
   final _GoogleMapState _googleMapState;
 
   void _connectStreams(int mapId) {
@@ -102,10 +88,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) {
-    assert(optionsUpdate != null);
+  Future<void> _updateMapConfiguration(MapConfiguration update) {
     return GoogleMapsFlutterPlatform.instance
-        .updateMapOptions(optionsUpdate, mapId: mapId);
+        .updateMapConfiguration(update, mapId: mapId);
   }
 
   /// Updates marker configuration.

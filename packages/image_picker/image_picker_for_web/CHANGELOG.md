@@ -1,3 +1,8 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+* Fixes violations of new analysis option use_named_constants.
+
 ## 2.1.8
 
 * Minor fixes for new analysis options.

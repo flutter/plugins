@@ -6,7 +6,8 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFPreferencesHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFPreferencesHostApiImpl

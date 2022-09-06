@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -35,7 +36,7 @@ void main() {
     late WebKitFlutterApis flutterApis;
 
     setUp(() {
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
       flutterApis = WebKitFlutterApis(instanceManager: instanceManager);
       WebKitFlutterApis.instance = flutterApis;
     });
@@ -69,6 +70,20 @@ void main() {
         TestWKWebViewConfigurationHostApi.setup(null);
       });
 
+      test('WKWebViewConfigurationFlutterApi.create', () {
+        final WebKitFlutterApis flutterApis = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        flutterApis.webViewConfiguration.create(2);
+
+        expect(instanceManager.containsIdentifier(2), isTrue);
+        expect(
+          instanceManager.getInstanceWithWeakReference(2),
+          isA<WKWebViewConfiguration>(),
+        );
+      });
+
       test('createFromWebViewConfiguration', () {
         verify(mockPlatformHostApi.createFromWebViewConfiguration(
           instanceManager.getIdentifier(websiteDataStore),
@@ -81,7 +96,7 @@ void main() {
             WKWebsiteDataStore.defaultDataStore;
         verify(
           mockPlatformHostApi.createDefaultDataStore(
-            InstanceManager.instance.getIdentifier(defaultDataStore),
+            NSObject.globalInstanceManager.getIdentifier(defaultDataStore),
           ),
         );
       });
@@ -186,6 +201,7 @@ void main() {
         TestWKScriptMessageHandlerHostApi.setup(mockPlatformHostApi);
 
         scriptMessageHandler = WKScriptMessageHandler(
+          didReceiveScriptMessage: (_, __) {},
           instanceManager: instanceManager,
         );
       });
@@ -198,6 +214,42 @@ void main() {
         verify(mockPlatformHostApi.create(
           instanceManager.getIdentifier(scriptMessageHandler),
         ));
+      });
+
+      test('didReceiveScriptMessage', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        scriptMessageHandler = WKScriptMessageHandler(
+          instanceManager: instanceManager,
+          didReceiveScriptMessage: (
+            WKUserContentController userContentController,
+            WKScriptMessage message,
+          ) {
+            argsCompleter.complete(<Object?>[userContentController, message]);
+          },
+        );
+
+        final WKUserContentController userContentController =
+            WKUserContentController.detached(
+          instanceManager: instanceManager,
+        );
+        instanceManager.addHostCreatedInstance(userContentController, 2);
+
+        WebKitFlutterApis.instance.scriptMessageHandler.didReceiveScriptMessage(
+          instanceManager.getIdentifier(scriptMessageHandler)!,
+          2,
+          WKScriptMessageData(name: 'name'),
+        );
+
+        expect(
+          argsCompleter.future,
+          completion(<Object?>[userContentController, isA<WKScriptMessage>()]),
+        );
       });
     });
 
@@ -288,6 +340,7 @@ void main() {
           MockTestWKScriptMessageHandlerHostApi(),
         );
         final WKScriptMessageHandler handler = WKScriptMessageHandler(
+          didReceiveScriptMessage: (_, __) {},
           instanceManager: instanceManager,
         );
 
@@ -438,34 +491,181 @@ void main() {
       });
 
       test('create', () async {
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+        );
+
         verify(mockPlatformHostApi.create(
           instanceManager.getIdentifier(navigationDelegate),
         ));
       });
 
-      test('setDidFinishNavigation', () async {
+      test('didFinishNavigation', () async {
         final Completer<List<Object?>> argsCompleter =
             Completer<List<Object?>>();
 
-        navigationDelegate.setDidFinishNavigation(
-          (WKWebView webView, String? url) {
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+          didFinishNavigation: (WKWebView webView, String? url) {
             argsCompleter.complete(<Object?>[webView, url]);
           },
         );
 
-        final int functionInstanceId =
-            verify(mockPlatformHostApi.setDidFinishNavigation(
-          instanceManager.getIdentifier(navigationDelegate),
-          captureAny,
-        )).captured.single as int;
-
-        flutterApis.navigationDelegateFlutterApi.didFinishNavigation(
-          functionInstanceId,
+        WebKitFlutterApis.instance.navigationDelegate.didFinishNavigation(
+          instanceManager.getIdentifier(navigationDelegate)!,
           instanceManager.getIdentifier(webView)!,
           'url',
         );
 
         expect(argsCompleter.future, completion(<Object?>[webView, 'url']));
+      });
+
+      test('didStartProvisionalNavigation', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+          didStartProvisionalNavigation: (WKWebView webView, String? url) {
+            argsCompleter.complete(<Object?>[webView, url]);
+          },
+        );
+
+        WebKitFlutterApis.instance.navigationDelegate
+            .didStartProvisionalNavigation(
+          instanceManager.getIdentifier(navigationDelegate)!,
+          instanceManager.getIdentifier(webView)!,
+          'url',
+        );
+
+        expect(argsCompleter.future, completion(<Object?>[webView, 'url']));
+      });
+
+      test('decidePolicyForNavigationAction', () async {
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+          decidePolicyForNavigationAction: (
+            WKWebView webView,
+            WKNavigationAction navigationAction,
+          ) async {
+            return WKNavigationActionPolicy.cancel;
+          },
+        );
+
+        final WKNavigationActionPolicyEnumData policyData =
+            await WebKitFlutterApis.instance.navigationDelegate
+                .decidePolicyForNavigationAction(
+          instanceManager.getIdentifier(navigationDelegate)!,
+          instanceManager.getIdentifier(webView)!,
+          WKNavigationActionData(
+            request: NSUrlRequestData(
+              url: 'url',
+              allHttpHeaderFields: <String, String>{},
+            ),
+            targetFrame: WKFrameInfoData(isMainFrame: false),
+          ),
+        );
+
+        expect(policyData.value, WKNavigationActionPolicyEnum.cancel);
+      });
+
+      test('didFailNavigation', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+          didFailNavigation: (WKWebView webView, NSError error) {
+            argsCompleter.complete(<Object?>[webView, error]);
+          },
+        );
+
+        WebKitFlutterApis.instance.navigationDelegate.didFailNavigation(
+          instanceManager.getIdentifier(navigationDelegate)!,
+          instanceManager.getIdentifier(webView)!,
+          NSErrorData(
+            code: 23,
+            domain: 'Hello',
+            localizedDescription: 'localiziedDescription',
+          ),
+        );
+
+        expect(
+          argsCompleter.future,
+          completion(<Object?>[webView, isA<NSError>()]),
+        );
+      });
+
+      test('didFailProvisionalNavigation', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+          didFailProvisionalNavigation: (WKWebView webView, NSError error) {
+            argsCompleter.complete(<Object?>[webView, error]);
+          },
+        );
+
+        WebKitFlutterApis.instance.navigationDelegate
+            .didFailProvisionalNavigation(
+          instanceManager.getIdentifier(navigationDelegate)!,
+          instanceManager.getIdentifier(webView)!,
+          NSErrorData(
+            code: 23,
+            domain: 'Hello',
+            localizedDescription: 'localiziedDescription',
+          ),
+        );
+
+        expect(
+          argsCompleter.future,
+          completion(<Object?>[webView, isA<NSError>()]),
+        );
+      });
+
+      test('webViewWebContentProcessDidTerminate', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+          webViewWebContentProcessDidTerminate: (WKWebView webView) {
+            argsCompleter.complete(<Object?>[webView]);
+          },
+        );
+
+        WebKitFlutterApis.instance.navigationDelegate
+            .webViewWebContentProcessDidTerminate(
+          instanceManager.getIdentifier(navigationDelegate)!,
+          instanceManager.getIdentifier(webView)!,
+        );
+
+        expect(argsCompleter.future, completion(<Object?>[webView]));
       });
     });
 
@@ -630,6 +830,30 @@ void main() {
             .thenAnswer((_) => Future<String>.value('stopstop'));
         expect(webView.evaluateJavaScript('gogo'), completion('stopstop'));
       });
+
+      test('evaluateJavaScript returns NSError', () {
+        when(mockPlatformHostApi.evaluateJavaScript(webViewInstanceId, 'gogo'))
+            .thenThrow(
+          PlatformException(
+            code: '',
+            details: NSErrorData(
+              code: 0,
+              domain: 'domain',
+              localizedDescription: 'desc',
+            ),
+          ),
+        );
+        expect(
+          webView.evaluateJavaScript('gogo'),
+          throwsA(
+            isA<PlatformException>().having(
+              (PlatformException exception) => exception.details,
+              'details',
+              isA<NSError>(),
+            ),
+          ),
+        );
+      });
     });
 
     group('WKUIDelegate', () {
@@ -652,6 +876,63 @@ void main() {
         verify(mockPlatformHostApi.create(
           instanceManager.getIdentifier(uiDelegate),
         ));
+      });
+
+      test('onCreateWebView', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        uiDelegate = WKUIDelegate(
+          instanceManager: instanceManager,
+          onCreateWebView: (
+            WKWebView webView,
+            WKWebViewConfiguration configuration,
+            WKNavigationAction navigationAction,
+          ) {
+            argsCompleter.complete(<Object?>[
+              webView,
+              configuration,
+              navigationAction,
+            ]);
+          },
+        );
+
+        final WKWebView webView = WKWebView.detached(
+          instanceManager: instanceManager,
+        );
+        instanceManager.addHostCreatedInstance(webView, 2);
+
+        final WKWebViewConfiguration configuration =
+            WKWebViewConfiguration.detached(
+          instanceManager: instanceManager,
+        );
+        instanceManager.addHostCreatedInstance(configuration, 3);
+
+        WebKitFlutterApis.instance.uiDelegate.onCreateWebView(
+          instanceManager.getIdentifier(uiDelegate)!,
+          2,
+          3,
+          WKNavigationActionData(
+            request: NSUrlRequestData(
+              url: 'url',
+              allHttpHeaderFields: <String, String>{},
+            ),
+            targetFrame: WKFrameInfoData(isMainFrame: false),
+          ),
+        );
+
+        expect(
+          argsCompleter.future,
+          completion(<Object?>[
+            webView,
+            configuration,
+            isA<WKNavigationAction>(),
+          ]),
+        );
       });
     });
   });

@@ -10,10 +10,10 @@ which can be the App Store (on iOS) or Google Play (on Android).
 | **Support** | SDK 16+ | 9.0+ |
 
 <p>
-  <img src="https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/doc/iap_ios.gif?raw=true"
+  <img src="https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/doc/iap_ios.gif?raw=true"
     alt="An animated image of the iOS in-app purchase UI" height="400"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/doc/iap_android.gif?raw=true"
+  <img src="https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/doc/iap_android.gif?raw=true"
    alt="An animated image of the Android in-app purchase UI" height="400"/>
 </p>
 
@@ -41,7 +41,7 @@ your app with each store. Both stores have extensive guides:
 > to a particular store.
 
 For a list of steps for configuring in-app purchases in both stores, see the
-[example app README](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/example/README.md).
+[example app README](https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/example/README.md).
 
 Once you've configured your in-app purchases in their respective stores, you
 can start using the plugin. Two basic options are available:
@@ -426,4 +426,4 @@ iosPlatformAddition.presentCodeRedemptionSheet();
 ## Contributing to this plugin
 
 If you would like to contribute to the plugin, check out our
-[contribution guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md).
+[contribution guide](https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md).

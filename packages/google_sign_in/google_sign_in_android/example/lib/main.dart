@@ -41,14 +41,16 @@ class SignInDemoState extends State<SignInDemo> {
   }
 
   Future<void> _ensureInitialized() {
-    return _initialization ??= GoogleSignInPlatform.instance.init(
+    return _initialization ??=
+        GoogleSignInPlatform.instance.initWithParams(const SignInInitParameters(
       scopes: <String>[
         'email',
         'https://www.googleapis.com/auth/contacts.readonly',
       ],
-    )..catchError((dynamic _) {
-        _initialization = null;
-      });
+    ))
+          ..catchError((dynamic _) {
+            _initialization = null;
+          });
   }
 
   void _setUser(GoogleSignInUserData? user) {

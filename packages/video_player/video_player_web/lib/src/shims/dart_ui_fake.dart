@@ -11,10 +11,10 @@ import 'dart:html' as html;
 // ignore_for_file: camel_case_types
 
 /// Shim for web_ui engine.PlatformViewRegistry
-/// https://github.com/flutter/engine/blob/master/lib/web_ui/lib/ui.dart#L62
+/// https://github.com/flutter/engine/blob/main/lib/web_ui/lib/ui.dart#L62
 class platformViewRegistry {
   /// Shim for registerViewFactory
-  /// https://github.com/flutter/engine/blob/master/lib/web_ui/lib/ui.dart#L72
+  /// https://github.com/flutter/engine/blob/main/lib/web_ui/lib/ui.dart#L72
   static bool registerViewFactory(
       String viewTypeId, html.Element Function(int viewId) viewFactory) {
     return false;
@@ -22,10 +22,10 @@ class platformViewRegistry {
 }
 
 /// Shim for web_ui engine.AssetManager.
-/// https://github.com/flutter/engine/blob/master/lib/web_ui/lib/src/engine/assets.dart#L12
+/// https://github.com/flutter/engine/blob/main/lib/web_ui/lib/src/engine/assets.dart#L12
 class webOnlyAssetManager {
   /// Shim for getAssetUrl.
-  /// https://github.com/flutter/engine/blob/master/lib/web_ui/lib/src/engine/assets.dart#L45
+  /// https://github.com/flutter/engine/blob/main/lib/web_ui/lib/src/engine/assets.dart#L45
   static String getAssetUrl(String asset) => '';
 }
 

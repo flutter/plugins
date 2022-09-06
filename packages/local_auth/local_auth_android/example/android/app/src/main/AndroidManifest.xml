@@ -2,7 +2,7 @@
     package="io.flutter.plugins.localauthexample">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 
     <application android:label="local_auth_example" android:icon="@mipmap/ic_launcher">
         <activity android:name="io.flutter.embedding.android.FlutterFragmentActivity"

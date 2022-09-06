@@ -60,6 +60,19 @@ void main() {
     package.pubspecFile.writeAsStringSync(lines.join('\n'));
   }
 
+  /// Adds a 'dev_dependencies:' section with entries for each package in
+  /// [dependencies] to [package].
+  void _addDevDependenciesSection(
+      RepositoryPackage package, Iterable<String> devDependencies) {
+    final String originalContent = package.pubspecFile.readAsStringSync();
+    package.pubspecFile.writeAsStringSync('''
+$originalContent
+
+dev_dependencies:
+${devDependencies.map((String dep) => '  $dep: ^1.0.0').join('\n')}
+''');
+  }
+
   test('no-ops for no plugins', () async {
     createFakePackage('foo', packagesDir, isFlutter: true);
     final RepositoryPackage packageBar =
@@ -81,7 +94,7 @@ void main() {
     expect(packageBar.pubspecFile.readAsStringSync(), originalPubspecContents);
   });
 
-  test('rewrites references', () async {
+  test('rewrites "dependencies" references', () async {
     final RepositoryPackage simplePackage =
         createFakePackage('foo', packagesDir, isFlutter: true);
     final Directory pluginGroup = packagesDir.childDirectory('bar');
@@ -139,6 +152,35 @@ void main() {
           'dependency_overrides:',
           '  bar_platform_interface:',
           '    path: ../../bar/bar_platform_interface',
+        ]));
+  });
+
+  test('rewrites "dev_dependencies" references', () async {
+    createFakePackage('foo', packagesDir);
+    final RepositoryPackage builderPackage =
+        createFakePackage('foo_builder', packagesDir);
+
+    _addDevDependenciesSection(builderPackage, <String>[
+      'foo',
+    ]);
+
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['make-deps-path-based', '--target-dependencies=foo']);
+
+    expect(
+        output,
+        containsAll(<String>[
+          'Rewriting references to: foo...',
+          '  Modified packages/foo_builder/pubspec.yaml',
+        ]));
+
+    expect(
+        builderPackage.pubspecFile.readAsLinesSync(),
+        containsAllInOrder(<String>[
+          '# FOR TESTING ONLY. DO NOT MERGE.',
+          'dependency_overrides:',
+          '  foo:',
+          '    path: ../foo',
         ]));
   });
 

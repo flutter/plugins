@@ -53,6 +53,13 @@ void main() {
         final String accepts = acceptedTypesToString(acceptedTypes);
         expect(accepts, 'image/*,audio/*,video/*');
       });
+
+      test('throws for a type group that does not support web', () {
+        final List<XTypeGroup> acceptedTypes = <XTypeGroup>[
+          XTypeGroup(label: 'text', macUTIs: <String>['public.text']),
+        ];
+        expect(() => acceptedTypesToString(acceptedTypes), throwsArgumentError);
+      });
     });
   });
 }

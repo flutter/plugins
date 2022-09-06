@@ -7,13 +7,29 @@
 
 #import "FWFGeneratedWebKitApis.h"
 #import "FWFInstanceManager.h"
+#import "FWFObjectHostApi.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ * Flutter api implementation for WKScriptMessageHandler.
+ *
+ * Handles making callbacks to Dart for a WKScriptMessageHandler.
+ */
+@interface FWFScriptMessageHandlerFlutterApiImpl : FWFWKScriptMessageHandlerFlutterApi
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
+@end
+
+/**
  * Implementation of WKScriptMessageHandler for FWFScriptMessageHandlerHostApiImpl.
  */
-@interface FWFScriptMessageHandler : NSObject <WKScriptMessageHandler>
+@interface FWFScriptMessageHandler : FWFObject <WKScriptMessageHandler>
+@property(readonly, nonnull, nonatomic)
+    FWFScriptMessageHandlerFlutterApiImpl *scriptMessageHandlerAPI;
+
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
 /**
@@ -22,7 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Handles creating WKScriptMessageHandler that intercommunicate with a paired Dart object.
  */
 @interface FWFScriptMessageHandlerHostApiImpl : NSObject <FWFWKScriptMessageHandlerHostApi>
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager;
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
 NS_ASSUME_NONNULL_END

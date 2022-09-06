@@ -1,3 +1,5 @@
+<?code-excerpt path-base="excerpts/packages/video_player_example"?>
+
 # Video Player plugin for Flutter
 
 [![pub package](https://img.shields.io/pub/v/video_player.svg)](https://pub.dev/packages/video_player)
@@ -8,7 +10,7 @@ A Flutter plugin for iOS, Android and Web for playing back video on a Widget sur
 |-------------|---------|------|-------|
 | **Support** | SDK 16+ | 9.0+ | Any\* |
 
-![The example app running in iOS](https://github.com/flutter/plugins/blob/master/packages/video_player/video_player/doc/demo_ipod.gif?raw=true)
+![The example app running in iOS](https://github.com/flutter/plugins/blob/main/packages/video_player/video_player/doc/demo_ipod.gif?raw=true)
 
 ## Installation
 
@@ -50,19 +52,23 @@ The `VideoPlayerOptions.mixWithOthers` option can't be implemented in web, at le
 
 ## Example
 
+<?code-excerpt "basic.dart (basic-example)"?>
 ```dart
-import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
-void main() => runApp(VideoApp());
+void main() => runApp(const VideoApp());
 
+/// Stateful widget to fetch and then display video content.
 class VideoApp extends StatefulWidget {
+  const VideoApp({Key? key}) : super(key: key);
+
   @override
   _VideoAppState createState() => _VideoAppState();
 }
 
 class _VideoAppState extends State<VideoApp> {
-  VideoPlayerController _controller;
+  late VideoPlayerController _controller;
 
   @override
   void initState() {

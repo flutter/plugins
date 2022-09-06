@@ -13,7 +13,7 @@ platform_properties:
     properties:
       dependencies: >
         [
-          {"dependency": "curl"}
+          {"dependency": "curl", "version": "version:7.64.0"}
         ]
       device_type: none
       os: Linux
@@ -21,7 +21,7 @@ platform_properties:
     properties:
       dependencies: >
         [
-          {"dependency": "certs"}
+          {"dependency": "certs", "version": "version:9563bb"}
         ]
       device_type: none
       os: Windows
@@ -37,7 +37,7 @@ targets:
       version_file: flutter_master.version
       dependencies: >
         [
-          {"dependency": "vs_build"}
+          {"dependency": "vs_build", "version": "version:vs2019"}
         ]
 
   - name: Windows win32-platform_tests stable
@@ -47,9 +47,10 @@ targets:
       add_recipes_cq: "true"
       target_file: windows_build_and_platform_tests.yaml
       channel: stable
+      version_file: flutter_stable.version
       dependencies: >
         [
-          {"dependency": "vs_build"}
+          {"dependency": "vs_build", "version": "version:vs2019"}
         ]
 
   - name: Windows windows-build_all_plugins master
@@ -62,7 +63,7 @@ targets:
       version_file: flutter_master.version
       dependencies: >
         [
-          {"dependency": "vs_build"}
+          {"dependency": "vs_build", "version": "version:vs2019"}
         ]
 
   - name: Windows windows-build_all_plugins stable
@@ -72,9 +73,10 @@ targets:
       add_recipes_cq: "true"
       target_file: build_all_plugins.yaml
       channel: stable
+      version_file: flutter_stable.version
       dependencies: >
         [
-          {"dependency": "vs_build"}
+          {"dependency": "vs_build", "version": "version:vs2019"}
         ]
 
   - name: Windows plugin_tools_tests

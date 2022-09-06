@@ -21,7 +21,7 @@ editing any of the serialized data structs, rebuild the serializers by running
 watch the filesystem for changes.
 
 If you would like to contribute to the plugin, check out our
-[contribution guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md).
+[contribution guide](https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md).
 
 
 [1]: ../in_app_purchase

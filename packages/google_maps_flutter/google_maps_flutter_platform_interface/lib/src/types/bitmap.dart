@@ -18,10 +18,8 @@ class BitmapDescriptor {
   const BitmapDescriptor._(this._json);
 
   /// The inverse of .toJson.
-  // This is needed in Web to re-hydrate BitmapDescriptors that have been
-  // transformed to JSON for transport.
-  // TODO(stuartmorgan): Clean this up. See
-  // https://github.com/flutter/flutter/issues/70330
+  // TODO(stuartmorgan): Remove this in the next breaking change.
+  @Deprecated('No longer supported')
   BitmapDescriptor.fromJson(Object json) : _json = json {
     assert(_json is List<dynamic>);
     final List<dynamic> jsonList = json as List<dynamic>;
@@ -159,8 +157,22 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor using an array of bytes that must be encoded
   /// as PNG.
-  static BitmapDescriptor fromBytes(Uint8List byteData) {
-    return BitmapDescriptor._(<Object>[_fromBytes, byteData]);
+  /// On the web, the [size] parameter represents the *physical size* of the
+  /// bitmap, regardless of the actual resolution of the encoded PNG.
+  /// This helps the browser to render High-DPI images at the correct size.
+  /// `size` is not required (and ignored, if passed) in other platforms.
+  static BitmapDescriptor fromBytes(Uint8List byteData, {Size? size}) {
+    assert(byteData.isNotEmpty,
+        'Cannot create BitmapDescriptor with empty byteData');
+    return BitmapDescriptor._(<Object>[
+      _fromBytes,
+      byteData,
+      if (kIsWeb && size != null)
+        <Object>[
+          size.width,
+          size.height,
+        ]
+    ]);
   }
 
   final Object _json;

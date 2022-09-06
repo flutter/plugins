@@ -39,6 +39,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
     static final String ON_PURCHASES_UPDATED =
         "PurchasesUpdatedListener#onPurchasesUpdated(int, List<Purchase>)";
     static final String QUERY_PURCHASES = "BillingClient#queryPurchases(String)";
+    static final String QUERY_PURCHASES_ASYNC = "BillingClient#queryPurchasesAsync(String)";
     static final String QUERY_PURCHASE_HISTORY_ASYNC =
         "BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
     static final String CONSUME_PURCHASE_ASYNC =
@@ -48,6 +49,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
     static final String IS_FEATURE_SUPPORTED = "BillingClient#isFeatureSupported(String)";
     static final String LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW =
         "BillingClient#launchPriceChangeConfirmationFlow (Activity, PriceChangeFlowParams, PriceChangeConfirmationListener)";
+    static final String GET_CONNECTION_STATE = "BillingClient#getConnectionState()";
 
     private MethodNames() {};
   }

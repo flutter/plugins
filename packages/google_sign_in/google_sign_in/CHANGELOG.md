@@ -1,3 +1,20 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 5.4.1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 5.4.0
+
+* Adds support for configuring `serverClientId` through `GoogleSignIn` constructor.
+* Adds support for Dart-based configuration as alternative to `GoogleService-Info.plist` for iOS.
+
+## 5.3.3
+
+* Updates references to the obsolete master branch.
+
 ## 5.3.2
 
 * Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.

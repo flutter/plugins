@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Context;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.Scope;
 
 /**
@@ -20,6 +22,10 @@ import com.google.android.gms.common.api.Scope;
  * the same name and same parameters.
  */
 public class GoogleSignInWrapper {
+
+  GoogleSignInClient getClient(Context context, GoogleSignInOptions options) {
+    return GoogleSignIn.getClient(context, options);
+  }
 
   GoogleSignInAccount getLastSignedInAccount(Context context) {
     return GoogleSignIn.getLastSignedInAccount(context);

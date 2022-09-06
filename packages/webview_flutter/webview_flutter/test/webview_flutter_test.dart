@@ -85,9 +85,7 @@ void main() {
       JavascriptMode.unrestricted,
     );
 
-    await tester.pumpWidget(const WebView(
-      javascriptMode: JavascriptMode.disabled,
-    ));
+    await tester.pumpWidget(const WebView());
 
     final CreationParams disabledparams = captureBuildArgs(
       mockWebViewPlatform,
@@ -455,7 +453,6 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
-        javascriptMode: JavascriptMode.disabled,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -489,7 +486,6 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
-        javascriptMode: JavascriptMode.disabled,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -527,7 +523,6 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
-        javascriptMode: JavascriptMode.disabled,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -757,7 +752,6 @@ void main() {
     testWidgets('onPageStarted is null', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
         initialUrl: 'https://youtube.com',
-        onPageStarted: null,
       ));
 
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
@@ -818,7 +812,6 @@ void main() {
     testWidgets('onPageFinished is null', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
         initialUrl: 'https://youtube.com',
-        onPageFinished: null,
       ));
 
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
@@ -878,7 +871,6 @@ void main() {
     testWidgets('onLoadingProgress is null', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
         initialUrl: 'https://youtube.com',
-        onProgress: null,
       ));
 
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
@@ -1033,7 +1025,6 @@ void main() {
 
       await tester.pumpWidget(WebView(
         key: key,
-        debuggingEnabled: false,
       ));
 
       final WebSettings disabledSettings =
@@ -1046,9 +1037,7 @@ void main() {
 
   group('zoomEnabled', () {
     testWidgets('Enable zoom', (WidgetTester tester) async {
-      await tester.pumpWidget(const WebView(
-        zoomEnabled: true,
-      ));
+      await tester.pumpWidget(const WebView());
 
       final CreationParams params = captureBuildArgs(
         mockWebViewPlatform,
@@ -1075,7 +1064,6 @@ void main() {
 
       await tester.pumpWidget(WebView(
         key: key,
-        zoomEnabled: true,
       ));
 
       final WebSettings enabledSettings =

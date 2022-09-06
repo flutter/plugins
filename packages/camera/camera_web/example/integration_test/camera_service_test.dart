@@ -4,6 +4,8 @@
 
 import 'dart:html';
 import 'dart:js_util' as js_util;
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
@@ -22,7 +24,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('CameraService', () {
-    const int cameraId = 0;
+    const int cameraId = 1;
 
     late Window window;
     late Navigator navigator;
