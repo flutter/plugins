@@ -24,8 +24,8 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
   @objc
   public init(
     channel: FlutterMethodChannel,
-    shortcutStateManager: FLTShortcutStateManager = FLTShortcutStateManager())
-  {
+    shortcutStateManager: FLTShortcutStateManager = FLTShortcutStateManager()
+  ) {
     self.channel = channel
     self.shortcutStateManager = shortcutStateManager
   }
@@ -33,9 +33,8 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "setShortcutItems":
-      guard let items = call.arguments as? [[String:Any]] else {
-        preconditionFailure("The argument must be a list of dictionaries")
-      }
+      // `arguments` must be a list of dictionaries
+      let items = call.arguments as! [[String: Any]]
       shortcutStateManager.setShortcutItems(items)
       result(nil)
     case "clearShortcutItems":
@@ -48,13 +47,21 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
     }
   }
 
-  public func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) -> Bool {
+  public func application(
+    _ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem,
+    completionHandler: @escaping (Bool) -> Void
+  ) -> Bool {
     handleShortcut(shortcutItem.type)
     return true
   }
 
-  public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
-    if let shortcutItem = launchOptions[UIApplication.LaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
+  public func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [AnyHashable: Any] = [:]
+  ) -> Bool {
+    if let shortcutItem = launchOptions[UIApplication.LaunchOptionsKey.shortcutItem]
+      as? UIApplicationShortcutItem
+    {
       // Keep hold of the shortcut type and handle it in the
       // `applicationDidBecomeActure:` method once the Dart MethodChannel
       // is initialized.
@@ -63,7 +70,7 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
       // Return false to indicate we handled the quick action to ensure
       // the `application:performActionFor:` method is not called (as
       // per Apple's documentation:
-      // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622935-application?language=objc).
+      // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622935-application).
       return false
     }
     return true
