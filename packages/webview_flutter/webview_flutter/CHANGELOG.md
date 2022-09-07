@@ -121,7 +121,7 @@
 ## 2.0.6
 
 * WebView requires at least Android 19 if you are using
-  hybrid composition ([flutter/issues/59894](https://github.com/flutter/flutter/issues/59894)).
+hybrid composition ([flutter/issues/59894](https://github.com/flutter/flutter/issues/59894)).
 
 ## 2.0.5
 
@@ -134,12 +134,12 @@
 ## 2.0.3
 
 * Fixes bug where scroll bars on the Android non-hybrid WebView are rendered on
-  the wrong side of the screen.
+the wrong side of the screen.
 
 ## 2.0.2
 
 * Fixes bug where text fields are hidden behind the keyboard
-  when hybrid composition is used [flutter/issues/75667](https://github.com/flutter/flutter/issues/75667).
+when hybrid composition is used [flutter/issues/75667](https://github.com/flutter/flutter/issues/75667).
 
 ## 2.0.1
 
@@ -191,8 +191,8 @@
 ## 1.0.0 - Out of developer preview 🎉.
 
 * Bumped the minimal Flutter SDK to 1.22 where platform views are out of developer preview, and
-performing better on iOS. Flutter 1.22 no longer requires adding the
-  `io.flutter.embedded_views_preview` flag to `Info.plist`.
+  performing better on iOS. Flutter 1.22 no longer requires adding the
+`io.flutter.embedded_views_preview` flag to `Info.plist`.
 
 * Added support for Hybrid Composition on Android (see opt-in instructions in [README](https://github.com/flutter/plugins/blob/main/packages/webview_flutter/README.md#android))
   * Lowered the required Android API to 19 (was previously 20): [#23728](https://github.com/flutter/flutter/issues/23728).
