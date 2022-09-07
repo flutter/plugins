@@ -20,7 +20,7 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
   /// The type of the shortcut item selected when launching the app.
   private var launchingShortcutType: String? = nil
 
-  // TODO: (hellohuanlin) remove `@objc` attribute after migrating tests to Swift.
+  // TODO: (hellohuanlin) remove `@objc` attribute and make it non-public after migrating tests to Swift.
   @objc
   public init(
     channel: FlutterMethodChannel,

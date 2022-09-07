@@ -1,7 +1,7 @@
 ## 1.0.0+1
 
 * Removes custom modulemap file with "Test" submodule and private headers for Swift migration. 
-* Migrated `FLTQuickActionsPlugin` class to Swift.
+* Migrates `FLTQuickActionsPlugin` class to Swift.
 
 ## 1.0.0
 
