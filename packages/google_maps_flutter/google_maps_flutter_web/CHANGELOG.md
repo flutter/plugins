@@ -1,6 +1,7 @@
 ## 0.4.1
 
 * Adds support for heatmap layers.
+* Updates minimum Flutter version to 2.10.
 
 ## 0.4.0+2
 

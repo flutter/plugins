@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 0.9.8+5
+
+* Fixes a regression introduced in 0.9.8+4 where the stream handler is not set. 
+
 ## 0.9.8+4
 
 * Fixes a crash due to sending orientation change events when the engine is torn down. 

@@ -1,3 +1,8 @@
+## 2.1.3
+
+* Updates minimum Flutter version to 2.10.
+* Adds compatibility with `package:win32` 3.x.
+
 ## 2.1.2
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.

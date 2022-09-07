@@ -86,7 +86,7 @@ class DialogWrapper {
 
   // Attempts to set the default folder for the dialog to |path|,
   // if it exists.
-  void SetDefaultFolder(std::string_view path) {
+  void SetFolder(std::string_view path) {
     std::wstring wide_path = Utf16FromUtf8(path);
     IShellItemPtr item;
     last_result_ = SHCreateItemFromParsingName(wide_path.c_str(), nullptr,
@@ -94,7 +94,7 @@ class DialogWrapper {
     if (!SUCCEEDED(last_result_)) {
       return;
     }
-    dialog_controller_->SetDefaultFolder(item);
+    dialog_controller_->SetFolder(item);
   }
 
   // Sets the file name that is initially shown in the dialog.
@@ -230,7 +230,7 @@ ErrorOr<flutter::EncodableList> ShowDialog(
   }
 
   if (initial_directory) {
-    dialog.SetDefaultFolder(*initial_directory);
+    dialog.SetFolder(*initial_directory);
   }
   if (suggested_name) {
     dialog.SetFileName(*suggested_name);
