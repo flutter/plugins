@@ -346,6 +346,22 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   XCTAssertNil(error);
 }
 
+- (void)testSetAllowsLinkPreview {
+  FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
+
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
+
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
+
+  FlutterError *error;
+  [hostAPI setAllowsLinkPreviewForWebViewWithIdentifier:@0 isAllowed:@NO error:&error];
+  OCMVerify([mockWebView setAllowsLinkPreview:NO]);
+  XCTAssertNil(error);
+}
+
 - (void)testEvaluateJavaScript {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
