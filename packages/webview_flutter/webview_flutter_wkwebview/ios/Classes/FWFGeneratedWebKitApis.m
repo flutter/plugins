@@ -2508,16 +2508,19 @@ void FWFWKWebViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFWKWebViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setAllowsLinkPreview:isAllowed:error:)],
+      NSCAssert([api respondsToSelector:@selector
+                     (setAllowsLinkPreviewForWebViewWithIdentifier:isAllowed:error:)],
                 @"FWFWKWebViewHostApi api (%@) doesn't respond to "
-                @"@selector(setAllowsLinkPreview:isAllowed:error:)",
+                @"@selector(setAllowsLinkPreviewForWebViewWithIdentifier:isAllowed:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_identifier = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_allow = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api setAllowsLinkPreview:arg_identifier isAllowed:arg_allow error:&error];
+        [api setAllowsLinkPreviewForWebViewWithIdentifier:arg_identifier
+                                                isAllowed:arg_allow
+                                                    error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {

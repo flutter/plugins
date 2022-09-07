@@ -506,9 +506,9 @@ NSObject<FlutterMessageCodec> *FWFWKWebViewHostApiGetCodec(void);
 - (void)setAllowsBackForwardForWebViewWithIdentifier:(NSNumber *)identifier
                                            isAllowed:(NSNumber *)allow
                                                error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setAllowsLinkPreview:(NSNumber *)identifier
-                   isAllowed:(NSNumber *)allow
-                       error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setAllowsLinkPreviewForWebViewWithIdentifier:(NSNumber *)identifier
+                                           isAllowed:(NSNumber *)allow
+                                               error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setUserAgentForWebViewWithIdentifier:(NSNumber *)identifier
                                    userAgent:(nullable NSString *)userAgent
                                        error:(FlutterError *_Nullable *_Nonnull)error;
