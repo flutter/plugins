@@ -25,7 +25,12 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
   void setUp(BinaryMessenger binaryMessenger, Context context) {
     // Set up instance manager.
-    instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager =
+        InstanceManager.open(
+            identifier -> {
+              new GeneratedCameraXLibrary.JavaObjectFlutterApi(binaryMessenger)
+                  .dispose(identifier, reply -> {});
+            });
 
     // Set up Host APIs.
     GeneratedCameraXLibrary.CameraInfoHostApi.setup(

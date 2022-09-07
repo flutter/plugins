@@ -20,7 +20,7 @@ class _TestJavaObjectHostApiCodec extends StandardMessageCodec {
 abstract class TestJavaObjectHostApi {
   static const MessageCodec<Object?> codec = _TestJavaObjectHostApiCodec();
 
-  void dispose(int instanceId);
+  void dispose(int identifier);
   static void setup(TestJavaObjectHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -34,10 +34,10 @@ abstract class TestJavaObjectHostApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.JavaObjectHostApi.dispose was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.JavaObjectHostApi.dispose was null, expected non-null int.');
-          api.dispose(arg_instanceId!);
+          api.dispose(arg_identifier!);
           return <Object?, Object?>{};
         });
       }
@@ -52,7 +52,7 @@ class _TestCameraInfoHostApiCodec extends StandardMessageCodec {
 abstract class TestCameraInfoHostApi {
   static const MessageCodec<Object?> codec = _TestCameraInfoHostApiCodec();
 
-  int getSensorRotationDegrees(int instanceId);
+  int getSensorRotationDegrees(int identifier);
   static void setup(TestCameraInfoHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -67,10 +67,10 @@ abstract class TestCameraInfoHostApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.CameraInfoHostApi.getSensorRotationDegrees was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.CameraInfoHostApi.getSensorRotationDegrees was null, expected non-null int.');
-          final int output = api.getSensorRotationDegrees(arg_instanceId!);
+          final int output = api.getSensorRotationDegrees(arg_identifier!);
           return <Object?, Object?>{'result': output};
         });
       }

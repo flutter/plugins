@@ -28,20 +28,20 @@ import 'package:pigeon/pigeon.dart';
 )
 @HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
 abstract class JavaObjectHostApi {
-  void dispose(int instanceId);
+  void dispose(int identifier);
 }
 
 @FlutterApi()
 abstract class JavaObjectFlutterApi {
-  void dispose(int instanceId);
+  void dispose(int identifier);
 }
 
 @HostApi(dartHostTestHandler: 'TestCameraInfoHostApi')
 abstract class CameraInfoHostApi {
-  int getSensorRotationDegrees(int instanceId);
+  int getSensorRotationDegrees(int identifier);
 }
 
 @FlutterApi()
 abstract class CameraInfoFlutterApi {
-  void create(int instanceId);
+  void create(int identifier);
 }

@@ -28,7 +28,7 @@ public class GeneratedCameraXLibrary {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface JavaObjectHostApi {
-    void dispose(@NonNull Long instanceId);
+    void dispose(@NonNull Long identifier);
 
     /** The codec used by JavaObjectHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -49,11 +49,11 @@ public class GeneratedCameraXLibrary {
                 Map<String, Object> wrapped = new HashMap<>();
                 try {
                   ArrayList<Object> args = (ArrayList<Object>) message;
-                  Number instanceIdArg = (Number) args.get(0);
-                  if (instanceIdArg == null) {
-                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
                   }
-                  api.dispose((instanceIdArg == null) ? null : instanceIdArg.longValue());
+                  api.dispose((identifierArg == null) ? null : identifierArg.longValue());
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
@@ -89,12 +89,12 @@ public class GeneratedCameraXLibrary {
       return JavaObjectFlutterApiCodec.INSTANCE;
     }
 
-    public void dispose(@NonNull Long instanceIdArg, Reply<Void> callback) {
+    public void dispose(@NonNull Long identifierArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(
               binaryMessenger, "dev.flutter.pigeon.JavaObjectFlutterApi.dispose", getCodec());
       channel.send(
-          new ArrayList<Object>(Arrays.asList(instanceIdArg)),
+          new ArrayList<Object>(Arrays.asList(identifierArg)),
           channelReply -> {
             callback.reply(null);
           });
@@ -110,7 +110,7 @@ public class GeneratedCameraXLibrary {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface CameraInfoHostApi {
     @NonNull
-    Long getSensorRotationDegrees(@NonNull Long instanceId);
+    Long getSensorRotationDegrees(@NonNull Long identifier);
 
     /** The codec used by CameraInfoHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -133,13 +133,13 @@ public class GeneratedCameraXLibrary {
                 Map<String, Object> wrapped = new HashMap<>();
                 try {
                   ArrayList<Object> args = (ArrayList<Object>) message;
-                  Number instanceIdArg = (Number) args.get(0);
-                  if (instanceIdArg == null) {
-                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
                   }
                   Long output =
                       api.getSensorRotationDegrees(
-                          (instanceIdArg == null) ? null : instanceIdArg.longValue());
+                          (identifierArg == null) ? null : identifierArg.longValue());
                   wrapped.put("result", output);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
@@ -175,12 +175,12 @@ public class GeneratedCameraXLibrary {
       return CameraInfoFlutterApiCodec.INSTANCE;
     }
 
-    public void create(@NonNull Long instanceIdArg, Reply<Void> callback) {
+    public void create(@NonNull Long identifierArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(
               binaryMessenger, "dev.flutter.pigeon.CameraInfoFlutterApi.create", getCodec());
       channel.send(
-          new ArrayList<Object>(Arrays.asList(instanceIdArg)),
+          new ArrayList<Object>(Arrays.asList(identifierArg)),
           channelReply -> {
             callback.reply(null);
           });

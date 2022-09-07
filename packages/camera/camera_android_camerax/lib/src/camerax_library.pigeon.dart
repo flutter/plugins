@@ -25,12 +25,12 @@ class JavaObjectHostApi {
 
   static const MessageCodec<Object?> codec = _JavaObjectHostApiCodec();
 
-  Future<void> dispose(int arg_instanceId) async {
+  Future<void> dispose(int arg_identifier) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.JavaObjectHostApi.dispose', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_identifier]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -57,7 +57,7 @@ class _JavaObjectFlutterApiCodec extends StandardMessageCodec {
 abstract class JavaObjectFlutterApi {
   static const MessageCodec<Object?> codec = _JavaObjectFlutterApiCodec();
 
-  void dispose(int instanceId);
+  void dispose(int identifier);
   static void setup(JavaObjectFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -71,10 +71,10 @@ abstract class JavaObjectFlutterApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.JavaObjectFlutterApi.dispose was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.JavaObjectFlutterApi.dispose was null, expected non-null int.');
-          api.dispose(arg_instanceId!);
+          api.dispose(arg_identifier!);
           return;
         });
       }
@@ -97,12 +97,12 @@ class CameraInfoHostApi {
 
   static const MessageCodec<Object?> codec = _CameraInfoHostApiCodec();
 
-  Future<int> getSensorRotationDegrees(int arg_instanceId) async {
+  Future<int> getSensorRotationDegrees(int arg_identifier) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.CameraInfoHostApi.getSensorRotationDegrees', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_identifier]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -134,7 +134,7 @@ class _CameraInfoFlutterApiCodec extends StandardMessageCodec {
 abstract class CameraInfoFlutterApi {
   static const MessageCodec<Object?> codec = _CameraInfoFlutterApiCodec();
 
-  void create(int instanceId);
+  void create(int identifier);
   static void setup(CameraInfoFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -148,10 +148,10 @@ abstract class CameraInfoFlutterApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.CameraInfoFlutterApi.create was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.CameraInfoFlutterApi.create was null, expected non-null int.');
-          api.create(arg_instanceId!);
+          api.create(arg_identifier!);
           return;
         });
       }

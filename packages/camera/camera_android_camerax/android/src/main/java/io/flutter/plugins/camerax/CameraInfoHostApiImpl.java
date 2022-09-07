@@ -16,8 +16,8 @@ public class CameraInfoHostApiImpl implements CameraInfoHostApi {
   }
 
   @Override
-  public Long getSensorRotationDegrees(@NonNull Long instanceId) {
-    CameraInfo cameraInfo = (CameraInfo) instanceManager.getInstance(instanceId);
+  public Long getSensorRotationDegrees(@NonNull Long identifier) {
+    CameraInfo cameraInfo = (CameraInfo) instanceManager.getInstance(identifier);
     return Long.valueOf(cameraInfo.getSensorRotationDegrees());
   }
 }

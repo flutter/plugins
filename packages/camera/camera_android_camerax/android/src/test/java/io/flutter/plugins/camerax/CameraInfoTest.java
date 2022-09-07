@@ -57,7 +57,6 @@ public class CameraInfoTest {
     final CameraInfoFlutterApiImpl spyFlutterApi =
         spy(new CameraInfoFlutterApiImpl(mockBinaryMessenger, testInstanceManager));
 
-    testInstanceManager.addHostCreatedInstance(mockCameraInfo);
     spyFlutterApi.create(mockCameraInfo, reply -> {});
 
     final long identifier =

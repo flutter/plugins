@@ -6,7 +6,7 @@ import 'camera_info.dart';
 import 'camerax_library.pigeon.dart';
 import 'java_object.dart';
 
-/// Handles initialization of Flutter APIs for Android CameraX Camera.
+/// Handles initialization of Flutter APIs for the Android CameraX library.
 class AndroidCameraXCameraFlutterApis {
   /// Creates a [AndroidCameraXCameraFlutterApis].
   AndroidCameraXCameraFlutterApis({
