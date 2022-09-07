@@ -8,4 +8,3 @@ FOUNDATION_EXPORT double quickActionsIOSVersionNumber;
 FOUNDATION_EXPORT const unsigned char quickActionsIOSVersionString[];
 
 #import <quick_actions_ios/FLTShortcutStateManager.h>
-

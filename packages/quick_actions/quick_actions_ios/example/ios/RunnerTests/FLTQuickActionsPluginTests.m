@@ -25,7 +25,9 @@
 
   FLTShortcutStateManager *mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
 
-  QuickActionsPlugin *plugin = [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class]) shortcutStateManager:mockShortcutStateManager];
+  QuickActionsPlugin *plugin =
+      [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
+                             shortcutStateManager:mockShortcutStateManager];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"result block must be called."];
   [plugin handleMethodCall:call
@@ -44,7 +46,7 @@
   FLTShortcutStateManager *mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
   QuickActionsPlugin *plugin =
       [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
-                                shortcutStateManager:mockShortcutStateManager];
+                             shortcutStateManager:mockShortcutStateManager];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"result block must be called."];
   [plugin handleMethodCall:call
@@ -62,7 +64,7 @@
 
   QuickActionsPlugin *plugin =
       [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
-                                shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
+                             shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"result block must be called."];
   [plugin handleMethodCall:call
@@ -78,7 +80,7 @@
 
   QuickActionsPlugin *plugin =
       [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
-                                shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
+                             shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"result must be called."];
   [plugin
@@ -96,7 +98,7 @@
   id mockChannel = OCMClassMock([FlutterMethodChannel class]);
   QuickActionsPlugin *plugin =
       [[QuickActionsPlugin alloc] initWithChannel:mockChannel
-                                shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
+                             shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
 
   UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
            initWithType:@"SearchTheThing"
@@ -117,7 +119,7 @@
   id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
   QuickActionsPlugin *plugin =
       [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
-                                shortcutStateManager:mockShortcutStateManager];
+                             shortcutStateManager:mockShortcutStateManager];
 
   UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
            initWithType:@"SearchTheThing"
@@ -137,7 +139,7 @@
 - (void)testApplicationDidFinishLaunchingWithOptions_launchWithoutShortcut {
   QuickActionsPlugin *plugin =
       [[QuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
-                                shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
+                             shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
   BOOL launchResult = [plugin application:[UIApplication sharedApplication]
             didFinishLaunchingWithOptions:@{}];
   XCTAssertTrue(launchResult,
@@ -149,7 +151,7 @@
   id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
   QuickActionsPlugin *plugin =
       [[QuickActionsPlugin alloc] initWithChannel:mockChannel
-                                shortcutStateManager:mockShortcutStateManager];
+                             shortcutStateManager:mockShortcutStateManager];
 
   [plugin application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:@{}];
   [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
@@ -161,7 +163,7 @@
   id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
   QuickActionsPlugin *plugin =
       [[QuickActionsPlugin alloc] initWithChannel:mockChannel
-                                shortcutStateManager:mockShortcutStateManager];
+                             shortcutStateManager:mockShortcutStateManager];
 
   UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
            initWithType:@"SearchTheThing"
@@ -182,7 +184,7 @@
   id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
   QuickActionsPlugin *plugin =
       [[QuickActionsPlugin alloc] initWithChannel:mockChannel
-                                shortcutStateManager:mockShortcutStateManager];
+                             shortcutStateManager:mockShortcutStateManager];
 
   UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
            initWithType:@"SearchTheThing"
