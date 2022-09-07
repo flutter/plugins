@@ -33,7 +33,7 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "setShortcutItems":
-      // `arguments` must be a list of dictionaries
+      // `arguments` must be an array of dictionaries
       let items = call.arguments as! [[String: Any]]
       shortcutStateManager.setShortcutItems(items)
       result(nil)

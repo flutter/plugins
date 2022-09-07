@@ -153,7 +153,10 @@
       [[QuickActionsPlugin alloc] initWithChannel:mockChannel
                              shortcutStateManager:mockShortcutStateManager];
 
-  [plugin application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:@{}];
+  BOOL launchResult = [plugin application:[UIApplication sharedApplication]
+            didFinishLaunchingWithOptions:@{}];
+  XCTAssertTrue(launchResult,
+                @"didFinishLaunchingWithOptions must return true if not launched from shortcut.");
   [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
   OCMVerify(never(), [mockChannel invokeMethod:OCMOCK_ANY arguments:OCMOCK_ANY]);
 }
@@ -172,9 +175,10 @@
                    icon:[UIApplicationShortcutIcon
                             iconWithTemplateImageName:@"search_the_thing.png"]
                userInfo:nil];
-  [plugin application:[UIApplication sharedApplication]
-      didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
-
+  BOOL launchResult = [plugin application:[UIApplication sharedApplication]
+            didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
+  XCTAssertFalse(launchResult,
+                 @"didFinishLaunchingWithOptions must return false if launched from shortcut.");
   [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
   OCMVerify([mockChannel invokeMethod:@"launch" arguments:item.type]);
 }
@@ -193,9 +197,10 @@
                    icon:[UIApplicationShortcutIcon
                             iconWithTemplateImageName:@"search_the_thing.png"]
                userInfo:nil];
-  [plugin application:[UIApplication sharedApplication]
-      didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
-
+  BOOL launchResult = [plugin application:[UIApplication sharedApplication]
+            didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
+  XCTAssertFalse(launchResult,
+                 @"didFinishLaunchingWithOptions must return false if launched from shortcut.");
   [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
   [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
   // shortcut should only be handled once per launch.
