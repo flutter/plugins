@@ -237,11 +237,11 @@ task:
       skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 4 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 0 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 1 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 2 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 3 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 4 --shardCount 5"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -300,8 +300,8 @@ task:
     - name: web-platform_tests
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+          PACKAGE_SHARDING: "--shardIndex 0 --shardCount 2"
+          PACKAGE_SHARDING: "--shardIndex 1 --shardCount 2"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -377,10 +377,10 @@ task:
       env:
         PATH: $PATH:/usr/local/bin
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 0 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 1 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 2 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
