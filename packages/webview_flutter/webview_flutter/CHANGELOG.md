@@ -192,7 +192,7 @@ when hybrid composition is used [flutter/issues/75667](https://github.com/flutte
 
 * Bumped the minimal Flutter SDK to 1.22 where platform views are out of developer preview, and
 performing better on iOS. Flutter 1.22 no longer requires adding the
-  `io.flutter.embedded_views_preview` flag to `Info.plist`.
+`io.flutter.embedded_views_preview` flag to `Info.plist`.
 
 * Added support for Hybrid Composition on Android (see opt-in instructions in [README](https://github.com/flutter/plugins/blob/main/packages/webview_flutter/README.md#android))
   * Lowered the required Android API to 19 (was previously 20): [#23728](https://github.com/flutter/flutter/issues/23728).
