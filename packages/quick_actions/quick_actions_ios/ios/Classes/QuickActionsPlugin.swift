@@ -63,7 +63,7 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
       as? UIApplicationShortcutItem
     {
       // Keep hold of the shortcut type and handle it in the
-      // `applicationDidBecomeActure:` method once the Dart MethodChannel
+      // `applicationDidBecomeActive:` method once the Dart MethodChannel
       // is initialized.
       launchingShortcutType = shortcutItem.type
 
