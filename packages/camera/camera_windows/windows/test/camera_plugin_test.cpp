@@ -30,6 +30,41 @@ using ::testing::Eq;
 using ::testing::Pointee;
 using ::testing::Return;
 
+void MockInitCamera(MockCamera* camera, bool success) {
+  EXPECT_CALL(*camera,
+              HasPendingResultByType(Eq(PendingResultType::kCreateCamera)))
+      .Times(1)
+      .WillOnce(Return(false));
+
+  EXPECT_CALL(*camera,
+              AddPendingResult(Eq(PendingResultType::kCreateCamera), _))
+      .Times(1)
+      .WillOnce([camera](PendingResultType type,
+                         std::unique_ptr<MethodResult<>> result) {
+        camera->pending_result_ = std::move(result);
+        return true;
+      });
+
+  EXPECT_CALL(*camera, HasDeviceId(Eq(camera->device_id_)))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(*camera, InitCamera)
+      .Times(1)
+      .WillOnce([camera, success](flutter::TextureRegistrar* texture_registrar,
+                                  flutter::BinaryMessenger* messenger,
+                                  bool record_audio,
+                                  ResolutionPreset resolution_preset) {
+        assert(camera->pending_result_);
+        if (success) {
+          camera->pending_result_->Success(EncodableValue(1));
+          return true;
+        } else {
+          camera->pending_result_->Error("camera_error", "InitCamera failed.");
+          return false;
+        }
+      });
+}
+
 TEST(CameraPlugin, AvailableCamerasHandlerSuccessIfNoCameras) {
   std::unique_ptr<MockTextureRegistrar> texture_registrar_ =
       std::make_unique<MockTextureRegistrar>();
@@ -99,28 +134,7 @@ TEST(CameraPlugin, CreateHandlerCallsInitCamera) {
   std::unique_ptr<MockCamera> camera =
       std::make_unique<MockCamera>(MOCK_DEVICE_ID);
 
-  EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::kCreateCamera)))
-      .Times(1)
-      .WillOnce(Return(false));
-
-  EXPECT_CALL(*camera,
-              AddPendingResult(Eq(PendingResultType::kCreateCamera), _))
-      .Times(1)
-      .WillOnce([cam = camera.get()](PendingResultType type,
-                                     std::unique_ptr<MethodResult<>> result) {
-        cam->pending_result_ = std::move(result);
-        return true;
-      });
-  EXPECT_CALL(*camera, InitCamera)
-      .Times(1)
-      .WillOnce([cam = camera.get()](
-                    flutter::TextureRegistrar* texture_registrar,
-                    flutter::BinaryMessenger* messenger, bool record_audio,
-                    ResolutionPreset resolution_preset) {
-        assert(cam->pending_result_);
-        return cam->pending_result_->Success(EncodableValue(1));
-      });
+  MockInitCamera(camera.get(), true);
 
   // Move mocked camera to the factory to be passed
   // for plugin with CreateCamera function.
@@ -185,34 +199,7 @@ TEST(CameraPlugin, CreateHandlerErrorOnExistingDeviceId) {
   std::unique_ptr<MockCamera> camera =
       std::make_unique<MockCamera>(MOCK_DEVICE_ID);
 
-  EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::kCreateCamera)))
-      .Times(1)
-      .WillOnce(Return(false));
-
-  EXPECT_CALL(*camera,
-              AddPendingResult(Eq(PendingResultType::kCreateCamera), _))
-      .Times(1)
-      .WillOnce([cam = camera.get()](PendingResultType type,
-                                     std::unique_ptr<MethodResult<>> result) {
-        cam->pending_result_ = std::move(result);
-        return true;
-      });
-  EXPECT_CALL(*camera, InitCamera)
-      .Times(1)
-      .WillOnce([cam = camera.get()](
-                    flutter::TextureRegistrar* texture_registrar,
-                    flutter::BinaryMessenger* messenger, bool record_audio,
-                    ResolutionPreset resolution_preset) {
-        assert(cam->pending_result_);
-        return cam->pending_result_->Success(EncodableValue(1));
-      });
-
-  EXPECT_CALL(*camera, HasDeviceId(Eq(MOCK_DEVICE_ID)))
-      .Times(1)
-      .WillOnce([cam = camera.get()](std::string& device_id) {
-        return cam->device_id_ == device_id;
-      });
+  MockInitCamera(camera.get(), true);
 
   // Move mocked camera to the factory to be passed
   // for plugin with CreateCamera function.
@@ -239,6 +226,64 @@ TEST(CameraPlugin, CreateHandlerErrorOnExistingDeviceId) {
 
   EXPECT_CALL(*second_create_result, ErrorInternal).Times(1);
   EXPECT_CALL(*second_create_result, SuccessInternal).Times(0);
+
+  plugin.HandleMethodCall(
+      flutter::MethodCall("create",
+                          std::make_unique<EncodableValue>(EncodableMap(args))),
+      std::move(second_create_result));
+}
+
+TEST(CameraPlugin, CreateHandlerAllowsRetry) {
+  std::unique_ptr<MockMethodResult> first_create_result =
+      std::make_unique<MockMethodResult>();
+  std::unique_ptr<MockMethodResult> second_create_result =
+      std::make_unique<MockMethodResult>();
+  std::unique_ptr<MockTextureRegistrar> texture_registrar_ =
+      std::make_unique<MockTextureRegistrar>();
+  std::unique_ptr<MockBinaryMessenger> messenger_ =
+      std::make_unique<MockBinaryMessenger>();
+  std::unique_ptr<MockCameraFactory> camera_factory_ =
+      std::make_unique<MockCameraFactory>();
+
+  // The camera will fail initialization once and then succeed.
+  EXPECT_CALL(*camera_factory_, CreateCamera(MOCK_DEVICE_ID))
+      .Times(2)
+      .WillOnce([](const std::string& device_id) {
+        std::unique_ptr<MockCamera> first_camera =
+            std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+
+        MockInitCamera(first_camera.get(), false);
+
+        return first_camera;
+      })
+      .WillOnce([](const std::string& device_id) {
+        std::unique_ptr<MockCamera> second_camera =
+            std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+
+        MockInitCamera(second_camera.get(), true);
+
+        return second_camera;
+      });
+
+  EXPECT_CALL(*first_create_result, ErrorInternal).Times(1);
+  EXPECT_CALL(*first_create_result, SuccessInternal).Times(0);
+
+  CameraPlugin plugin(texture_registrar_.get(), messenger_.get(),
+                      std::move(camera_factory_));
+  EncodableMap args = {
+      {EncodableValue("cameraName"), EncodableValue(MOCK_CAMERA_NAME)},
+      {EncodableValue("resolutionPreset"), EncodableValue(nullptr)},
+      {EncodableValue("enableAudio"), EncodableValue(true)},
+  };
+
+  plugin.HandleMethodCall(
+      flutter::MethodCall("create",
+                          std::make_unique<EncodableValue>(EncodableMap(args))),
+      std::move(first_create_result));
+
+  EXPECT_CALL(*second_create_result, ErrorInternal).Times(0);
+  EXPECT_CALL(*second_create_result,
+              SuccessInternal(Pointee(EncodableValue(1))));
 
   plugin.HandleMethodCall(
       flutter::MethodCall("create",

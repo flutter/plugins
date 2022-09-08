@@ -85,4 +85,70 @@ extern WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(
  */
 extern NSString *_Nullable FWFWKWebsiteDataTypeFromEnumData(FWFWKWebsiteDataTypeEnumData *data);
 
+/**
+ * Converts a WKNavigationAction to an FWFWKNavigationActionData.
+ *
+ * @param action The object containing information to create a WKNavigationActionData.
+ *
+ * @return A FWFWKNavigationActionData.
+ */
+extern FWFWKNavigationActionData *FWFWKNavigationActionDataFromNavigationAction(
+    WKNavigationAction *action);
+
+/**
+ * Converts a NSURLRequest to an FWFNSUrlRequestData.
+ *
+ * @param request The object containing information to create a WKNavigationActionData.
+ *
+ * @return A FWFNSUrlRequestData.
+ */
+extern FWFNSUrlRequestData *FWFNSUrlRequestDataFromNSURLRequest(NSURLRequest *request);
+
+/**
+ * Converts a WKFrameInfo to an FWFWKFrameInfoData.
+ *
+ * @param info The object containing information to create a FWFWKFrameInfoData.
+ *
+ * @return A FWFWKFrameInfoData.
+ */
+extern FWFWKFrameInfoData *FWFWKFrameInfoDataFromWKFrameInfo(WKFrameInfo *info);
+
+/**
+ * Converts an FWFWKNavigationActionPolicyEnumData to a WKNavigationActionPolicy.
+ *
+ * @param data The data object containing information to create a WKNavigationActionPolicy.
+ *
+ * @return A WKNavigationActionPolicy or -1 if data could not be converted.
+ */
+extern WKNavigationActionPolicy FWFWKNavigationActionPolicyFromEnumData(
+    FWFWKNavigationActionPolicyEnumData *data);
+
+/**
+ * Converts a NSError to an FWFNSErrorData.
+ *
+ * @param error The object containing information to create a FWFNSErrorData.
+ *
+ * @return A FWFNSErrorData.
+ */
+extern FWFNSErrorData *FWFNSErrorDataFromNSError(NSError *error);
+
+/**
+ * Converts an NSKeyValueChangeKey to a FWFNSKeyValueChangeKeyEnumData.
+ *
+ * @param key The data object containing information to create a FWFNSKeyValueChangeKeyEnumData.
+ *
+ * @return A FWFNSKeyValueChangeKeyEnumData or nil if data could not be converted.
+ */
+extern FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(
+    NSKeyValueChangeKey key);
+
+/**
+ * Converts a WKScriptMessage to an FWFWKScriptMessageData.
+ *
+ * @param message The object containing information to create a FWFWKScriptMessageData.
+ *
+ * @return A FWFWKScriptMessageData.
+ */
+extern FWFWKScriptMessageData *FWFWKScriptMessageDataFromWKScriptMessage(WKScriptMessage *message);
+
 NS_ASSUME_NONNULL_END

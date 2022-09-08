@@ -191,6 +191,11 @@ class PubspecCheckCommand extends PackageLoopingCommand {
         errorMessages
             .add('The "repository" link should end with the package path.');
       }
+
+      if (pubspec.repository!.path.contains('/master/')) {
+        errorMessages
+            .add('The "repository" link should use "main", not "master".');
+      }
     }
 
     if (pubspec.homepage != null) {

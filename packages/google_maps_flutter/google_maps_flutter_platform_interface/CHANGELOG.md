@@ -1,5 +1,30 @@
 ## NEXT
 
+* Updates minimum Flutter version to 2.10.
+
+## 2.2.2
+
+* Adds a `size` parameter to `BitmapDescriptor.fromBytes`, so **web** applications
+  can specify the actual *physical size* of the bitmap. The parameter is not needed
+  (and ignored) in other platforms. Issue [#73789](https://github.com/flutter/flutter/issues/73789).
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 2.2.1
+
+* Adds a new interface for inspecting the platform map state in tests.
+
+## 2.2.0
+
+* Adds new versions of `buildView` and `updateOptions` that take a new option
+  class instead of a dictionary, to remove the cross-package dependency on
+  magic string keys.
+* Adopts several parameter objects in the new `buildView` variant to
+  future-proof it against future changes.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.1.7
+
+* Updates code for stricter analysis options.
 * Removes unnecessary imports.
 
 ## 2.1.6

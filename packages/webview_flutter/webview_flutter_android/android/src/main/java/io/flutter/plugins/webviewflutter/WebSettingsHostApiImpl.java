@@ -45,12 +45,13 @@ public class WebSettingsHostApiImpl implements WebSettingsHostApi {
   @Override
   public void create(Long instanceId, Long webViewInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(webViewInstanceId);
-    instanceManager.addInstance(webSettingsCreator.createWebSettings(webView), instanceId);
+    instanceManager.addDartCreatedInstance(
+        webSettingsCreator.createWebSettings(webView), instanceId);
   }
 
   @Override
   public void dispose(Long instanceId) {
-    instanceManager.removeInstanceWithId(instanceId);
+    instanceManager.remove(instanceId);
   }
 
   @Override

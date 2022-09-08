@@ -135,7 +135,7 @@ class SkuDetailsWrapper {
   final int originalPriceAmountMicros;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) {
       return false;
     }
@@ -203,7 +203,7 @@ class SkuDetailsResponseWrapper {
   final List<SkuDetailsWrapper> skuDetailsList;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) {
       return false;
     }
@@ -248,7 +248,7 @@ class BillingResultWrapper {
   final String? debugMessage;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) {
       return false;
     }

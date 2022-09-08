@@ -44,7 +44,6 @@ abstract class PluginCommand extends Command<void> {
   }) : _gitDir = gitDir {
     argParser.addMultiOption(
       _packagesArg,
-      splitCommas: true,
       help:
           'Specifies which packages the command should run on (before sharding).\n',
       valueHelp: 'package1,package2,...',

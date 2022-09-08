@@ -6,10 +6,6 @@ part of google_maps_flutter_web;
 
 /// The `CircleController` class wraps a [gmaps.Circle] and its `onTap` behavior.
 class CircleController {
-  gmaps.Circle? _circle;
-
-  final bool _consumeTapEvents;
-
   /// Creates a `CircleController`, which wraps a [gmaps.Circle] object and its `onTap` behavior.
   CircleController({
     required gmaps.Circle circle,
@@ -23,6 +19,10 @@ class CircleController {
       });
     }
   }
+
+  gmaps.Circle? _circle;
+
+  final bool _consumeTapEvents;
 
   /// Returns the wrapped [gmaps.Circle]. Only used for testing.
   @visibleForTesting

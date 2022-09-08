@@ -14,15 +14,15 @@
 @implementation FWFHTTPCookieStoreHostApiTests
 - (void)testCreateFromWebsiteDataStoreWithIdentifier API_AVAILABLE(ios(11.0)) {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFHTTPCookieStoreHostApiImpl *hostApi =
+  FWFHTTPCookieStoreHostApiImpl *hostAPI =
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   WKWebsiteDataStore *mockDataStore = OCMClassMock([WKWebsiteDataStore class]);
   OCMStub([mockDataStore httpCookieStore]).andReturn(OCMClassMock([WKHTTPCookieStore class]));
-  [instanceManager addInstance:mockDataStore withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockDataStore withIdentifier:0];
 
   FlutterError *error;
-  [hostApi createFromWebsiteDataStoreWithIdentifier:@1 dataStoreIdentifier:@0 error:&error];
+  [hostAPI createFromWebsiteDataStoreWithIdentifier:@1 dataStoreIdentifier:@0 error:&error];
   WKHTTPCookieStore *cookieStore = (WKHTTPCookieStore *)[instanceManager instanceForIdentifier:1];
   XCTAssertTrue([cookieStore isKindOfClass:[WKHTTPCookieStore class]]);
   XCTAssertNil(error);
@@ -32,9 +32,9 @@
   WKHTTPCookieStore *mockHttpCookieStore = OCMClassMock([WKHTTPCookieStore class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockHttpCookieStore withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockHttpCookieStore withIdentifier:0];
 
-  FWFHTTPCookieStoreHostApiImpl *hostApi =
+  FWFHTTPCookieStoreHostApiImpl *hostAPI =
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FWFNSHttpCookieData *cookieData = [FWFNSHttpCookieData
@@ -42,7 +42,7 @@
                                makeWithValue:FWFNSHttpCookiePropertyKeyEnumName] ]
             propertyValues:@[ @"hello" ]];
   FlutterError *__block blockError;
-  [hostApi setCookieForStoreWithIdentifier:@0
+  [hostAPI setCookieForStoreWithIdentifier:@0
                                     cookie:cookieData
                                 completion:^(FlutterError *error) {
                                   blockError = error;

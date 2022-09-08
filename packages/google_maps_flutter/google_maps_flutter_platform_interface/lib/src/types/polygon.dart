@@ -20,7 +20,7 @@ class PolygonId extends MapsObjectId<Polygon> {
 
 /// Draws a polygon through geographical locations on the map.
 @immutable
-class Polygon implements MapsObject {
+class Polygon implements MapsObject<Polygon> {
   /// Creates an immutable representation of a polygon through geographical locations on the map.
   const Polygon({
     required this.polygonId,
@@ -123,11 +123,13 @@ class Polygon implements MapsObject {
   }
 
   /// Creates a new [Polygon] object whose values are the same as this instance.
+  @override
   Polygon clone() {
     return copyWith(pointsParam: List<LatLng>.of(points));
   }
 
   /// Converts this object to something serializable in JSON.
+  @override
   Object toJson() {
     final Map<String, Object> json = <String, Object>{};
 
@@ -159,19 +161,23 @@ class Polygon implements MapsObject {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final Polygon typedOther = other as Polygon;
-    return polygonId == typedOther.polygonId &&
-        consumeTapEvents == typedOther.consumeTapEvents &&
-        fillColor == typedOther.fillColor &&
-        geodesic == typedOther.geodesic &&
-        listEquals(points, typedOther.points) &&
-        const DeepCollectionEquality().equals(holes, typedOther.holes) &&
-        visible == typedOther.visible &&
-        strokeColor == typedOther.strokeColor &&
-        strokeWidth == typedOther.strokeWidth &&
-        zIndex == typedOther.zIndex;
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is Polygon &&
+        polygonId == other.polygonId &&
+        consumeTapEvents == other.consumeTapEvents &&
+        fillColor == other.fillColor &&
+        geodesic == other.geodesic &&
+        listEquals(points, other.points) &&
+        const DeepCollectionEquality().equals(holes, other.holes) &&
+        visible == other.visible &&
+        strokeColor == other.strokeColor &&
+        strokeWidth == other.strokeWidth &&
+        zIndex == other.zIndex;
   }
 
   @override

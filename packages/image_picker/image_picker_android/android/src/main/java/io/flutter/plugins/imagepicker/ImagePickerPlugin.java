@@ -183,7 +183,7 @@ public class ImagePickerPlugin
   private static final String METHOD_CALL_RETRIEVE = "retrieve";
   private static final int CAMERA_DEVICE_FRONT = 1;
   private static final int CAMERA_DEVICE_REAR = 0;
-  private static final String CHANNEL = "plugins.flutter.io/image_picker";
+  private static final String CHANNEL = "plugins.flutter.io/image_picker_android";
 
   private static final int SOURCE_CAMERA = 0;
   private static final int SOURCE_GALLERY = 1;

@@ -7,6 +7,8 @@ import 'dart:async';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
+import 'type_conversion.dart';
+
 /// Passes [url] to the underlying platform for handling.
 ///
 /// [mode] support varies significantly by platform:
@@ -43,20 +45,18 @@ Future<bool> launchUrl(
   WebViewConfiguration webViewConfiguration = const WebViewConfiguration(),
   String? webOnlyWindowName,
 }) async {
-  final bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
-  if (mode == LaunchMode.inAppWebView && !isWebURL) {
+  if (mode == LaunchMode.inAppWebView &&
+      !(url.scheme == 'https' || url.scheme == 'http')) {
     throw ArgumentError.value(url, 'url',
         'To use an in-app web view, you must provide an http(s) URL.');
   }
-  // TODO(stuartmorgan): Use UrlLauncherPlatform directly once a new API
-  // that better matches these parameters has been added. For now, delegate to
-  // launchUrlString so that there's only one copy of the parameter translation
-  // logic.
-  return await launchUrlString(
+  return await UrlLauncherPlatform.instance.launchUrl(
     url.toString(),
-    mode: mode,
-    webViewConfiguration: webViewConfiguration,
-    webOnlyWindowName: webOnlyWindowName,
+    LaunchOptions(
+      mode: convertLaunchMode(mode),
+      webViewConfiguration: convertConfiguration(webViewConfiguration),
+      webOnlyWindowName: webOnlyWindowName,
+    ),
   );
 }
 

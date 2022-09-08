@@ -27,6 +27,7 @@ String _headerSection(
   String name, {
   bool isPlugin = false,
   bool includeRepository = true,
+  String repositoryBranch = 'main',
   String? repositoryPackagesDirRelativePath,
   bool includeHomepage = false,
   bool includeIssueTracker = true,
@@ -38,7 +39,7 @@ String _headerSection(
     'flutter',
     if (isPlugin) 'plugins' else 'packages',
     'tree',
-    'main',
+    repositoryBranch,
     'packages',
     repositoryPath,
   ];
@@ -328,7 +329,7 @@ ${_devDependenciesSection()}
       );
     });
 
-    test('fails when repository is incorrect', () async {
+    test('fails when repository package name is incorrect', () async {
       final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
@@ -351,6 +352,33 @@ ${_devDependenciesSection()}
         output,
         containsAllInOrder(<Matcher>[
           contains('The "repository" link should end with the package path.'),
+        ]),
+      );
+    });
+
+    test('fails when repository uses master instead of main', () async {
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, examples: <String>[]);
+
+      plugin.pubspecFile.writeAsStringSync('''
+${_headerSection('plugin', isPlugin: true, repositoryBranch: 'master')}
+${_environmentSection()}
+${_flutterSection(isPlugin: true)}
+${_dependenciesSection()}
+${_devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('The "repository" link should use "main", not "master".'),
         ]),
       );
     });

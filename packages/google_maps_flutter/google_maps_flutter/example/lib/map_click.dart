@@ -90,7 +90,6 @@ class _MapClickBodyState extends State<_MapClickBody> {
       )));
     }
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: columnChildren,
     );

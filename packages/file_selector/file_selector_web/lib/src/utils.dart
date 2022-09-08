@@ -11,7 +11,11 @@ String acceptedTypesToString(List<XTypeGroup>? acceptedTypes) {
   }
   final List<String> allTypes = <String>[];
   for (final XTypeGroup group in acceptedTypes) {
-    _assertTypeGroupIsValid(group);
+    // If any group allows everything, no filtering should be done.
+    if (group.allowsAny) {
+      return '';
+    }
+    _validateTypeGroup(group);
     if (group.extensions != null) {
       allTypes.addAll(group.extensions!.map(_normalizeExtension));
     }
@@ -25,13 +29,17 @@ String acceptedTypesToString(List<XTypeGroup>? acceptedTypes) {
   return allTypes.join(',');
 }
 
-/// Make sure that at least one of its fields is populated.
-void _assertTypeGroupIsValid(XTypeGroup group) {
-  assert(
-      !((group.extensions == null || group.extensions!.isEmpty) &&
-          (group.mimeTypes == null || group.mimeTypes!.isEmpty) &&
-          (group.webWildCards == null || group.webWildCards!.isEmpty)),
-      'At least one of extensions / mimeTypes / webWildCards is required for web.');
+/// Make sure that at least one of the supported fields is populated.
+void _validateTypeGroup(XTypeGroup group) {
+  if ((group.extensions?.isEmpty ?? true) &&
+      (group.mimeTypes?.isEmpty ?? true) &&
+      (group.webWildCards?.isEmpty ?? true)) {
+    throw ArgumentError('Provided type group $group does not allow '
+        'all files, but does not set any of the web-supported filter '
+        'categories. At least one of "extensions", "mimeTypes", or '
+        '"webWildCards" must be non-empty for web if anything is '
+        'non-empty.');
+  }
 }
 
 /// Append a dot at the beggining if it is not there png -> .png

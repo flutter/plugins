@@ -12,6 +12,9 @@ import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 import 'common/repository_package.dart';
 
+const String _instructionWikiUrl =
+    'https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages';
+
 /// A command to enforce README conventions across the repository.
 class ReadmeCheckCommand extends PackageLoopingCommand {
   /// Creates an instance of the README check command.
@@ -95,7 +98,8 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
     final List<String> readmeLines = readme.readAsLinesSync();
     final List<String> errors = <String>[];
 
-    final String? blockValidationError = _validateCodeBlocks(readmeLines);
+    final String? blockValidationError =
+        _validateCodeBlocks(readmeLines, mainPackage: mainPackage);
     if (blockValidationError != null) {
       errors.add(blockValidationError);
     }
@@ -123,8 +127,12 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
   }
 
   /// Validates that code blocks (``` ... ```) follow repository standards.
-  String? _validateCodeBlocks(List<String> readmeLines) {
+  String? _validateCodeBlocks(
+    List<String> readmeLines, {
+    required RepositoryPackage mainPackage,
+  }) {
     final RegExp codeBlockDelimiterPattern = RegExp(r'^\s*```\s*([^ ]*)\s*');
+    const String excerptTagStart = '<?code-excerpt ';
     final List<int> missingLanguageLines = <int>[];
     final List<int> missingExcerptLines = <int>[];
     bool inBlock = false;
@@ -151,7 +159,6 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
 
       // Check for code-excerpt usage if requested.
       if (getBoolArg(_requireExcerptsArg) && infoString == 'dart') {
-        const String excerptTagStart = '<?code-excerpt ';
         if (i == 0 || !readmeLines[i - 1].trim().startsWith(excerptTagStart)) {
           missingExcerptLines.add(humanReadableLineNumber);
         }
@@ -172,6 +179,20 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
       errorSummary = 'Missing language identifier for code block';
     }
 
+    // If any blocks use code excerpts, make sure excerpting is configured
+    // for the package.
+    if (readmeLines.any((String line) => line.startsWith(excerptTagStart))) {
+      const String buildRunnerConfigFile = 'build.excerpt.yaml';
+      if (!mainPackage.getExamples().any((RepositoryPackage example) =>
+          example.directory.childFile(buildRunnerConfigFile).existsSync())) {
+        printError('code-excerpt tag found, but the package is not configured '
+            'for excerpting. Follow the instructions at\n'
+            '$_instructionWikiUrl\n'
+            'for setting up a build.excerpt.yaml file.');
+        errorSummary ??= 'Missing code-excerpt configuration';
+      }
+    }
+
     if (missingExcerptLines.isNotEmpty) {
       for (final int lineNumber in missingExcerptLines) {
         printError('${indentation}Dart code block at line $lineNumber is not '
@@ -180,7 +201,8 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
       printError(
           '\n${indentation}For each block listed above, add <?code-excerpt ...> '
           'tag on the previous line, and ensure that a build.excerpt.yaml is '
-          'configured for the source example.\n');
+          'configured for the source example as explained at\n'
+          '$_instructionWikiUrl');
       errorSummary ??= 'Missing code-excerpt management for code block';
     }
 

@@ -114,7 +114,6 @@ class _MyAppState extends State<MyApp> {
 
       await CameraPlatform.instance.initializeCamera(
         cameraId,
-        imageFormatGroup: ImageFormatGroup.unknown,
       );
 
       final CameraInitializedEvent event = await initialized;
@@ -429,7 +428,6 @@ class _MyAppState extends State<MyApp> {
                   vertical: 10,
                 ),
                 child: Align(
-                  alignment: Alignment.center,
                   child: Container(
                     constraints: const BoxConstraints(
                       maxHeight: 500,

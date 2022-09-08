@@ -7,7 +7,8 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFWebsiteDataStoreHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFWebsiteDataStoreHostApiImpl
@@ -19,28 +20,28 @@
   return self;
 }
 
-- (WKWebsiteDataStore *)websiteDataStoreForIdentifier:(NSNumber *)instanceId {
-  return (WKWebsiteDataStore *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (WKWebsiteDataStore *)websiteDataStoreForIdentifier:(NSNumber *)identifier {
+  return (WKWebsiteDataStore *)[self.instanceManager instanceForIdentifier:identifier.longValue];
 }
 
-- (void)createFromWebViewConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
-                             configurationIdentifier:(nonnull NSNumber *)configurationInstanceId
+- (void)createFromWebViewConfigurationWithIdentifier:(nonnull NSNumber *)identifier
+                             configurationIdentifier:(nonnull NSNumber *)configurationIdentifier
                                                error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
-      instanceForIdentifier:configurationInstanceId.longValue];
-  [self.instanceManager addInstance:configuration.websiteDataStore
-                     withIdentifier:instanceId.longValue];
+      instanceForIdentifier:configurationIdentifier.longValue];
+  [self.instanceManager addDartCreatedInstance:configuration.websiteDataStore
+                                withIdentifier:identifier.longValue];
 }
 
-- (void)createDefaultDataStoreWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)createDefaultDataStoreWithIdentifier:(nonnull NSNumber *)identifier
                                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                  error {
-  [self.instanceManager addInstance:[WKWebsiteDataStore defaultDataStore]
-                     withIdentifier:instanceId.longValue];
+  [self.instanceManager addDartCreatedInstance:[WKWebsiteDataStore defaultDataStore]
+                                withIdentifier:identifier.longValue];
 }
 
 - (void)
-    removeDataFromDataStoreWithIdentifier:(nonnull NSNumber *)instanceId
+    removeDataFromDataStoreWithIdentifier:(nonnull NSNumber *)identifier
                                   ofTypes:
                                       (nonnull NSArray<FWFWKWebsiteDataTypeEnumData *> *)dataTypes
                             modifiedSince:(nonnull NSNumber *)modificationTimeInSecondsSinceEpoch
@@ -51,7 +52,7 @@
     [stringDataTypes addObject:FWFWKWebsiteDataTypeFromEnumData(type)];
   }
 
-  WKWebsiteDataStore *dataStore = [self websiteDataStoreForIdentifier:instanceId];
+  WKWebsiteDataStore *dataStore = [self websiteDataStoreForIdentifier:identifier];
   [dataStore
       fetchDataRecordsOfTypes:stringDataTypes
             completionHandler:^(NSArray<WKWebsiteDataRecord *> *records) {
@@ -60,7 +61,7 @@
                       modifiedSince:[NSDate dateWithTimeIntervalSince1970:
                                                 modificationTimeInSecondsSinceEpoch.doubleValue]
                   completionHandler:^{
-                    completion(@(records.count > 0), nil);
+                    completion([NSNumber numberWithBool:(records.count > 0)], nil);
                   }];
             }];
 }
