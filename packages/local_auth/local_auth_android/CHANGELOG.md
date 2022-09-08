@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Bump androidx.fragment version to 1.5.2.
+
 ## 1.0.4
 
 * Minor fixes for new analysis options.
