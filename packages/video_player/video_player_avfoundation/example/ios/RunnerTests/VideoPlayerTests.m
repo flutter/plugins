@@ -246,7 +246,7 @@
 
   // Set Picture In Picture Stop
   FLTPictureInPictureMessage *setPictureInPictureStop =
-      [FLTPictureInPictureMessage makeWithTextureId:textureId enabled:@false];
+      [FLTPictureInPictureMessage makeWithTextureId:textureId enabled:@NO];
   XCTAssertNil(error);
   [videoPlayerPlugin setPictureInPicture:setPictureInPictureStop error:&error];
 
