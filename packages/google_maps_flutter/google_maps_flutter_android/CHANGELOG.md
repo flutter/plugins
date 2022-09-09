@@ -1,3 +1,7 @@
+## 2.3.1
+
+* Updates `annotation` to 1.4.0.
+
 ## 2.3.0
 
 * Switches the default for `useAndroidViewSurface` to true, and adds

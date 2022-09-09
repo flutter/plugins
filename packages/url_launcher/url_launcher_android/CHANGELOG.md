@@ -1,3 +1,7 @@
+## 6.0.19
+
+* Updates `annotation` to 1.4.0.
+
 ## 6.0.18
 
 * Updates gradle to 7.2.2.

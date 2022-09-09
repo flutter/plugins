@@ -1,5 +1,6 @@
-## NEXT
+## 0.2.3+4
 
+* Updates `annotation` to 1.4.0.
 * Updates minimum Flutter version to 2.10.
 
 ## 0.2.3+3
