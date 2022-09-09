@@ -537,6 +537,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       _videoPlayerPlatform.isPictureInPictureSupported();
 
   /// Prepare picture in picture by passing the location of the video player view
+  /// nableStartPictureInPictureAutomaticallyFromInline indicates whether Picture in Picture should be allowed to start automatically when transitioning to background when the receiver’s content is embedded inline. Default is false.
   Future<void> preparePictureInPicture({
     required Rect rect,
     bool enableStartPictureInPictureAutomaticallyFromInline = false,
