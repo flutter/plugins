@@ -117,7 +117,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
       GlobalKey<State<StatefulWidget>>();
   final Key _pictureInPictureKey = UniqueKey();
 
-  bool _enableStartPictureInPicutreAutomaticlyFromInline = false;
+  bool _enableStartPictureInPictureAutomaticlyFromInline = false;
 
   @override
   void initState() {
@@ -154,10 +154,10 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                     : 'Pip is not supported'),
           ),
           Switch(
-            value: _enableStartPictureInPicutreAutomaticlyFromInline,
+            value: _enableStartPictureInPictureAutomaticlyFromInline,
             onChanged: (bool newValue) {
               setState(() {
-                _enableStartPictureInPicutreAutomaticlyFromInline = newValue;
+                _enableStartPictureInPictureAutomaticlyFromInline = newValue;
               });
             },
           ),
@@ -172,7 +172,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
               final Offset offset = box.localToGlobal(Offset.zero);
               _controller.preparePictureInPicture(
                 enableStartPictureInPictureAutomaticallyFromInline:
-                    _enableStartPictureInPicutreAutomaticlyFromInline,
+                    _enableStartPictureInPictureAutomaticlyFromInline,
                 top: offset.dy,
                 left: offset.dx,
                 width: box.size.width,
