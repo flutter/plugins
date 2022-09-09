@@ -231,7 +231,7 @@
 
   // Set Picture In Picture Start
   FLTPictureInPictureMessage *setPictureInPictureStart =
-      [FLTPictureInPictureMessage makeWithTextureId:textureId enabled:@true];
+      [FLTPictureInPictureMessage makeWithTextureId:textureId enabled:@YES];
   XCTestExpectation *startingPiPExpectation = [self expectationWithDescription:@"startingPiP"];
   [player onListenWithArguments:nil
                       eventSink:^(NSDictionary<NSString *, id> *event) {
