@@ -85,20 +85,16 @@ task:
         - cd script/tool
         - dart pub run test
     - name: publishable
-      env:
-        CHANGE_DESC: "$TMPDIR/change-description.txt"
       version_check_script:
-        # For pre-submit, pass the PR label, as well as the PR description or
-        # incremental commit message (for Dependabot checks), to the script to
-        # allow for version check overrides.
+        # For pre-submit, pass the PR labels to the script to allow for version
+        # check overrides.
         # For post-submit, ignore platform version breaking version changes and
-        # missing version/CHANGELOG detection since the overrides aren't
+        # missing version/CHANGELOG detection since the labels aren't
         # available outside of the context of the PR.
         - if [[ $CIRRUS_PR == "" ]]; then
         -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
         - else
-        -   echo "$CIRRUS_CHANGE_MESSAGE" > "$CHANGE_DESC"
-        -   ./script/tool_runner.sh version-check --check-for-missing-changes --change-description-file="$CHANGE_DESC" --pr-labels="$CIRRUS_PR_LABELS"
+        -   ./script/tool_runner.sh version-check --check-for-missing-changes --pr-labels="$CIRRUS_PR_LABELS"
         - fi
       publish_check_script: ./script/tool_runner.sh publish-check
     - name: format
