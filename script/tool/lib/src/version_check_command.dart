@@ -580,7 +580,9 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
             'the standard policy of listing all changes in the CHANGELOG, '
             'comment in the PR to explain why the PR is exempt, and add (or '
             'ask your reviewer to add) the '
-            '"$_missingChangelogChangeOverrideLabel" label.');
+            '"$_missingChangelogChangeOverrideLabel" label. Otherwise, '
+            'please add a NEXT entry in the CHANGELOG as described in '
+            'the contributing guide.');
         return 'Missing CHANGELOG change';
       }
     }
