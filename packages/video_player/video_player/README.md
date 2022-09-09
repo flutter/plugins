@@ -149,10 +149,14 @@ Not setting this capability but calling `preparePictureInPicture` and `setPictur
 	</array>
 ```
 
+Example:
+![The example app running in iOS with picture in picture enabled](https://github.com/flutter/plugins/blob/main/packages/video_player/video_player/doc/demo_pip_iphone.gif?raw=true)
+
 #### Android
 
-On Android the implementation is different. There is no link to the video player. Your complete app will be minimized ([picture in picutre android documentation](https://developer.android.com/guide/topics/ui/picture-in-picture))
-You have multiple options on android:
+On Android the implementation is different. There is no link to the video player. Your complete app will be minimized ([picture in picutre Android documentation](https://developer.android.com/guide/topics/ui/picture-in-picture))
+
+You have multiple options on Android:
 - [simple_pip_mode](https://pub.dev/packages/simple_pip_mode)
 - Create your own plugin that follows the andorid documentation
 
