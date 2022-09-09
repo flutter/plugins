@@ -45,7 +45,7 @@
 @property(nonatomic) BOOL isLooping;
 @property(nonatomic, readonly) BOOL isInitialized;
 @property(nonatomic) AVPlayerLayer *playerLayer;
-@property(nonatomic) bool pictureInPictureEnabled;
+@property(nonatomic) BOOL isPiPStarted;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
                 httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers;
@@ -59,9 +59,7 @@ static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void *playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void *playbackBufferFullContext = &playbackBufferFullContext;
 
-#if TARGET_OS_IOS
-AVPictureInPictureController *_pipController;
-#endif
+AVPictureInPictureController *pipController;
 
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset frameUpdater:(FLTFrameUpdater *)frameUpdater {
@@ -242,33 +240,32 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   return self;
 }
 
-- (void)setPictureInPicture:(BOOL)pictureInPictureEnabled {
-  if (self.pictureInPictureEnabled == pictureInPictureEnabled) {
+- (void)setPictureInPicture:(BOOL)isPiPStarted {
+  if (self.isPiPStarted == isPiPStarted) {
     return;
   }
 
-  self.pictureInPictureEnabled = pictureInPictureEnabled;
-  if (_pipController && self.pictureInPictureEnabled &&
-      ![_pipController isPictureInPictureActive]) {
+  self.isPiPStarted = isPiPStarted;
+  if (pipController && self.isPiPStarted &&
+      ![pipController isPictureInPictureActive]) {
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"startingPiP"});
     }
-    [_pipController startPictureInPicture];
-  } else if (_pipController && !self.pictureInPictureEnabled &&
-             [_pipController isPictureInPictureActive]) {
-    [_pipController stopPictureInPicture];
+    [pipController startPictureInPicture];
+  } else if (pipController && !self.isPiPStarted &&
+             [pipController isPictureInPictureActive]) {
+    [pipController stopPictureInPicture];
   }
 }
 
-#if TARGET_OS_IOS
 - (void)setupPipController:(BOOL)canStartPictureInPictureAutomaticallyFromInline {
   if ([AVPictureInPictureController isPictureInPictureSupported]) {
-    _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:self.playerLayer];
+    pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:self.playerLayer];
     if (@available(iOS 14.2, *)) {
-      _pipController.canStartPictureInPictureAutomaticallyFromInline =
+      pipController.canStartPictureInPictureAutomaticallyFromInline =
           canStartPictureInPictureAutomaticallyFromInline;
     }
-    _pipController.delegate = self;
+    pipController.delegate = self;
   }
 }
 
@@ -283,17 +280,15 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     self.playerLayer.opacity = 0.001;
     [vc.view.layer addSublayer:self.playerLayer];
     vc.view.layer.needsDisplayOnBoundsChange = YES;
-#if TARGET_OS_IOS
     [self setupPipController:canStartPictureInPictureAutomaticallyFromInline];
-#endif
   }
 }
-#endif
 
-#if TARGET_OS_IOS
+#pragma mark - AVPictureInPictureControllerDelegate
+
 - (void)pictureInPictureControllerDidStopPictureInPicture:
     (AVPictureInPictureController *)pictureInPictureController {
-  self.pictureInPictureEnabled = false;
+  self.isPiPStarted = NO;
   if (_eventSink != nil) {
     _eventSink(@{@"event" : @"stoppedPiP"});
   }
@@ -301,30 +296,12 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)pictureInPictureControllerDidStartPictureInPicture:
     (AVPictureInPictureController *)pictureInPictureController {
-  self.pictureInPictureEnabled = true;
+  self.isPiPStarted = YES;
   if (_eventSink != nil) {
     _eventSink(@{@"event" : @"startingPiP"});
   }
   [self updatePlayingState];
 }
-
-- (void)pictureInPictureControllerWillStopPictureInPicture:
-    (AVPictureInPictureController *)pictureInPictureController {
-}
-
-- (void)pictureInPictureControllerWillStartPictureInPicture:
-    (AVPictureInPictureController *)pictureInPictureController {
-}
-
-- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController
-    failedToStartPictureInPictureWithError:(NSError *)error {
-}
-
-- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController
-    restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:
-        (void (^)(BOOL))completionHandler {
-}
-#endif
 
 - (void)observeValueForKeyPath:(NSString *)path
                       ofObject:(id)object
@@ -730,12 +707,12 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   [player usePlayerLayer:CGRectMake(input.left.floatValue, input.top.floatValue,
                                     input.width.floatValue, input.height.floatValue)
       canStartPictureInPictureAutomaticallyFromInline:
-          input.enableStartPictureInPictureAutomaticallyFromInline.intValue == 1];
+          input.enableStartPictureInPictureAutomaticallyFromInline.boolValue];
 }
 
 - (void)setPictureInPicture:(FLTPictureInPictureMessage *)input error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player setPictureInPicture:input.enabled.intValue == 1];
+  [player setPictureInPicture:input.enabled.boolValue];
 }
 
 - (nullable NSNumber *)isPictureInPictureSupported:
