@@ -1,3 +1,8 @@
+## 0.10.0+2
+
+* Removes call to `join` on the camera's background `HandlerThread`.
+* Updates minimum Flutter version to 2.10.
+
 ## 0.10.0+1
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
