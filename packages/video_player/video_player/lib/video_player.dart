@@ -785,11 +785,9 @@ class _VideoPlayerState extends State<VideoPlayer> {
   _VideoPlayerState() {
     _listener = () {
       final int newTextureId = widget.controller.textureId;
-      final bool newEnabledVideo = !widget.controller.value.isPipActive;
-      if (newTextureId != _textureId || newEnabledVideo != _enabledVideo) {
+      if (newTextureId != _textureId) {
         setState(() {
           _textureId = newTextureId;
-          // _enabledVideo = newEnabledVideo;
         });
       }
     };
@@ -798,13 +796,11 @@ class _VideoPlayerState extends State<VideoPlayer> {
   late VoidCallback _listener;
 
   late int _textureId;
-  late bool _enabledVideo;
 
   @override
   void initState() {
     super.initState();
     _textureId = widget.controller.textureId;
-    _enabledVideo = !widget.controller.value.isPipActive;
     // Need to listen for initialization events since the actual texture ID
     // becomes available after asynchronous initialization finishes.
     widget.controller.addListener(_listener);
@@ -815,7 +811,6 @@ class _VideoPlayerState extends State<VideoPlayer> {
     super.didUpdateWidget(oldWidget);
     oldWidget.controller.removeListener(_listener);
     _textureId = widget.controller.textureId;
-    _enabledVideo = !widget.controller.value.isPipActive;
     widget.controller.addListener(_listener);
   }
 
