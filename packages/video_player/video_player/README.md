@@ -137,10 +137,21 @@ To learn about playback speed limitations, see the [`setPlaybackSpeed` method do
 
 ### Picture in Picture
 
-This plugin supports picture in picture mode on iOS.
-- Make sure you don't forget to set the correct `UIBackgroundModes` if you want to support picture in picture make sure to enable `audio` (in xcode it will also say, airplay & picture in picture)
-On Android the implementation is different. There is no link to the video player. You have multiple options on android:
-- [picture in picutre android documentation](https://developer.android.com/guide/topics/ui/picture-in-picture)
+#### iOS
+On iOS the picture in picture is linked to the AVPlayerController.
+If you want to enable picture in picture make sure to enable the `audio` capability. (in xcode it will also say, `audo, airplay & picture in picture`)
+
+```
+    <key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
+```
+
+#### Android
+
+On Android the implementation is different. There is no link to the video player. Your complete app will be minimized ([picture in picutre android documentation](https://developer.android.com/guide/topics/ui/picture-in-picture))
+You have multiple options on android:
 - [simple_pip_mode](https://pub.dev/packages/simple_pip_mode)
 - Create your own plugin that follows the andorid documentation
 
