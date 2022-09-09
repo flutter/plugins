@@ -500,4 +500,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.setBackgroundColor(color.intValue());
   }
+
+  public InstanceManager getInstanceManager() {
+    return instanceManager;
+  }
 }
