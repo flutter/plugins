@@ -533,9 +533,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   /// Returns true if picture in picture is supported on the device.
-  Future<bool> isPictureInPictureSupported() {
-    return _videoPlayerPlatform.isPictureInPictureSupported();
-  }
+  Future<bool> isPictureInPictureSupported() =>
+      _videoPlayerPlatform.isPictureInPictureSupported();
 
   /// Prepare picture in picture by passing the location of the video player view
   Future<void> preparePictureInPicture({
