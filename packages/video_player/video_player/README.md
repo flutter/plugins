@@ -139,7 +139,8 @@ To learn about playback speed limitations, see the [`setPlaybackSpeed` method do
 
 #### iOS
 On iOS the picture in picture is linked to the AVPlayerController.
-If you want to enable picture in picture make sure to enable the `audio` capability. (in xcode it will also say, `audo, airplay & picture in picture`)
+If you want to enable picture in picture make sure to enable the `audio` capability. (in Xcode it will also say, `audo, airplay & picture in picture`)
+Not setting this capability but calling `preparePictureInPicture` and `setPictureInPicture` will not start the picture in picture.
 
 ```
     <key>UIBackgroundModes</key>
