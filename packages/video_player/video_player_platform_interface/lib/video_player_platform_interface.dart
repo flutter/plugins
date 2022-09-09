@@ -105,10 +105,7 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   }
 
   /// Returns true if picture in picture is supported on the device.
-  Future<bool> isPictureInPictureSupported() {
-    throw UnimplementedError(
-        'isPictureInPictureSupported() has not been implemented.');
-  }
+  Future<bool> isPictureInPictureSupported() async => false;
 
   /// Prepare picture in picture by passing the location of the video player view
   Future<void> preparePictureInPicture({
