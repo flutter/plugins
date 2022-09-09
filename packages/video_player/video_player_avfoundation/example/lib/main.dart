@@ -154,7 +154,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                     : 'PiP is not supported'),
           ),
           Row(
-            children: [
+            children: <Widget>[
               const Expanded(
                 child: Text('Start PiP automaticly when going to background'),
               ),
@@ -181,10 +181,12 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
               _controller.preparePictureInPicture(
                 enableStartPictureInPictureAutomaticallyFromInline:
                     _enableStartPictureInPictureAutomaticallyFromInline,
-                top: offset.dy,
-                left: offset.dx,
-                width: box.size.width,
-                height: box.size.height,
+                rect: Rect.fromLTWH(
+                  offset.dx,
+                  offset.dy,
+                  box.size.width,
+                  box.size.height,
+                ),
               );
             },
             child: const Text('Prepare'),

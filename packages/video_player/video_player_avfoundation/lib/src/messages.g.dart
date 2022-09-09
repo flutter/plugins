@@ -195,28 +195,19 @@ class PreparePictureInPictureMessage {
   PreparePictureInPictureMessage({
     required this.textureId,
     required this.enableStartPictureInPictureAutomaticallyFromInline,
-    required this.top,
-    required this.left,
-    required this.width,
-    required this.height,
+    this.rect,
   });
 
   int textureId;
   int enableStartPictureInPictureAutomaticallyFromInline;
-  double top;
-  double left;
-  double width;
-  double height;
+  PiPRect? rect;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
     pigeonMap['textureId'] = textureId;
     pigeonMap['enableStartPictureInPictureAutomaticallyFromInline'] =
         enableStartPictureInPictureAutomaticallyFromInline;
-    pigeonMap['top'] = top;
-    pigeonMap['left'] = left;
-    pigeonMap['width'] = width;
-    pigeonMap['height'] = height;
+    pigeonMap['rect'] = rect == null ? null : rect!.encode();
     return pigeonMap;
   }
 
@@ -227,6 +218,37 @@ class PreparePictureInPictureMessage {
       enableStartPictureInPictureAutomaticallyFromInline:
           pigeonMap['enableStartPictureInPictureAutomaticallyFromInline']!
               as int,
+      rect:
+          pigeonMap['rect'] != null ? PiPRect.decode(pigeonMap['rect']!) : null,
+    );
+  }
+}
+
+class PiPRect {
+  PiPRect({
+    required this.top,
+    required this.left,
+    required this.width,
+    required this.height,
+  });
+
+  double top;
+  double left;
+  double width;
+  double height;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['top'] = top;
+    pigeonMap['left'] = left;
+    pigeonMap['width'] = width;
+    pigeonMap['height'] = height;
+    return pigeonMap;
+  }
+
+  static PiPRect decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return PiPRect(
       top: pigeonMap['top']! as double,
       left: pigeonMap['left']! as double,
       width: pigeonMap['width']! as double,
@@ -273,23 +295,26 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is MixWithOthersMessage) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is PictureInPictureMessage) {
+    } else if (value is PiPRect) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PlaybackSpeedMessage) {
+    } else if (value is PictureInPictureMessage) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else if (value is PositionMessage) {
+    } else if (value is PlaybackSpeedMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is PreparePictureInPictureMessage) {
+    } else if (value is PositionMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is TextureMessage) {
+    } else if (value is PreparePictureInPictureMessage) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    } else if (value is VolumeMessage) {
+    } else if (value is TextureMessage) {
       buffer.putUint8(136);
+      writeValue(buffer, value.encode());
+    } else if (value is VolumeMessage) {
+      buffer.putUint8(137);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -309,21 +334,24 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
         return MixWithOthersMessage.decode(readValue(buffer)!);
 
       case 131:
-        return PictureInPictureMessage.decode(readValue(buffer)!);
+        return PiPRect.decode(readValue(buffer)!);
 
       case 132:
-        return PlaybackSpeedMessage.decode(readValue(buffer)!);
+        return PictureInPictureMessage.decode(readValue(buffer)!);
 
       case 133:
-        return PositionMessage.decode(readValue(buffer)!);
+        return PlaybackSpeedMessage.decode(readValue(buffer)!);
 
       case 134:
-        return PreparePictureInPictureMessage.decode(readValue(buffer)!);
+        return PositionMessage.decode(readValue(buffer)!);
 
       case 135:
-        return TextureMessage.decode(readValue(buffer)!);
+        return PreparePictureInPictureMessage.decode(readValue(buffer)!);
 
       case 136:
+        return TextureMessage.decode(readValue(buffer)!);
+
+      case 137:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:

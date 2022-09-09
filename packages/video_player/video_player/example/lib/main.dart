@@ -257,7 +257,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                     : 'PiP is not supported'),
           ),
           Row(
-            children: [
+            children: <Widget>[
               const Expanded(
                 child: Text('Start PiP automaticly when going to background'),
               ),

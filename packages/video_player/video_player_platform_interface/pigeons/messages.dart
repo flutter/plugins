@@ -50,6 +50,7 @@ class CreateMessage {
       this.uri,
       this.formatHint,
       this.httpHeaders});
+
   String? asset;
   String? uri;
   String? packageName;
@@ -67,14 +68,22 @@ class PreparePictureInPictureMessage {
   PreparePictureInPictureMessage(
     this.textureId,
     this.enableStartPictureInPictureAutomaticallyFromInline,
-    this.top,
-    this.left,
-    this.width,
-    this.height,
+    this.rect,
   );
 
   int textureId;
   int enableStartPictureInPictureAutomaticallyFromInline;
+  PiPRect? rect;
+}
+
+class PiPRect {
+  PiPRect({
+    required this.top,
+    required this.left,
+    required this.width,
+    required this.height,
+  });
+
   double top;
   double left;
   double width;
@@ -91,17 +100,30 @@ class PictureInPictureMessage {
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class VideoPlayerApi {
   void initialize();
+
   TextureMessage create(CreateMessage msg);
+
   void dispose(TextureMessage msg);
+
   void setLooping(LoopingMessage msg);
+
   void setVolume(VolumeMessage msg);
+
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+
   void play(TextureMessage msg);
+
   PositionMessage position(TextureMessage msg);
+
   void seekTo(PositionMessage msg);
+
   void pause(TextureMessage msg);
+
   void setMixWithOthers(MixWithOthersMessage msg);
+
   bool isPictureInPictureSupported();
+
   void preparePictureInPicture(PreparePictureInPictureMessage msg);
+
   void setPictureInPicture(PictureInPictureMessage msg);
 }

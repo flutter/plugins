@@ -144,9 +144,9 @@ Not setting this capability but calling `preparePictureInPicture` and `setPictur
 
 ```
     <key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-	</array>
+    <array>
+        <string>audio</string>
+    </array>
 ```
 
 Example:

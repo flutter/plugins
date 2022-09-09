@@ -704,8 +704,8 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)preparePictureInPicture:(FLTPreparePictureInPictureMessage *)input
                           error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player usePlayerLayer:CGRectMake(input.left.floatValue, input.top.floatValue,
-                                    input.width.floatValue, input.height.floatValue)
+  [player usePlayerLayer:CGRectMake(input.rect.left.floatValue, input.rect.top.floatValue,
+                                    input.rect.width.floatValue, input.rect.height.floatValue)
       canStartPictureInPictureAutomaticallyFromInline:
           input.enableStartPictureInPictureAutomaticallyFromInline.boolValue];
 }

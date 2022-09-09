@@ -8,13 +8,11 @@
 // @dart = 2.12
 import 'dart:async';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
-// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
-// ignore: unnecessary_import
 import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-// TODO(gaaclarke): The following output had to be tweaked from a relative path to a uri.
-import 'package:video_player_avfoundation/src/messages.g.dart';
+
+import '../lib/src/messages.g.dart';
 
 class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
   const _TestHostVideoPlayerApiCodec();
@@ -29,23 +27,26 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is MixWithOthersMessage) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is PictureInPictureMessage) {
+    } else if (value is PiPRect) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PlaybackSpeedMessage) {
+    } else if (value is PictureInPictureMessage) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else if (value is PositionMessage) {
+    } else if (value is PlaybackSpeedMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is PreparePictureInPictureMessage) {
+    } else if (value is PositionMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is TextureMessage) {
+    } else if (value is PreparePictureInPictureMessage) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    } else if (value is VolumeMessage) {
+    } else if (value is TextureMessage) {
       buffer.putUint8(136);
+      writeValue(buffer, value.encode());
+    } else if (value is VolumeMessage) {
+      buffer.putUint8(137);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -65,21 +66,24 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
         return MixWithOthersMessage.decode(readValue(buffer)!);
 
       case 131:
-        return PictureInPictureMessage.decode(readValue(buffer)!);
+        return PiPRect.decode(readValue(buffer)!);
 
       case 132:
-        return PlaybackSpeedMessage.decode(readValue(buffer)!);
+        return PictureInPictureMessage.decode(readValue(buffer)!);
 
       case 133:
-        return PositionMessage.decode(readValue(buffer)!);
+        return PlaybackSpeedMessage.decode(readValue(buffer)!);
 
       case 134:
-        return PreparePictureInPictureMessage.decode(readValue(buffer)!);
+        return PositionMessage.decode(readValue(buffer)!);
 
       case 135:
-        return TextureMessage.decode(readValue(buffer)!);
+        return PreparePictureInPictureMessage.decode(readValue(buffer)!);
 
       case 136:
+        return TextureMessage.decode(readValue(buffer)!);
+
+      case 137:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:

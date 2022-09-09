@@ -549,10 +549,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       textureId: _textureId,
       enableStartPictureInPictureAutomaticallyFromInline:
           enableStartPictureInPictureAutomaticallyFromInline,
-      top: rect.top,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height,
+      rect: rect,
     );
   }
 

@@ -357,20 +357,14 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
 
   /// Prepare picture in picture by passing the location of the video player view
   Future<void> preparePictureInPicture({
-    required double top,
-    required double left,
-    required double width,
-    required double height,
+    required Rect rect,
     bool enableStartPictureInPictureAutomaticallyFromInline = false,
   }) {
     return _platform.preparePictureInPicture(
       textureId: textureId,
       enableStartPictureInPictureAutomaticallyFromInline:
           enableStartPictureInPictureAutomaticallyFromInline,
-      top: top,
-      left: left,
-      width: width,
-      height: height,
+      rect: rect,
     );
   }
 

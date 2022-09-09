@@ -62,14 +62,22 @@ class PreparePictureInPictureMessage {
   PreparePictureInPictureMessage(
     this.textureId,
     this.enableStartPictureInPictureAutomaticallyFromInline,
-    this.top,
-    this.left,
-    this.width,
-    this.height,
+    this.rect,
   );
 
   int textureId;
   int enableStartPictureInPictureAutomaticallyFromInline;
+  PiPRect? rect;
+}
+
+class PiPRect {
+  PiPRect({
+    required this.top,
+    required this.left,
+    required this.width,
+    required this.height,
+  });
+
   double top;
   double left;
   double width;

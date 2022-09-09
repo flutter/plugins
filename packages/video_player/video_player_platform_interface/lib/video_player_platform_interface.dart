@@ -114,10 +114,7 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   Future<void> preparePictureInPicture({
     required int textureId,
     required bool enableStartPictureInPictureAutomaticallyFromInline,
-    required double top,
-    required double left,
-    required double width,
-    required double height,
+    required Rect rect,
   }) {
     throw UnimplementedError(
         'preparePictureInPicture() has not been implemented.');

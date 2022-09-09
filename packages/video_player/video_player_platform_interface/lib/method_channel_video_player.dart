@@ -154,19 +154,21 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   Future<void> preparePictureInPicture({
     required int textureId,
     required bool enableStartPictureInPictureAutomaticallyFromInline,
-    required double top,
-    required double left,
-    required double width,
-    required double height,
+    required Rect rect,
   }) {
-    return _api.preparePictureInPicture(PreparePictureInPictureMessage(
+    return _api.preparePictureInPicture(
+      PreparePictureInPictureMessage(
         textureId: textureId,
         enableStartPictureInPictureAutomaticallyFromInline:
             enableStartPictureInPictureAutomaticallyFromInline ? 1 : 0,
-        top: top,
-        left: left,
-        width: width,
-        height: height));
+        rect: PiPRect(
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        ),
+      ),
+    );
   }
 
   @override
