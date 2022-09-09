@@ -161,8 +161,8 @@ task:
       depends_on: analyze
       env:
         matrix:
+          CHANNEL: "3.0.5"
           CHANNEL: "2.10.5"
-          CHANNEL: "2.8.1"
       package_prep_script:
         # Allow analyzing plugins that use a Pigeon version with a higher
         # minimum Flutter/Dart version than the plugin itself.
@@ -212,9 +212,9 @@ task:
         - flutter config --enable-linux-desktop
         - ./script/tool_runner.sh build-examples --linux
       native_test_script:
-        - ./script/tool_runner.sh native-test --linux --no-integration
+        - xvfb-run ./script/tool_runner.sh native-test --linux --no-integration
       drive_script:
-        - xvfb-run ./script/tool_runner.sh drive-examples --linux
+        - xvfb-run ./script/tool_runner.sh drive-examples --linux --exclude=script/configs/exclude_integration_linux.yaml
 
 # Heavy-workload Linux tasks.
 # These use machines with more CPUs and memory, so will reduce parallelization
@@ -237,11 +237,11 @@ task:
       skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 4 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 0 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 1 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 2 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 3 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 4 --shardCount 5"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -300,8 +300,8 @@ task:
     - name: web-platform_tests
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+          PACKAGE_SHARDING: "--shardIndex 0 --shardCount 2"
+          PACKAGE_SHARDING: "--shardIndex 1 --shardCount 2"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -377,10 +377,10 @@ task:
       env:
         PATH: $PATH:/usr/local/bin
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 0 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 1 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 2 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"

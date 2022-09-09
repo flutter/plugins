@@ -65,7 +65,7 @@ void main() {
 
       // Expect that `another` played.
       expect(another.value.position,
-          (Duration position) => position > const Duration());
+          (Duration position) => position > Duration.zero);
 
       await expectLater(started.future, completes);
       await expectLater(ended.future, completes);

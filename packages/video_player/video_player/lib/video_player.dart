@@ -453,7 +453,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// finished.
   Future<void> play() async {
     if (value.position == value.duration) {
-      await seekTo(const Duration());
+      await seekTo(Duration.zero);
     }
     value = value.copyWith(isPlaying: true);
     await _applyPlayPause();
@@ -556,8 +556,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     if (position > value.duration) {
       position = value.duration;
-    } else if (position < const Duration()) {
-      position = const Duration();
+    } else if (position < Duration.zero) {
+      position = Duration.zero;
     }
     await _videoPlayerPlatform.seekTo(_textureId, position);
     _updatePosition(position);

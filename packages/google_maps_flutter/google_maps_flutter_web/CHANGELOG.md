@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
 ## 0.4.0+2
 
 * Updates conversion of `BitmapDescriptor.fromBytes` marker icons to support the

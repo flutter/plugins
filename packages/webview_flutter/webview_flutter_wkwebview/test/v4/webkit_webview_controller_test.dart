@@ -58,12 +58,6 @@ void main() {
           WebKitWebViewControllerCreationParams(
         webKitProxy: WebKitProxy(
           createWebViewConfiguration: () => nonNullMockWebViewConfiguration,
-        ),
-      );
-
-      final WebKitWebViewController controller = WebKitWebViewController(
-        controllerCreationParams,
-        webKitProxy: WebKitProxy(
           createWebView: (
             _, {
             void Function(
@@ -82,6 +76,10 @@ void main() {
             return nonNullMockWebView;
           },
         ),
+      );
+
+      final WebKitWebViewController controller = WebKitWebViewController(
+        controllerCreationParams,
       );
 
       when(nonNullMockWebView.scrollView)
@@ -715,9 +713,10 @@ void main() {
 
       final WebKitNavigationDelegate navigationDelegate =
           WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 
@@ -766,9 +765,10 @@ void main() {
 
       final WebKitNavigationDelegate navigationDelegate =
           WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: const WebKitProxy(
-          createNavigationDelegate: CapturingNavigationDelegate.new,
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
         ),
       );
 
