@@ -82,10 +82,7 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   Future<void> preparePictureInPicture({
-    double top = 0,
-    double left = 0,
-    double width = 0,
-    double height = 0,
+    required Rect rect,
     bool enableStartPictureInPictureAutomaticallyFromInline = false,
   }) async {}
 

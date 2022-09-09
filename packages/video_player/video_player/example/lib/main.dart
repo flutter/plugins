@@ -265,10 +265,12 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
               }
               final Offset offset = box.localToGlobal(Offset.zero);
               _controller.preparePictureInPicture(
-                top: offset.dy,
-                left: offset.dx,
-                width: box.size.width,
-                height: box.size.height,
+                rect: Rect.fromLTWH(
+                  offset.dx,
+                  offset.dy,
+                  box.size.width,
+                  box.size.height,
+                ),
               );
             },
             child: const Text('Prepare'),

@@ -539,10 +539,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Prepare picture in picture by passing the location of the video player view
   Future<void> preparePictureInPicture({
-    double top = 0,
-    double left = 0,
-    double width = 0,
-    double height = 0,
+    required Rect rect,
     bool enableStartPictureInPictureAutomaticallyFromInline = false,
   }) async {
     if (!value.isInitialized || _isDisposed) {
@@ -552,10 +549,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       textureId: _textureId,
       enableStartPictureInPictureAutomaticallyFromInline:
           enableStartPictureInPictureAutomaticallyFromInline,
-      top: top,
-      left: left,
-      width: width,
-      height: height,
+      top: rect.top,
+      left: rect.left,
+      width: rect.width,
+      height: rect.height,
     );
   }
 
