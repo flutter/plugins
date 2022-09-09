@@ -210,6 +210,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   final GlobalKey<State<StatefulWidget>> _playerKey =
       GlobalKey<State<StatefulWidget>>();
   final Key _pictureInPictureKey = UniqueKey();
+  bool _enableStartPictureInPictureAutomaticallyFromInline = false;
 
   Future<ClosedCaptionFile> _loadCaptions() async {
     final String fileContents = await DefaultAssetBundle.of(context)
@@ -252,8 +253,24 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
             future: _controller.isPictureInPictureSupported(),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) =>
                 Text(snapshot.data ?? false
-                    ? 'Pip is supported'
-                    : 'Pip is not supported'),
+                    ? 'PiP is supported'
+                    : 'PiP is not supported'),
+          ),
+          Row(
+            children: [
+              const Expanded(
+                child: Text('Start PiP automaticly when going to background'),
+              ),
+              Switch(
+                value: _enableStartPictureInPictureAutomaticallyFromInline,
+                onChanged: (bool newValue) {
+                  setState(() {
+                    _enableStartPictureInPictureAutomaticallyFromInline =
+                        newValue;
+                  });
+                },
+              ),
+            ],
           ),
           MaterialButton(
             color: Colors.blue,
@@ -271,6 +288,8 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                   box.size.width,
                   box.size.height,
                 ),
+                enableStartPictureInPictureAutomaticallyFromInline:
+                    _enableStartPictureInPictureAutomaticallyFromInline,
               );
             },
             child: const Text('Prepare'),

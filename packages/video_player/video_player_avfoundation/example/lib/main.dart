@@ -117,7 +117,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
       GlobalKey<State<StatefulWidget>>();
   final Key _pictureInPictureKey = UniqueKey();
 
-  bool _enableStartPictureInPictureAutomaticlyFromInline = false;
+  bool _enableStartPictureInPictureAutomaticallyFromInline = false;
 
   @override
   void initState() {
@@ -150,16 +150,24 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
             future: _controller.isPictureInPictureSupported(),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) =>
                 Text(snapshot.data ?? false
-                    ? 'Pip is supported'
-                    : 'Pip is not supported'),
+                    ? 'PiP is supported'
+                    : 'PiP is not supported'),
           ),
-          Switch(
-            value: _enableStartPictureInPictureAutomaticlyFromInline,
-            onChanged: (bool newValue) {
-              setState(() {
-                _enableStartPictureInPictureAutomaticlyFromInline = newValue;
-              });
-            },
+          Row(
+            children: [
+              const Expanded(
+                child: Text('Start PiP automaticly when going to background'),
+              ),
+              Switch(
+                value: _enableStartPictureInPictureAutomaticallyFromInline,
+                onChanged: (bool newValue) {
+                  setState(() {
+                    _enableStartPictureInPictureAutomaticallyFromInline =
+                        newValue;
+                  });
+                },
+              ),
+            ],
           ),
           MaterialButton(
             color: Colors.blue,
@@ -172,7 +180,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
               final Offset offset = box.localToGlobal(Offset.zero);
               _controller.preparePictureInPicture(
                 enableStartPictureInPictureAutomaticallyFromInline:
-                    _enableStartPictureInPictureAutomaticlyFromInline,
+                    _enableStartPictureInPictureAutomaticallyFromInline,
                 top: offset.dy,
                 left: offset.dx,
                 width: box.size.width,
