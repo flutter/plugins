@@ -4,6 +4,7 @@
 
 @import os.log;
 @import XCTest;
+#import <AVKit/AVKit.h>
 
 @interface VideoPlayerUITests : XCTestCase
 @property(nonatomic, strong) XCUIApplication *app;
@@ -30,26 +31,30 @@
   XCTAssertTrue([playButton waitForExistenceWithTimeout:30.0]);
   [playButton tap];
 
-  XCUIElement *pipSupportedText = app.staticTexts[@"Pip is supported"];
-  XCTAssertTrue([pipSupportedText waitForExistenceWithTimeout:30.0]);
+  if ([AVPictureInPictureController isPictureInPictureSupported]) {
+    XCUIElement *pipSupportedText = app.staticTexts[@"Pip is supported"];
+    XCTAssertTrue([pipSupportedText waitForExistenceWithTimeout:30.0]);
 
-  XCUIElement *pipPrepareButton = app.buttons[@"Prepare"];
-  XCTAssertTrue([pipPrepareButton waitForExistenceWithTimeout:30.0]);
-  [pipPrepareButton tap];
+    XCUIElement *pipPrepareButton = app.buttons[@"Prepare"];
+    XCTAssertTrue([pipPrepareButton waitForExistenceWithTimeout:30.0]);
+    [pipPrepareButton tap];
 
-  XCUIElement *pipStartButton = app.buttons[@"Start PiP"];
-  XCTAssertTrue([pipStartButton waitForExistenceWithTimeout:30.0]);
-  [pipStartButton tap];
+    XCUIElement *pipStartButton = app.buttons[@"Start PiP"];
+    XCTAssertTrue([pipStartButton waitForExistenceWithTimeout:30.0]);
+    [pipStartButton tap];
 
-  XCUIElement *pipUIView = app.otherElements[@"PIPUIView"];
-  XCTAssertTrue([pipUIView waitForExistenceWithTimeout:30.0]);
+    XCUIElement *pipUIView = app.otherElements[@"PIPUIView"];
+    XCTAssertTrue([pipUIView waitForExistenceWithTimeout:30.0]);
 
-  XCUIElement *pipStopButton = app.buttons[@"Stop PiP"];
-  XCTAssertTrue([pipStopButton waitForExistenceWithTimeout:30.0]);
-  [pipStopButton tap];
+    XCUIElement *pipStopButton = app.buttons[@"Stop PiP"];
+    XCTAssertTrue([pipStopButton waitForExistenceWithTimeout:30.0]);
+    [pipStopButton tap];
 
-  XCTAssertTrue([pipStartButton waitForExistenceWithTimeout:30.0]);
-
+    XCTAssertTrue([pipStartButton waitForExistenceWithTimeout:30.0]);
+  } else {
+    XCTAssertTrue([app.staticTexts[@"Pip is not supported"] waitForExistenceWithTimeout:30.0]);
+  }
+    
   NSPredicate *find1xButton = [NSPredicate predicateWithFormat:@"label CONTAINS '1.0x'"];
   XCUIElement *playbackSpeed1x = [app.staticTexts elementMatchingPredicate:find1xButton];
   BOOL foundPlaybackSpeed1x = [playbackSpeed1x waitForExistenceWithTimeout:30.0];
