@@ -222,11 +222,11 @@
   // Set Picture In Picture
   FLTPreparePictureInPictureMessage *preparePictureInPicture =
       [FLTPreparePictureInPictureMessage makeWithTextureId:textureId
-        enableStartPictureInPictureAutomaticallyFromInline:@1
-                                                       top:@0
-                                                      left:@0
-                                                     width:@300
-                                                    height:@200];
+          enableStartPictureInPictureAutomaticallyFromInline:@1
+                                                         top:@0
+                                                        left:@0
+                                                       width:@300
+                                                      height:@200];
   [videoPlayerPlugin preparePictureInPicture:preparePictureInPicture error:&error];
   XCTAssertNil(error);
 

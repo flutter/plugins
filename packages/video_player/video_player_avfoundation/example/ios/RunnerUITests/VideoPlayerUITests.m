@@ -54,7 +54,7 @@
   } else {
     XCTAssertTrue([app.staticTexts[@"Pip is not supported"] waitForExistenceWithTimeout:30.0]);
   }
-    
+
   NSPredicate *find1xButton = [NSPredicate predicateWithFormat:@"label CONTAINS '1.0x'"];
   XCUIElement *playbackSpeed1x = [app.staticTexts elementMatchingPredicate:find1xButton];
   BOOL foundPlaybackSpeed1x = [playbackSpeed1x waitForExistenceWithTimeout:30.0];

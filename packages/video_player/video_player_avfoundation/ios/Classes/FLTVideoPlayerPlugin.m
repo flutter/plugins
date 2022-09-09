@@ -246,14 +246,12 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   }
 
   self.isPiPStarted = isPiPStarted;
-  if (pipController && self.isPiPStarted &&
-      ![pipController isPictureInPictureActive]) {
+  if (pipController && self.isPiPStarted && ![pipController isPictureInPictureActive]) {
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"startingPiP"});
     }
     [pipController startPictureInPicture];
-  } else if (pipController && !self.isPiPStarted &&
-             [pipController isPictureInPictureActive]) {
+  } else if (pipController && !self.isPiPStarted && [pipController isPictureInPictureActive]) {
     [pipController stopPictureInPicture];
   }
 }
