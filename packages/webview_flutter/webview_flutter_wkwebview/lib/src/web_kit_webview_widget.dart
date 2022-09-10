@@ -247,9 +247,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     if (allowsInlineMediaPlayback != null) {
       configuration.setAllowsInlineMediaPlayback(allowsInlineMediaPlayback);
     }
-    if (allowsInlineMediaPlayback != null) {
-      configuration.setAllowsInlineMediaPlayback(allowsInlineMediaPlayback);
-    }
 
     late final bool requiresUserAction;
     switch (autoMediaPlaybackPolicy) {

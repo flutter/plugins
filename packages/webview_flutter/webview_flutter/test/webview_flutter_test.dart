@@ -1162,7 +1162,7 @@ void main() {
           verify(mockWebViewPlatformController.updateSettings(captureAny))
               .captured
               .last as WebSettings;
-      expect(disabledSettings.debuggingEnabled, true);
+      expect(disabledSettings.allowsLinkPreview, true);
     });
   });
 
