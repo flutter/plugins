@@ -133,7 +133,7 @@ class UpdateReleaseInfoCommand extends PackageLoopingCommand {
           packagesDir.fileSystem.directory((await gitDir).path);
       final String relativePackagePath =
           getRelativePosixPath(package.directory, from: gitRoot);
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: _changedFiles,
           relativePackagePath: relativePackagePath);
 
