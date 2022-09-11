@@ -5,7 +5,7 @@
 
 ## 2.3.10
 
-* Adds setMaxVideoResolution method to support different video resolutions while picking a video stream from a source with different tracks
+* Adds setMaxVideoResolution method to support different video resolutions while picking a video stream from a source with different tracks.
 
 ## 2.3.9
 
