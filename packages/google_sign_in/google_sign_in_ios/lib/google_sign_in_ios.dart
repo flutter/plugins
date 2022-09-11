@@ -30,15 +30,25 @@ class GoogleSignInIOS extends GoogleSignInPlatform {
     String? hostedDomain,
     String? clientId,
   }) {
-    if (signInOption == SignInOption.games) {
+    return initWithParams(SignInInitParameters(
+      signInOption: signInOption,
+      scopes: scopes,
+      hostedDomain: hostedDomain,
+      clientId: clientId,
+    ));
+  }
+
+  @override
+  Future<void> initWithParams(SignInInitParameters params) {
+    if (params.signInOption == SignInOption.games) {
       throw PlatformException(
           code: 'unsupported-options',
           message: 'Games sign in is not supported on iOS');
     }
     return channel.invokeMethod<void>('init', <String, dynamic>{
-      'scopes': scopes,
-      'hostedDomain': hostedDomain,
-      'clientId': clientId,
+      'scopes': params.scopes,
+      'hostedDomain': params.hostedDomain,
+      'clientId': params.clientId,
     });
   }
 

@@ -465,7 +465,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// finished.
   Future<void> play() async {
     if (value.position == value.duration) {
-      await seekTo(const Duration());
+      await seekTo(Duration.zero);
     }
     value = value.copyWith(isPlaying: true);
     await _applyPlayPause();
@@ -518,11 +518,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       // playing back. This is necessary because we do not set playback speed
       // when paused.
       await _applyPlaybackSpeed();
-
-      // This ensures that the correct playback max video resolution is always applied when
-      // playing back. This is necessary because we do not set max video resolution
-      // when paused.
-      await _applyMaxVideoResolution();
     } else {
       _timer?.cancel();
       await _videoPlayerPlatform.pause(_textureId);
@@ -596,8 +591,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     if (position > value.duration) {
       position = value.duration;
-    } else if (position < const Duration()) {
-      position = const Duration();
+    } else if (position < Duration.zero) {
+      position = Duration.zero;
     }
     await _videoPlayerPlatform.seekTo(_textureId, position);
     _updatePosition(position);

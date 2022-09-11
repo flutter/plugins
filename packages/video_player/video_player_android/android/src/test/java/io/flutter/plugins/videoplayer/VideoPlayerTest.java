@@ -5,12 +5,17 @@
 package io.flutter.plugins.videoplayer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
@@ -29,6 +34,8 @@ public class VideoPlayerTest {
   private TextureRegistry.SurfaceTextureEntry fakeSurfaceTextureEntry;
   private VideoPlayerOptions fakeVideoPlayerOptions;
   private QueuingEventSink fakeEventSink;
+  private DefaultTrackSelector fakeTrackSelector;
+  private DefaultTrackSelector.Parameters.Builder fakeTrackSelectorBuilder;
 
   @Captor private ArgumentCaptor<HashMap<String, Object>> eventCaptor;
 
@@ -41,6 +48,8 @@ public class VideoPlayerTest {
     fakeSurfaceTextureEntry = mock(TextureRegistry.SurfaceTextureEntry.class);
     fakeVideoPlayerOptions = mock(VideoPlayerOptions.class);
     fakeEventSink = mock(QueuingEventSink.class);
+    fakeTrackSelector = mock(DefaultTrackSelector.class);
+    fakeTrackSelectorBuilder = mock(DefaultTrackSelector.Parameters.Builder.class);
   }
 
   @Test
@@ -51,7 +60,8 @@ public class VideoPlayerTest {
             fakeEventChannel,
             fakeSurfaceTextureEntry,
             fakeVideoPlayerOptions,
-            fakeEventSink);
+            fakeEventSink,
+            null);
     Format testFormat =
         new Format.Builder().setWidth(100).setHeight(200).setRotationDegrees(90).build();
 
@@ -68,7 +78,7 @@ public class VideoPlayerTest {
     assertEquals(event.get("duration"), 10L);
     assertEquals(event.get("width"), 200);
     assertEquals(event.get("height"), 100);
-    assertEquals(event.get("rotationCorrection"), null);
+    assertNull(event.get("rotationCorrection"));
   }
 
   @Test
@@ -79,7 +89,8 @@ public class VideoPlayerTest {
             fakeEventChannel,
             fakeSurfaceTextureEntry,
             fakeVideoPlayerOptions,
-            fakeEventSink);
+            fakeEventSink,
+            null);
     Format testFormat =
         new Format.Builder().setWidth(100).setHeight(200).setRotationDegrees(270).build();
 
@@ -96,7 +107,7 @@ public class VideoPlayerTest {
     assertEquals(event.get("duration"), 10L);
     assertEquals(event.get("width"), 200);
     assertEquals(event.get("height"), 100);
-    assertEquals(event.get("rotationCorrection"), null);
+    assertNull(event.get("rotationCorrection"));
   }
 
   @Test
@@ -107,7 +118,8 @@ public class VideoPlayerTest {
             fakeEventChannel,
             fakeSurfaceTextureEntry,
             fakeVideoPlayerOptions,
-            fakeEventSink);
+            fakeEventSink,
+            null);
     Format testFormat =
         new Format.Builder().setWidth(100).setHeight(200).setRotationDegrees(0).build();
 
@@ -124,7 +136,7 @@ public class VideoPlayerTest {
     assertEquals(event.get("duration"), 10L);
     assertEquals(event.get("width"), 100);
     assertEquals(event.get("height"), 200);
-    assertEquals(event.get("rotationCorrection"), null);
+    assertNull(event.get("rotationCorrection"));
   }
 
   @Test
@@ -135,7 +147,8 @@ public class VideoPlayerTest {
             fakeEventChannel,
             fakeSurfaceTextureEntry,
             fakeVideoPlayerOptions,
-            fakeEventSink);
+            fakeEventSink,
+            null);
     Format testFormat =
         new Format.Builder().setWidth(100).setHeight(200).setRotationDegrees(180).build();
 
@@ -153,5 +166,29 @@ public class VideoPlayerTest {
     assertEquals(event.get("width"), 100);
     assertEquals(event.get("height"), 200);
     assertEquals(event.get("rotationCorrection"), 180);
+  }
+
+  @Test
+  public void testVideoPlayerWithMaxResolution() {
+    VideoPlayer videoPlayer =
+        new VideoPlayer(
+            fakeExoPlayer,
+            fakeEventChannel,
+            fakeSurfaceTextureEntry,
+            fakeVideoPlayerOptions,
+            fakeEventSink,
+            fakeTrackSelector);
+
+    when(fakeExoPlayer.getTrackSelector()).thenReturn(fakeTrackSelector);
+    when(fakeTrackSelector.buildUponParameters()).thenReturn(fakeTrackSelectorBuilder);
+    when(fakeTrackSelectorBuilder.setMaxVideoSize(anyInt(), anyInt()))
+        .thenReturn(fakeTrackSelectorBuilder);
+
+    videoPlayer.setMaxVideoResolution(1920, 1080);
+
+    verify(fakeTrackSelector, times(1)).buildUponParameters();
+    verify(fakeTrackSelector, times(1))
+        .setParameters(any(DefaultTrackSelector.Parameters.Builder.class));
+    verify(fakeTrackSelectorBuilder, times(1)).setMaxVideoSize(1920, 1080);
   }
 }

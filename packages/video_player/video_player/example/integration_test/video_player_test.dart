@@ -49,7 +49,7 @@ void main() {
       await _controller.initialize();
 
       expect(_controller.value.isInitialized, true);
-      expect(_controller.value.position, const Duration());
+      expect(_controller.value.position, Duration.zero);
       expect(_controller.value.isPlaying, false);
       // The WebM version has a slightly different duration than the MP4.
       expect(_controller.value.duration,
@@ -87,7 +87,7 @@ void main() {
 
         expect(_controller.value.isPlaying, true);
         expect(_controller.value.position,
-            (Duration position) => position > const Duration());
+            (Duration position) => position > Duration.zero);
       },
     );
 
@@ -264,7 +264,7 @@ void main() {
 
         expect(_controller.value.isPlaying, false);
         expect(_controller.value.position,
-            (Duration position) => position > const Duration());
+            (Duration position) => position > Duration.zero);
 
         await expectLater(started.future, completes);
         await expectLater(ended.future, completes);
@@ -284,7 +284,7 @@ void main() {
       await _controller.initialize();
 
       expect(_controller.value.isInitialized, true);
-      expect(_controller.value.position, const Duration());
+      expect(_controller.value.position, Duration.zero);
       expect(_controller.value.isPlaying, false);
       // Due to the duration calculation accuracy between platforms,
       // the milliseconds on Web will be a slightly different from natives.
@@ -307,7 +307,7 @@ void main() {
       expect(_controller.value.isPlaying, true);
       expect(
         _controller.value.position,
-        (Duration position) => position > const Duration(),
+        (Duration position) => position > Duration.zero,
       );
     });
 

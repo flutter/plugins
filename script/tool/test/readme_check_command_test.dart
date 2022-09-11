@@ -504,8 +504,11 @@ A B C
     });
 
     test('passes when excerpt requirement is met', () async {
-      final RepositoryPackage package =
-          createFakePackage('a_package', packagesDir);
+      final RepositoryPackage package = createFakePackage(
+        'a_package',
+        packagesDir,
+        extraFiles: <String>[kReadmeExcerptConfigPath],
+      );
 
       package.readmeFile.writeAsStringSync('''
 Example:
@@ -524,6 +527,40 @@ A B C
         containsAll(<Matcher>[
           contains('Running for a_package...'),
           contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('fails when excerpts are used but the package is not configured',
+        () async {
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir);
+
+      package.readmeFile.writeAsStringSync('''
+Example:
+
+<?code-excerpt "main.dart (SomeSection)"?>
+```dart
+A B C
+```
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['readme-check', '--require-excerpts'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('code-excerpt tag found, but the package is not configured '
+              'for excerpting. Follow the instructions at\n'
+              'https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages\n'
+              'for setting up a build.excerpt.yaml file.'),
+          contains('Missing code-excerpt configuration'),
         ]),
       );
     });
@@ -552,6 +589,9 @@ A B C
         output,
         containsAllInOrder(<Matcher>[
           contains('Dart code block at line 3 is not managed by code-excerpt.'),
+          // Ensure that the failure message links to instructions.
+          contains(
+              'https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages'),
           contains('Missing code-excerpt management for code block'),
         ]),
       );

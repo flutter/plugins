@@ -30,7 +30,7 @@ const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 class MarkerIconsBodyState extends State<MarkerIconsBody> {
   GoogleMapController? controller;
 
-  EdgeInsets _padding = const EdgeInsets.all(0);
+  EdgeInsets _padding = EdgeInsets.zero;
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +167,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
                 _bottomController.clear();
                 _leftController.clear();
                 _rightController.clear();
-                _padding = const EdgeInsets.all(0);
+                _padding = EdgeInsets.zero;
               });
             },
           )

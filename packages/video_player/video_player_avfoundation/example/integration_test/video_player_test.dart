@@ -57,7 +57,7 @@ void main() {
       await _controller.initialize();
 
       expect(_controller.value.isInitialized, true);
-      expect(await _controller.position, const Duration());
+      expect(await _controller.position, Duration.zero);
       expect(_controller.value.duration,
           const Duration(seconds: 7, milliseconds: 540));
     });
@@ -68,7 +68,7 @@ void main() {
       await _controller.play();
       await tester.pumpAndSettle(_playDuration);
 
-      expect(await _controller.position, greaterThan(const Duration()));
+      expect(await _controller.position, greaterThan(Duration.zero));
     });
 
     testWidgets('can seek', (WidgetTester tester) async {
@@ -122,7 +122,7 @@ void main() {
       await _controller.play();
       await tester.pumpAndSettle(_playDuration);
 
-      expect(await _controller.position, greaterThan(const Duration()));
+      expect(await _controller.position, greaterThan(Duration.zero));
     });
   });
 
@@ -156,7 +156,7 @@ void main() {
       // TODO(stuartmorgan): Switch to _controller.position once seekTo is
       // fixed on the native side to wait for completion, so this is testing
       // the native code rather than the MiniController position cache.
-      expect(_controller.value.position, greaterThan(const Duration()));
+      expect(_controller.value.position, greaterThan(Duration.zero));
 
       await expectLater(started.future, completes);
       await expectLater(ended.future, completes);

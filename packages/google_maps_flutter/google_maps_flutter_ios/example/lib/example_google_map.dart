@@ -233,7 +233,7 @@ class ExampleGoogleMap extends StatefulWidget {
     this.layoutDirection,
 
     /// If no padding is specified default padding will be 0.
-    this.padding = const EdgeInsets.all(0),
+    this.padding = EdgeInsets.zero,
     this.indoorViewEnabled = false,
     this.trafficEnabled = false,
     this.buildingsEnabled = true,

@@ -160,6 +160,56 @@
   XCTAssertEqualWithAccuracy([videoInitialization[@"duration"] intValue], 4000, 200);
 }
 
+- (void)testSetMaxVideoResolution {
+  NSObject<FlutterPluginRegistry> *registry =
+      (NSObject<FlutterPluginRegistry> *)[[UIApplication sharedApplication] delegate];
+  NSObject<FlutterPluginRegistrar> *registrar =
+      [registry registrarForPlugin:@"TestSetMaxVideoResolution"];
+
+  FLTVideoPlayerPlugin *videoPlayerPlugin =
+      (FLTVideoPlayerPlugin *)[[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
+
+  FlutterError *error;
+  [videoPlayerPlugin initialize:&error];
+  XCTAssertNil(error);
+
+  FLTCreateMessage *create = [FLTCreateMessage
+      makeWithAsset:nil
+                uri:@"https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"
+        packageName:nil
+         formatHint:nil
+        httpHeaders:@{}];
+  FLTTextureMessage *textureMessage = [videoPlayerPlugin create:create error:&error];
+
+  NSNumber *textureId = textureMessage.textureId;
+  FLTVideoPlayer *player = videoPlayerPlugin.playersByTextureId[textureId];
+  XCTAssertNotNil(player);
+
+  AVPlayer *avPlayer = player.player;
+  if (@available(iOS 11.0, *)) {
+    XCTAssertEqualWithAccuracy(avPlayer.currentItem.preferredMaximumResolution.width, 0,
+                               0.000000001);
+    XCTAssertEqualWithAccuracy(avPlayer.currentItem.preferredMaximumResolution.height, 0,
+                               0.000000001);
+  }
+
+  FLTMaxVideoResolutionMessage *message = [FLTMaxVideoResolutionMessage makeWithTextureId:textureId
+                                                                                    width:@1920
+                                                                                   height:@1080];
+
+  [videoPlayerPlugin setMaxVideoResolution:message error:&error];
+  XCTAssertNil(error);
+
+  if (@available(iOS 11.0, *)) {
+    XCTAssertEqualWithAccuracy(avPlayer.currentItem.preferredMaximumResolution.width, 1920,
+                               0.000000001);
+    XCTAssertEqualWithAccuracy(avPlayer.currentItem.preferredMaximumResolution.height, 1080,
+                               0.000000001);
+  }
+
+  [videoPlayerPlugin dispose:textureMessage error:&error];
+}
+
 - (void)testTransformFix {
   [self validateTransformFixForOrientation:UIImageOrientationUp];
   [self validateTransformFixForOrientation:UIImageOrientationDown];
