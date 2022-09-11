@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
+import 'package:webview_flutter_android/src/weak_reference_utils.dart';
 import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
@@ -139,6 +140,8 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
 
   late WebViewAndroidWebViewClient _webViewClient;
 
+  bool _hasNavigationDelegate = false;
+
   /// Represents the WebView maintained by platform code.
   late final android_webview.WebView webView;
 
@@ -160,8 +163,47 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
 
   /// Receives callbacks when content should be downloaded instead.
   @visibleForTesting
-  late final WebViewAndroidDownloadListener downloadListener =
-      WebViewAndroidDownloadListener(loadUrl: loadUrl);
+  late final android_webview.DownloadListener downloadListener =
+      android_webview.DownloadListener(
+    onDownloadStart: withWeakRefenceTo(
+      this,
+      (WeakReference<WebViewAndroidPlatformController> weakReference) {
+        return (
+          String url,
+          String userAgent,
+          String contentDisposition,
+          String mimetype,
+          int contentLength,
+        ) {
+          final WebViewAndroidPlatformController? controller =
+              weakReference.target;
+          if (controller == null) {
+            return;
+          }
+
+          if (!controller._hasNavigationDelegate) {
+            return;
+          }
+
+          final FutureOr<bool> returnValue =
+              controller.callbacksHandler.onNavigationRequest(
+            url: url,
+            isForMainFrame: true,
+          );
+
+          if (returnValue is bool && returnValue) {
+            controller.loadUrl(url, <String, String>{});
+          } else {
+            (returnValue as Future<bool>).then((bool shouldLoadUrl) {
+              if (shouldLoadUrl) {
+                controller.loadUrl(url, <String, String>{});
+              }
+            });
+          }
+        };
+      },
+    ),
+  );
 
   /// Handles JavaScript dialogs, favicons, titles, new windows, and the progress for [android_webview.WebView].
   @visibleForTesting
@@ -398,6 +440,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   }
 
   Future<void> _setHasNavigationDelegate(bool hasNavigationDelegate) {
+    _hasNavigationDelegate = hasNavigationDelegate;
     if (hasNavigationDelegate) {
       downloadListener._onNavigationRequest =
           callbacksHandler.onNavigationRequest;
@@ -451,241 +494,259 @@ class WebViewAndroidJavaScriptChannel
     extends android_webview.JavaScriptChannel {
   /// Creates a [WebViewAndroidJavaScriptChannel].
   WebViewAndroidJavaScriptChannel(
-      String channelName, this.javascriptChannelRegistry)
-      : super(channelName);
+    String channelName,
+    this.javascriptChannelRegistry,
+  ) : super(
+          channelName,
+          postMessage: withWeakRefenceTo(
+            javascriptChannelRegistry,
+            (WeakReference<JavascriptChannelRegistry> weakReference) {
+              return (String message) {
+                weakReference.target?.onJavascriptChannelMessage(
+                  channelName,
+                  message,
+                );
+              };
+            },
+          ),
+        );
 
   /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
   final JavascriptChannelRegistry javascriptChannelRegistry;
-
-  @override
-  void postMessage(String message) {
-    javascriptChannelRegistry.onJavascriptChannelMessage(channelName, message);
-  }
 }
 
-/// Receives callbacks when content can not be handled by the rendering engine for [WebViewAndroidPlatformController], and should be downloaded instead.
-///
-/// When handling navigation requests, this calls [onNavigationRequestCallback]
-/// when a [android_webview.WebView] attempts to navigate to a new page. If
-/// this callback return true, this calls [loadUrl].
-class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
-  /// Creates a [WebViewAndroidDownloadListener].
-  WebViewAndroidDownloadListener({required this.loadUrl});
+// /// Receives callbacks when content can not be handled by the rendering engine for [WebViewAndroidPlatformController], and should be downloaded instead.
+// ///
+// /// When handling navigation requests, this calls [onNavigationRequestCallback]
+// /// when a [android_webview.WebView] attempts to navigate to a new page. If
+// /// this callback return true, this calls [loadUrl].
+// class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
+//   /// Creates a [WebViewAndroidDownloadListener].
+//   WebViewAndroidDownloadListener({required this.loadUrl})
+//       : super(
+//             onDownloadStart: (
+//           String url,
+//           String userAgent,
+//           String contentDisposition,
+//           String mimetype,
+//           int contentLength,
+//         ) {
+//             });
+//
+//   // Changed by WebViewAndroidPlatformController.
+//   FutureOr<bool> Function({
+//     required String url,
+//     required bool isForMainFrame,
+//   })? _onNavigationRequest;
+//
+//   /// Callback to load a URL when a navigation request is approved.
+//   final Future<void> Function(String url, Map<String, String>? headers) loadUrl;
+//
+//   @override
+//   void onDownloadStart(
+//     String url,
+//     String userAgent,
+//     String contentDisposition,
+//     String mimetype,
+//     int contentLength,
+//   ) {
+//     if (_onNavigationRequest == null) {
+//       return;
+//     }
+//
+//     final FutureOr<bool> returnValue = _onNavigationRequest!(
+//       url: url,
+//       isForMainFrame: true,
+//     );
+//
+//     if (returnValue is bool && returnValue) {
+//       loadUrl(url, <String, String>{});
+//     } else {
+//       (returnValue as Future<bool>).then((bool shouldLoadUrl) {
+//         if (shouldLoadUrl) {
+//           loadUrl(url, <String, String>{});
+//         }
+//       });
+//     }
+//   }
+// }
 
-  // Changed by WebViewAndroidPlatformController.
-  FutureOr<bool> Function({
-    required String url,
-    required bool isForMainFrame,
-  })? _onNavigationRequest;
-
-  /// Callback to load a URL when a navigation request is approved.
-  final Future<void> Function(String url, Map<String, String>? headers) loadUrl;
-
-  @override
-  void onDownloadStart(
-    String url,
-    String userAgent,
-    String contentDisposition,
-    String mimetype,
-    int contentLength,
-  ) {
-    if (_onNavigationRequest == null) {
-      return;
-    }
-
-    final FutureOr<bool> returnValue = _onNavigationRequest!(
-      url: url,
-      isForMainFrame: true,
-    );
-
-    if (returnValue is bool && returnValue) {
-      loadUrl(url, <String, String>{});
-    } else {
-      (returnValue as Future<bool>).then((bool shouldLoadUrl) {
-        if (shouldLoadUrl) {
-          loadUrl(url, <String, String>{});
-        }
-      });
-    }
-  }
-}
-
-/// Receives various navigation requests and errors for [WebViewAndroidPlatformController].
-///
-/// When handling navigation requests, this calls [onNavigationRequestCallback]
-/// when a [android_webview.WebView] attempts to navigate to a new page. If
-/// this callback return true, this calls [loadUrl].
-class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
-  /// Creates a [WebViewAndroidWebViewClient] that doesn't handle navigation requests.
-  WebViewAndroidWebViewClient({
-    required this.onPageStartedCallback,
-    required this.onPageFinishedCallback,
-    required this.onWebResourceErrorCallback,
-  })  : loadUrl = null,
-        onNavigationRequestCallback = null,
-        super(shouldOverrideUrlLoading: false);
-
-  /// Creates a [WebViewAndroidWebViewClient] that handles navigation requests.
-  WebViewAndroidWebViewClient.handlesNavigation({
-    required this.onPageStartedCallback,
-    required this.onPageFinishedCallback,
-    required this.onWebResourceErrorCallback,
-    required this.onNavigationRequestCallback,
-    required this.loadUrl,
-  }) : super(shouldOverrideUrlLoading: true);
-
-  /// Callback when [android_webview.WebViewClient] receives a callback from [android_webview.WebViewClient].onPageStarted.
-  final void Function(String url) onPageStartedCallback;
-
-  /// Callback when [android_webview.WebViewClient] receives a callback from [android_webview.WebViewClient].onPageFinished.
-  final void Function(String url) onPageFinishedCallback;
-
-  /// Callback when [android_webview.WebViewClient] receives an error callback.
-  void Function(WebResourceError error) onWebResourceErrorCallback;
-
-  /// Checks whether a navigation request should be approved or disaproved.
-  final FutureOr<bool> Function({
-    required String url,
-    required bool isForMainFrame,
-  })? onNavigationRequestCallback;
-
-  /// Callback when a navigation request is approved.
-  final Future<void> Function(String url, Map<String, String>? headers)?
-      loadUrl;
-
-  static WebResourceErrorType _errorCodeToErrorType(int errorCode) {
-    switch (errorCode) {
-      case android_webview.WebViewClient.errorAuthentication:
-        return WebResourceErrorType.authentication;
-      case android_webview.WebViewClient.errorBadUrl:
-        return WebResourceErrorType.badUrl;
-      case android_webview.WebViewClient.errorConnect:
-        return WebResourceErrorType.connect;
-      case android_webview.WebViewClient.errorFailedSslHandshake:
-        return WebResourceErrorType.failedSslHandshake;
-      case android_webview.WebViewClient.errorFile:
-        return WebResourceErrorType.file;
-      case android_webview.WebViewClient.errorFileNotFound:
-        return WebResourceErrorType.fileNotFound;
-      case android_webview.WebViewClient.errorHostLookup:
-        return WebResourceErrorType.hostLookup;
-      case android_webview.WebViewClient.errorIO:
-        return WebResourceErrorType.io;
-      case android_webview.WebViewClient.errorProxyAuthentication:
-        return WebResourceErrorType.proxyAuthentication;
-      case android_webview.WebViewClient.errorRedirectLoop:
-        return WebResourceErrorType.redirectLoop;
-      case android_webview.WebViewClient.errorTimeout:
-        return WebResourceErrorType.timeout;
-      case android_webview.WebViewClient.errorTooManyRequests:
-        return WebResourceErrorType.tooManyRequests;
-      case android_webview.WebViewClient.errorUnknown:
-        return WebResourceErrorType.unknown;
-      case android_webview.WebViewClient.errorUnsafeResource:
-        return WebResourceErrorType.unsafeResource;
-      case android_webview.WebViewClient.errorUnsupportedAuthScheme:
-        return WebResourceErrorType.unsupportedAuthScheme;
-      case android_webview.WebViewClient.errorUnsupportedScheme:
-        return WebResourceErrorType.unsupportedScheme;
-    }
-
-    throw ArgumentError(
-      'Could not find a WebResourceErrorType for errorCode: $errorCode',
-    );
-  }
-
-  /// Whether this [android_webview.WebViewClient] handles navigation requests.
-  bool get handlesNavigation =>
-      loadUrl != null && onNavigationRequestCallback != null;
-
-  @override
-  void onPageStarted(android_webview.WebView webView, String url) {
-    onPageStartedCallback(url);
-  }
-
-  @override
-  void onPageFinished(android_webview.WebView webView, String url) {
-    onPageFinishedCallback(url);
-  }
-
-  @override
-  void onReceivedError(
-    android_webview.WebView webView,
-    int errorCode,
-    String description,
-    String failingUrl,
-  ) {
-    onWebResourceErrorCallback(WebResourceError(
-      errorCode: errorCode,
-      description: description,
-      failingUrl: failingUrl,
-      errorType: _errorCodeToErrorType(errorCode),
-    ));
-  }
-
-  @override
-  void onReceivedRequestError(
-    android_webview.WebView webView,
-    android_webview.WebResourceRequest request,
-    android_webview.WebResourceError error,
-  ) {
-    if (request.isForMainFrame) {
-      onWebResourceErrorCallback(WebResourceError(
-        errorCode: error.errorCode,
-        description: error.description,
-        failingUrl: request.url,
-        errorType: _errorCodeToErrorType(error.errorCode),
-      ));
-    }
-  }
-
-  @override
-  void urlLoading(android_webview.WebView webView, String url) {
-    if (!handlesNavigation) {
-      return;
-    }
-
-    final FutureOr<bool> returnValue = onNavigationRequestCallback!(
-      url: url,
-      isForMainFrame: true,
-    );
-
-    if (returnValue is bool && returnValue) {
-      loadUrl!(url, <String, String>{});
-    } else if (returnValue is Future<bool>) {
-      returnValue.then((bool shouldLoadUrl) {
-        if (shouldLoadUrl) {
-          loadUrl!(url, <String, String>{});
-        }
-      });
-    }
-  }
-
-  @override
-  void requestLoading(
-    android_webview.WebView webView,
-    android_webview.WebResourceRequest request,
-  ) {
-    if (!handlesNavigation) {
-      return;
-    }
-
-    final FutureOr<bool> returnValue = onNavigationRequestCallback!(
-      url: request.url,
-      isForMainFrame: request.isForMainFrame,
-    );
-
-    if (returnValue is bool && returnValue) {
-      loadUrl!(request.url, <String, String>{});
-    } else if (returnValue is Future<bool>) {
-      returnValue.then((bool shouldLoadUrl) {
-        if (shouldLoadUrl) {
-          loadUrl!(request.url, <String, String>{});
-        }
-      });
-    }
-  }
-}
+// /// Receives various navigation requests and errors for [WebViewAndroidPlatformController].
+// ///
+// /// When handling navigation requests, this calls [onNavigationRequestCallback]
+// /// when a [android_webview.WebView] attempts to navigate to a new page. If
+// /// this callback return true, this calls [loadUrl].
+// class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
+//   /// Creates a [WebViewAndroidWebViewClient] that doesn't handle navigation requests.
+//   WebViewAndroidWebViewClient({
+//     required this.onPageStartedCallback,
+//     required this.onPageFinishedCallback,
+//     required this.onWebResourceErrorCallback,
+//   })  : loadUrl = null,
+//         onNavigationRequestCallback = null,
+//         super(shouldOverrideUrlLoading: false);
+//
+//   /// Creates a [WebViewAndroidWebViewClient] that handles navigation requests.
+//   WebViewAndroidWebViewClient.handlesNavigation({
+//     required this.onPageStartedCallback,
+//     required this.onPageFinishedCallback,
+//     required this.onWebResourceErrorCallback,
+//     required this.onNavigationRequestCallback,
+//     required this.loadUrl,
+//   }) : super(shouldOverrideUrlLoading: true);
+//
+//   /// Callback when [android_webview.WebViewClient] receives a callback from [android_webview.WebViewClient].onPageStarted.
+//   final void Function(String url) onPageStartedCallback;
+//
+//   /// Callback when [android_webview.WebViewClient] receives a callback from [android_webview.WebViewClient].onPageFinished.
+//   final void Function(String url) onPageFinishedCallback;
+//
+//   /// Callback when [android_webview.WebViewClient] receives an error callback.
+//   void Function(WebResourceError error) onWebResourceErrorCallback;
+//
+//   /// Checks whether a navigation request should be approved or disaproved.
+//   final FutureOr<bool> Function({
+//     required String url,
+//     required bool isForMainFrame,
+//   })? onNavigationRequestCallback;
+//
+//   /// Callback when a navigation request is approved.
+//   final Future<void> Function(String url, Map<String, String>? headers)?
+//       loadUrl;
+//
+//   static WebResourceErrorType _errorCodeToErrorType(int errorCode) {
+//     switch (errorCode) {
+//       case android_webview.WebViewClient.errorAuthentication:
+//         return WebResourceErrorType.authentication;
+//       case android_webview.WebViewClient.errorBadUrl:
+//         return WebResourceErrorType.badUrl;
+//       case android_webview.WebViewClient.errorConnect:
+//         return WebResourceErrorType.connect;
+//       case android_webview.WebViewClient.errorFailedSslHandshake:
+//         return WebResourceErrorType.failedSslHandshake;
+//       case android_webview.WebViewClient.errorFile:
+//         return WebResourceErrorType.file;
+//       case android_webview.WebViewClient.errorFileNotFound:
+//         return WebResourceErrorType.fileNotFound;
+//       case android_webview.WebViewClient.errorHostLookup:
+//         return WebResourceErrorType.hostLookup;
+//       case android_webview.WebViewClient.errorIO:
+//         return WebResourceErrorType.io;
+//       case android_webview.WebViewClient.errorProxyAuthentication:
+//         return WebResourceErrorType.proxyAuthentication;
+//       case android_webview.WebViewClient.errorRedirectLoop:
+//         return WebResourceErrorType.redirectLoop;
+//       case android_webview.WebViewClient.errorTimeout:
+//         return WebResourceErrorType.timeout;
+//       case android_webview.WebViewClient.errorTooManyRequests:
+//         return WebResourceErrorType.tooManyRequests;
+//       case android_webview.WebViewClient.errorUnknown:
+//         return WebResourceErrorType.unknown;
+//       case android_webview.WebViewClient.errorUnsafeResource:
+//         return WebResourceErrorType.unsafeResource;
+//       case android_webview.WebViewClient.errorUnsupportedAuthScheme:
+//         return WebResourceErrorType.unsupportedAuthScheme;
+//       case android_webview.WebViewClient.errorUnsupportedScheme:
+//         return WebResourceErrorType.unsupportedScheme;
+//     }
+//
+//     throw ArgumentError(
+//       'Could not find a WebResourceErrorType for errorCode: $errorCode',
+//     );
+//   }
+//
+//   /// Whether this [android_webview.WebViewClient] handles navigation requests.
+//   bool get handlesNavigation =>
+//       loadUrl != null && onNavigationRequestCallback != null;
+//
+//   @override
+//   void onPageStarted(android_webview.WebView webView, String url) {
+//     onPageStartedCallback(url);
+//   }
+//
+//   @override
+//   void onPageFinished(android_webview.WebView webView, String url) {
+//     onPageFinishedCallback(url);
+//   }
+//
+//   @override
+//   void onReceivedError(
+//     android_webview.WebView webView,
+//     int errorCode,
+//     String description,
+//     String failingUrl,
+//   ) {
+//     onWebResourceErrorCallback(WebResourceError(
+//       errorCode: errorCode,
+//       description: description,
+//       failingUrl: failingUrl,
+//       errorType: _errorCodeToErrorType(errorCode),
+//     ));
+//   }
+//
+//   @override
+//   void onReceivedRequestError(
+//     android_webview.WebView webView,
+//     android_webview.WebResourceRequest request,
+//     android_webview.WebResourceError error,
+//   ) {
+//     if (request.isForMainFrame) {
+//       onWebResourceErrorCallback(WebResourceError(
+//         errorCode: error.errorCode,
+//         description: error.description,
+//         failingUrl: request.url,
+//         errorType: _errorCodeToErrorType(error.errorCode),
+//       ));
+//     }
+//   }
+//
+//   @override
+//   void urlLoading(android_webview.WebView webView, String url) {
+//     if (!handlesNavigation) {
+//       return;
+//     }
+//
+//     final FutureOr<bool> returnValue = onNavigationRequestCallback!(
+//       url: url,
+//       isForMainFrame: true,
+//     );
+//
+//     if (returnValue is bool && returnValue) {
+//       loadUrl!(url, <String, String>{});
+//     } else if (returnValue is Future<bool>) {
+//       returnValue.then((bool shouldLoadUrl) {
+//         if (shouldLoadUrl) {
+//           loadUrl!(url, <String, String>{});
+//         }
+//       });
+//     }
+//   }
+//
+//   @override
+//   void requestLoading(
+//     android_webview.WebView webView,
+//     android_webview.WebResourceRequest request,
+//   ) {
+//     if (!handlesNavigation) {
+//       return;
+//     }
+//
+//     final FutureOr<bool> returnValue = onNavigationRequestCallback!(
+//       url: request.url,
+//       isForMainFrame: request.isForMainFrame,
+//     );
+//
+//     if (returnValue is bool && returnValue) {
+//       loadUrl!(request.url, <String, String>{});
+//     } else if (returnValue is Future<bool>) {
+//       returnValue.then((bool shouldLoadUrl) {
+//         if (shouldLoadUrl) {
+//           loadUrl!(request.url, <String, String>{});
+//         }
+//       });
+//     }
+//   }
+// }
 
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebViewAndroidPlatformController].
 class WebViewAndroidWebChromeClient extends android_webview.WebChromeClient {

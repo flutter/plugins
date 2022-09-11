@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:webview_flutter_android/src/instance_manager.dart';
+import 'package:webview_flutter_android/src/weak_reference_utils.dart';
 import 'package:webview_flutter_android/webview_android.dart';
 import 'package:webview_flutter_android/webview_surface_android.dart';
 import 'package:webview_flutter_android_example/navigation_decision.dart';
@@ -102,6 +104,28 @@ Future<void> main() async {
       completion(secondaryUrl),
     );
   });
+
+  testWidgets(
+      'withWeakRefenceTo allows encapsulating class to be garbage collected',
+      (WidgetTester tester) async {
+    final Completer<int> gcCompleter = Completer<int>();
+    final InstanceManager instanceManager = InstanceManager(
+      onWeakReferenceRemoved: gcCompleter.complete,
+    );
+
+    ClassWithCallbackClass? instance = ClassWithCallbackClass();
+    instanceManager.addHostCreatedInstance(instance.callbackClass, 0);
+    instance = null;
+
+    // Force garbage collection.
+    await IntegrationTestWidgetsFlutterBinding.instance
+        .watchPerformance(() async {
+      await tester.pumpAndSettle();
+    });
+
+    final int gcIdentifier = await gcCompleter.future;
+    expect(gcIdentifier, 0);
+  }, timeout: const Timeout(Duration(seconds: 10)));
 
   testWidgets('evaluateJavascript', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -1511,4 +1535,34 @@ class ResizableWebViewState extends State<ResizableWebView> {
       ),
     );
   }
+}
+
+class CopyableObjectWithCallback with Copyable {
+  CopyableObjectWithCallback(this.callback);
+
+  final VoidCallback callback;
+
+  @override
+  CopyableObjectWithCallback copy() {
+    return CopyableObjectWithCallback(callback);
+  }
+}
+
+class ClassWithCallbackClass {
+  ClassWithCallbackClass() {
+    callbackClass = CopyableObjectWithCallback(
+      withWeakRefenceTo(
+        this,
+        (WeakReference<ClassWithCallbackClass> weakReference) {
+          return () {
+            // Weak reference to `this` in callback.
+            // ignore: unnecessary_statements
+            weakReference;
+          };
+        },
+      ),
+    );
+  }
+
+  late final CopyableObjectWithCallback callbackClass;
 }

@@ -619,7 +619,7 @@ class JavaScriptChannel extends JavaObject {
   /// Constructs a [JavaScriptChannel].
   JavaScriptChannel(
     this.channelName, {
-    void Function(String message)? postMessage,
+    required this.postMessage,
   }) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
@@ -631,7 +631,7 @@ class JavaScriptChannel extends JavaObject {
   /// create copies.
   JavaScriptChannel.detached(
     this.channelName, {
-    void Function(String message)? postMessage,
+    required this.postMessage,
   }) : super.detached();
 
   /// Pigeon Host Api implementation for [JavaScriptChannel].
@@ -642,7 +642,7 @@ class JavaScriptChannel extends JavaObject {
   final String channelName;
 
   /// Callback method when javaScript calls `postMessage` on the object instance passed.
-  void postMessage(String message) {}
+  final void Function(String message) postMessage;
 
   @override
   JavaScriptChannel copy() {
@@ -655,23 +655,12 @@ class WebViewClient extends JavaObject {
   /// Constructs a [WebViewClient].
   WebViewClient({
     this.shouldOverrideUrlLoading = true,
-    void Function(WebView webView, String url)? onPageStarted,
-    void Function(WebView webView, String url)? onPageFinished,
-    void Function(
-      WebView webView,
-      WebResourceRequest request,
-      WebResourceError error,
-    )?
-        onReceivedRequestError,
-    void Function(
-      WebView webView,
-      int errorCode,
-      String description,
-      String failingUrl,
-    )?
-        onReceivedError,
-    void Function(WebView webView, WebResourceRequest request)? requestLoading,
-    void Function(WebView webView, String url)? urlLoading,
+    this.onPageStarted,
+    this.onPageFinished,
+    this.onReceivedRequestError,
+    @Deprecated('Only called on Android version < 23.') this.onReceivedError,
+    this.requestLoading,
+    this.urlLoading,
   }) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
@@ -682,23 +671,12 @@ class WebViewClient extends JavaObject {
   /// create copies.
   WebViewClient.detached({
     this.shouldOverrideUrlLoading = true,
-    void Function(WebView webView, String url)? onPageStarted,
-    void Function(WebView webView, String url)? onPageFinished,
-    void Function(
-      WebView webView,
-      WebResourceRequest request,
-      WebResourceError error,
-    )?
-        onReceivedRequestError,
-    void Function(
-      WebView webView,
-      int errorCode,
-      String description,
-      String failingUrl,
-    )?
-        onReceivedError,
-    void Function(WebView webView, WebResourceRequest request)? requestLoading,
-    void Function(WebView webView, String url)? urlLoading,
+    this.onPageStarted,
+    this.onPageFinished,
+    this.onReceivedRequestError,
+    @Deprecated('Only called on Android version < 23.') this.onReceivedError,
+    this.requestLoading,
+    this.urlLoading,
   }) : super.detached();
 
   /// User authentication failed on server.
@@ -807,7 +785,7 @@ class WebViewClient extends JavaObject {
   /// embedded frame changes, i.e. clicking a link whose target is an iframe, it
   /// will also not be called for fragment navigations (navigations to
   /// #fragment_id).
-  void onPageStarted(WebView webView, String url) {}
+  final void Function(WebView webView, String url)? onPageStarted;
 
   // TODO(bparrishMines): Update documentation when WebView.postVisualStateCallback is added.
   /// Notify the host application that a page has finished loading.
@@ -815,7 +793,7 @@ class WebViewClient extends JavaObject {
   /// This method is called only for main frame. Receiving an [onPageFinished]
   /// callback does not guarantee that the next frame drawn by WebView will
   /// reflect the state of the DOM at this point.
-  void onPageFinished(WebView webView, String url) {}
+  final void Function(WebView webView, String url)? onPageFinished;
 
   /// Report web resource loading error to the host application.
   ///
@@ -824,23 +802,23 @@ class WebViewClient extends JavaObject {
   /// be called for any resource (iframe, image, etc.), not just for the main
   /// page. Thus, it is recommended to perform minimum required work in this
   /// callback.
-  void onReceivedRequestError(
+  final void Function(
     WebView webView,
     WebResourceRequest request,
     WebResourceError error,
-  ) {}
+  )? onReceivedRequestError;
 
   /// Report an error to the host application.
   ///
   /// These errors are unrecoverable (i.e. the main resource is unavailable).
   /// The errorCode parameter corresponds to one of the error* constants.
   @Deprecated('Only called on Android version < 23.')
-  void onReceivedError(
+  final void Function(
     WebView webView,
     int errorCode,
     String description,
     String failingUrl,
-  ) {}
+  )? onReceivedError;
 
   // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
   /// When a URL is about to be loaded in the current [WebView].
@@ -850,7 +828,8 @@ class WebViewClient extends JavaObject {
   /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
   /// causes the current [WebView] to abort loading the URL, while returning
   /// false causes the [WebView] to continue loading the URL as usual.
-  void requestLoading(WebView webView, WebResourceRequest request) {}
+  final void Function(WebView webView, WebResourceRequest request)?
+      requestLoading;
 
   // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
   /// When a URL is about to be loaded in the current [WebView].
@@ -860,7 +839,7 @@ class WebViewClient extends JavaObject {
   /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
   /// causes the current [WebView] to abort loading the URL, while returning
   /// false causes the [WebView] to continue loading the URL as usual.
-  void urlLoading(WebView webView, String url) {}
+  final void Function(WebView webView, String url)? urlLoading;
 
   @override
   WebViewClient copy() {
@@ -880,16 +859,7 @@ class WebViewClient extends JavaObject {
 /// engine for [WebView], and should be downloaded instead.
 class DownloadListener extends JavaObject {
   /// Constructs a [DownloadListener].
-  DownloadListener({
-    void Function(
-      String url,
-      String userAgent,
-      String contentDisposition,
-      String mimetype,
-      int contentLength,
-    )?
-        onDownloadStart,
-  }) : super.detached() {
+  DownloadListener({required this.onDownloadStart}) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
 
@@ -898,29 +868,20 @@ class DownloadListener extends JavaObject {
   ///
   /// This should only be used by subclasses created by this library or to
   /// create copies.
-  DownloadListener.detached({
-    void Function(
-      String url,
-      String userAgent,
-      String contentDisposition,
-      String mimetype,
-      int contentLength,
-    )?
-        onDownloadStart,
-  }) : super.detached();
+  DownloadListener.detached({required this.onDownloadStart}) : super.detached();
 
   /// Pigeon Host Api implementation for [DownloadListener].
   @visibleForTesting
   static DownloadListenerHostApiImpl api = DownloadListenerHostApiImpl();
 
   /// Notify the host application that a file should be downloaded.
-  void onDownloadStart(
+  final void Function(
     String url,
     String userAgent,
     String contentDisposition,
     String mimetype,
     int contentLength,
-  ) {}
+  ) onDownloadStart;
 
   @override
   DownloadListener copy() {
@@ -931,9 +892,7 @@ class DownloadListener extends JavaObject {
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebView].
 class WebChromeClient extends JavaObject {
   /// Constructs a [WebChromeClient].
-  WebChromeClient({
-    void Function(WebView webView, int progress)? onProgressChanged,
-  }) : super.detached() {
+  WebChromeClient({this.onProgressChanged}) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
 
@@ -942,16 +901,14 @@ class WebChromeClient extends JavaObject {
   ///
   /// This should only be used by subclasses created by this library or to
   /// create copies.
-  WebChromeClient.detached({
-    void Function(WebView webView, int progress)? onProgressChanged,
-  }) : super.detached();
+  WebChromeClient.detached({this.onProgressChanged}) : super.detached();
 
   /// Pigeon Host Api implementation for [WebChromeClient].
   @visibleForTesting
   static WebChromeClientHostApiImpl api = WebChromeClientHostApiImpl();
 
   /// Notify the host application that a file should be downloaded.
-  void onProgressChanged(WebView webView, int progress) {}
+  final void Function(WebView webView, int progress)? onProgressChanged;
 
   @override
   WebChromeClient copy() {

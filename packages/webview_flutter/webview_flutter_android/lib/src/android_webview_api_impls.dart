@@ -589,7 +589,9 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       webViewInstance != null,
       'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
     );
-    instance!.onPageFinished(webViewInstance!, url);
+    if (instance!.onPageFinished != null) {
+      instance.onPageFinished!(webViewInstance!, url);
+    }
   }
 
   @override
@@ -606,7 +608,9 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       webViewInstance != null,
       'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
     );
-    instance!.onPageStarted(webViewInstance!, url);
+    if (instance!.onPageStarted != null) {
+      instance.onPageStarted!(webViewInstance!, url);
+    }
   }
 
   @override
@@ -630,12 +634,14 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
     );
     // ignore: deprecated_member_use_from_same_package
-    instance!.onReceivedError(
-      webViewInstance!,
-      errorCode,
-      description,
-      failingUrl,
-    );
+    if (instance!.onReceivedError != null) {
+      instance.onReceivedError!(
+        webViewInstance!,
+        errorCode,
+        description,
+        failingUrl,
+      );
+    }
   }
 
   @override
@@ -657,11 +663,13 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       webViewInstance != null,
       'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
     );
-    instance!.onReceivedRequestError(
-      webViewInstance!,
-      _toWebResourceRequest(request),
-      _toWebResourceError(error),
-    );
+    if (instance!.onReceivedRequestError != null) {
+      instance.onReceivedRequestError!(
+        webViewInstance!,
+        _toWebResourceRequest(request),
+        _toWebResourceError(error),
+      );
+    }
   }
 
   @override
@@ -682,7 +690,12 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       webViewInstance != null,
       'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
     );
-    instance!.requestLoading(webViewInstance!, _toWebResourceRequest(request));
+    if (instance!.requestLoading != null) {
+      instance.requestLoading!(
+        webViewInstance!,
+        _toWebResourceRequest(request),
+      );
+    }
   }
 
   @override
@@ -703,7 +716,9 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       webViewInstance != null,
       'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
     );
-    instance!.urlLoading(webViewInstance!, url);
+    if (instance!.urlLoading != null) {
+      instance.urlLoading!(webViewInstance!, url);
+    }
   }
 }
 
@@ -822,7 +837,9 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
       webViewInstance != null,
       'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
     );
-    instance!.onProgressChanged(webViewInstance!, progress);
+    if (instance!.onProgressChanged != null) {
+      instance.onProgressChanged!(webViewInstance!, progress);
+    }
   }
 }
 

@@ -544,7 +544,7 @@ void main() {
 
       test('copy', () {
         expect(
-          JavaScriptChannel.detached('channel').copy(),
+          JavaScriptChannel.detached('channel', postMessage: (_) {}).copy(),
           isA<JavaScriptChannel>(),
         );
       });
