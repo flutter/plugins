@@ -67,7 +67,8 @@
 - (nullable FLTPlatformImage *)getPlatformImageName:(NSString *)name
                                               error:(FlutterError *_Nullable *_Nonnull)error {
   UIImage *image = [UIImage imageNamed:name];
-  NSData *data = UIImagePNGRepresentation(image);
+  FlutterStandardTypedData *data =
+      [FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)];
 
   return [FLTPlatformImage makeWithScale:@(image.scale) bytes:data];
 }
