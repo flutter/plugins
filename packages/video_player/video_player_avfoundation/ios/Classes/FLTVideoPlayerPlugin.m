@@ -424,8 +424,6 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)setMaxVideoResolutionWithWidth:(long)width height:(long)height {
   if (@available(iOS 11.0, *)) {
     _player.currentItem.preferredMaximumResolution = CGSizeMake(width, height);
-  } else {
-    // Fallback on earlier versions
   }
 }
 
@@ -609,8 +607,21 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)setMaxVideoResolution:(FLTMaxVideoResolutionMessage *)input error:(FlutterError **)error {
-  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player setMaxVideoResolutionWithWidth:input.width.intValue height:input.height.intValue];
+  int width = input.width.intValue;
+  int height = input.height.intValue;
+
+  if (width > 0 && height > 0) {
+    FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+    [player setMaxVideoResolutionWithWidth:width height:height];
+  } else if (width <= 0) {
+    *error = [FlutterError errorWithCode:@"VideoError"
+                                 message:@"Non-positive resolution width is generally unsupported."
+                                 details:nil];
+  } else if (height <= 0) {
+    *error = [FlutterError errorWithCode:@"VideoError"
+                                 message:@"Non-positive resolution height is generally unsupported."
+                                 details:nil];
+  }
 }
 
 - (void)play:(FLTTextureMessage *)input error:(FlutterError **)error {
