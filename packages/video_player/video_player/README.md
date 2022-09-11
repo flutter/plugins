@@ -7,7 +7,7 @@
 A Flutter plugin for iOS, Android and Web for playing back video on a Widget surface.
 
 |             | Android | iOS  | Web   |
-|-------------|---------|------|-------|
+| ----------- | ------- | ---- | ----- |
 | **Support** | SDK 16+ | 9.0+ | Any\* |
 
 ![The example app running in iOS](https://github.com/flutter/plugins/blob/main/packages/video_player/video_player/doc/demo_ipod.gif?raw=true)
@@ -53,6 +53,7 @@ The `VideoPlayerOptions.mixWithOthers` option can't be implemented in web, at le
 ## Example
 
 <?code-excerpt "basic.dart (basic-example)"?>
+
 ```dart
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -125,6 +126,34 @@ documentation in order to give a more elaborate overview of the API.
 
 This is not complete as of now. You can contribute to this section by [opening a pull request](https://github.com/flutter/plugins/pulls).
 
+### Data Sources
+
+You can provide a video from different data sources using different constructors.
+
+- `VideoPlayerController.asset` loads a video from your Flutter assets,
+- `VideoPlayerController.file` loads a video from a local file,
+- `VideoPlayerController.network` loads a video from the network, and
+- (**Android Only**) `VideoPlayerController.contentUri` loads a video from a provided content-uri.
+
+You cannot pass a YouTube video URI into the `VideoPlayerController.network` constructor.
+Functionality to decode YouTube URIs is not provided by this plugin.
+
+To learn more about the limitations of `VideoPlayerController` constructors, see the [`Constructors` documentation](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController-class.html#constructors).
+
+For specific information on supported video formats on each platform, please refer back to the [Supported Formats](##supported-formats) section.
+
+### Looping
+
+You can set the looping behavior on your `_controller` (instance of `VideoPlayerController`) by calling
+`_controller.setLooping`. `setLooping` takes a `bool` value indicating whether the video will loop after being played once. Looping behavior defaults to false.
+
+You can also set the `_controller` to start the video at a specific timestamp by calling `_controller.seekTo`.
+`seekTo` takes a `Duration` object (`moment`) indicating the timestamp from where the video will resume the next time it is played.
+
+Setting looping to true and providing a to the `seekTo` method will start the video again from the provided `moment`.
+
+For more information on these methods, please refer to the [`setLooping` method documentation]() and the [`seekTo` method documentation]().
+
 ### Playback speed
 
 You can set the playback speed on your `_controller` (instance of `VideoPlayerController`) by
@@ -136,3 +165,15 @@ and so on.
 To learn about playback speed limitations, see the [`setPlaybackSpeed` method documentation](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setPlaybackSpeed.html).
 
 Furthermore, see the example app for an example playback speed implementation.
+
+### Closed Captioning
+
+#### Caption Files
+
+You can set the closed captioning on your `_controller` by calling `_setClosedCaptionFile`. Supported caption file formats are the SubRip (.srt) and WebVTT (.vtt) file formats.
+
+#### Displaying Captions
+
+You can use the `ClosedCaption` widget to display captions on a video in an overlay.
+
+You can access the caption string from the `_controller` using `_controller.value.caption.text`.
