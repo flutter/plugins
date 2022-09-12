@@ -63,5 +63,5 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     androidTestImplementation 'androidx.test.ext:junit:1.0.0'
     androidTestImplementation 'org.mockito:mockito-core:4.7.0'
-    androidTestImplementation 'org.mockito:mockito-android:4.7.0'
+    androidTestImplementation 'org.mockito:mockito-android:4.8.0'
 }
