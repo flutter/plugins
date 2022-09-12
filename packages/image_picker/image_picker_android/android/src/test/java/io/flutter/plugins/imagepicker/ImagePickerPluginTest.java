@@ -132,7 +132,7 @@ public class ImagePickerPluginTest {
 
   @Test
   public void
-  onMethodCall_PickingImage_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
+      onMethodCall_PickingImage_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
     MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
     HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
     arguments.put("cameraDevice", 1);
@@ -151,7 +151,7 @@ public class ImagePickerPluginTest {
 
   @Test
   public void
-  onMethodCall_PickingVideo_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
+      onMethodCall_PickingVideo_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
     MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
     HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
     arguments.put("cameraDevice", 1);
@@ -182,8 +182,10 @@ public class ImagePickerPluginTest {
     ImagePickerDelegate delegate = plugin.constructDelegate(mockActivity);
 
     verify(mockActivity, times(1)).getCacheDir();
-    assertThat("Delegate uses cache directory for storing camera captures",
-        delegate.externalFilesDirectory, equalTo(mockDirectory));
+    assertThat(
+        "Delegate uses cache directory for storing camera captures",
+        delegate.externalFilesDirectory,
+        equalTo(mockDirectory));
   }
 
   @Test
