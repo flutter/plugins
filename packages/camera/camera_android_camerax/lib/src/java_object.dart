@@ -27,7 +27,9 @@ class JavaObject {
 
   /// Global instance of [InstanceManager].
   static final InstanceManager globalInstanceManager = InstanceManager(
-    onWeakReferenceRemoved: (_) {},
+    onWeakReferenceRemoved: (int identifier) {
+      JavaObjectHostApiImpl().dispose(identifier);
+    },
   );
 
   /// Pigeon Host Api implementation for [JavaObject].
