@@ -49,13 +49,14 @@ abstract class PlatformInterface {
   }
 
   /// Expando mapping instances of PlatformInterface to their associated tokens.
-  /// The reason we don't simply use a private field of type `Object?` is
-  /// because as part of implementing
-  /// https://github.com/dart-lang/language/issues/2020, it will soon become a
-  /// runtime error to invoke a private member that is mocked in another
-  /// library.  By using an expando rather than an instance field, we ensure
-  /// that we will be able to reliably detect implementations using `implements`
-  /// rather than `extends`.
+  /// The reason this is not simply a private field of type `Object?` is because
+  /// as of the implementation of field promotion in Dart
+  /// (https://github.com/dart-lang/language/issues/2020), it is a runtime error
+  /// to invoke a private member that is mocked in another library.  The expando
+  /// approach prevents [_verify] from triggering this runtime exception when
+  /// encountering an implementation that uses `implements` rather than
+  /// `extends`.  This in turn allows [_verify] to throw an [AssertionError] (as
+  /// documented).
   static final Expando<Object> _instanceTokens = Expando<Object>();
 
   /// Ensures that the platform instance was constructed with a non-`const` token
