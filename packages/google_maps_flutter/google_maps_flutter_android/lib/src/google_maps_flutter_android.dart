@@ -471,19 +471,14 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
     return _channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
   }
 
-  /// Set [GoogleMapsFlutterPlatform] to use [AndroidViewSurface] to build the Google Maps widget.
+  /// Set [GoogleMapsFlutterPlatform] to use [AndroidViewSurface] to build the
+  /// Google Maps widget.
   ///
-  /// This implementation uses hybrid composition to render the Google Maps
-  /// Widget on Android. This comes at the cost of some performance on Android
-  /// versions below 10. See
-  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
-  /// information.
+  /// See https://pub.dev/packages/google_maps_flutter_android#display-mode
+  /// for more information.
   ///
-  /// If set to true, the google map widget should be built with
-  /// [buildViewWithTextDirection] instead of [buildView].
-  ///
-  /// Defaults to false.
-  bool useAndroidViewSurface = false;
+  /// Currently defaults to true, but the default is subject to change.
+  bool useAndroidViewSurface = true;
 
   Widget _buildView(
     int creationId,

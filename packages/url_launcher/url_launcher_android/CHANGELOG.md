@@ -1,5 +1,10 @@
-## NEXT
+## 6.0.19
 
+* Revert gradle back to 3.4.2.
+
+## 6.0.18
+
+* Updates gradle to 7.2.2.
 * Updates minimum Flutter version to 2.10.
 
 ## 6.0.17
