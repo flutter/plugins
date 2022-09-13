@@ -29,7 +29,7 @@ import org.mockito.junit.MockitoRule;
 public class CameraSelectorTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock public CameraSelector cameraSelector;
+  @Mock public CameraSelector mockCameraSelector;
   @Mock public BinaryMessenger mockBinaryMessenger;
 
   InstanceManager testInstanceManager;
@@ -53,11 +53,11 @@ public class CameraSelectorTest {
     cameraSelectorHostApi.cameraSelectorBuilder = mockCameraSelectorBuilder;
 
     when(mockCameraSelectorBuilder.requireLensFacing(1)).thenReturn(mockCameraSelectorBuilder);
-    when(mockCameraSelectorBuilder.build()).thenReturn(cameraSelector);
+    when(mockCameraSelectorBuilder.build()).thenReturn(mockCameraSelector);
 
     assertEquals(
         cameraSelectorHostApi.requireLensFacing(1L),
-        testInstanceManager.getIdentifierForStrongReference(cameraSelector));
+        testInstanceManager.getIdentifierForStrongReference(mockCameraSelector));
     verify(mockCameraSelectorBuilder).requireLensFacing(CameraSelector.LENS_FACING_BACK);
   }
 
@@ -69,15 +69,15 @@ public class CameraSelectorTest {
     final List<CameraInfo> cameraInfosForFilter = Arrays.asList(cameraInfo);
     final List<Long> cameraInfosIds = Arrays.asList(1L);
 
-    testInstanceManager.addDartCreatedInstance(cameraSelector, 0);
+    testInstanceManager.addDartCreatedInstance(mockCameraSelector, 0);
     testInstanceManager.addDartCreatedInstance(cameraInfo, 1);
 
-    when(cameraSelector.filter(cameraInfosForFilter)).thenReturn(cameraInfosForFilter);
+    when(mockCameraSelector.filter(cameraInfosForFilter)).thenReturn(cameraInfosForFilter);
 
     assertEquals(
         cameraSelectorHostApi.filter(0L, cameraInfosIds),
         Arrays.asList(testInstanceManager.getIdentifierForStrongReference(cameraInfo)));
-    verify(cameraSelector).filter(cameraInfosForFilter);
+    verify(mockCameraSelector).filter(cameraInfosForFilter);
   }
 
   @Test
@@ -85,11 +85,12 @@ public class CameraSelectorTest {
     final CameraSelectorFlutterApiImpl spyFlutterApi =
         spy(new CameraSelectorFlutterApiImpl(mockBinaryMessenger, testInstanceManager));
 
-    testInstanceManager.addHostCreatedInstance(cameraSelector);
-    spyFlutterApi.create(cameraSelector, 0L, reply -> {});
+    testInstanceManager.addHostCreatedInstance(mockCameraSelector);
+    spyFlutterApi.create(mockCameraSelector, 0L, reply -> {});
 
     final long identifier =
-        Objects.requireNonNull(testInstanceManager.getIdentifierForStrongReference(cameraSelector));
+        Objects.requireNonNull(
+            testInstanceManager.getIdentifierForStrongReference(mockCameraSelector));
     verify(spyFlutterApi).create(eq(identifier), eq(0L), any());
   }
 }
