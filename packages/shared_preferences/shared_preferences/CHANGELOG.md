@@ -1,3 +1,9 @@
+
+
+## 2.0.20
+
+* Added List<List<String>> functionality.
+
 ## NEXT
 
 * Updates minimum Flutter version to 2.10.
