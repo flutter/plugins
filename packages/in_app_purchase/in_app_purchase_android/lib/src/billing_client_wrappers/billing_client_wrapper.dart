@@ -516,7 +516,7 @@ enum ProrationMode {
   @JsonValue(3)
   immediateWithoutProration,
 
-  /// Replacement takes effect when the old plan expires, and the new price will 
+  /// Replacement takes effect when the old plan expires, and the new price will
   /// be charged at the same time.
   @JsonValue(4)
   deferred,
