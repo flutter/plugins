@@ -90,15 +90,15 @@ class SharedPreferences {
     return list?.toList() as List<String>?;
   }
 
-  /// Reads a set of string values from persistent storage, throwing an
-  /// exception if it's not a string set.
+  /// Reads a set of List<string> values from persistent storage, throwing an
+  /// exception if it's not a List<string> set.
   List<List<String>>? getStringListList(String key) {
     List<List<dynamic>>? listList = _preferenceCache[key] as List<List<dynamic>>?;
     if (listList != null && listList is! List<List<String>>) {
       listList = listList.cast<List<String>>().toList();
       _preferenceCache[key] = listList;
     }
-    // Make a copy of the list so that later mutations won't propagate
+    // Make a copy of the list<list> so that later mutations won't propagate
     return listList?.toList() as List<List<String>>?;
   }
 
