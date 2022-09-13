@@ -1,3 +1,7 @@
+## 2.10.1
+
+* Adds a getter for access to the Java InstanceManager.
+
 ## 2.10.0
 
 * Bumps webkit from 1.0.0 to 1.5.0.
