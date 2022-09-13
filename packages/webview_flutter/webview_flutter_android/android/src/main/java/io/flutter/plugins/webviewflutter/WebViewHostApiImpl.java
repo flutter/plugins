@@ -501,6 +501,9 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     webView.setBackgroundColor(color.intValue());
   }
 
+  /**
+   * Maintains instances used to communicate with the corresponding WebView Dart object.
+   */
   public InstanceManager getInstanceManager() {
     return instanceManager;
   }

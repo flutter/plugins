@@ -169,6 +169,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(context.getMainLooper()));
   }
 
+  /**
+   * Maintains instances used to communicate with the corresponding objects in Dart.
+   */
   @Nullable
   public InstanceManager getInstanceManager() {
     return instanceManager;
