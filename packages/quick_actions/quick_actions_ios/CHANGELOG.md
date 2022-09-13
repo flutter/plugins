@@ -1,3 +1,7 @@
+## NEXT
+
+* Migrates `RunnerUITests` to Swift.
+
 ## 1.0.1
 
 * Removes custom modulemap file with "Test" submodule and private headers for Swift migration. 
