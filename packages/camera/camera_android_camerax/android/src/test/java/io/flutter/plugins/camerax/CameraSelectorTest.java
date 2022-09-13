@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.camerax;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -53,9 +53,12 @@ public class CameraSelectorTest {
     cameraSelectorHostApi.cameraSelectorBuilder = mockCameraSelectorBuilder;
 
     when(mockCameraSelectorBuilder.requireLensFacing(1)).thenReturn(mockCameraSelectorBuilder);
+    when(mockCameraSelectorBuilder.build()).thenReturn(cameraSelector);
 
-    cameraSelectorHostApi.requireLensFacing(1L);
-    verify(mockCameraSelectorBuilder).requireLensFacing(anyInt());
+    assertEquals(
+        cameraSelectorHostApi.requireLensFacing(1L),
+        testInstanceManager.getIdentifierForStrongReference(cameraSelector));
+    verify(mockCameraSelectorBuilder).requireLensFacing(CameraSelector.LENS_FACING_BACK);
   }
 
   @Test
@@ -69,7 +72,11 @@ public class CameraSelectorTest {
     testInstanceManager.addDartCreatedInstance(cameraSelector, 0);
     testInstanceManager.addDartCreatedInstance(cameraInfo, 1);
 
-    cameraSelectorHostApi.filter(0L, cameraInfosIds);
+    when(cameraSelector.filter(cameraInfosForFilter)).thenReturn(cameraInfosForFilter);
+
+    assertEquals(
+        cameraSelectorHostApi.filter(0L, cameraInfosIds),
+        Arrays.asList(testInstanceManager.getIdentifierForStrongReference(cameraInfo)));
     verify(cameraSelector).filter(cameraInfosForFilter);
   }
 

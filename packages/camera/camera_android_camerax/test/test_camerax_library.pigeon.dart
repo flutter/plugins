@@ -86,7 +86,7 @@ abstract class TestCameraSelectorHostApi {
   static const MessageCodec<Object?> codec = _TestCameraSelectorHostApiCodec();
 
   int requireLensFacing(int lensDirection);
-  List<int?> filter(int instanceId, List<int?> cameraInfoIds);
+  List<int?> filter(int identifier, List<int?> cameraInfoIds);
   static void setup(TestCameraSelectorHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -119,15 +119,15 @@ abstract class TestCameraSelectorHostApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.CameraSelectorHostApi.filter was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.CameraSelectorHostApi.filter was null, expected non-null int.');
           final List<int?>? arg_cameraInfoIds =
               (args[1] as List<Object?>?)?.cast<int?>();
           assert(arg_cameraInfoIds != null,
               'Argument for dev.flutter.pigeon.CameraSelectorHostApi.filter was null, expected non-null List<int?>.');
           final List<int?> output =
-              api.filter(arg_instanceId!, arg_cameraInfoIds!);
+              api.filter(arg_identifier!, arg_cameraInfoIds!);
           return <Object?, Object?>{'result': output};
         });
       }

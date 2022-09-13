@@ -32,7 +32,7 @@ class MockTestCameraSelectorHostApi extends _i1.Mock
       Invocation.method(#requireLensFacing, [lensDirection]),
       returnValue: 0) as int);
   @override
-  List<int?> filter(int? instanceId, List<int?>? cameraInfoIds) => (super
-      .noSuchMethod(Invocation.method(#filter, [instanceId, cameraInfoIds]),
+  List<int?> filter(int? identifier, List<int?>? cameraInfoIds) => (super
+      .noSuchMethod(Invocation.method(#filter, [identifier, cameraInfoIds]),
           returnValue: <int?>[]) as List<int?>);
 }

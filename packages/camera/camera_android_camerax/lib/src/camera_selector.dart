@@ -98,8 +98,8 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
     CameraSelector instance,
     List<CameraInfo> cameraInfos,
   ) async {
-    int? instanceId = instanceManager.getIdentifier(instance);
-    instanceId ??= instanceManager.addDartCreatedInstance(instance,
+    int? identifier = instanceManager.getIdentifier(instance);
+    identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (CameraSelector original) {
       return CameraSelector.detached(
           binaryMessenger: binaryMessenger,
@@ -110,7 +110,7 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
     final List<int> cameraInfoIds = (cameraInfos.map<int>(
         (CameraInfo info) => instanceManager.getIdentifier(info)!)).toList();
     final List<int?> filteredCameraInfoIds =
-        await filter(instanceId, cameraInfoIds);
+        await filter(identifier, cameraInfoIds);
     if (filteredCameraInfoIds.isEmpty) {
       return <CameraInfo>[];
     }

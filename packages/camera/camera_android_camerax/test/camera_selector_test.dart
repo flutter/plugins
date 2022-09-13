@@ -20,7 +20,7 @@ void main() {
   group('CameraSelector', () {
     tearDown(() => TestCameraSelectorHostApi.setup(null));
 
-    test('requireLensFacingTest', () {
+    test('requireLensFacingTest', () async {
       final MockTestCameraSelectorHostApi mockApi =
           MockTestCameraSelectorHostApi();
       TestCameraSelectorHostApi.setup(mockApi);
@@ -49,12 +49,15 @@ void main() {
 
       when(mockApi.requireLensFacing(CameraSelector.LENS_FACING_BACK))
           .thenReturn(2);
-      cameraSelector.requireLensFacing(CameraSelector.LENS_FACING_BACK);
 
+      expect(
+          await cameraSelector
+              .requireLensFacing(CameraSelector.LENS_FACING_BACK),
+          equals(modifiedCameraSelector));
       verify(mockApi.requireLensFacing(CameraSelector.LENS_FACING_BACK));
     });
 
-    test('filterTest', () {
+    test('filterTest', () async {
       final MockTestCameraSelectorHostApi mockApi =
           MockTestCameraSelectorHostApi();
       TestCameraSelectorHostApi.setup(mockApi);
@@ -82,7 +85,8 @@ void main() {
 
       when(mockApi.filter(instanceManager.getIdentifier(cameraSelector),
           <int>[cameraInfoId])).thenReturn(<int>[cameraInfoId]);
-      cameraSelector.filter(<CameraInfo>[cameraInfo]);
+      expect(await cameraSelector.filter(<CameraInfo>[cameraInfo]),
+          equals(<CameraInfo>[cameraInfo]));
 
       verify(mockApi.filter(0, <int>[cameraInfoId]));
     });

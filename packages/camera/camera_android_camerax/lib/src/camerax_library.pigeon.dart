@@ -204,12 +204,12 @@ class CameraSelectorHostApi {
   }
 
   Future<List<int?>> filter(
-      int arg_instanceId, List<int?> arg_cameraInfoIds) async {
+      int arg_identifier, List<int?> arg_cameraInfoIds) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.CameraSelectorHostApi.filter', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_cameraInfoIds])
+        await channel.send(<Object?>[arg_identifier, arg_cameraInfoIds])
             as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
@@ -242,7 +242,7 @@ class _CameraSelectorFlutterApiCodec extends StandardMessageCodec {
 abstract class CameraSelectorFlutterApi {
   static const MessageCodec<Object?> codec = _CameraSelectorFlutterApiCodec();
 
-  void create(int instanceId, int? lensFacing);
+  void create(int identifier, int? lensFacing);
   static void setup(CameraSelectorFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -256,11 +256,11 @@ abstract class CameraSelectorFlutterApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.CameraSelectorFlutterApi.create was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.CameraSelectorFlutterApi.create was null, expected non-null int.');
           final int? arg_lensFacing = (args[1] as int?);
-          api.create(arg_instanceId!, arg_lensFacing);
+          api.create(arg_identifier!, arg_lensFacing);
           return;
         });
       }

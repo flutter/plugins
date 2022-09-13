@@ -201,7 +201,7 @@ public class GeneratedCameraXLibrary {
     Long requireLensFacing(@NonNull Long lensDirection);
 
     @NonNull
-    List<Long> filter(@NonNull Long instanceId, @NonNull List<Long> cameraInfoIds);
+    List<Long> filter(@NonNull Long identifier, @NonNull List<Long> cameraInfoIds);
 
     /** The codec used by CameraSelectorHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -252,9 +252,9 @@ public class GeneratedCameraXLibrary {
                 Map<String, Object> wrapped = new HashMap<>();
                 try {
                   ArrayList<Object> args = (ArrayList<Object>) message;
-                  Number instanceIdArg = (Number) args.get(0);
-                  if (instanceIdArg == null) {
-                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
                   }
                   List<Long> cameraInfoIdsArg = (List<Long>) args.get(1);
                   if (cameraInfoIdsArg == null) {
@@ -262,7 +262,7 @@ public class GeneratedCameraXLibrary {
                   }
                   List<Long> output =
                       api.filter(
-                          (instanceIdArg == null) ? null : instanceIdArg.longValue(),
+                          (identifierArg == null) ? null : identifierArg.longValue(),
                           cameraInfoIdsArg);
                   wrapped.put("result", output);
                 } catch (Error | RuntimeException exception) {
@@ -301,12 +301,12 @@ public class GeneratedCameraXLibrary {
     }
 
     public void create(
-        @NonNull Long instanceIdArg, @Nullable Long lensFacingArg, Reply<Void> callback) {
+        @NonNull Long identifierArg, @Nullable Long lensFacingArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(
               binaryMessenger, "dev.flutter.pigeon.CameraSelectorFlutterApi.create", getCodec());
       channel.send(
-          new ArrayList<Object>(Arrays.asList(instanceIdArg, lensFacingArg)),
+          new ArrayList<Object>(Arrays.asList(identifierArg, lensFacingArg)),
           channelReply -> {
             callback.reply(null);
           });
