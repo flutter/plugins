@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.View;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -165,5 +166,11 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private void updateContext(Context context) {
     webViewHostApi.setContext(context);
     javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(context.getMainLooper()));
+  }
+
+  /** Maintains instances used to communicate with the corresponding objects in Dart. */
+  @Nullable
+  public InstanceManager getInstanceManager() {
+    return instanceManager;
   }
 }
