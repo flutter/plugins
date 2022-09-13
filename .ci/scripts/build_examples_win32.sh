@@ -4,4 +4,4 @@
 # found in the LICENSE file.
 
 dart ./script/tool/bin/flutter_plugin_tools.dart build-examples --windows \
-   --packages-for-branch --log-timing
+   --packages-for-branch --log-timing --exclude=camera_windows
