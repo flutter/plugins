@@ -1,6 +1,6 @@
 ## 2.10.1
 
-* Adds a getter for access to the Java InstanceManager.
+* Adds a getter to expose the Java InstanceManager.
 
 ## 2.10.0
 
