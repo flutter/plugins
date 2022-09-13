@@ -50,6 +50,27 @@ class GitVersionFinder {
     return changedFiles.toList();
   }
 
+  /// Get a list of all the changed files.
+  Future<List<String>> getDiffContents({
+    String? targetPath,
+    bool includeUncommitted = false,
+  }) async {
+    final String baseSha = await getBaseSha();
+    final io.ProcessResult diffCommand = await baseGitDir.runCommand(<String>[
+      'diff',
+      baseSha,
+      if (!includeUncommitted) 'HEAD',
+      if (targetPath != null) ...<String>['--', targetPath],
+    ]);
+    final String diffStdout = diffCommand.stdout.toString();
+    if (diffStdout.isEmpty) {
+      return <String>[];
+    }
+    final List<String> changedFiles = diffStdout.split('\n')
+      ..removeWhere((String element) => element.isEmpty);
+    return changedFiles.toList();
+  }
+
   /// Get the package version specified in the pubspec file in `pubspecPath` and
   /// at the revision of `gitRef` (defaulting to the base if not provided).
   Future<Version?> getPackageVersion(String pubspecPath,
