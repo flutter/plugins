@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/material.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
@@ -17,8 +18,7 @@ class SharedPreferences {
   static const String _prefix = 'flutter.';
   static Completer<SharedPreferences>? _completer;
 
-  static SharedPreferencesStorePlatform get _store =>
-      SharedPreferencesStorePlatform.instance;
+  static SharedPreferencesStorePlatform get _store => SharedPreferencesStorePlatform.instance;
 
   /// Loads and parses the [SharedPreferences] for this app from disk.
   ///
@@ -26,11 +26,9 @@ class SharedPreferences {
   /// performance-sensitive blocks.
   static Future<SharedPreferences> getInstance() async {
     if (_completer == null) {
-      final Completer<SharedPreferences> completer =
-          Completer<SharedPreferences>();
+      final Completer<SharedPreferences> completer = Completer<SharedPreferences>();
       try {
-        final Map<String, Object> preferencesMap =
-            await _getSharedPreferencesMap();
+        final Map<String, Object> preferencesMap = await _getSharedPreferencesMap();
         completer.complete(SharedPreferences._(preferencesMap));
       } on Exception catch (e) {
         // If there's an error, explicitly return the future with an error.
@@ -92,6 +90,18 @@ class SharedPreferences {
     return list?.toList() as List<String>?;
   }
 
+  /// Reads a set of string values from persistent storage, throwing an
+  /// exception if it's not a string set.
+  List<List<String>>? getStringListList(String key) {
+    List<List<dynamic>>? listList = _preferenceCache[key] as List<List<dynamic>>?;
+    if (listList != null && listList is! List<List<String>>) {
+      listList = listList.cast<List<String>>().toList();
+      _preferenceCache[key] = listList;
+    }
+    // Make a copy of the list so that later mutations won't propagate
+    return listList?.toList() as List<List<String>>?;
+  }
+
   /// Saves a boolean [value] to persistent storage in the background.
   Future<bool> setBool(String key, bool value) => _setValue('Bool', key, value);
 
@@ -101,8 +111,7 @@ class SharedPreferences {
   /// Saves a double [value] to persistent storage in the background.
   ///
   /// Android doesn't support storing doubles, so it will be stored as a float.
-  Future<bool> setDouble(String key, double value) =>
-      _setValue('Double', key, value);
+  Future<bool> setDouble(String key, double value) => _setValue('Double', key, value);
 
   /// Saves a string [value] to persistent storage in the background.
   ///
@@ -112,12 +121,13 @@ class SharedPreferences {
   /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu'
   /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy'
   /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu'
-  Future<bool> setString(String key, String value) =>
-      _setValue('String', key, value);
+  Future<bool> setString(String key, String value) => _setValue('String', key, value);
 
   /// Saves a list of strings [value] to persistent storage in the background.
-  Future<bool> setStringList(String key, List<String> value) =>
-      _setValue('StringList', key, value);
+  Future<bool> setStringList(String key, List<String> value) => _setValue('StringList', key, value);
+
+  /// Saves a listList of strings [value] to persistent storage in the background.
+  Future<bool> setStringListList(String key, List<List<String>> value) => _setValue('StringListList', key, value);
 
   /// Removes an entry from persistent storage.
   Future<bool> remove(String key) {
@@ -132,6 +142,16 @@ class SharedPreferences {
     if (value is List<String>) {
       // Make a copy of the list so that later mutations won't propagate
       _preferenceCache[key] = value.toList();
+    } else if (value is List<List<String>>) {
+      List<List<String>> listList = [[]];
+      listList.clear();
+      for (var i = 0; i < value.toList().length; i++) {
+        listList.add([value.toList()[i].toList()[0].toString()]);
+        for (var j = 1; j < value.toList()[i].toList().length; j++) {
+          listList[i].insert(j,value.toList()[i].toList()[j].toString());
+        }
+      }
+      _preferenceCache[key] = listList;
     } else {
       _preferenceCache[key] = value;
     }
@@ -154,8 +174,7 @@ class SharedPreferences {
   /// Use this method to observe modifications that were made in native code
   /// (without using the plugin) while the app is running.
   Future<void> reload() async {
-    final Map<String, Object> preferences =
-        await SharedPreferences._getSharedPreferencesMap();
+    final Map<String, Object> preferences = await SharedPreferences._getSharedPreferencesMap();
     _preferenceCache.clear();
     _preferenceCache.addAll(preferences);
   }
@@ -177,16 +196,14 @@ class SharedPreferences {
   /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
   static void setMockInitialValues(Map<String, Object> values) {
-    final Map<String, Object> newValues =
-        values.map<String, Object>((String key, Object value) {
+    final Map<String, Object> newValues = values.map<String, Object>((String key, Object value) {
       String newKey = key;
       if (!key.startsWith(_prefix)) {
         newKey = '$_prefix$key';
       }
       return MapEntry<String, Object>(newKey, value);
     });
-    SharedPreferencesStorePlatform.instance =
-        InMemorySharedPreferencesStore.withData(newValues);
+    SharedPreferencesStorePlatform.instance = InMemorySharedPreferencesStore.withData(newValues);
     _completer = null;
   }
 }
