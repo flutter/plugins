@@ -47,10 +47,10 @@ class CameraSelector extends JavaObject {
   ///
   /// If it is null, the default BinaryMessenger will be used which routes to
   /// the host platform.
-  late final BinaryMessenger? binaryMessenger;
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with native language objects.
-  late final InstanceManager? instanceManager;
+  final InstanceManager? instanceManager;
 
   /// Lens direction of this selector.
   final int? lensFacing;
