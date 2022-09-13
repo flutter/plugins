@@ -254,7 +254,7 @@ void main() {
 
       test('getScrollPosition', () async {
         when(mockPlatformHostApi.getScrollPosition(webViewInstanceId))
-            .thenReturn(<int?>[2, 16]);
+            .thenReturn(WebViewPoint(x: 2, y: 16));
         await expectLater(
           webView.getScrollPosition(),
           completion(const Offset(2.0, 16.0)),

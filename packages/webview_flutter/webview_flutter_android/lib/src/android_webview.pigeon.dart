@@ -77,6 +77,31 @@ class WebResourceErrorData {
   }
 }
 
+class WebViewPoint {
+  WebViewPoint({
+    required this.x,
+    required this.y,
+  });
+
+  int x;
+  int y;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['x'] = x;
+    pigeonMap['y'] = y;
+    return pigeonMap;
+  }
+
+  static WebViewPoint decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return WebViewPoint(
+      x: pigeonMap['x']! as int,
+      y: pigeonMap['y']! as int,
+    );
+  }
+}
+
 class _JavaObjectHostApiCodec extends StandardMessageCodec {
   const _JavaObjectHostApiCodec();
 }
@@ -220,6 +245,26 @@ class CookieManagerHostApi {
 
 class _WebViewHostApiCodec extends StandardMessageCodec {
   const _WebViewHostApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is WebViewPoint) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return WebViewPoint.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
 }
 
 class WebViewHostApi {
@@ -733,7 +778,7 @@ class WebViewHostApi {
     }
   }
 
-  Future<List<int?>> getScrollPosition(int arg_instanceId) async {
+  Future<WebViewPoint> getScrollPosition(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WebViewHostApi.getScrollPosition', codec,
         binaryMessenger: _binaryMessenger);
@@ -758,7 +803,7 @@ class WebViewHostApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyMap['result'] as List<Object?>?)!.cast<int?>();
+      return (replyMap['result'] as WebViewPoint?)!;
     }
   }
 

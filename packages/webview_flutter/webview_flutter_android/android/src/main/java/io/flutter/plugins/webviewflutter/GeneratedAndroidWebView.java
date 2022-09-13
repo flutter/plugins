@@ -265,6 +265,78 @@ public class GeneratedAndroidWebView {
     }
   }
 
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class WebViewPoint {
+    private @NonNull Long x;
+
+    public @NonNull Long getX() {
+      return x;
+    }
+
+    public void setX(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"x\" is null.");
+      }
+      this.x = setterArg;
+    }
+
+    private @NonNull Long y;
+
+    public @NonNull Long getY() {
+      return y;
+    }
+
+    public void setY(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"y\" is null.");
+      }
+      this.y = setterArg;
+    }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private WebViewPoint() {}
+
+    public static final class Builder {
+      private @Nullable Long x;
+
+      public @NonNull Builder setX(@NonNull Long setterArg) {
+        this.x = setterArg;
+        return this;
+      }
+
+      private @Nullable Long y;
+
+      public @NonNull Builder setY(@NonNull Long setterArg) {
+        this.y = setterArg;
+        return this;
+      }
+
+      public @NonNull WebViewPoint build() {
+        WebViewPoint pigeonReturn = new WebViewPoint();
+        pigeonReturn.setX(x);
+        pigeonReturn.setY(y);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("x", x);
+      toMapResult.put("y", y);
+      return toMapResult;
+    }
+
+    static @NonNull WebViewPoint fromMap(@NonNull Map<String, Object> map) {
+      WebViewPoint pigeonResult = new WebViewPoint();
+      Object x = map.get("x");
+      pigeonResult.setX((x == null) ? null : ((x instanceof Integer) ? (Integer) x : (Long) x));
+      Object y = map.get("y");
+      pigeonResult.setY((y == null) ? null : ((y instanceof Integer) ? (Integer) y : (Long) y));
+      return pigeonResult;
+    }
+  }
+
   public interface Result<T> {
     void success(T result);
 
@@ -444,6 +516,27 @@ public class GeneratedAndroidWebView {
     public static final WebViewHostApiCodec INSTANCE = new WebViewHostApiCodec();
 
     private WebViewHostApiCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return WebViewPoint.fromMap((Map<String, Object>) readValue(buffer));
+
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(ByteArrayOutputStream stream, Object value) {
+      if (value instanceof WebViewPoint) {
+        stream.write(128);
+        writeValue(stream, ((WebViewPoint) value).toMap());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
   }
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
@@ -505,7 +598,7 @@ public class GeneratedAndroidWebView {
     Long getScrollY(@NonNull Long instanceId);
 
     @NonNull
-    List<Long> getScrollPosition(@NonNull Long instanceId);
+    WebViewPoint getScrollPosition(@NonNull Long instanceId);
 
     void setWebContentsDebuggingEnabled(@NonNull Boolean enabled);
 
@@ -1125,7 +1218,7 @@ public class GeneratedAndroidWebView {
                   if (instanceIdArg == null) {
                     throw new NullPointerException("instanceIdArg unexpectedly null.");
                   }
-                  List<Long> output =
+                  WebViewPoint output =
                       api.getScrollPosition(
                           (instanceIdArg == null) ? null : instanceIdArg.longValue());
                   wrapped.put("result", output);

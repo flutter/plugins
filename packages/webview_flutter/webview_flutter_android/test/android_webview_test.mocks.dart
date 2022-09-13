@@ -4,11 +4,11 @@
 
 import 'dart:async' as _i5;
 import 'dart:typed_data' as _i7;
-import 'dart:ui' as _i3;
+import 'dart:ui' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
-import 'package:webview_flutter_android/src/android_webview.pigeon.dart' as _i4;
+import 'package:webview_flutter_android/src/android_webview.pigeon.dart' as _i3;
 
 import 'test_android_webview.pigeon.dart' as _i6;
 
@@ -22,27 +22,29 @@ import 'test_android_webview.pigeon.dart' as _i6;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-class _FakeDownloadListener_0 extends _i1.Fake
-    implements _i2.DownloadListener {}
+class _FakeDownloadListener_0 extends _i1.Fake implements _i2.DownloadListener {
+}
 
 class _FakeJavaScriptChannel_1 extends _i1.Fake
     implements _i2.JavaScriptChannel {}
 
-class _FakeWebChromeClient_2 extends _i1.Fake implements _i2.WebChromeClient {}
+class _FakeWebViewPoint_2 extends _i1.Fake implements _i3.WebViewPoint {}
 
-class _FakeWebSettings_3 extends _i1.Fake implements _i2.WebSettings {}
+class _FakeWebChromeClient_3 extends _i1.Fake implements _i2.WebChromeClient {}
 
-class _FakeOffset_4 extends _i1.Fake implements _i3.Offset {}
+class _FakeWebSettings_4 extends _i1.Fake implements _i2.WebSettings {}
 
-class _FakeWebView_5 extends _i1.Fake implements _i2.WebView {}
+class _FakeOffset_5 extends _i1.Fake implements _i4.Offset {}
 
-class _FakeWebViewClient_6 extends _i1.Fake implements _i2.WebViewClient {}
+class _FakeWebView_6 extends _i1.Fake implements _i2.WebView {}
+
+class _FakeWebViewClient_7 extends _i1.Fake implements _i2.WebViewClient {}
 
 /// A class which mocks [CookieManagerHostApi].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCookieManagerHostApi extends _i1.Mock
-    implements _i4.CookieManagerHostApi {
+    implements _i3.CookieManagerHostApi {
   MockCookieManagerHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -369,9 +371,9 @@ class MockTestWebViewHostApi extends _i1.Mock
       (super.noSuchMethod(Invocation.method(#getScrollY, [instanceId]),
           returnValue: 0) as int);
   @override
-  List<int?> getScrollPosition(int? instanceId) =>
+  _i3.WebViewPoint getScrollPosition(int? instanceId) =>
       (super.noSuchMethod(Invocation.method(#getScrollPosition, [instanceId]),
-          returnValue: <int?>[]) as List<int?>);
+          returnValue: _FakeWebViewPoint_2()) as _i3.WebViewPoint);
   @override
   void setWebContentsDebuggingEnabled(bool? enabled) => super.noSuchMethod(
       Invocation.method(#setWebContentsDebuggingEnabled, [enabled]),
@@ -448,7 +450,7 @@ class MockWebChromeClient extends _i1.Mock implements _i2.WebChromeClient {
   @override
   _i2.WebChromeClient copy() =>
       (super.noSuchMethod(Invocation.method(#copy, []),
-          returnValue: _FakeWebChromeClient_2()) as _i2.WebChromeClient);
+          returnValue: _FakeWebChromeClient_3()) as _i2.WebChromeClient);
 }
 
 /// A class which mocks [WebView].
@@ -466,7 +468,7 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
   @override
   _i2.WebSettings get settings =>
       (super.noSuchMethod(Invocation.getter(#settings),
-          returnValue: _FakeWebSettings_3()) as _i2.WebSettings);
+          returnValue: _FakeWebSettings_4()) as _i2.WebSettings);
   @override
   _i5.Future<void> loadData(
           {String? data, String? mimeType, String? encoding}) =>
@@ -561,10 +563,10 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
       (super.noSuchMethod(Invocation.method(#getScrollY, []),
           returnValue: Future<int>.value(0)) as _i5.Future<int>);
   @override
-  _i5.Future<_i3.Offset> getScrollPosition() =>
+  _i5.Future<_i4.Offset> getScrollPosition() =>
       (super.noSuchMethod(Invocation.method(#getScrollPosition, []),
-              returnValue: Future<_i3.Offset>.value(_FakeOffset_4()))
-          as _i5.Future<_i3.Offset>);
+              returnValue: Future<_i4.Offset>.value(_FakeOffset_5()))
+          as _i5.Future<_i4.Offset>);
   @override
   _i5.Future<void> setWebViewClient(_i2.WebViewClient? webViewClient) =>
       (super.noSuchMethod(Invocation.method(#setWebViewClient, [webViewClient]),
@@ -595,7 +597,7 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  _i5.Future<void> setBackgroundColor(_i3.Color? color) =>
+  _i5.Future<void> setBackgroundColor(_i4.Color? color) =>
       (super.noSuchMethod(Invocation.method(#setBackgroundColor, [color]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
@@ -606,7 +608,7 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
   _i2.WebView copy() => (super.noSuchMethod(Invocation.method(#copy, []),
-      returnValue: _FakeWebView_5()) as _i2.WebView);
+      returnValue: _FakeWebView_6()) as _i2.WebView);
 }
 
 /// A class which mocks [WebViewClient].
@@ -652,5 +654,5 @@ class MockWebViewClient extends _i1.Mock implements _i2.WebViewClient {
           returnValueForMissingStub: null);
   @override
   _i2.WebViewClient copy() => (super.noSuchMethod(Invocation.method(#copy, []),
-      returnValue: _FakeWebViewClient_6()) as _i2.WebViewClient);
+      returnValue: _FakeWebViewClient_7()) as _i2.WebViewClient);
 }

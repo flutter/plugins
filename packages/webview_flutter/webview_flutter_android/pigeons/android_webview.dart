@@ -51,6 +51,13 @@ class WebResourceErrorData {
   String description;
 }
 
+class WebViewPoint {
+  WebViewPoint(this.x, this.y);
+
+  int x;
+  int y;
+}
+
 /// Handles methods calls to the native Java Object class.
 ///
 /// Also handles calls to remove the reference to an instance with `dispose`.
@@ -141,7 +148,7 @@ abstract class WebViewHostApi {
 
   int getScrollY(int instanceId);
 
-  List<int> getScrollPosition(int instanceId);
+  WebViewPoint getScrollPosition(int instanceId);
 
   void setWebContentsDebuggingEnabled(bool enabled);
 

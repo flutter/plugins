@@ -47,6 +47,26 @@ abstract class TestJavaObjectHostApi {
 
 class _TestWebViewHostApiCodec extends StandardMessageCodec {
   const _TestWebViewHostApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is WebViewPoint) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return WebViewPoint.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
 }
 
 abstract class TestWebViewHostApi {
@@ -73,7 +93,7 @@ abstract class TestWebViewHostApi {
   void scrollBy(int instanceId, int x, int y);
   int getScrollX(int instanceId);
   int getScrollY(int instanceId);
-  List<int?> getScrollPosition(int instanceId);
+  WebViewPoint getScrollPosition(int instanceId);
   void setWebContentsDebuggingEnabled(bool enabled);
   void setWebViewClient(int instanceId, int webViewClientInstanceId);
   void addJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId);
@@ -506,7 +526,7 @@ abstract class TestWebViewHostApi {
           final int? arg_instanceId = (args[0] as int?);
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.WebViewHostApi.getScrollPosition was null, expected non-null int.');
-          final List<int?> output = api.getScrollPosition(arg_instanceId!);
+          final WebViewPoint output = api.getScrollPosition(arg_instanceId!);
           return <Object?, Object?>{'result': output};
         });
       }

@@ -281,9 +281,9 @@ class WebViewHostApiImpl extends WebViewHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<Offset> getScrollPositionFromInstance(WebView instance) async {
-    final List<int?> position =
+    final WebViewPoint position =
         await getScrollPosition(instanceManager.getIdentifier(instance)!);
-    return Offset(position[0]!.toDouble(), position[1]!.toDouble());
+    return Offset(position.x.toDouble(), position.y.toDouble());
   }
 
   /// Helper method to convert instances ids to objects.
