@@ -313,6 +313,15 @@ public class WebViewTest {
   }
 
   @Test
+  public void getScrollPosition() {
+    when(mockWebView.getScrollX()).thenReturn(1);
+    when(mockWebView.getScrollY()).thenReturn(2);
+    final GeneratedAndroidWebView.WebViewPoint position = testHostApiImpl.getScrollPosition(0L);
+    assertEquals((long) position.getX(), 1L);
+    assertEquals((long) position.getY(), 2L);
+  }
+
+  @Test
   public void setWebViewClient() {
     final WebViewClient mockWebViewClient = mock(WebViewClient.class);
     testInstanceManager.addDartCreatedInstance(mockWebViewClient, 1L);

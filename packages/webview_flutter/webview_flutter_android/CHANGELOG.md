@@ -1,6 +1,11 @@
-## 2.10.1
+## 2.10.2
 
 * Adds a getter to expose the Java InstanceManager.
+
+## 2.10.1
+
+* Adds a method to the `WebView` wrapper to retrieve the X and Y positions simultaneously.
+* Removes reference to https://github.com/flutter/flutter/issues/97744 from `README`.
 
 ## 2.10.0
 
