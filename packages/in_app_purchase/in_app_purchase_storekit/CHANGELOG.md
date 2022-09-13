@@ -1,6 +1,7 @@
-## NEXT
+## 0.3.3
 
 * Updates minimum Flutter version to 2.10.
+* Replaces deprecated ThemeData.primaryColor.
 
 ## 0.3.2
 
