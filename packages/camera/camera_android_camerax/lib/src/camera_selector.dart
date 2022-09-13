@@ -43,10 +43,13 @@ class CameraSelector extends JavaObject {
   static final Future<CameraSelector> defaultBackCamera =
       CameraSelector.detached().requireLensFacing(LENS_FACING_BACK);
 
-  /// Sends binary data across the Flutter platform barrier.
+  /// Receives binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
   late final BinaryMessenger? binaryMessenger;
 
-  /// Maintains instances store to communicate with native language objects.
+  /// Maintains instances stored to communicate with native language objects.
   late final InstanceManager? instanceManager;
 
   /// Lens direction of this selector.
@@ -84,7 +87,7 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
   /// Maintains instances stored to communicate with native language objects.
   final InstanceManager instanceManager;
 
-  /// Modifies a [CameraSelector] to have the lens direction specified.
+  /// Configures the [CameraSelector] to have the lens direction specified.
   Future<CameraSelector> requireLensFacingInInstance(int lensFacing) async {
     final int cameraSelectorId = await requireLensFacing(lensFacing);
     final CameraSelector? cameraSelector = instanceManager
