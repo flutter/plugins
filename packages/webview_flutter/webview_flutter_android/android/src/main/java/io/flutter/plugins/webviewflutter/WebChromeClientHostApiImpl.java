@@ -29,20 +29,18 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
   /**
    * Implementation of {@link WebChromeClient} that passes arguments of callback methods to Dart.
    */
-  public static class WebChromeClientImpl extends WebChromeClient implements Releasable {
-    @Nullable private WebChromeClientFlutterApiImpl flutterApi;
+  public static class WebChromeClientImpl extends WebChromeClient {
+    private final WebChromeClientFlutterApiImpl flutterApi;
     private WebViewClient webViewClient;
 
     /**
      * Creates a {@link WebChromeClient} that passes arguments of callbacks methods to Dart.
      *
      * @param flutterApi handles sending messages to Dart
-     * @param webViewClient receives forwarded calls from {@link WebChromeClient#onCreateWindow}
      */
     public WebChromeClientImpl(
-        @NonNull WebChromeClientFlutterApiImpl flutterApi, WebViewClient webViewClient) {
+        @NonNull WebChromeClientFlutterApiImpl flutterApi) {
       this.flutterApi = flutterApi;
-      this.webViewClient = webViewClient;
     }
 
     @Override
@@ -102,9 +100,8 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
 
     @Override
     public void onProgressChanged(WebView view, int progress) {
-      if (flutterApi != null) {
         flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
-      }
+
     }
 
     /**
@@ -116,14 +113,6 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     public void setWebViewClient(WebViewClient webViewClient) {
       this.webViewClient = webViewClient;
     }
-
-    @Override
-    public void release() {
-      if (flutterApi != null) {
-        flutterApi.dispose(this, reply -> {});
-      }
-      flutterApi = null;
-    }
   }
 
   /** Handles creating {@link WebChromeClient}s for a {@link WebChromeClientHostApiImpl}. */
@@ -132,12 +121,11 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
      * Creates a {@link DownloadListenerHostApiImpl.DownloadListenerImpl}.
      *
      * @param flutterApi handles sending messages to Dart
-     * @param webViewClient receives forwarded calls from {@link WebChromeClient#onCreateWindow}
-     * @return the created {@link DownloadListenerHostApiImpl.DownloadListenerImpl}
+     * @return the created {@link WebChromeClientHostApiImpl.WebChromeClientImpl}
      */
     public WebChromeClientImpl createWebChromeClient(
-        WebChromeClientFlutterApiImpl flutterApi, WebViewClient webViewClient) {
-      return new WebChromeClientImpl(flutterApi, webViewClient);
+        WebChromeClientFlutterApiImpl flutterApi) {
+      return new WebChromeClientImpl(flutterApi);
     }
   }
 
@@ -158,11 +146,9 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
   }
 
   @Override
-  public void create(Long instanceId, Long webViewClientInstanceId) {
-    final WebViewClient webViewClient =
-        (WebViewClient) instanceManager.getInstance(webViewClientInstanceId);
+  public void create(Long instanceId) {
     final WebChromeClient webChromeClient =
-        webChromeClientCreator.createWebChromeClient(flutterApi, webViewClient);
+        webChromeClientCreator.createWebChromeClient(flutterApi);
     instanceManager.addDartCreatedInstance(webChromeClient, instanceId);
   }
 }

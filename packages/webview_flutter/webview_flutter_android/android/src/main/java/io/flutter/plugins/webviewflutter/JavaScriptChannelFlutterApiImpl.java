@@ -33,20 +33,6 @@ public class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi
     super.postMessage(getIdentifierForJavaScriptChannel(javaScriptChannel), messageArg, callback);
   }
 
-  /**
-   * Communicates to Dart that the reference to a {@link JavaScriptChannel} was removed.
-   *
-   * @param javaScriptChannel The instance whose reference will be removed.
-   * @param callback Reply callback with return value from Dart.
-   */
-  public void dispose(JavaScriptChannel javaScriptChannel, Reply<Void> callback) {
-    if (instanceManager.containsInstance(javaScriptChannel)) {
-      dispose(getIdentifierForJavaScriptChannel(javaScriptChannel), callback);
-    } else {
-      callback.reply(null);
-    }
-  }
-
   private long getIdentifierForJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
     final Long identifier = instanceManager.getIdentifierForStrongReference(javaScriptChannel);
     if (identifier == null) {

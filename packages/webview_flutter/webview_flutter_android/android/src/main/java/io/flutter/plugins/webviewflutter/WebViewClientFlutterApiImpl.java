@@ -197,20 +197,6 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     urlLoading(getIdentifierForClient(webViewClient), webViewIdentifier, urlArg, callback);
   }
 
-  /**
-   * Communicates to Dart that the reference to a {@link WebViewClient} was removed.
-   *
-   * @param webViewClient the instance whose reference will be removed
-   * @param callback reply callback with return value from Dart
-   */
-  public void dispose(WebViewClient webViewClient, Reply<Void> callback) {
-    if (instanceManager.containsInstance(webViewClient)) {
-      dispose(getIdentifierForClient(webViewClient), callback);
-    } else {
-      callback.reply(null);
-    }
-  }
-
   private long getIdentifierForClient(WebViewClient webViewClient) {
     final Long identifier = instanceManager.getIdentifierForStrongReference(webViewClient);
     if (identifier == null) {

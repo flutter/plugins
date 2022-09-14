@@ -16,13 +16,11 @@ import androidx.annotation.Nullable;
  *
  * <p>Exposes a single method named `postMessage` to JavaScript, which sends a message to the Dart
  * code.
- *
- * <p>No messages are sent to Dart after {@link JavaScriptChannel#release} is called.
  */
-public class JavaScriptChannel implements Releasable {
+public class JavaScriptChannel {
   private final Handler platformThreadHandler;
   final String javaScriptChannelName;
-  @Nullable private JavaScriptChannelFlutterApiImpl flutterApi;
+  private final JavaScriptChannelFlutterApiImpl flutterApi;
 
   /**
    * Creates a {@link JavaScriptChannel} that passes arguments of callback methods to Dart.
@@ -46,9 +44,7 @@ public class JavaScriptChannel implements Releasable {
   public void postMessage(final String message) {
     final Runnable postMessageRunnable =
         () -> {
-          if (flutterApi != null) {
-            flutterApi.postMessage(JavaScriptChannel.this, message, reply -> {});
-          }
+          flutterApi.postMessage(JavaScriptChannel.this, message, reply -> {});
         };
 
     if (platformThreadHandler.getLooper() == Looper.myLooper()) {
@@ -56,13 +52,5 @@ public class JavaScriptChannel implements Releasable {
     } else {
       platformThreadHandler.post(postMessageRunnable);
     }
-  }
-
-  @Override
-  public void release() {
-    if (flutterApi != null) {
-      flutterApi.dispose(this, reply -> {});
-    }
-    flutterApi = null;
   }
 }
