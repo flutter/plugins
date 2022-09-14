@@ -2,6 +2,7 @@
 
 * Adds support for the `allowsLinkPreview` property on iOS.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Fixes typo in an internal method name, from `setCookieForInsances` to `setCookieForInstances`.
 
 ## 2.9.3
 
