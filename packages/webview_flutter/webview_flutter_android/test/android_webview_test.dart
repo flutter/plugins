@@ -252,6 +252,15 @@ void main() {
         expect(webView.getScrollY(), completion(56));
       });
 
+      test('getScrollPosition', () async {
+        when(mockPlatformHostApi.getScrollPosition(webViewInstanceId))
+            .thenReturn(WebViewPoint(x: 2, y: 16));
+        await expectLater(
+          webView.getScrollPosition(),
+          completion(const Offset(2.0, 16.0)),
+        );
+      });
+
       test('setWebViewClient', () {
         TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
         WebViewClient.api = WebViewClientHostApiImpl(
