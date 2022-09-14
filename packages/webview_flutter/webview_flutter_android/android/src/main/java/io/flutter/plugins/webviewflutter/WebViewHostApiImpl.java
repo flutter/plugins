@@ -59,8 +59,12 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      * @return the created {@link InputAwareWebViewPlatformView}
      */
     public InputAwareWebViewPlatformView createInputAwareWebView(
-        Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager, @Nullable View containerView) {
-      return new InputAwareWebViewPlatformView(context, binaryMessenger, instanceManager, containerView);
+        Context context,
+        BinaryMessenger binaryMessenger,
+        InstanceManager instanceManager,
+        @Nullable View containerView) {
+      return new InputAwareWebViewPlatformView(
+          context, binaryMessenger, instanceManager, containerView);
     }
 
     /**
@@ -138,7 +142,11 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      *
      * @param context an Activity Context to access application assets. This value cannot be null.
      */
-    public InputAwareWebViewPlatformView(Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager, View containerView) {
+    public InputAwareWebViewPlatformView(
+        Context context,
+        BinaryMessenger binaryMessenger,
+        InstanceManager instanceManager,
+        View containerView) {
       super(context, containerView);
       currentWebViewClient = new WebViewClient();
       currentWebChromeClient =
@@ -239,7 +247,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     final WebView webView =
         useHybridComposition
             ? webViewProxy.createWebView(context, binaryMessenger, instanceManager)
-            : webViewProxy.createInputAwareWebView(context, binaryMessenger, instanceManager, containerView);
+            : webViewProxy.createInputAwareWebView(
+                context, binaryMessenger, instanceManager, containerView);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
     instanceManager.addDartCreatedInstance(webView, instanceId);

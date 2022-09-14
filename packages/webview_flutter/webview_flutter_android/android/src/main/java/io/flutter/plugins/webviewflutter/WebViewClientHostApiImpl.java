@@ -48,43 +48,35 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
-
       flutterApi.onPageStarted(this, view, url, reply -> {});
     }
 
     @Override
     public void onPageFinished(WebView view, String url) {
-
       flutterApi.onPageFinished(this, view, url, reply -> {});
     }
 
     @Override
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-
       flutterApi.onReceivedRequestError(this, view, request, error, reply -> {});
     }
 
     @Override
     public void onReceivedError(
         WebView view, int errorCode, String description, String failingUrl) {
-
       flutterApi.onReceivedError(
           this, view, (long) errorCode, description, failingUrl, reply -> {});
     }
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-
       flutterApi.requestLoading(this, view, request, reply -> {});
-
       return shouldOverrideUrlLoading;
     }
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
       flutterApi.urlLoading(this, view, url, reply -> {});
-
       return shouldOverrideUrlLoading;
     }
 
@@ -112,13 +104,11 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
-
       flutterApi.onPageStarted(this, view, url, reply -> {});
     }
 
     @Override
     public void onPageFinished(WebView view, String url) {
-
       flutterApi.onPageFinished(this, view, url, reply -> {});
     }
 
@@ -131,14 +121,12 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
         @NonNull WebView view,
         @NonNull WebResourceRequest request,
         @NonNull WebResourceErrorCompat error) {
-
       flutterApi.onReceivedRequestError(this, view, request, error, reply -> {});
     }
 
     @Override
     public void onReceivedError(
         WebView view, int errorCode, String description, String failingUrl) {
-
       flutterApi.onReceivedError(
           this, view, (long) errorCode, description, failingUrl, reply -> {});
     }
@@ -147,17 +135,13 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     @Override
     public boolean shouldOverrideUrlLoading(
         @NonNull WebView view, @NonNull WebResourceRequest request) {
-
       flutterApi.requestLoading(this, view, request, reply -> {});
-
       return shouldOverrideUrlLoading;
     }
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
       flutterApi.urlLoading(this, view, url, reply -> {});
-
       return shouldOverrideUrlLoading;
     }
 
