@@ -22,7 +22,7 @@ public class DownloadListenerHostApiImpl implements DownloadListenerHostApi {
    * Implementation of {@link DownloadListener} that passes arguments of callback methods to Dart.
    */
   public static class DownloadListenerImpl implements DownloadListener {
-     private final DownloadListenerFlutterApiImpl flutterApi;
+    private final DownloadListenerFlutterApiImpl flutterApi;
 
     /**
      * Creates a {@link DownloadListenerImpl} that passes arguments of callbacks methods to Dart.
@@ -40,8 +40,8 @@ public class DownloadListenerHostApiImpl implements DownloadListenerHostApi {
         String contentDisposition,
         String mimetype,
         long contentLength) {
-        flutterApi.onDownloadStart(
-            this, url, userAgent, contentDisposition, mimetype, contentLength, reply -> {});
+      flutterApi.onDownloadStart(
+          this, url, userAgent, contentDisposition, mimetype, contentLength, reply -> {});
     }
   }
 

@@ -86,7 +86,11 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
     webViewHostApi =
         new WebViewHostApiImpl(
-            instanceManager, binaryMessenger, new WebViewHostApiImpl.WebViewProxy(), context, containerView);
+            instanceManager,
+            binaryMessenger,
+            new WebViewHostApiImpl.WebViewProxy(),
+            context,
+            containerView);
     javaScriptChannelHostApi =
         new JavaScriptChannelHostApiImpl(
             instanceManager,

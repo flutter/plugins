@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.webkit.JavascriptInterface;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Added as a JavaScript interface to the WebView for any JavaScript channel that the Dart code sets

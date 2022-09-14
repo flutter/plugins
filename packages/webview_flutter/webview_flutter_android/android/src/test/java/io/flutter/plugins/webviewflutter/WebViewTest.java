@@ -15,12 +15,7 @@ import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
-
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerImpl;
-import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
-import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientImpl;
-import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.InputAwareWebViewPlatformView;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
 import java.util.HashMap;
 import org.junit.After;
@@ -41,8 +36,7 @@ public class WebViewTest {
 
   @Mock Context mockContext;
 
-  @Mock
-  BinaryMessenger mockBinaryMessenger;
+  @Mock BinaryMessenger mockBinaryMessenger;
 
   InstanceManager testInstanceManager;
   WebViewHostApiImpl testHostApiImpl;
@@ -51,9 +45,11 @@ public class WebViewTest {
   public void setUp() {
     testInstanceManager = InstanceManager.open(identifier -> {});
 
-    when(mockWebViewProxy.createWebView(mockContext, mockBinaryMessenger, testInstanceManager)).thenReturn(mockWebView);
+    when(mockWebViewProxy.createWebView(mockContext, mockBinaryMessenger, testInstanceManager))
+        .thenReturn(mockWebView);
     testHostApiImpl =
-        new WebViewHostApiImpl(testInstanceManager, mockBinaryMessenger, mockWebViewProxy, mockContext, null);
+        new WebViewHostApiImpl(
+            testInstanceManager, mockBinaryMessenger, mockWebViewProxy, mockContext, null);
     testHostApiImpl.create(0L, true);
   }
 

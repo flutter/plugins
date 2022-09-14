@@ -38,8 +38,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
      *
      * @param flutterApi handles sending messages to Dart
      */
-    public WebChromeClientImpl(
-        @NonNull WebChromeClientFlutterApiImpl flutterApi) {
+    public WebChromeClientImpl(@NonNull WebChromeClientFlutterApiImpl flutterApi) {
       this.flutterApi = flutterApi;
     }
 
@@ -104,8 +103,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
 
     @Override
     public void onProgressChanged(WebView view, int progress) {
-        flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
-
+      flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
     }
 
     /**
@@ -127,8 +125,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
      * @param flutterApi handles sending messages to Dart
      * @return the created {@link WebChromeClientHostApiImpl.WebChromeClientImpl}
      */
-    public WebChromeClientImpl createWebChromeClient(
-        WebChromeClientFlutterApiImpl flutterApi) {
+    public WebChromeClientImpl createWebChromeClient(WebChromeClientFlutterApiImpl flutterApi) {
       return new WebChromeClientImpl(flutterApi);
     }
   }

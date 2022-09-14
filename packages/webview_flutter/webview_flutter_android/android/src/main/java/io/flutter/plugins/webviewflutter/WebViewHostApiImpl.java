@@ -14,7 +14,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
@@ -43,10 +42,12 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      *
      * @param context an Activity Context to access application assets
      * @param binaryMessenger used to communicate with Dart over asynchronous messages
-     * @param instanceManager mangages instances used to communicate with the corresponding objects in Dart
+     * @param instanceManager mangages instances used to communicate with the corresponding objects
+     *     in Dart
      * @return the created {@link WebViewPlatformView}
      */
-    public WebViewPlatformView createWebView(Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+    public WebViewPlatformView createWebView(
+        Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
       return new WebViewPlatformView(context, binaryMessenger, instanceManager);
     }
 
@@ -82,11 +83,14 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      *
      * @param context an Activity Context to access application assets. This value cannot be null.
      */
-    public WebViewPlatformView(Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+    public WebViewPlatformView(
+        Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
       super(context);
       setWebViewClient(currentWebViewClient);
 
-      currentWebChromeClient = new WebChromeClientImpl(new WebChromeClientFlutterApiImpl(binaryMessenger, instanceManager));
+      currentWebChromeClient =
+          new WebChromeClientImpl(
+              new WebChromeClientFlutterApiImpl(binaryMessenger, instanceManager));
       currentWebChromeClient.setWebViewClient(currentWebViewClient);
       setWebChromeClient(currentWebChromeClient);
     }
