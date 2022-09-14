@@ -76,8 +76,10 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
       Context context,
       View containerView,
       FlutterAssetManager flutterAssetManager) {
+    final JavaObjectHostApiImpl javaObjectHostApi = new JavaObjectHostApiImpl(instanceManager);
+    GeneratedAndroidWebView.JavaObjectHostApi.setup(binaryMessenger, javaObjectHostApi);
 
-    instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager = InstanceManager.open(javaObjectHostApi::dispose);
 
     viewRegistry.registerViewFactory(
         "plugins.flutter.io/webview", new FlutterWebViewFactory(instanceManager));

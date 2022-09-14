@@ -62,10 +62,5 @@ public class JavaScriptChannelTest {
   public void postMessage() {
     javaScriptChannel.postMessage("A message post.");
     verify(mockFlutterApi).postMessage(eq(javaScriptChannel), eq("A message post."), any());
-
-    reset(mockFlutterApi);
-    javaScriptChannel.release();
-    javaScriptChannel.postMessage("a message");
-    verify(mockFlutterApi, never()).postMessage((JavaScriptChannel) any(), any(), any());
   }
 }

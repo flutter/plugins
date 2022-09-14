@@ -31,7 +31,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
    */
   public static class WebChromeClientImpl extends WebChromeClient {
     private final WebChromeClientFlutterApiImpl flutterApi;
-    private WebViewClient webViewClient;
+    @Nullable private WebViewClient webViewClient;
 
     /**
      * Creates a {@link WebChromeClient} that passes arguments of callbacks methods to Dart.
@@ -65,6 +65,10 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     @VisibleForTesting
     boolean onCreateWindow(
         final WebView view, Message resultMsg, @Nullable WebView onCreateWindowWebView) {
+      if (webViewClient == null) {
+        return false;
+      }
+
       final WebViewClient windowWebViewClient =
           new WebViewClient() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -110,7 +114,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
      *
      * @param webViewClient the forwarding {@link WebViewClient}
      */
-    public void setWebViewClient(WebViewClient webViewClient) {
+    public void setWebViewClient(@NonNull WebViewClient webViewClient) {
       this.webViewClient = webViewClient;
     }
   }

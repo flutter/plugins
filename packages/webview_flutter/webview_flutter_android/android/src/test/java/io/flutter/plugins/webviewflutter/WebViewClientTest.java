@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,11 +70,6 @@ public class WebViewClientTest {
     webViewClient.onPageStarted(mockWebView, "https://www.google.com", null);
     verify(mockFlutterApi)
         .onPageStarted(eq(webViewClient), eq(mockWebView), eq("https://www.google.com"), any());
-
-    reset(mockFlutterApi);
-    webViewClient.release();
-    webViewClient.onPageStarted(mockWebView, "", null);
-    verify(mockFlutterApi, never()).onPageStarted((WebViewClient) any(), any(), any(), any());
   }
 
   @Test
@@ -90,12 +83,6 @@ public class WebViewClientTest {
             eq("description"),
             eq("https://www.google.com"),
             any());
-
-    reset(mockFlutterApi);
-    webViewClient.release();
-    webViewClient.onReceivedError(mockWebView, 33, "", "");
-    verify(mockFlutterApi, never())
-        .onReceivedError((WebViewClient) any(), any(), any(), any(), any(), any());
   }
 
   @Test
@@ -103,11 +90,6 @@ public class WebViewClientTest {
     webViewClient.shouldOverrideUrlLoading(mockWebView, "https://www.google.com");
     verify(mockFlutterApi)
         .urlLoading(eq(webViewClient), eq(mockWebView), eq("https://www.google.com"), any());
-
-    reset(mockFlutterApi);
-    webViewClient.release();
-    webViewClient.shouldOverrideUrlLoading(mockWebView, "");
-    verify(mockFlutterApi, never()).urlLoading((WebViewClient) any(), any(), any(), any());
   }
 
   @Test
