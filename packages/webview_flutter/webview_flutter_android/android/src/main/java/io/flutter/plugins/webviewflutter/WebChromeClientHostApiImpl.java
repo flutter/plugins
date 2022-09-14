@@ -64,6 +64,10 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     @VisibleForTesting
     boolean onCreateWindow(
         final WebView view, Message resultMsg, @Nullable WebView onCreateWindowWebView) {
+      // WebChromeClient requires a WebViewClient because of a bug fix that makes
+      // calls to WebViewClient.requestLoading/WebViewClient.urlLoading when a new
+      // window is opened. This is to make sure a url opened by `Window.open` has
+      // a secure url.
       if (webViewClient == null) {
         return false;
       }

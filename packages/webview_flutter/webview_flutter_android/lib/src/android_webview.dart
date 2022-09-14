@@ -383,12 +383,6 @@ class WebView extends JavaObject {
   /// JavaScript dialogs, favicons, titles, and the progress. This will replace
   /// the current handler.
   Future<void> setWebChromeClient(WebChromeClient? client) {
-    // TODO remove
-    'woeifja';
-    // WebView requires a WebViewClient because of a bug fix that makes
-    // calls to WebViewClient.requestLoading/WebViewClient.urlLoading when a new
-    // window is opened. This is to make sure a url opened by `Window.open` has
-    // a secure url.
     return api.setWebChromeClientFromInstance(this, client);
   }
 
