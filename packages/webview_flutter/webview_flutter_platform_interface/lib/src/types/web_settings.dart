@@ -82,7 +82,6 @@ class WebSettings {
     this.hasProgressTracking,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
-    this.allowsLinkPreview,
     this.allowsInlineMediaPlayback,
     this.zoomEnabled,
     required this.userAgent,
@@ -126,13 +125,8 @@ class WebSettings {
   /// See also: [WebView.gestureNavigationEnabled]
   final bool? gestureNavigationEnabled;
 
-  /// Determines whether pressing a link displays a preview of the destination for the link in iOS.
-  ///
-  /// See also: [WebView.allowsLinkPreview]
-  final bool? allowsLinkPreview;
-
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, allowsLinkPreview: $allowsLinkPreview, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
   }
 }

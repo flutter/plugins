@@ -435,7 +435,6 @@ void main() {
         hasProgressTracking: true,
         debuggingEnabled: true,
         gestureNavigationEnabled: true,
-        allowsLinkPreview: false,
         allowsInlineMediaPlayback: true,
         zoomEnabled: false,
       );
@@ -453,7 +452,6 @@ void main() {
               'hasProgressTracking': true,
               'debuggingEnabled': true,
               'gestureNavigationEnabled': true,
-              'allowsLinkPreview': false,
               'allowsInlineMediaPlayback': true,
               'zoomEnabled': false,
             },
