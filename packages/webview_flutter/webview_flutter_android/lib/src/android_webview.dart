@@ -873,7 +873,7 @@ class DownloadListener extends JavaObject {
 
   @override
   DownloadListener copy() {
-    return DownloadListener(onDownloadStart: onDownloadStart);
+    return DownloadListener.detached(onDownloadStart: onDownloadStart);
   }
 }
 

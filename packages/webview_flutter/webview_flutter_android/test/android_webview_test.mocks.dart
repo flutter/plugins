@@ -69,12 +69,11 @@ class MockDownloadListener extends _i1.Mock implements _i2.DownloadListener {
   }
 
   @override
-  void onDownloadStart(String? url, String? userAgent,
-          String? contentDisposition, String? mimetype, int? contentLength) =>
-      super.noSuchMethod(
-          Invocation.method(#onDownloadStart,
-              [url, userAgent, contentDisposition, mimetype, contentLength]),
-          returnValueForMissingStub: null);
+  void Function(String, String, String, String, int) get onDownloadStart =>
+      (super.noSuchMethod(Invocation.getter(#onDownloadStart),
+          returnValue: (String url, String userAgent, String contentDisposition,
+              String mimetype, int contentLength) {}) as void Function(
+          String, String, String, String, int));
   @override
   _i2.DownloadListener copy() =>
       (super.noSuchMethod(Invocation.method(#copy, []),
@@ -94,9 +93,9 @@ class MockJavaScriptChannel extends _i1.Mock implements _i2.JavaScriptChannel {
       (super.noSuchMethod(Invocation.getter(#channelName), returnValue: '')
           as String);
   @override
-  void postMessage(String? message) =>
-      super.noSuchMethod(Invocation.method(#postMessage, [message]),
-          returnValueForMissingStub: null);
+  void Function(String) get postMessage =>
+      (super.noSuchMethod(Invocation.getter(#postMessage),
+          returnValue: (String message) {}) as void Function(String));
   @override
   _i2.JavaScriptChannel copy() =>
       (super.noSuchMethod(Invocation.method(#copy, []),
@@ -158,9 +157,8 @@ class MockTestWebChromeClientHostApi extends _i1.Mock
   }
 
   @override
-  void create(int? instanceId, int? webViewClientInstanceId) =>
-      super.noSuchMethod(
-          Invocation.method(#create, [instanceId, webViewClientInstanceId]),
+  void create(int? instanceId) =>
+      super.noSuchMethod(Invocation.method(#create, [instanceId]),
           returnValueForMissingStub: null);
 }
 
@@ -177,10 +175,6 @@ class MockTestWebSettingsHostApi extends _i1.Mock
   void create(int? instanceId, int? webViewInstanceId) => super.noSuchMethod(
       Invocation.method(#create, [instanceId, webViewInstanceId]),
       returnValueForMissingStub: null);
-  @override
-  void dispose(int? instanceId) =>
-      super.noSuchMethod(Invocation.method(#dispose, [instanceId]),
-          returnValueForMissingStub: null);
   @override
   void setDomStorageEnabled(int? instanceId, bool? flag) => super.noSuchMethod(
       Invocation.method(#setDomStorageEnabled, [instanceId, flag]),
@@ -288,10 +282,6 @@ class MockTestWebViewHostApi extends _i1.Mock
   void create(int? instanceId, bool? useHybridComposition) =>
       super.noSuchMethod(
           Invocation.method(#create, [instanceId, useHybridComposition]),
-          returnValueForMissingStub: null);
-  @override
-  void dispose(int? instanceId) =>
-      super.noSuchMethod(Invocation.method(#dispose, [instanceId]),
           returnValueForMissingStub: null);
   @override
   void loadData(
@@ -443,10 +433,6 @@ class MockWebChromeClient extends _i1.Mock implements _i2.WebChromeClient {
     _i1.throwOnMissingStub(this);
   }
 
-  @override
-  void onProgressChanged(_i2.WebView? webView, int? progress) => super
-      .noSuchMethod(Invocation.method(#onProgressChanged, [webView, progress]),
-          returnValueForMissingStub: null);
   @override
   _i2.WebChromeClient copy() =>
       (super.noSuchMethod(Invocation.method(#copy, []),
@@ -602,11 +588,6 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  _i5.Future<void> release() =>
-      (super.noSuchMethod(Invocation.method(#release, []),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
-  @override
   _i2.WebView copy() => (super.noSuchMethod(Invocation.method(#copy, []),
       returnValue: _FakeWebView_6()) as _i2.WebView);
 }
@@ -623,35 +604,6 @@ class MockWebViewClient extends _i1.Mock implements _i2.WebViewClient {
   bool get shouldOverrideUrlLoading =>
       (super.noSuchMethod(Invocation.getter(#shouldOverrideUrlLoading),
           returnValue: false) as bool);
-  @override
-  void onPageStarted(_i2.WebView? webView, String? url) =>
-      super.noSuchMethod(Invocation.method(#onPageStarted, [webView, url]),
-          returnValueForMissingStub: null);
-  @override
-  void onPageFinished(_i2.WebView? webView, String? url) =>
-      super.noSuchMethod(Invocation.method(#onPageFinished, [webView, url]),
-          returnValueForMissingStub: null);
-  @override
-  void onReceivedRequestError(_i2.WebView? webView,
-          _i2.WebResourceRequest? request, _i2.WebResourceError? error) =>
-      super.noSuchMethod(
-          Invocation.method(#onReceivedRequestError, [webView, request, error]),
-          returnValueForMissingStub: null);
-  @override
-  void onReceivedError(_i2.WebView? webView, int? errorCode,
-          String? description, String? failingUrl) =>
-      super.noSuchMethod(
-          Invocation.method(
-              #onReceivedError, [webView, errorCode, description, failingUrl]),
-          returnValueForMissingStub: null);
-  @override
-  void requestLoading(_i2.WebView? webView, _i2.WebResourceRequest? request) =>
-      super.noSuchMethod(Invocation.method(#requestLoading, [webView, request]),
-          returnValueForMissingStub: null);
-  @override
-  void urlLoading(_i2.WebView? webView, String? url) =>
-      super.noSuchMethod(Invocation.method(#urlLoading, [webView, url]),
-          returnValueForMissingStub: null);
   @override
   _i2.WebViewClient copy() => (super.noSuchMethod(Invocation.method(#copy, []),
       returnValue: _FakeWebViewClient_7()) as _i2.WebViewClient);
