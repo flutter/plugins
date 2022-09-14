@@ -59,8 +59,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      * @return the created {@link InputAwareWebViewPlatformView}
      */
     public InputAwareWebViewPlatformView createInputAwareWebView(
-        Context context, @Nullable View containerView) {
-      return new InputAwareWebViewPlatformView(context, containerView);
+        Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager, @Nullable View containerView) {
+      return new InputAwareWebViewPlatformView(context, binaryMessenger, instanceManager, containerView);
     }
 
     /**
@@ -75,7 +75,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
 
   /** Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s. */
   public static class WebViewPlatformView extends WebView implements PlatformView {
-    private WebViewClient currentWebViewClient = new WebViewClient();
+    private WebViewClient currentWebViewClient;
     private WebChromeClientImpl currentWebChromeClient;
 
     /**
@@ -86,12 +86,12 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     public WebViewPlatformView(
         Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
       super(context);
-      setWebViewClient(currentWebViewClient);
-
+      currentWebViewClient = new WebViewClient();
       currentWebChromeClient =
           new WebChromeClientImpl(
               new WebChromeClientFlutterApiImpl(binaryMessenger, instanceManager));
-      currentWebChromeClient.setWebViewClient(currentWebViewClient);
+
+      setWebViewClient(currentWebViewClient);
       setWebChromeClient(currentWebChromeClient);
     }
 
@@ -130,7 +130,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @SuppressLint("ViewConstructor")
   public static class InputAwareWebViewPlatformView extends InputAwareWebView
       implements PlatformView {
-    private WebViewClient currentWebViewClient = new WebViewClient();
+    private WebViewClient currentWebViewClient;
     private WebChromeClientImpl currentWebChromeClient;
 
     /**
@@ -138,8 +138,15 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      *
      * @param context an Activity Context to access application assets. This value cannot be null.
      */
-    public InputAwareWebViewPlatformView(Context context, View containerView) {
+    public InputAwareWebViewPlatformView(Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager, View containerView) {
       super(context, containerView);
+      currentWebViewClient = new WebViewClient();
+      currentWebChromeClient =
+          new WebChromeClientImpl(
+              new WebChromeClientFlutterApiImpl(binaryMessenger, instanceManager));
+
+      setWebViewClient(currentWebViewClient);
+      setWebChromeClient(currentWebChromeClient);
     }
 
     @Override
@@ -232,7 +239,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     final WebView webView =
         useHybridComposition
             ? webViewProxy.createWebView(context, binaryMessenger, instanceManager)
-            : webViewProxy.createInputAwareWebView(context, containerView);
+            : webViewProxy.createInputAwareWebView(context, binaryMessenger, instanceManager, containerView);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
     instanceManager.addDartCreatedInstance(webView, instanceId);
