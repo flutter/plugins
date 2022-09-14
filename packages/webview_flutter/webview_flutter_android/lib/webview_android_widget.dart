@@ -425,7 +425,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
         weakThis.target?.callbacksHandler.onPageStarted(url);
       },
       onPageFinished: (_, String url) {
-        weakThis.target?.callbacksHandler.onPageStarted(url);
+        weakThis.target?.callbacksHandler.onPageFinished(url);
       },
       onReceivedError: (
         _,
