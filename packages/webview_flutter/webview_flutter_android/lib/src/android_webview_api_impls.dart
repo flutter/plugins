@@ -144,15 +144,6 @@ class WebViewHostApiImpl extends WebViewHostApi {
     );
   }
 
-  /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(WebView instance) async {
-    final int? instanceId = instanceManager.getIdentifier(instance);
-    if (instanceId != null) {
-      instanceManager.remove(instanceId);
-      await dispose(instanceId);
-    }
-  }
-
   /// Helper method to convert the instances ids to objects.
   Future<void> loadDataFromInstance(
     WebView instance,
@@ -368,15 +359,6 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(WebSettings instance) async {
-    final int? instanceId = instanceManager.getIdentifier(instance);
-    if (instanceId != null) {
-      instanceManager.remove(instanceId);
-      return dispose(instanceId);
-    }
-  }
-
-  /// Helper method to convert instances ids to objects.
   Future<void> setDomStorageEnabledFromInstance(
     WebSettings instance,
     bool flag,
@@ -532,11 +514,6 @@ class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
   final InstanceManager instanceManager;
 
   @override
-  void dispose(int instanceId) {
-    instanceManager.remove(instanceId);
-  }
-
-  @override
   void postMessage(int instanceId, String message) {
     final JavaScriptChannel? instance = instanceManager
         .getInstanceWithWeakReference(instanceId) as JavaScriptChannel?;
@@ -577,11 +554,6 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;
-
-  @override
-  void dispose(int instanceId) {
-    instanceManager.remove(instanceId);
-  }
 
   @override
   void onPageFinished(int instanceId, int webViewInstanceId, String url) {
@@ -761,11 +733,6 @@ class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
   final InstanceManager instanceManager;
 
   @override
-  void dispose(int instanceId) {
-    instanceManager.remove(instanceId);
-  }
-
-  @override
   void onDownloadStart(
     int instanceId,
     String url,
@@ -803,16 +770,10 @@ class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
   final InstanceManager instanceManager;
 
   /// Helper method to convert instances ids to objects.
-  Future<void> createFromInstance(
-    WebChromeClient instance,
-    WebViewClient webViewClient,
-  ) async {
+  Future<void> createFromInstance(WebChromeClient instance) async {
     if (instanceManager.getIdentifier(instance) == null) {
       final int identifier = instanceManager.addDartCreatedInstance(instance);
-      return create(
-        identifier,
-        instanceManager.getIdentifier(webViewClient)!,
-      );
+      return create(identifier);
     }
   }
 }
@@ -825,11 +786,6 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;
-
-  @override
-  void dispose(int instanceId) {
-    instanceManager.remove(instanceId);
-  }
 
   @override
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress) {

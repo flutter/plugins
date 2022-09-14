@@ -38,7 +38,9 @@ class JavaObject with Copyable {
 
   /// Global instance of [InstanceManager].
   static final InstanceManager globalInstanceManager = InstanceManager(
-    onWeakReferenceRemoved: (_) {},
+    onWeakReferenceRemoved: (int identifier) {
+      JavaObjectHostApiImpl().dispose(identifier);
+    },
   );
 
   /// Pigeon Host Api implementation for [JavaObject].
@@ -89,8 +91,6 @@ class WebView extends JavaObject {
   /// Pigeon Host Api implementation for [WebView].
   @visibleForTesting
   static WebViewHostApiImpl api = WebViewHostApiImpl();
-
-  WebViewClient? _currentWebViewClient;
 
   /// Whether the [WebView] will be rendered with an [AndroidViewSurface].
   ///
@@ -330,8 +330,6 @@ class WebView extends JavaObject {
   ///
   /// This will replace the current handler.
   Future<void> setWebViewClient(WebViewClient webViewClient) {
-    _currentWebViewClient = webViewClient;
-    WebViewClient.api.createFromInstance(webViewClient);
     return api.setWebViewClientFromInstance(this, webViewClient);
   }
 
@@ -375,11 +373,8 @@ class WebView extends JavaObject {
   /// Registers the interface to be used when content can not be handled by the rendering engine, and should be downloaded instead.
   ///
   /// This will replace the current handler.
-  Future<void> setDownloadListener(DownloadListener? listener) async {
-    await Future.wait(<Future<void>>[
-      if (listener != null) DownloadListener.api.createFromInstance(listener),
-      api.setDownloadListenerFromInstance(this, listener)
-    ]);
+  Future<void> setDownloadListener(DownloadListener? listener) {
+    return api.setDownloadListenerFromInstance(this, listener);
   }
 
   /// Sets the chrome handler.
@@ -387,34 +382,19 @@ class WebView extends JavaObject {
   /// This is an implementation of [WebChromeClient] for use in handling
   /// JavaScript dialogs, favicons, titles, and the progress. This will replace
   /// the current handler.
-  Future<void> setWebChromeClient(WebChromeClient? client) async {
+  Future<void> setWebChromeClient(WebChromeClient? client) {
+    // TODO remove
+    'woeifja';
     // WebView requires a WebViewClient because of a bug fix that makes
     // calls to WebViewClient.requestLoading/WebViewClient.urlLoading when a new
     // window is opened. This is to make sure a url opened by `Window.open` has
     // a secure url.
-    assert(
-      _currentWebViewClient != null,
-      "Can't set a WebChromeClient without setting a WebViewClient first.",
-    );
-    await Future.wait(<Future<void>>[
-      if (client != null)
-        WebChromeClient.api.createFromInstance(client, _currentWebViewClient!),
-      api.setWebChromeClientFromInstance(this, client),
-    ]);
+    return api.setWebChromeClientFromInstance(this, client);
   }
 
   /// Sets the background color of this WebView.
   Future<void> setBackgroundColor(Color color) {
     return api.setBackgroundColorFromInstance(this, color.value);
-  }
-
-  /// Releases all resources used by the [WebView].
-  ///
-  /// Any methods called after [release] will throw an exception.
-  Future<void> release() {
-    _currentWebViewClient = null;
-    WebSettings.api.disposeFromInstance(settings);
-    return api.disposeFromInstance(this);
   }
 
   @override
@@ -627,6 +607,7 @@ class JavaScriptChannel extends JavaObject {
     required this.postMessage,
   }) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
+    api.createFromInstance(this);
   }
 
   /// Constructs a [JavaScriptChannel] without creating the associated Java
@@ -668,6 +649,7 @@ class WebViewClient extends JavaObject {
     this.urlLoading,
   }) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
+    api.createFromInstance(this);
   }
 
   /// Constructs a [WebViewClient] without creating the associated Java object.
@@ -866,6 +848,7 @@ class DownloadListener extends JavaObject {
   /// Constructs a [DownloadListener].
   DownloadListener({required this.onDownloadStart}) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
+    api.createFromInstance(this);
   }
 
   /// Constructs a [DownloadListener] without creating the associated Java
@@ -899,6 +882,7 @@ class WebChromeClient extends JavaObject {
   /// Constructs a [WebChromeClient].
   WebChromeClient({this.onProgressChanged}) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
+    api.createFromInstance(this);
   }
 
   /// Constructs a [WebChromeClient] without creating the associated Java
