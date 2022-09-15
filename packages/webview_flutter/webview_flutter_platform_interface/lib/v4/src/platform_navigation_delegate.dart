@@ -11,7 +11,7 @@ import 'webview_platform.dart';
 
 /// Signature for callbacks that report a pending navigation request.
 typedef NavigationRequestCallback = FutureOr<NavigationDecision> Function(
-    {required NavigationRequest navigationRequest});
+    NavigationRequest navigationRequest);
 
 /// Signature for callbacks that report page events triggered by the native web view.
 typedef PageEventCallback = void Function(String url);
