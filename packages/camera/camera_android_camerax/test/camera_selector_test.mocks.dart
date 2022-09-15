@@ -28,9 +28,9 @@ class MockTestCameraSelectorHostApi extends _i1.Mock
   }
 
   @override
-  int create(int? lensDirection) =>
-      (super.noSuchMethod(Invocation.method(#create, [lensDirection]),
-          returnValue: 0) as int);
+  void create(int? identifier, int? lensDirection) => super.noSuchMethod(
+      Invocation.method(#create, [identifier, lensDirection]),
+      returnValueForMissingStub: null);
   @override
   List<int?> filter(int? identifier, List<int?>? cameraInfoIds) => (super
       .noSuchMethod(Invocation.method(#filter, [identifier, cameraInfoIds]),

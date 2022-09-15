@@ -45,7 +45,7 @@ public class CameraSelectorTest {
   }
 
   @Test
-  public void requireLensFacingTest() {
+  public void createTest() {
     final CameraSelectorHostApiImpl cameraSelectorHostApi =
         new CameraSelectorHostApiImpl(mockBinaryMessenger, testInstanceManager);
     final CameraSelector.Builder mockCameraSelectorBuilder = mock(CameraSelector.Builder.class);
@@ -55,10 +55,10 @@ public class CameraSelectorTest {
     when(mockCameraSelectorBuilder.requireLensFacing(1)).thenReturn(mockCameraSelectorBuilder);
     when(mockCameraSelectorBuilder.build()).thenReturn(mockCameraSelector);
 
-    assertEquals(
-        cameraSelectorHostApi.requireLensFacing(1L),
-        testInstanceManager.getIdentifierForStrongReference(mockCameraSelector));
+    cameraSelectorHostApi.create(0L, 1L);
+
     verify(mockCameraSelectorBuilder).requireLensFacing(CameraSelector.LENS_FACING_BACK);
+    assertEquals(testInstanceManager.getInstance(0L), mockCameraSelector);
   }
 
   @Test
