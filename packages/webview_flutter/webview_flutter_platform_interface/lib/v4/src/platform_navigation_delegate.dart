@@ -10,8 +10,8 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'webview_platform.dart';
 
 /// Signature for callbacks that report a pending navigation request.
-typedef NavigationRequestCallback = FutureOr<bool> Function(
-    {required String url, required bool isForMainFrame});
+typedef NavigationRequestCallback = FutureOr<NavigationDecision> Function(
+    {required NavigationRequest navigationRequest});
 
 /// Signature for callbacks that report page events triggered by the native web view.
 typedef PageEventCallback = void Function(String url);

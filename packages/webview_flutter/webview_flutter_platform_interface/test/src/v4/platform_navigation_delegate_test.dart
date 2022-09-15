@@ -60,8 +60,9 @@ void main() {
             const PlatformNavigationDelegateCreationParams());
 
     expect(
-      () => callbackDelegate.setOnNavigationRequest(
-          ({required bool isForMainFrame, required String url}) => true),
+      () => callbackDelegate.setOnNavigationRequest((
+              {required NavigationRequest navigationRequest}) =>
+          NavigationDecision.navigate),
       throwsUnimplementedError,
     );
   });
