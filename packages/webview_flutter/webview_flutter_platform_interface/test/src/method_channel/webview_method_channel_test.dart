@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,14 +39,11 @@ void main() {
         case 'loadFile':
           if (methodCall.arguments == 'invalid file') {
             throw PlatformException(
-                code: 'loadFile_failed',
-                message: 'Failed loading file.',
-                details: null);
+                code: 'loadFile_failed', message: 'Failed loading file.');
           } else if (methodCall.arguments == 'some error') {
             throw PlatformException(
               code: 'some_error',
               message: 'Some error occurred.',
-              details: null,
             );
           }
           return null;
@@ -51,13 +52,11 @@ void main() {
             throw PlatformException(
               code: 'loadFlutterAsset_invalidKey',
               message: 'Failed loading asset.',
-              details: null,
             );
           } else if (methodCall.arguments == 'some error') {
             throw PlatformException(
               code: 'some_error',
               message: 'Some error occurred.',
-              details: null,
             );
           }
           return null;

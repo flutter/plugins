@@ -95,7 +95,6 @@ void main() {
     test('handles method channel returning null', () async {
       stubPlatform.addResponse(
         name: methodName,
-        value: null,
       );
 
       expect(
@@ -110,7 +109,7 @@ void main() {
   test('endConnection', () async {
     const String endConnectionName = 'BillingClient#endConnection()';
     expect(stubPlatform.countPreviousCalls(endConnectionName), equals(0));
-    stubPlatform.addResponse(name: endConnectionName, value: null);
+    stubPlatform.addResponse(name: endConnectionName);
     await billingClient.endConnection();
     expect(stubPlatform.countPreviousCalls(endConnectionName), equals(1));
   });
@@ -162,7 +161,7 @@ void main() {
     });
 
     test('handles null method channel response', () async {
-      stubPlatform.addResponse(name: queryMethodName, value: null);
+      stubPlatform.addResponse(name: queryMethodName);
 
       final SkuDetailsResponseWrapper response = await billingClient
           .querySkuDetails(
@@ -227,8 +226,7 @@ void main() {
               sku: skuDetails.sku,
               accountId: accountId,
               obfuscatedProfileId: profileId,
-              oldSku: dummyOldPurchase.sku,
-              purchaseToken: null),
+              oldSku: dummyOldPurchase.sku),
           throwsAssertionError);
 
       expect(
@@ -236,7 +234,6 @@ void main() {
               sku: skuDetails.sku,
               accountId: accountId,
               obfuscatedProfileId: profileId,
-              oldSku: null,
               purchaseToken: dummyOldPurchase.purchaseToken),
           throwsAssertionError);
     });
@@ -314,6 +311,45 @@ void main() {
           const ProrationModeConverter().toJson(prorationMode));
     });
 
+    test(
+        'serializes and deserializes data when using immediateAndChargeFullPrice',
+        () async {
+      const String debugMessage = 'dummy message';
+      const BillingResponse responseCode = BillingResponse.ok;
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+          responseCode: responseCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+        name: launchMethodName,
+        value: buildBillingResultMap(expectedBillingResult),
+      );
+      const SkuDetailsWrapper skuDetails = dummySkuDetails;
+      const String accountId = 'hashedAccountId';
+      const String profileId = 'hashedProfileId';
+      const ProrationMode prorationMode =
+          ProrationMode.immediateAndChargeFullPrice;
+
+      expect(
+          await billingClient.launchBillingFlow(
+              sku: skuDetails.sku,
+              accountId: accountId,
+              obfuscatedProfileId: profileId,
+              oldSku: dummyOldPurchase.sku,
+              prorationMode: prorationMode,
+              purchaseToken: dummyOldPurchase.purchaseToken),
+          equals(expectedBillingResult));
+      final Map<dynamic, dynamic> arguments = stubPlatform
+          .previousCallMatching(launchMethodName)
+          .arguments as Map<dynamic, dynamic>;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], equals(accountId));
+      expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
+      expect(arguments['obfuscatedProfileId'], equals(profileId));
+      expect(
+          arguments['purchaseToken'], equals(dummyOldPurchase.purchaseToken));
+      expect(arguments['prorationMode'],
+          const ProrationModeConverter().toJson(prorationMode));
+    });
+
     test('handles null accountId', () async {
       const String debugMessage = 'dummy message';
       const BillingResponse responseCode = BillingResponse.ok;
@@ -337,7 +373,6 @@ void main() {
     test('handles method channel returning null', () async {
       stubPlatform.addResponse(
         name: launchMethodName,
-        value: null,
       );
       const SkuDetailsWrapper skuDetails = dummySkuDetails;
       expect(
@@ -400,7 +435,6 @@ void main() {
     test('handles method channel returning null', () async {
       stubPlatform.addResponse(
         name: queryPurchasesMethodName,
-        value: null,
       );
       final PurchasesResultWrapper response =
           await billingClient.queryPurchases(SkuType.inapp);
@@ -466,7 +500,6 @@ void main() {
     test('handles method channel returning null', () async {
       stubPlatform.addResponse(
         name: queryPurchaseHistoryMethodName,
-        value: null,
       );
       final PurchasesHistoryResult response =
           await billingClient.queryPurchaseHistory(SkuType.inapp);
@@ -501,7 +534,6 @@ void main() {
     test('handles method channel returning null', () async {
       stubPlatform.addResponse(
         name: consumeMethodName,
-        value: null,
       );
       final BillingResultWrapper billingResult =
           await billingClient.consumeAsync('dummy token');
@@ -534,7 +566,6 @@ void main() {
     test('handles method channel returning null', () async {
       stubPlatform.addResponse(
         name: acknowledgeMethodName,
-        value: null,
       );
       final BillingResultWrapper billingResult =
           await billingClient.acknowledgePurchase('dummy token');

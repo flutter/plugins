@@ -9,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+
 import 'google_sign_in_test.mocks.dart';
 
 /// Verify that [GoogleSignInAccount] can be mocked even though it's unused
@@ -58,13 +59,24 @@ void main() {
       verify(mockPlatform.signIn());
     });
 
-    test('signIn prioritize clientId parameter when available', () async {
+    test('clientId parameter is forwarded to implementation', () async {
       const String fakeClientId = 'fakeClientId';
       final GoogleSignIn googleSignIn = GoogleSignIn(clientId: fakeClientId);
 
       await googleSignIn.signIn();
 
       _verifyInit(mockPlatform, clientId: fakeClientId);
+      verify(mockPlatform.signIn());
+    });
+
+    test('serverClientId parameter is forwarded to implementation', () async {
+      const String fakeServerClientId = 'fakeServerClientId';
+      final GoogleSignIn googleSignIn =
+          GoogleSignIn(serverClientId: fakeServerClientId);
+
+      await googleSignIn.signIn();
+
+      _verifyInit(mockPlatform, serverClientId: fakeServerClientId);
       verify(mockPlatform.signIn());
     });
 
@@ -240,10 +252,12 @@ void main() {
     test('can sign in after init failed before', () async {
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
-      when(mockPlatform.init()).thenThrow(Exception('First init fails'));
+      when(mockPlatform.initWithParams(any))
+          .thenThrow(Exception('First init fails'));
       expect(googleSignIn.signIn(), throwsA(isInstanceOf<Exception>()));
 
-      when(mockPlatform.init()).thenAnswer((Invocation _) async {});
+      when(mockPlatform.initWithParams(any))
+          .thenAnswer((Invocation _) async {});
       expect(await googleSignIn.signIn(), isNotNull);
     });
 
@@ -334,13 +348,44 @@ void main() {
 
 void _verifyInit(
   MockGoogleSignInPlatform mockSignIn, {
+  List<String> scopes = const <String>[],
   SignInOption signInOption = SignInOption.standard,
+  String? hostedDomain,
   String? clientId,
+  String? serverClientId,
+  bool forceCodeForRefreshToken = false,
 }) {
-  verify(mockSignIn.init(
-    signInOption: signInOption,
-    scopes: <String>[],
-    hostedDomain: null,
-    clientId: clientId,
-  ));
+  verify(mockSignIn.initWithParams(argThat(
+    isA<SignInInitParameters>()
+        .having(
+          (SignInInitParameters p) => p.scopes,
+          'scopes',
+          scopes,
+        )
+        .having(
+          (SignInInitParameters p) => p.signInOption,
+          'signInOption',
+          signInOption,
+        )
+        .having(
+          (SignInInitParameters p) => p.hostedDomain,
+          'hostedDomain',
+          hostedDomain,
+        )
+        .having(
+          (SignInInitParameters p) => p.clientId,
+          'clientId',
+          clientId,
+        )
+        .having(
+          (SignInInitParameters p) => p.serverClientId,
+          'serverClientId',
+          serverClientId,
+        )
+        .having(
+          (SignInInitParameters p) => p.forceCodeForRefreshToken,
+          'forceCodeForRefreshToken',
+          forceCodeForRefreshToken,
+        ),
+  )));
 }

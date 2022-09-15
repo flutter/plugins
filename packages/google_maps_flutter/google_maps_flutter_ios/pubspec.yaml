@@ -1,0 +1,29 @@
+name: google_maps_flutter_ios
+description: iOS implementation of the google_maps_flutter plugin.
+repository: https://github.com/flutter/plugins/tree/main/packages/google_maps_flutter/google_maps_flutter_ios
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+maps%22
+version: 2.1.11
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+  flutter: ">=2.10.0"
+
+flutter:
+  plugin:
+    implements: google_maps_flutter
+    platforms:
+      ios:
+        pluginClass: FLTGoogleMapsPlugin
+        dartPluginClass: GoogleMapsFlutterIOS
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_maps_flutter_platform_interface: ^2.2.1
+  stream_transform: ^2.0.0
+
+dev_dependencies:
+  async: ^2.5.0
+  flutter_test:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.0

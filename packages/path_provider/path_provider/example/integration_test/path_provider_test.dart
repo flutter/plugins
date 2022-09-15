@@ -70,10 +70,10 @@ void main() {
   ];
 
   for (final StorageDirectory? type in _allDirs) {
-    test('getExternalStorageDirectories (type: $type)', () async {
+    testWidgets('getExternalStorageDirectories (type: $type)',
+        (WidgetTester tester) async {
       if (Platform.isIOS) {
-        final Future<List<Directory>?> result =
-            getExternalStorageDirectories(type: null);
+        final Future<List<Directory>?> result = getExternalStorageDirectories();
         expect(result, throwsA(isInstanceOf<UnsupportedError>()));
       } else if (Platform.isAndroid) {
         final List<Directory>? directories =

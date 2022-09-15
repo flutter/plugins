@@ -1,7 +1,6 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 import 'dart:async';
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
@@ -51,12 +50,26 @@ class ImagePickerIOS extends ImagePickerPlatform {
   }) async {
     final String? path = await _pickImageAsPath(
       source: source,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
-      preferredCameraDevice: preferredCameraDevice,
+      options: ImagePickerOptions(
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+        preferredCameraDevice: preferredCameraDevice,
+      ),
     );
     return path != null ? PickedFile(path) : null;
+  }
+
+  @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions options = const ImagePickerOptions(),
+  }) async {
+    final String? path = await _pickImageAsPath(
+      source: source,
+      options: options,
+    );
+    return path != null ? XFile(path) : null;
   }
 
   @override
@@ -66,9 +79,13 @@ class ImagePickerIOS extends ImagePickerPlatform {
     int? imageQuality,
   }) async {
     final List<dynamic>? paths = await _pickMultiImageAsPath(
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
+      options: MultiImagePickerOptions(
+        imageOptions: ImageOptions(
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+        ),
+      ),
     );
     if (paths == null) {
       return null;
@@ -77,20 +94,33 @@ class ImagePickerIOS extends ImagePickerPlatform {
     return paths.map((dynamic path) => PickedFile(path as String)).toList();
   }
 
-  Future<List<String>?> _pickMultiImageAsPath({
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
+  @override
+  Future<List<XFile>> getMultiImageWithOptions({
+    MultiImagePickerOptions options = const MultiImagePickerOptions(),
   }) async {
+    final List<String>? paths = await _pickMultiImageAsPath(options: options);
+    if (paths == null) {
+      return <XFile>[];
+    }
+
+    return paths.map((String path) => XFile(path)).toList();
+  }
+
+  Future<List<String>?> _pickMultiImageAsPath({
+    MultiImagePickerOptions options = const MultiImagePickerOptions(),
+  }) async {
+    final int? imageQuality = options.imageOptions.imageQuality;
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
     }
 
+    final double? maxWidth = options.imageOptions.maxWidth;
     if (maxWidth != null && maxWidth < 0) {
       throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
     }
 
+    final double? maxHeight = options.imageOptions.maxHeight;
     if (maxHeight != null && maxHeight < 0) {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
@@ -98,22 +128,24 @@ class ImagePickerIOS extends ImagePickerPlatform {
     // TODO(stuartmorgan): Remove the cast once Pigeon supports non-nullable
     //  generics, https://github.com/flutter/flutter/issues/97848
     return (await _hostApi.pickMultiImage(
-            MaxSize(width: maxWidth, height: maxHeight), imageQuality))
+            MaxSize(width: maxWidth, height: maxHeight),
+            imageQuality,
+            options.imageOptions.requestFullMetadata))
         ?.cast<String>();
   }
 
   Future<String?> _pickImageAsPath({
     required ImageSource source,
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
+    ImagePickerOptions options = const ImagePickerOptions(),
   }) {
+    final int? imageQuality = options.imageQuality;
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
     }
 
+    final double? maxHeight = options.maxHeight;
+    final double? maxWidth = options.maxWidth;
     if (maxWidth != null && maxWidth < 0) {
       throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
     }
@@ -124,10 +156,12 @@ class ImagePickerIOS extends ImagePickerPlatform {
 
     return _hostApi.pickImage(
       SourceSpecification(
-          type: _convertSource(source),
-          camera: _convertCamera(preferredCameraDevice)),
+        type: _convertSource(source),
+        camera: _convertCamera(options.preferredCameraDevice),
+      ),
       MaxSize(width: maxWidth, height: maxHeight),
       imageQuality,
+      options.requestFullMetadata,
     );
   }
 
@@ -167,10 +201,12 @@ class ImagePickerIOS extends ImagePickerPlatform {
   }) async {
     final String? path = await _pickImageAsPath(
       source: source,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
-      preferredCameraDevice: preferredCameraDevice,
+      options: ImagePickerOptions(
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+        preferredCameraDevice: preferredCameraDevice,
+      ),
     );
     return path != null ? XFile(path) : null;
   }
@@ -182,9 +218,13 @@ class ImagePickerIOS extends ImagePickerPlatform {
     int? imageQuality,
   }) async {
     final List<String>? paths = await _pickMultiImageAsPath(
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
+      options: MultiImagePickerOptions(
+        imageOptions: ImageOptions(
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+        ),
+      ),
     );
     if (paths == null) {
       return null;

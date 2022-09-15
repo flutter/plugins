@@ -4,16 +4,13 @@
 
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:flutter/services.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'messages.g.dart';
 
 /// The iOS implementation of [PathProviderPlatform].
 class PathProviderIOS extends PathProviderPlatform {
   /// The method channel used to interact with the native platform.
-  @visibleForTesting
-  MethodChannel methodChannel =
-      const MethodChannel('plugins.flutter.io/path_provider_ios');
+  final PathProviderApi _pathProvider = PathProviderApi();
 
   /// Registers this class as the default instance of [PathProviderPlatform]
   static void registerWith() {
@@ -22,13 +19,12 @@ class PathProviderIOS extends PathProviderPlatform {
 
   @override
   Future<String?> getTemporaryPath() async {
-    return methodChannel.invokeMethod<String>('getTemporaryDirectory');
+    return _pathProvider.getTemporaryPath();
   }
 
   @override
   Future<String?> getApplicationSupportPath() async {
-    final String? path = await methodChannel
-        .invokeMethod<String>('getApplicationSupportDirectory');
+    final String? path = await _pathProvider.getApplicationSupportPath();
     if (path != null) {
       // Ensure the directory exists before returning it, for consistency with
       // other platforms.
@@ -39,13 +35,12 @@ class PathProviderIOS extends PathProviderPlatform {
 
   @override
   Future<String?> getLibraryPath() async {
-    return methodChannel.invokeMethod<String>('getLibraryDirectory');
+    return _pathProvider.getLibraryPath();
   }
 
   @override
   Future<String?> getApplicationDocumentsPath() async {
-    return methodChannel
-        .invokeMethod<String>('getApplicationDocumentsDirectory');
+    return _pathProvider.getApplicationDocumentsPath();
   }
 
   @override

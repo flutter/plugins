@@ -21,8 +21,7 @@ void main() {
 
         final MockDomHelper mockDomHelper = MockDomHelper(
             files: <XFile>[mockFile],
-            expectAccept: '.jpg,.jpeg,image/png,image/*',
-            expectMultiple: false);
+            expectAccept: '.jpg,.jpeg,image/png,image/*');
 
         final FileSelectorWeb plugin =
             FileSelectorWeb(domHelper: mockDomHelper);

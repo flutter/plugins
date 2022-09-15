@@ -213,7 +213,7 @@ void main() {
 
     test('returns false for non-Flutter package', () async {
       final RepositoryPackage package =
-          createFakePackage('a_package', packagesDir, isFlutter: false);
+          createFakePackage('a_package', packagesDir);
       expect(package.requiresFlutter(), false);
     });
   });

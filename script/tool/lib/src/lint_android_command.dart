@@ -35,7 +35,7 @@ class LintAndroidCommand extends PackageLoopingCommand {
     if (!pluginSupportsPlatform(platformAndroid, package,
         requiredMode: PlatformSupport.inline)) {
       return PackageResult.skip(
-          'Plugin does not have an Android implemenatation.');
+          'Plugin does not have an Android implementation.');
     }
 
     bool failed = false;

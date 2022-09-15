@@ -41,13 +41,15 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   late Future<void> _isAuthInitialized;
   bool _isInitCalled = false;
 
-  // This method throws if init hasn't been called at some point in the past.
-  // It is used by the [initialized] getter to ensure that users can't await
-  // on a Future that will never resolve.
+  // This method throws if init or initWithParams hasn't been called at some
+  // point in the past. It is used by the [initialized] getter to ensure that
+  // users can't await on a Future that will never resolve.
   void _assertIsInitCalled() {
     if (!_isInitCalled) {
       throw StateError(
-          'GoogleSignInPlugin::init() must be called before any other method in this plugin.');
+        'GoogleSignInPlugin::init() or GoogleSignInPlugin::initWithParams() '
+        'must be called before any other method in this plugin.',
+      );
     }
   }
 
@@ -71,16 +73,29 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     SignInOption signInOption = SignInOption.standard,
     String? hostedDomain,
     String? clientId,
-  }) async {
-    final String? appClientId = clientId ?? _autoDetectedClientId;
+  }) {
+    return initWithParams(SignInInitParameters(
+      scopes: scopes,
+      signInOption: signInOption,
+      hostedDomain: hostedDomain,
+      clientId: clientId,
+    ));
+  }
+
+  @override
+  Future<void> initWithParams(SignInInitParameters params) async {
+    final String? appClientId = params.clientId ?? _autoDetectedClientId;
     assert(
         appClientId != null,
         'ClientID not set. Either set it on a '
         '<meta name="google-signin-client_id" content="CLIENT_ID" /> tag,'
-        ' or pass clientId when calling init()');
+        ' or pass clientId when initializing GoogleSignIn');
+
+    assert(params.serverClientId == null,
+        'serverClientId is not supported on Web.');
 
     assert(
-        !scopes.any((String scope) => scope.contains(' ')),
+        !params.scopes.any((String scope) => scope.contains(' ')),
         "OAuth 2.0 Scopes for Google APIs can't contain spaces. "
         'Check https://developers.google.com/identity/protocols/googlescopes '
         'for a list of valid OAuth 2.0 scopes.');
@@ -88,9 +103,9 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     await _isGapiInitialized;
 
     final auth2.GoogleAuth auth = auth2.init(auth2.ClientConfig(
-      hosted_domain: hostedDomain,
+      hosted_domain: params.hostedDomain,
       // The js lib wants a space-separated list of values
-      scope: scopes.join(' '),
+      scope: params.scopes.join(' '),
       client_id: appClientId!,
       plugin_name: 'dart-google_sign_in_web',
     ));

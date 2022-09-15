@@ -74,7 +74,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
                 final boolean didSucceed = dynamicShortcutsSet;
 
-                // TODO(camsim99): Move re-dispatch below to background thread when Flutter 2.8+ is stable.
+                // TODO(camsim99): Move re-dispatch below to background thread when Flutter 2.8+ is
+                // stable.
                 uiThreadExecutor.execute(
                     () -> {
                       if (didSucceed) {
@@ -163,7 +164,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         .setAction(Intent.ACTION_RUN)
         .putExtra(EXTRA_ACTION, type)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
   }
 
   private static class UiThreadExecutor implements Executor {

@@ -4,6 +4,8 @@
 
 import 'dart:async';
 import 'dart:html';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:ui';
 
 import 'package:async/async.dart';
@@ -24,7 +26,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('CameraPlugin', () {
-    const int cameraId = 0;
+    const int cameraId = 1;
 
     late Window window;
     late Navigator navigator;
@@ -591,7 +593,7 @@ void main() {
               (Camera camera) => camera.options,
               'options',
               CameraOptions(
-                audio: const AudioConstraints(enabled: false),
+                audio: const AudioConstraints(),
                 video: VideoConstraints(
                   facingMode: FacingModeConstraint(CameraType.user),
                   width: VideoSizeConstraint(

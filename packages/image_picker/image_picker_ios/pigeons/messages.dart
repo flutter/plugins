@@ -35,12 +35,13 @@ class SourceSpecification {
 @HostApi(dartHostTestHandler: 'TestHostImagePickerApi')
 abstract class ImagePickerApi {
   @async
-  @ObjCSelector('pickImageWithSource:maxSize:quality:')
-  String? pickImage(
-      SourceSpecification source, MaxSize maxSize, int? imageQuality);
+  @ObjCSelector('pickImageWithSource:maxSize:quality:fullMetadata:')
+  String? pickImage(SourceSpecification source, MaxSize maxSize,
+      int? imageQuality, bool requestFullMetadata);
   @async
-  @ObjCSelector('pickMultiImageWithMaxSize:quality:')
-  List<String>? pickMultiImage(MaxSize maxSize, int? imageQuality);
+  @ObjCSelector('pickMultiImageWithMaxSize:quality:fullMetadata:')
+  List<String>? pickMultiImage(
+      MaxSize maxSize, int? imageQuality, bool requestFullMetadata);
   @async
   @ObjCSelector('pickVideoWithSource:maxDuration:')
   String? pickVideo(SourceSpecification source, int? maxDurationSeconds);
