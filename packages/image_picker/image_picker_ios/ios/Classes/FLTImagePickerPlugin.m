@@ -495,6 +495,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                             maxHeight:maxHeight
                                                              maxWidth:maxWidth
                                                   desiredImageQuality:desiredImageQuality
+                                                         fullMetadata:self.callContext.requestFullMetadata
                                                        savedPathBlock:^(NSString *savedPath) {
                                                          pathList[i] = savedPath;
                                                        }];
