@@ -26,7 +26,7 @@
                      maxHeight:(NSNumber *)maxHeight
                       maxWidth:(NSNumber *)maxWidth
            desiredImageQuality:(NSNumber *)desiredImageQuality
-           fullMetadata:(BOOL)fullMetadata
+                  fullMetadata:(BOOL)fullMetadata
                 savedPathBlock:(void (^)(NSString *))savedPathBlock API_AVAILABLE(ios(14));
 
 @end
