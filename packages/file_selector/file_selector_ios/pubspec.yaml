@@ -2,7 +2,7 @@ name: file_selector_ios
 description: iOS implementation of the file_selector plugin.
 repository: https://github.com/flutter/plugins/tree/main/packages/file_selector/file_selector_ios
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+file_selector%22
-version: 0.5.0+1
+version: 0.5.0+2
 
 environment:
   sdk: ">=2.14.4 <3.0.0"
@@ -27,4 +27,3 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.1.0
   pigeon: ^3.2.5
-  
