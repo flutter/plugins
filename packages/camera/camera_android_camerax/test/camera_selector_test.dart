@@ -28,7 +28,7 @@ void main() {
       final InstanceManager instanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
-      final CameraSelector cameraSelector = CameraSelector.detached(
+      CameraSelector.detached(
         instanceManager: instanceManager,
       );
 
@@ -43,7 +43,7 @@ void main() {
       final InstanceManager instanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
-      final CameraSelector cameraSelector = CameraSelector(
+      CameraSelector(
         instanceManager: instanceManager,
       );
 
@@ -58,7 +58,7 @@ void main() {
       final InstanceManager instanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
-      final CameraSelector cameraSelector = CameraSelector(
+      CameraSelector(
           instanceManager: instanceManager,
           lensFacing: CameraSelector.LENS_FACING_BACK);
 
