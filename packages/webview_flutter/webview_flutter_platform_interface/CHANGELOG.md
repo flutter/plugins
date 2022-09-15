@@ -1,3 +1,7 @@
+## 1.9.4
+
+* Exposes type definitions for commonly used function signatures in the `PlatformNavigationDelegate` class.
+
 ## 1.9.3
 
 * Updates minimum Flutter version to 2.10.
