@@ -1,3 +1,49 @@
+## 0.10.0
+
+* Improves the logic in `version-check` to determine what changes don't require
+  version changes, as well as making any dev-only changes also not require
+  changelog changes since in practice we almost always override the check in
+  that case.
+* Removes special-case handling of Dependabot PRs, and the (fragile)
+  `--change-description-file` flag was only still used for that case, as
+  the improved diff analysis now handles that case more robustly.
+
+## 0.9.3
+
+* Raises minimum `compileSdkVersion` to 32 for the `all-plugins-app` command.
+
+## 0.9.2
+
+* Adds checking of `code-excerpt` configuration to `readme-check`, to validate
+  that if the excerpting tags are added to a README they are actually being
+  used.
+
+## 0.9.1
+
+* Adds a `--downgrade` flag to `analyze` for analyzing with the oldest possible
+  versions of packages.
+
+## 0.9.0
+
+* Replaces PR-description-based version/changelog/breaking change check
+  overrides in `version-check` with label-based overrides using a new
+  `pr-labels` flag, since we don't actually have reliable access to the
+  PR description in checks.
+
+## 0.8.10
+
+- Adds a new `remove-dev-dependencies` command to remove `dev_dependencies`
+  entries to make legacy version analysis possible in more cases.
+- Adds a `--lib-only` option to `analyze` to allow only analyzing the client
+  parts of a library for legacy verison compatibility.
+
+## 0.8.9
+
+- Includes `dev_dependencies` when overridding dependencies using
+  `make-deps-path-based`.
+- Bypasses version and CHANGELOG checks for Dependabot PRs for packages
+  that are known not to be client-affecting.
+
 ## 0.8.8
 
 - Allows pre-release versions in `version-check`.

@@ -22,7 +22,7 @@ class CameraWindows extends CameraPlatform {
   final MethodChannel pluginChannel =
       const MethodChannel('plugins.flutter.io/camera_windows');
 
-  /// Camera specific method channels to allow comminicating with specific cameras.
+  /// Camera specific method channels to allow communicating with specific cameras.
   final Map<int, MethodChannel> _cameraChannels = <int, MethodChannel>{};
 
   /// The controller that broadcasts events coming from handleCameraMethodCall

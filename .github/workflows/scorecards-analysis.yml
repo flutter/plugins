@@ -17,6 +17,8 @@ jobs:
       security-events: write
       actions: read
       contents: read
+      # Needed to access OIDC token.
+      id-token: write
 
     steps:
       - name: "Checkout code"
@@ -25,7 +27,7 @@ jobs:
           persist-credentials: false
 
       - name: "Run analysis"
-        uses: ossf/scorecard-action@3e15ea8318eee9b333819ec77a36aca8d39df13e
+        uses: ossf/scorecard-action@865b4092859256271290c77adbd10a43f4779972
         with:
           results_file: results.sarif
           results_format: sarif
@@ -48,6 +50,6 @@ jobs:
 
       # Upload the results to GitHub's code scanning dashboard.
       - name: "Upload to code-scanning"
-        uses: github/codeql-action/upload-sarif@27ea8f8fe5977c00f5b37e076ab846c5bd783b96
+        uses: github/codeql-action/upload-sarif@b398f525a5587552e573b247ac661067fafa920b
         with:
           sarif_file: results.sarif

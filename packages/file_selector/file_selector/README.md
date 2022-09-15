@@ -6,9 +6,9 @@
 
 A Flutter plugin that manages files and interactions with file dialogs.
 
-|             | macOS  | Web | Windows     |
-|-------------|--------|-----|-------------|
-| **Support** | 10.11+ | Any | Windows 10+ |
+|             | iOS    | Linux | macOS  | Web | Windows     |
+|-------------|--------|-------|--------|-----|-------------|
+| **Support** | iOS 9+ | Any   | 10.11+ | Any | Windows 10+ |
 
 ## Usage
 To use this plugin, add `file_selector` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
@@ -75,6 +75,22 @@ final XFile textFile =
     XFile.fromData(fileData, mimeType: mimeType, name: fileName);
 await textFile.saveTo(path);
 ```
+
+### Filtering by file types
+
+Different platforms support different type group filter options. To avoid
+`ArgumentError`s on some platforms, ensure that any `XTypeGroup`s you pass set
+filters that cover all platforms you are targeting, or that you conditionally
+pass different `XTypeGroup`s based on `Platform`.
+
+|                | Linux | macOS  | Web | Windows     |
+|----------------|-------|--------|-----|-------------|
+| `extensions`   | ✔️     | ✔️      | ✔️   | ✔️           |
+| `mimeTypes`    | ✔️     | ✔️†     | ✔️   |             |
+| `macUTIs`      |       | ✔️      |     |             |
+| `webWildCards` |       |        | ✔️   |             |
+
+† `mimeTypes` are not supported on version of macOS earlier than 11 (Big Sur).
 
 [example]:./example
 [entitlement]: https://docs.flutter.dev/desktop#entitlements-and-the-app-sandbox

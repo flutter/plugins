@@ -298,72 +298,26 @@ void main() {
           ]));
     });
 
-    test('allows breaking changes to platform interfaces with explanation',
+    test('allows breaking changes to platform interfaces with override label',
         () async {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
         MockProcess(stdout: 'version: 1.0.0'),
       ];
-      final File changeDescriptionFile =
-          fileSystem.file('change_description.txt');
-      changeDescriptionFile.writeAsStringSync('''
-Some general PR description
 
-## Breaking change justification
-
-This is necessary because of X, Y, and Z
-
-## Another section''');
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
         '--base-sha=main',
-        '--change-description-file=${changeDescriptionFile.path}'
+        '--pr-labels=some label,override: allow breaking change,another-label'
       ]);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
           contains('Allowing breaking change to plugin_platform_interface '
-              'due to "## Breaking change justification" in the change '
-              'description.'),
+              'due to the "override: allow breaking change" label.'),
           contains('Ran for 1 package(s) (1 with warnings)'),
-        ]),
-      );
-      expect(
-          processRunner.recordedCalls,
-          containsAllInOrder(const <ProcessCall>[
-            ProcessCall(
-                'git-show',
-                <String>[
-                  'main:packages/plugin_platform_interface/pubspec.yaml'
-                ],
-                null)
-          ]));
-    });
-
-    test('throws if a nonexistent change description file is specified',
-        () async {
-      createFakePlugin('plugin_platform_interface', packagesDir,
-          version: '2.0.0');
-      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
-        MockProcess(stdout: 'version: 1.0.0'),
-      ];
-
-      Error? commandError;
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'version-check',
-        '--base-sha=main',
-        '--change-description-file=a_missing_file.txt'
-      ], errorHandler: (Error e) {
-        commandError = e;
-      });
-
-      expect(commandError, isA<ToolExit>());
-      expect(
-        output,
-        containsAllInOrder(<Matcher>[
-          contains('No such file: a_missing_file.txt'),
         ]),
       );
       expect(
@@ -899,7 +853,7 @@ packages/plugin/CHANGELOG.md
         );
       });
 
-      test('allows missing version change with justification', () async {
+      test('allows missing version change with override label', () async {
         final RepositoryPackage plugin =
             createFakePlugin('plugin', packagesDir, version: '1.0.0');
 
@@ -919,23 +873,16 @@ packages/plugin/pubspec.yaml
 '''),
         ];
 
-        final File changeDescriptionFile =
-            fileSystem.file('change_description.txt');
-        changeDescriptionFile.writeAsStringSync('''
-Some general PR description
-
-No version change: Code change is only to implementation comments.
-''');
         final List<String> output =
             await _runWithMissingChangeDetection(<String>[
-          '--change-description-file=${changeDescriptionFile.path}'
+          '--pr-labels=some label,override: no versioning needed,another-label'
         ]);
 
         expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Ignoring lack of version change due to '
-                '"No version change:" in the change description.'),
+            contains('Ignoring lack of version change due to the '
+                '"override: no versioning needed" label.'),
           ]),
         );
       });
@@ -1058,23 +1005,57 @@ packages/plugin/example/lib/foo.dart
 '''),
         ];
 
-        final File changeDescriptionFile =
-            fileSystem.file('change_description.txt');
-        changeDescriptionFile.writeAsStringSync('''
-Some general PR description
-
-No CHANGELOG change: Code change is only to implementation comments.
-''');
         final List<String> output =
             await _runWithMissingChangeDetection(<String>[
-          '--change-description-file=${changeDescriptionFile.path}'
+          '--pr-labels=some label,override: no changelog needed,another-label'
         ]);
 
         expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Ignoring lack of CHANGELOG update due to '
-                '"No CHANGELOG change:" in the change description.'),
+            contains('Ignoring lack of CHANGELOG update due to the '
+                '"override: no changelog needed" label.'),
+          ]),
+        );
+      });
+
+      // This test ensures that Dependabot Gradle changes to test-only files
+      // aren't flagged by the version check.
+      test(
+          'allows missing CHANGELOG and version change for test-only Gradle changes',
+          () async {
+        final RepositoryPackage plugin =
+            createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+        const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+        plugin.changelogFile.writeAsStringSync(changelog);
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.0.0'),
+        ];
+        processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+          // File list.
+          MockProcess(stdout: '''
+packages/plugin/android/build.gradle
+'''),
+          // build.gradle diff
+          MockProcess(stdout: '''
+-  androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+-  testImplementation 'junit:junit:4.10.0'
++  androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
++  testImplementation 'junit:junit:4.13.2'
+'''),
+        ];
+
+        final List<String> output =
+            await _runWithMissingChangeDetection(<String>[]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
           ]),
         );
       });

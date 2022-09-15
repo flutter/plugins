@@ -38,8 +38,7 @@ void main() {
 
       expect(parsedFile.captions[0].start,
           const Duration(seconds: 5, milliseconds: 200));
-      expect(parsedFile.captions[0].end,
-          const Duration(seconds: 6, milliseconds: 000));
+      expect(parsedFile.captions[0].end, const Duration(seconds: 6));
       expect(parsedFile.captions[0].text,
           "You know I'm so excited my glasses are falling off here.");
     });
@@ -106,7 +105,7 @@ void main() {
     final Caption firstCaption = parsedFile.captions.single;
     expect(firstCaption.number, 1);
     expect(firstCaption.start, const Duration(seconds: 13));
-    expect(firstCaption.end, const Duration(seconds: 16, milliseconds: 0));
+    expect(firstCaption.end, const Duration(seconds: 16));
     expect(firstCaption.text, 'Valid');
   });
 }

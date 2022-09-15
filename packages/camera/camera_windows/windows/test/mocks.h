@@ -67,7 +67,8 @@ class MockTextureRegistrar : public flutter::TextureRegistrar {
           return this->texture_id_;
         });
 
-    ON_CALL(*this, UnregisterTexture)
+    // Deprecated pre-Flutter-3.4 version.
+    ON_CALL(*this, UnregisterTexture(_))
         .WillByDefault([this](int64_t tid) -> bool {
           if (tid == this->texture_id_) {
             texture_ = nullptr;
@@ -76,6 +77,18 @@ class MockTextureRegistrar : public flutter::TextureRegistrar {
           }
           return false;
         });
+
+    // Flutter 3.4+ version.
+    ON_CALL(*this, UnregisterTexture(_, _))
+        .WillByDefault(
+            [this](int64_t tid, std::function<void()> callback) -> void {
+              // Forward to the pre-3.4 implementation so that expectations can
+              // be the same for all versions.
+              this->UnregisterTexture(tid);
+              if (callback) {
+                callback();
+              }
+            });
 
     ON_CALL(*this, MarkTextureFrameAvailable)
         .WillByDefault([this](int64_t tid) -> bool {
@@ -91,7 +104,13 @@ class MockTextureRegistrar : public flutter::TextureRegistrar {
   MOCK_METHOD(int64_t, RegisterTexture, (flutter::TextureVariant * texture),
               (override));
 
+  // Pre-Flutter-3.4 version.
   MOCK_METHOD(bool, UnregisterTexture, (int64_t), (override));
+  // Flutter 3.4+ version.
+  // TODO(cbracken): Add an override annotation to this once 3.4+ is the
+  // minimum version tested in CI.
+  MOCK_METHOD(void, UnregisterTexture,
+              (int64_t, std::function<void()> callback), ());
   MOCK_METHOD(bool, MarkTextureFrameAvailable, (int64_t), (override));
 
   int64_t texture_id_ = -1;
@@ -134,41 +153,43 @@ class MockCamera : public Camera {
               (override));
   MOCK_METHOD(std::unique_ptr<flutter::MethodResult<>>, GetPendingResultByType,
               (PendingResultType type));
-  MOCK_METHOD(void, OnCreateCaptureEngineFailed, (const std::string& error),
-              (override));
+  MOCK_METHOD(void, OnCreateCaptureEngineFailed,
+              (CameraResult result, const std::string& error), (override));
 
   MOCK_METHOD(void, OnStartPreviewSucceeded, (int32_t width, int32_t height),
               (override));
-  MOCK_METHOD(void, OnStartPreviewFailed, (const std::string& error),
-              (override));
+  MOCK_METHOD(void, OnStartPreviewFailed,
+              (CameraResult result, const std::string& error), (override));
 
   MOCK_METHOD(void, OnResumePreviewSucceeded, (), (override));
-  MOCK_METHOD(void, OnResumePreviewFailed, (const std::string& error),
-              (override));
+  MOCK_METHOD(void, OnResumePreviewFailed,
+              (CameraResult result, const std::string& error), (override));
 
   MOCK_METHOD(void, OnPausePreviewSucceeded, (), (override));
-  MOCK_METHOD(void, OnPausePreviewFailed, (const std::string& error),
-              (override));
+  MOCK_METHOD(void, OnPausePreviewFailed,
+              (CameraResult result, const std::string& error), (override));
 
   MOCK_METHOD(void, OnStartRecordSucceeded, (), (override));
-  MOCK_METHOD(void, OnStartRecordFailed, (const std::string& error),
-              (override));
+  MOCK_METHOD(void, OnStartRecordFailed,
+              (CameraResult result, const std::string& error), (override));
 
   MOCK_METHOD(void, OnStopRecordSucceeded, (const std::string& file_path),
               (override));
-  MOCK_METHOD(void, OnStopRecordFailed, (const std::string& error), (override));
+  MOCK_METHOD(void, OnStopRecordFailed,
+              (CameraResult result, const std::string& error), (override));
 
   MOCK_METHOD(void, OnTakePictureSucceeded, (const std::string& file_path),
               (override));
-  MOCK_METHOD(void, OnTakePictureFailed, (const std::string& error),
-              (override));
+  MOCK_METHOD(void, OnTakePictureFailed,
+              (CameraResult result, const std::string& error), (override));
 
   MOCK_METHOD(void, OnVideoRecordSucceeded,
               (const std::string& file_path, int64_t video_duration),
               (override));
-  MOCK_METHOD(void, OnVideoRecordFailed, (const std::string& error),
-              (override));
-  MOCK_METHOD(void, OnCaptureError, (const std::string& error), (override));
+  MOCK_METHOD(void, OnVideoRecordFailed,
+              (CameraResult result, const std::string& error), (override));
+  MOCK_METHOD(void, OnCaptureError,
+              (CameraResult result, const std::string& error), (override));
 
   MOCK_METHOD(bool, HasDeviceId, (std::string & device_id), (const override));
   MOCK_METHOD(bool, HasCameraId, (int64_t camera_id), (const override));
@@ -182,7 +203,7 @@ class MockCamera : public Camera {
   MOCK_METHOD(camera_windows::CaptureController*, GetCaptureController, (),
               (override));
 
-  MOCK_METHOD(void, InitCamera,
+  MOCK_METHOD(bool, InitCamera,
               (flutter::TextureRegistrar * texture_registrar,
                flutter::BinaryMessenger* messenger, bool record_audio,
                ResolutionPreset resolution_preset),
@@ -212,7 +233,7 @@ class MockCaptureController : public CaptureController {
  public:
   ~MockCaptureController() = default;
 
-  MOCK_METHOD(void, InitCaptureDevice,
+  MOCK_METHOD(bool, InitCaptureDevice,
               (flutter::TextureRegistrar * texture_registrar,
                const std::string& device_id, bool record_audio,
                ResolutionPreset resolution_preset),

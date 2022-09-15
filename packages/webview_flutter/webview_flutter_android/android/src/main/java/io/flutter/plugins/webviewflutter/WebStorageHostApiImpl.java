@@ -42,7 +42,7 @@ public class WebStorageHostApiImpl implements WebStorageHostApi {
 
   @Override
   public void create(Long instanceId) {
-    instanceManager.addInstance(webStorageCreator.createWebStorage(), instanceId);
+    instanceManager.addDartCreatedInstance(webStorageCreator.createWebStorage(), instanceId);
   }
 
   @Override

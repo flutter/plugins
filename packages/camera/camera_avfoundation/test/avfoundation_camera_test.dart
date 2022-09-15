@@ -961,7 +961,6 @@ void main() {
           'setZoomLevel': PlatformException(
             code: 'ZOOM_ERROR',
             message: 'Illegal zoom error',
-            details: null,
           )
         },
       );

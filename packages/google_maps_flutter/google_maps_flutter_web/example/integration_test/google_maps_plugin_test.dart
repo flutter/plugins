@@ -17,7 +17,7 @@ import 'package:mockito/mockito.dart';
 import 'google_maps_plugin_test.mocks.dart';
 
 @GenerateMocks(<Type>[], customMocks: <MockSpec<dynamic>>[
-  MockSpec<GoogleMapController>(returnNullOnMissingStub: true),
+  MockSpec<GoogleMapController>(onMissingStub: OnMissingStub.returnDefault),
 ])
 
 /// Test GoogleMapsPlugin

@@ -357,7 +357,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
       if (flutterConstraint != null &&
           !flutterConstraint.allows(minFlutterVersion)) {
         return PackageResult.skip(
-            'Does not support Flutter ${minFlutterVersion.toString()}');
+            'Does not support Flutter $minFlutterVersion');
       }
     }
 
@@ -365,8 +365,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
       final Pubspec pubspec = package.parsePubspec();
       final VersionConstraint? dartConstraint = pubspec.environment?['sdk'];
       if (dartConstraint != null && !dartConstraint.allows(minDartVersion)) {
-        return PackageResult.skip(
-            'Does not support Dart ${minDartVersion.toString()}');
+        return PackageResult.skip('Does not support Dart $minDartVersion');
       }
     }
 
