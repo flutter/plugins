@@ -127,7 +127,6 @@ public class InstanceManager {
    */
   public long addHostCreatedInstance(Object instance) {
     assertManagerIsNotClosed();
-    assert (!containsInstance(instance));
     final long identifier = nextIdentifier++;
     addInstance(instance, identifier);
     return identifier;

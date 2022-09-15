@@ -20,7 +20,7 @@ void main() {
   group('CameraSelector', () {
     tearDown(() => TestCameraSelectorHostApi.setup(null));
 
-    test('requireLensFacingTest', () async {
+    test('createTestWithoutLensSpecified', () async {
       final MockTestCameraSelectorHostApi mockApi =
           MockTestCameraSelectorHostApi();
       TestCameraSelectorHostApi.setup(mockApi);
@@ -31,30 +31,50 @@ void main() {
       final CameraSelector cameraSelector = CameraSelector.detached(
         instanceManager: instanceManager,
       );
-      final CameraSelector modifiedCameraSelector = CameraSelector.detached(
-          instanceManager: instanceManager,
-          lensFacing: CameraSelector.LENS_FACING_BACK);
 
       instanceManager.addHostCreatedInstance(
         cameraSelector,
         0,
         onCopy: (_) => CameraSelector.detached(),
       );
+
+      when(mockApi.create(null))
+          .thenReturn(0);
+
+      expect(
+          await cameraSelector.create(null),
+          equals(cameraSelector)
+      );
+      verify(mockApi.create(null));
+    });
+
+    test('createTestWithLensSpecified', () async {
+      final MockTestCameraSelectorHostApi mockApi =
+          MockTestCameraSelectorHostApi();
+      TestCameraSelectorHostApi.setup(mockApi);
+
+      final InstanceManager instanceManager = InstanceManager(
+        onWeakReferenceRemoved: (_) {},
+      );
+      final CameraSelector cameraSelector = CameraSelector.detached(
+          instanceManager: instanceManager,
+          lensFacing: CameraSelector.LENS_FACING_BACK);
+
       instanceManager.addHostCreatedInstance(
-        modifiedCameraSelector,
+        cameraSelector,
         2,
         onCopy: (_) => CameraSelector.detached(
             lensFacing: CameraSelector.LENS_FACING_BACK),
       );
 
-      when(mockApi.requireLensFacing(CameraSelector.LENS_FACING_BACK))
+      when(mockApi.create(CameraSelector.LENS_FACING_BACK))
           .thenReturn(2);
 
       expect(
           await cameraSelector
-              .requireLensFacing(CameraSelector.LENS_FACING_BACK),
-          equals(modifiedCameraSelector));
-      verify(mockApi.requireLensFacing(CameraSelector.LENS_FACING_BACK));
+              .create(CameraSelector.LENS_FACING_BACK),
+          equals(cameraSelector));
+      verify(mockApi.create(CameraSelector.LENS_FACING_BACK));
     });
 
     test('filterTest', () async {

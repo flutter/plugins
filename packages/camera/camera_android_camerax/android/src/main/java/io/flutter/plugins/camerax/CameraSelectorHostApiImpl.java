@@ -27,15 +27,16 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
   }
 
   @Override
-  public Long requireLensFacing(@NonNull Long lensDirection) {
-    CameraSelector cameraSelectorWithLensSpecified =
-        cameraSelectorBuilder.requireLensFacing(Math.toIntExact(lensDirection)).build();
+  public void create(@NonNull Long identifier, Long lensDirection) {
+    CameraSelector cameraSelector;
+    if (lensDirection != null) {
+      cameraSelector =
+          cameraSelectorBuilder.requireLensFacing(Math.toIntExact(lensDirection)).build();
+    } else {
+      cameraSelector = cameraSelectorBuilder.build();
+    }
 
-    final CameraSelectorFlutterApiImpl cameraInfoFlutterApi =
-        new CameraSelectorFlutterApiImpl(binaryMessenger, instanceManager);
-    cameraInfoFlutterApi.create(cameraSelectorWithLensSpecified, lensDirection, result -> {});
-
-    return instanceManager.getIdentifierForStrongReference(cameraSelectorWithLensSpecified);
+    instanceManager.addDartCreatedInstance(cameraSelector, identifier);
   }
 
   @Override
