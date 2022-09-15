@@ -14,9 +14,13 @@ class XTypeGroup {
     this.label,
     List<String>? extensions,
     this.mimeTypes,
-    this.macUTIs,
+    List<String>? macUTIs,
+    List<String>? uniformTypeIdentifiers,
     this.webWildCards,
-  }) : _extensions = extensions;
+  })  : _extensions = extensions,
+        assert(uniformTypeIdentifiers == null || macUTIs == null,
+            'It is only allowed to specify either macUTIs or uniformTypeIdentifiers'),
+        uniformTypeIdentifiers = uniformTypeIdentifiers ?? macUTIs;
 
   /// The 'name' or reference to this group of types.
   final String? label;
@@ -24,8 +28,8 @@ class XTypeGroup {
   /// The MIME types for this group.
   final List<String>? mimeTypes;
 
-  /// The UTIs for this group.
-  final List<String>? macUTIs;
+  /// The uniform type identifiers for this group
+  final List<String>? uniformTypeIdentifiers;
 
   /// The web wild cards for this group (ex: image/*, video/*).
   final List<String>? webWildCards;
@@ -55,6 +59,9 @@ class XTypeGroup {
         (macUTIs?.isEmpty ?? true) &&
         (webWildCards?.isEmpty ?? true);
   }
+
+  /// Returns the list of uniform type identifiers for this group
+  List<String>? get macUTIs => uniformTypeIdentifiers;
 
   static List<String>? _removeLeadingDots(List<String>? exts) => exts
       ?.map((String ext) => ext.startsWith('.') ? ext.substring(1) : ext)
