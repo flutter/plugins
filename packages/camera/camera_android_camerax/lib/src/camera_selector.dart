@@ -24,7 +24,7 @@ class CameraSelector extends JavaObject {
       instanceManager: instanceManager,
     );
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
-    create(lensFacing);
+    _api.createFromInstances(this, lensFacing);
   }
 
   /// Creates a detached [CameraSelector].
@@ -49,13 +49,27 @@ class CameraSelector extends JavaObject {
   static const int LENS_FACING_BACK = 1;
 
   /// Selector for default front facing camera.
-  static CameraSelector get defaultFrontCamera {
-    return CameraSelector(lensFacing: LENS_FACING_FRONT);
+  static CameraSelector getDefaultFrontCamera({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) {
+    return CameraSelector(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+      lensFacing: LENS_FACING_FRONT,
+    );
   }
 
   /// Selector for default back facing camera.
-  static CameraSelector get defaultBackCamera {
-    return CameraSelector(lensFacing: LENS_FACING_BACK);
+  static CameraSelector getDefaultBackCamera({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) {
+    return CameraSelector(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+      lensFacing: LENS_FACING_BACK,
+    );
   }
 
   /// Receives binary data across the Flutter platform barrier.
@@ -69,11 +83,6 @@ class CameraSelector extends JavaObject {
 
   /// Lens direction of this selector.
   final int? lensFacing;
-
-  /// Creates a [CameraSelector] with the correct lens direction if specified.
-  void create(int? lensFacing) {
-    _api.createFromInstances(this, lensFacing);
-  }
 
   /// Filters available cameras based on provided [CameraInfo]s.
   Future<List<CameraInfo>> filter(List<CameraInfo> cameraInfos) {
