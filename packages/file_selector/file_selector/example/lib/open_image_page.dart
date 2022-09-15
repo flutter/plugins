@@ -18,6 +18,7 @@ class OpenImagePage extends StatelessWidget {
     final XTypeGroup typeGroup = XTypeGroup(
       label: 'images',
       extensions: <String>['jpg', 'png'],
+      macUTIs: <String>['public.image'],
     );
     final XFile? file =
         await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);

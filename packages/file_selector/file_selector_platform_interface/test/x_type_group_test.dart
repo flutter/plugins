@@ -7,12 +7,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('XTypeGroup', () {
+    final List<String> extensions = <String>['txt', 'jpg'];
+    final List<String> mimeTypes = <String>['text/plain'];
+    final List<String> macUTIs = <String>['public.plain-text'];
+    final List<String> webWildCards = <String>['image/*'];
+
     test('toJSON() creates correct map', () {
       const String label = 'test group';
-      final List<String> extensions = <String>['txt', 'jpg'];
-      final List<String> mimeTypes = <String>['text/plain'];
-      final List<String> macUTIs = <String>['public.plain-text'];
-      final List<String> webWildCards = <String>['image/*'];
 
       final XTypeGroup group = XTypeGroup(
         label: label,
@@ -69,6 +70,24 @@ void main() {
       expect(mimeOnly.allowsAny, false);
       expect(utiOnly.allowsAny, false);
       expect(webOnly.allowsAny, false);
+    });
+
+    test('setUniformTypeIdentifiers overrides macUTIs', () {
+      final XTypeGroup group = XTypeGroup(
+        label: 'Any',
+      );
+
+      group.uniformTypeIdentifiers = macUTIs;
+
+      expect(group.uniformTypeIdentifiers, macUTIs);
+    });
+
+    test('getUniformTypeIdentifiers returns macUTIs', () {
+      final XTypeGroup group = XTypeGroup(
+        macUTIs: macUTIs,
+      );
+
+      expect(group.uniformTypeIdentifiers, macUTIs);
     });
 
     test('Leading dots are removed from extensions', () {

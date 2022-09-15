@@ -83,12 +83,13 @@ Different platforms support different type group filter options. To avoid
 filters that cover all platforms you are targeting, or that you conditionally
 pass different `XTypeGroup`s based on `Platform`.
 
-|                | Linux | macOS  | Web | Windows     |
-|----------------|-------|--------|-----|-------------|
-| `extensions`   | ✔️     | ✔️      | ✔️   | ✔️           |
-| `mimeTypes`    | ✔️     | ✔️†     | ✔️   |             |
-| `macUTIs`      |       | ✔️      |     |             |
-| `webWildCards` |       |        | ✔️   |             |
+|                | Linux | macOS  | Web | Windows     | iOS |
+|----------------|-------|--------|-----|-------------|-----|
+| `extensions`   | ✔️     | ✔️      | ✔️   | ✔️           |     |
+| `mimeTypes`    | ✔️     | ✔️†     | ✔️   |             |     |
+| `macUTIs`      |       | ✔️      |     |             |     |
+| `webWildCards` |       |        | ✔️   |             |     |
+| `uniformTypeIdentifiers` |       | ✔️      |     |             | ✔️   |
 
 † `mimeTypes` are not supported on version of macOS earlier than 11 (Big Sur).
 

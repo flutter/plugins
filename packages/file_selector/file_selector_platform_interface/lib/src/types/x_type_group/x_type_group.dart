@@ -26,7 +26,7 @@ class XTypeGroup {
   final List<String>? mimeTypes;
 
   /// The UTIs for this group
-  final List<String>? macUTIs;
+  List<String>? macUTIs;
 
   /// The web wild cards for this group (ex: image/*, video/*)
   final List<String>? webWildCards;
@@ -48,6 +48,14 @@ class XTypeGroup {
         (mimeTypes?.isEmpty ?? true) &&
         (macUTIs?.isEmpty ?? true) &&
         (webWildCards?.isEmpty ?? true);
+  }
+
+  /// Returns the list of Uniform Type Identifiers for this group.
+  List<String>? get uniformTypeIdentifiers => macUTIs;
+
+  /// Returns the list of Uniform Type Identifiers for this group.
+  set uniformTypeIdentifiers(List<String>? value) {
+    macUTIs = value;
   }
 
   static List<String>? _removeLeadingDots(List<String>? exts) => exts

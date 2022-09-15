@@ -1,5 +1,9 @@
 ## NEXT
 
+* Adds required iOS `macUTIs` parameter for the `_openTextFile`, `_openImageFile` and `_openImageFile`(for multiple images) methods on the `file_selector` project's main example.
+
+## 0.9.3
+
 * Updates minimum Flutter version to 2.10.
 
 ## 0.9.2

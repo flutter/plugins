@@ -18,10 +18,12 @@ class OpenMultipleImagesPage extends StatelessWidget {
     final XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'JPEGs',
       extensions: <String>['jpg', 'jpeg'],
+      macUTIs: <String>['public.jpeg'],
     );
     final XTypeGroup pngTypeGroup = XTypeGroup(
       label: 'PNGs',
       extensions: <String>['png'],
+      macUTIs: <String>['public.png'],
     );
     final List<XFile> files = await openFiles(acceptedTypeGroups: <XTypeGroup>[
       jpgsTypeGroup,

@@ -53,10 +53,12 @@ class FileSelectorIOS extends FileSelectorPlatform {
       if (typeGroup.allowsAny) {
         return <String>[];
       }
+
       if (typeGroup.macUTIs?.isEmpty ?? true) {
         throw ArgumentError('The provided type group $typeGroup should either '
             'allow all files, or have a non-empty "macUTIs"');
       }
+
       allowedUTIs.addAll(typeGroup.macUTIs!);
     }
     return allowedUTIs;

@@ -15,6 +15,7 @@ class OpenTextPage extends StatelessWidget {
     final XTypeGroup typeGroup = XTypeGroup(
       label: 'text',
       extensions: <String>['txt', 'json'],
+      macUTIs: <String>['public.text'],
     );
     // This demonstrates using an initial directory for the prompt, which should
     // only be done in cases where the application can likely predict where the

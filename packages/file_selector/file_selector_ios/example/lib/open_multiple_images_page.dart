@@ -16,13 +16,9 @@ class OpenMultipleImagesPage extends StatelessWidget {
 
   Future<void> _openImageFile(BuildContext context) async {
     final XTypeGroup jpgsTypeGroup = XTypeGroup(
-      label: 'JPEGs',
-      extensions: <String>['jpg', 'jpeg'],
       macUTIs: <String>['public.jpeg'],
     );
     final XTypeGroup pngTypeGroup = XTypeGroup(
-      label: 'PNGs',
-      extensions: <String>['png'],
       macUTIs: <String>['public.png'],
     );
     final List<XFile> files = await FileSelectorPlatform.instance

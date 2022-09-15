@@ -13,8 +13,6 @@ class OpenTextPage extends StatelessWidget {
 
   Future<void> _openTextFile(BuildContext context) async {
     final XTypeGroup typeGroup = XTypeGroup(
-      label: 'text',
-      extensions: <String>['txt', 'json'],
       macUTIs: <String>['public.text'],
     );
     final XFile? file = await FileSelectorPlatform.instance

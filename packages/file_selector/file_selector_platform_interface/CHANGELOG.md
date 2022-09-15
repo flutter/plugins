@@ -1,5 +1,9 @@
 ## NEXT
 
+* Adds the `uniformTypeIdentifiers` property to the `XTypeGroup` that relies on `macUTIs`. The last will be deprecated for future releases.
+
+## 2.1.1
+
 * Updates minimum Flutter version to 2.10.
 
 ## 2.1.0
