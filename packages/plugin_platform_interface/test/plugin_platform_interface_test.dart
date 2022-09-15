@@ -106,7 +106,8 @@ void main() {
 
     test('prevents implmentation with `implements` and `noSuchMethod`', () {
       expect(() {
-        SamplePluginPlatform.instance = ImplementsSamplePluginPlatformUsingNoSuchMethod();
+        SamplePluginPlatform.instance =
+            ImplementsSamplePluginPlatformUsingNoSuchMethod();
       }, throwsA(isA<AssertionError>()));
     });
 
