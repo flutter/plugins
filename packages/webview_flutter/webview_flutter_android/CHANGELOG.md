@@ -38,6 +38,7 @@
 
 ## 2.9.0
 
+* Adds Android implementation of the new webview_flutter_platform_interface (v4).
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 * Fixes bug where `Directionality` from context didn't affect `SurfaceAndroidWebView`.
 * Fixes bug where default text direction was different for `SurfaceAndroidWebView` and `AndroidWebView`.
