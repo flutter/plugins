@@ -1,4 +1,5 @@
 ## 0.8.6+1
+
 * Fixes issue with crashing the app when picking images with PHPicker without providing `Photo Library Usage` permission.
 
 ## 0.8.6
