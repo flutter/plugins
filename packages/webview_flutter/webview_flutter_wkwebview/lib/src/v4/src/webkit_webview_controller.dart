@@ -536,13 +536,17 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
         WKNavigationAction action,
       ) async {
         if (weakThis.target?._onNavigationRequest != null) {
-          final bool allow = await weakThis.target!._onNavigationRequest!(
+          final NavigationDecision decision =
+              await weakThis.target!._onNavigationRequest!(NavigationRequest(
             url: action.request.url,
-            isForMainFrame: action.targetFrame.isMainFrame,
-          );
-          return allow
-              ? WKNavigationActionPolicy.allow
-              : WKNavigationActionPolicy.cancel;
+            isMainFrame: action.targetFrame.isMainFrame,
+          ));
+          switch (decision) {
+            case NavigationDecision.prevent:
+              return WKNavigationActionPolicy.cancel;
+            case NavigationDecision.navigate:
+              return WKNavigationActionPolicy.allow;
+          }
         }
         return WKNavigationActionPolicy.allow;
       },
@@ -580,41 +584,37 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
   // Used to set `WKWebView.setNavigationDelegate` in `WebKitWebViewController`.
   late final WKNavigationDelegate _navigationDelegate;
 
-  void Function(String url)? _onPageFinished;
-  void Function(String url)? _onPageStarted;
-  void Function(int progress)? _onProgress;
-  void Function(WebResourceError error)? _onWebResourceError;
-  FutureOr<bool> Function({required String url, required bool isForMainFrame})?
-      _onNavigationRequest;
+  PageEventCallback? _onPageFinished;
+  PageEventCallback? _onPageStarted;
+  ProgressCallback? _onProgress;
+  WebResourceErrorCallback? _onWebResourceError;
+  NavigationRequestCallback? _onNavigationRequest;
 
   @override
-  Future<void> setOnPageFinished(
-    void Function(String url) onPageFinished,
-  ) async {
+  Future<void> setOnPageFinished(PageEventCallback onPageFinished) async {
     _onPageFinished = onPageFinished;
   }
 
   @override
-  Future<void> setOnPageStarted(void Function(String url) onPageStarted) async {
+  Future<void> setOnPageStarted(PageEventCallback onPageStarted) async {
     _onPageStarted = onPageStarted;
   }
 
   @override
-  Future<void> setOnProgress(void Function(int progress) onProgress) async {
+  Future<void> setOnProgress(ProgressCallback onProgress) async {
     _onProgress = onProgress;
   }
 
   @override
   Future<void> setOnWebResourceError(
-    void Function(WebResourceError error) onWebResourceError,
+    WebResourceErrorCallback onWebResourceError,
   ) async {
     _onWebResourceError = onWebResourceError;
   }
 
   @override
   Future<void> setOnNavigationRequest(
-    FutureOr<bool> Function({required String url, required bool isForMainFrame})
-        onNavigationRequest,
+    NavigationRequestCallback onNavigationRequest,
   ) async {
     _onNavigationRequest = onNavigationRequest;
   }

@@ -159,15 +159,11 @@ void main() {
         ),
       );
 
-      late final String callbackUrl;
-      late final bool callbackIsMainFrame;
-      FutureOr<bool> onNavigationRequest({
-        required String url,
-        required bool isForMainFrame,
-      }) {
-        callbackUrl = url;
-        callbackIsMainFrame = isForMainFrame;
-        return true;
+      late final NavigationRequest callbackRequest;
+      FutureOr<NavigationDecision> onNavigationRequest(
+          NavigationRequest request) {
+        callbackRequest = request;
+        return NavigationDecision.navigate;
       }
 
       webKitDelgate.setOnNavigationRequest(onNavigationRequest);
@@ -184,8 +180,8 @@ void main() {
         completion(WKNavigationActionPolicy.allow),
       );
 
-      expect(callbackUrl, 'https://www.google.com');
-      expect(callbackIsMainFrame, isFalse);
+      expect(callbackRequest.url, 'https://www.google.com');
+      expect(callbackRequest.isMainFrame, isFalse);
     });
   });
 }
