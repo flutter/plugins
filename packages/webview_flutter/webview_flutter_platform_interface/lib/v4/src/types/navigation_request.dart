@@ -14,5 +14,5 @@ class NavigationRequest {
   final String url;
 
   /// Indicates whether to inject the script into the main frame or all frames.
-  final String isMainFrame;
+  final bool isMainFrame;
 }
