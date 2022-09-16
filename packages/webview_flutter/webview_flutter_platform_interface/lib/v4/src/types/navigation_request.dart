@@ -13,6 +13,6 @@ class NavigationRequest {
   /// The URL of the pending navigation request.
   final String url;
 
-  /// Indicates whether to inject the script into the main frame or all frames.
+  /// Indicates whether the request was made in the web site's main frame or a subframe.
   final bool isMainFrame;
 }
