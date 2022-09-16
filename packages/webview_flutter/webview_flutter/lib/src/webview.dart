@@ -388,6 +388,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasProgressTracking: widget.onProgress != null,
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
+    allowsLinkPreview: widget.allowsLinkPreview,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
     zoomEnabled: widget.zoomEnabled,
@@ -407,6 +408,7 @@ WebSettings _clearUnchangedWebSettings(
   assert(newValue.debuggingEnabled != null);
   assert(newValue.userAgent != null);
   assert(newValue.zoomEnabled != null);
+  assert(newValue.allowsLinkPreview != null);
 
   JavascriptMode? javascriptMode;
   bool? hasNavigationDelegate;
@@ -414,6 +416,8 @@ WebSettings _clearUnchangedWebSettings(
   bool? debuggingEnabled;
   WebSetting<String?> userAgent = const WebSetting<String?>.absent();
   bool? zoomEnabled;
+  bool? allowsLinkPreview;
+
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -432,6 +436,9 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.zoomEnabled != newValue.zoomEnabled) {
     zoomEnabled = newValue.zoomEnabled;
   }
+  if (currentValue.allowsLinkPreview != newValue.allowsLinkPreview) {
+    allowsLinkPreview = newValue.allowsLinkPreview;
+  }
 
   return WebSettings(
     javascriptMode: javascriptMode,
@@ -440,6 +447,7 @@ WebSettings _clearUnchangedWebSettings(
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
     zoomEnabled: zoomEnabled,
+    allowsLinkPreview: allowsLinkPreview,
   );
 }
 

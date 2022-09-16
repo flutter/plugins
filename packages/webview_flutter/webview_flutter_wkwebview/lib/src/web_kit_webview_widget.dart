@@ -422,6 +422,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         webView.setAllowsBackForwardNavigationGestures(
           setting.gestureNavigationEnabled!,
         ),
+      if (setting.allowsLinkPreview != null)
+        webView.setAllowsLinkPreview(
+          setting.allowsLinkPreview!,
+        ),
     ]);
   }
 
