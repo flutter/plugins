@@ -336,7 +336,7 @@ task:
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
         - xcrun simctl list
-        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-15-0 | xargs xcrun simctl boot
+        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-16-0 | xargs xcrun simctl boot
       build_script:
         - ./script/tool_runner.sh build-examples --ios
       xcode_analyze_script:
@@ -385,7 +385,7 @@ task:
       script:
         - ./script/tool_runner.sh podspecs
     ### iOS tasks ###
-    # ios-platform_tests builds all the plugins on M1, so this build is run
+    # ios-platform_tests builds all the plugins on ARM, so this build is run
     # on Intel to give us build coverage of both host types.
     - name: ios-build_all_plugins
       env:
@@ -395,7 +395,7 @@ task:
           CHANNEL: "stable"
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### macOS desktop tasks ###
-    # macos-platform_tests builds all the plugins on M1, so this build is run
+    # macos-platform_tests builds all the plugins on ARM, so this build is run
     # on Intel to give us build coverage of both host types.
     - name: macos-build_all_plugins
       env:
