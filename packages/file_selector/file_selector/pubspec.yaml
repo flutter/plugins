@@ -3,7 +3,7 @@ description: Flutter plugin for opening and saving files, or selecting
   directories, using native file selection UI.
 repository: https://github.com/flutter/plugins/tree/main/packages/file_selector/file_selector
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+file_selector%22
-version: 0.9.2+1
+version: 0.9.2+2
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
