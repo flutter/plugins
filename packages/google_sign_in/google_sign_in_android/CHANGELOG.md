@@ -1,5 +1,6 @@
-## NEXT
+## 6.1.1
 
+* Corrects typos in plugin error logs and removes not actionable warnings.
 * Updates minimum Flutter version to 2.10.
 
 ## 6.1.0

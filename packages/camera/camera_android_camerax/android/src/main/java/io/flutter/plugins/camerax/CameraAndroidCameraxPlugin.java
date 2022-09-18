@@ -4,39 +4,69 @@
 
 package io.flutter.plugins.camerax;
 
+import android.content.Context;
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 
-/** CameraAndroidCameraxPlugin */
-public class CameraAndroidCameraxPlugin implements FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
-  private MethodChannel channel;
+/** Platform implementation of the camera_plugin implemented with the CameraX library. */
+public final class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware {
+  private InstanceManager instanceManager;
+  private FlutterPluginBinding pluginBinding;
 
-  @Override
-  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel =
-        new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "camera_android_camerax");
-    channel.setMethodCallHandler(this);
+  /**
+   * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
+   *
+   * <p>See {@code io.flutter.plugins.camera.MainActivity} for an example.
+   */
+  public CameraAndroidCameraxPlugin() {}
+
+  void setUp(BinaryMessenger binaryMessenger, Context context) {
+    // Set up instance manager.
+    instanceManager =
+        InstanceManager.open(
+            identifier -> {
+              new GeneratedCameraXLibrary.JavaObjectFlutterApi(binaryMessenger)
+                  .dispose(identifier, reply -> {});
+            });
+
+    // Set up Host APIs.
+    GeneratedCameraXLibrary.CameraInfoHostApi.setup(
+        binaryMessenger, new CameraInfoHostApiImpl(instanceManager));
+    GeneratedCameraXLibrary.JavaObjectHostApi.setup(
+        binaryMessenger, new JavaObjectHostApiImpl(instanceManager));
   }
 
   @Override
-  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else {
-      result.notImplemented();
-    }
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
+    pluginBinding = flutterPluginBinding;
+    (new CameraAndroidCameraxPlugin())
+        .setUp(
+            flutterPluginBinding.getBinaryMessenger(),
+            flutterPluginBinding.getApplicationContext());
   }
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    channel.setMethodCallHandler(null);
+    if (instanceManager != null) {
+      instanceManager.close();
+    }
   }
+
+  // Activity Lifecycle methods:
+
+  @Override
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {}
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {}
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(
+      @NonNull ActivityPluginBinding activityPluginBinding) {}
+
+  @Override
+  public void onDetachedFromActivity() {}
 }
