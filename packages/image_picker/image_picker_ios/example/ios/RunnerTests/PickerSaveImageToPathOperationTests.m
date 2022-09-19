@@ -22,7 +22,7 @@
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
                                                  withIdentifier:UTTypeWebP.identifier];
 
-  [self verifySavingImageWithPickerResult:result];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
 
 - (void)testSavePNGImage API_AVAILABLE(ios(14)) {
@@ -32,7 +32,7 @@
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
                                                  withIdentifier:UTTypeWebP.identifier];
 
-  [self verifySavingImageWithPickerResult:result];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
 
 - (void)testSaveJPGImage API_AVAILABLE(ios(14)) {
@@ -42,7 +42,7 @@
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
                                                  withIdentifier:UTTypeWebP.identifier];
 
-  [self verifySavingImageWithPickerResult:result];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
 
 - (void)testSaveGIFImage API_AVAILABLE(ios(14)) {
@@ -52,7 +52,21 @@
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
                                                  withIdentifier:UTTypeWebP.identifier];
 
-  [self verifySavingImageWithPickerResult:result];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+}
+
+- (void)testSavePNGImageWithoutFullMetadata API_AVAILABLE(ios(14)) {
+  id photoAssetUtil = OCMClassMock([PHAsset class]);
+
+  NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"pngImage"
+                                                             withExtension:@"png"];
+  NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
+  PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
+                                                 withIdentifier:UTTypeWebP.identifier];
+
+  [self verifySavingImageWithPickerResult:result fullMetadata:NO];
+  OCMVerify(times(0), [photoAssetUtil fetchAssetsWithLocalIdentifiers:[OCMArg any]
+                                                              options:[OCMArg any]]);
 }
 
 /**
@@ -79,7 +93,8 @@
  *
  * @param result the picker result
  */
-- (void)verifySavingImageWithPickerResult:(PHPickerResult *)result API_AVAILABLE(ios(14)) {
+- (void)verifySavingImageWithPickerResult:(PHPickerResult *)result
+                             fullMetadata:(BOOL)fullMetadata API_AVAILABLE(ios(14)) {
   XCTestExpectation *pathExpectation = [self expectationWithDescription:@"Path was created"];
 
   FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
@@ -87,6 +102,7 @@
                 maxHeight:@100
                  maxWidth:@100
       desiredImageQuality:@100
+             fullMetadata:fullMetadata
            savedPathBlock:^(NSString *savedPath) {
              if ([[NSFileManager defaultManager] fileExistsAtPath:savedPath]) {
                [pathExpectation fulfill];
