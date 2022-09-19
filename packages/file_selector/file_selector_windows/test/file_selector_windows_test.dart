@@ -4,6 +4,7 @@
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_windows/file_selector_windows.dart';
+import 'package:file_selector_windows/src/dart_file_selector_api.dart';
 import 'package:file_selector_windows/src/messages.g.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,34 +14,40 @@ import 'package:mockito/mockito.dart';
 import 'file_selector_windows_test.mocks.dart';
 import 'test_api.dart';
 
-@GenerateMocks(<Type>[TestFileSelectorApi])
+@GenerateMocks(<Type>[TestFileSelectorApi, DartFileSelectorAPI])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final FileSelectorWindows plugin = FileSelectorWindows();
-  late MockTestFileSelectorApi mockApi;
+  late FileSelectorWindows plugin;
+  late MockDartFileSelectorAPI mockDartFileSelectorAPI;
 
   setUp(() {
-    mockApi = MockTestFileSelectorApi();
-    TestFileSelectorApi.setup(mockApi);
+    mockDartFileSelectorAPI = MockDartFileSelectorAPI();
+    plugin = FileSelectorWindows(mockDartFileSelectorAPI);
+  });
+
+  tearDown(() {
+    reset(mockDartFileSelectorAPI);
   });
 
   test('registered instance', () {
-    FileSelectorWindows.registerWith();
+    FileSelectorWindows.registerWith(mockDartFileSelectorAPI);
     expect(FileSelectorPlatform.instance, isA<FileSelectorWindows>());
   });
 
   group('#openFile', () {
     setUp(() {
-      when(mockApi.showOpenDialog(any, any, any)).thenReturn(<String?>['foo']);
+      when(mockDartFileSelectorAPI.getFiles(
+              selectionOptions: anyNamed('selectionOptions')))
+          .thenReturn(<String>['foo']);
     });
 
     test('simple call works', () async {
       final XFile? file = await plugin.openFile();
 
       expect(file!.path, 'foo');
-      final VerificationResult result =
-          verify(mockApi.showOpenDialog(captureAny, null, null));
+      final VerificationResult result = verify(mockDartFileSelectorAPI.getFiles(
+          selectionOptions: captureAnyNamed('selectionOptions')));
       final SelectionOptions options = result.captured[0] as SelectionOptions;
       expect(options.allowMultiple, false);
       expect(options.selectFolders, false);
@@ -62,8 +69,10 @@ void main() {
 
       await plugin.openFile(acceptedTypeGroups: <XTypeGroup>[group, groupTwo]);
 
-      final VerificationResult result =
-          verify(mockApi.showOpenDialog(captureAny, null, null));
+      final VerificationResult result = verify(mockDartFileSelectorAPI.getFiles(
+          selectionOptions: captureAnyNamed('selectionOptions'),
+          initialDirectory: anyNamed('initialDirectory'),
+          confirmButtonText: anyNamed('confirmButtonText')));
       final SelectionOptions options = result.captured[0] as SelectionOptions;
       expect(
           _typeGroupListsMatch(options.allowedTypes, <TypeGroup>[
@@ -74,15 +83,29 @@ void main() {
     });
 
     test('passes initialDirectory correctly', () async {
+      when(mockDartFileSelectorAPI.getFiles(
+              selectionOptions: anyNamed('selectionOptions'),
+              initialDirectory: '/example/directory'))
+          .thenReturn(<String>['foo']);
       await plugin.openFile(initialDirectory: '/example/directory');
 
-      verify(mockApi.showOpenDialog(any, '/example/directory', null));
+      verify(mockDartFileSelectorAPI.getFiles(
+          selectionOptions: anyNamed('selectionOptions'),
+          initialDirectory: '/example/directory',
+          confirmButtonText: anyNamed('confirmButtonText')));
     });
 
     test('passes confirmButtonText correctly', () async {
+      when(mockDartFileSelectorAPI.getFiles(
+              selectionOptions: anyNamed('selectionOptions'),
+              confirmButtonText: 'Open File'))
+          .thenReturn(<String>['foo']);
       await plugin.openFile(confirmButtonText: 'Open File');
 
-      verify(mockApi.showOpenDialog(any, null, 'Open File'));
+      verify(mockDartFileSelectorAPI.getFiles(
+          selectionOptions: anyNamed('selectionOptions'),
+          initialDirectory: anyNamed('initialDirectory'),
+          confirmButtonText: 'Open File'));
     });
 
     test('throws for a type group that does not support Windows', () async {
@@ -108,8 +131,11 @@ void main() {
 
   group('#openFiles', () {
     setUp(() {
-      when(mockApi.showOpenDialog(any, any, any))
-          .thenReturn(<String?>['foo', 'bar']);
+      when(mockDartFileSelectorAPI.getFiles(
+              selectionOptions: anyNamed('selectionOptions'),
+              initialDirectory: anyNamed('initialDirectory'),
+              confirmButtonText: anyNamed('confirmButtonText')))
+          .thenReturn(<String>['foo', 'bar']);
     });
 
     test('simple call works', () async {
@@ -117,9 +143,12 @@ void main() {
 
       expect(file[0].path, 'foo');
       expect(file[1].path, 'bar');
-      final VerificationResult result =
-          verify(mockApi.showOpenDialog(captureAny, null, null));
+
+      final VerificationResult result = verify(mockDartFileSelectorAPI.getFiles(
+          selectionOptions: captureAnyNamed('selectionOptions')));
+
       final SelectionOptions options = result.captured[0] as SelectionOptions;
+
       expect(options.allowMultiple, true);
       expect(options.selectFolders, false);
     });
@@ -140,8 +169,8 @@ void main() {
 
       await plugin.openFiles(acceptedTypeGroups: <XTypeGroup>[group, groupTwo]);
 
-      final VerificationResult result =
-          verify(mockApi.showOpenDialog(captureAny, null, null));
+      final VerificationResult result = verify(mockDartFileSelectorAPI.getFiles(
+          selectionOptions: captureAnyNamed('selectionOptions')));
       final SelectionOptions options = result.captured[0] as SelectionOptions;
       expect(
           _typeGroupListsMatch(options.allowedTypes, <TypeGroup>[
@@ -154,13 +183,18 @@ void main() {
     test('passes initialDirectory correctly', () async {
       await plugin.openFiles(initialDirectory: '/example/directory');
 
-      verify(mockApi.showOpenDialog(any, '/example/directory', null));
+      verify(mockDartFileSelectorAPI.getFiles(
+          selectionOptions: anyNamed('selectionOptions'),
+          initialDirectory: '/example/directory'));
     });
 
     test('passes confirmButtonText correctly', () async {
       await plugin.openFiles(confirmButtonText: 'Open Files');
 
-      verify(mockApi.showOpenDialog(any, null, 'Open Files'));
+      verify(mockDartFileSelectorAPI.getFiles(
+          selectionOptions: anyNamed('selectionOptions'),
+          initialDirectory: anyNamed('initialDirectory'),
+          confirmButtonText: 'Open Files'));
     });
 
     test('throws for a type group that does not support Windows', () async {
@@ -184,47 +218,65 @@ void main() {
     });
   });
 
+  const String mockedPath = 'c://folder/foo';
+  const String confirmText = 'Open Directory';
+  const String initialDirectory = 'c://example/directory';
   group('#getDirectoryPath', () {
     setUp(() {
-      when(mockApi.showOpenDialog(any, any, any)).thenReturn(<String?>['foo']);
+      when(mockDartFileSelectorAPI.getDirectoryPath()).thenReturn(mockedPath);
+      when(mockDartFileSelectorAPI.getDirectoryPath(
+              confirmButtonText: confirmText))
+          .thenReturn(mockedPath);
+      when(mockDartFileSelectorAPI.getDirectoryPath(
+              initialDirectory: initialDirectory))
+          .thenReturn(mockedPath);
     });
 
     test('simple call works', () async {
-      final String? path = await plugin.getDirectoryPath();
+      final String? actualPath = await plugin.getDirectoryPath();
 
-      expect(path, 'foo');
-      final VerificationResult result =
-          verify(mockApi.showOpenDialog(captureAny, null, null));
-      final SelectionOptions options = result.captured[0] as SelectionOptions;
-      expect(options.allowMultiple, false);
-      expect(options.selectFolders, true);
+      expect(actualPath, mockedPath);
+      verify(mockDartFileSelectorAPI.getDirectoryPath());
     });
 
     test('passes initialDirectory correctly', () async {
-      await plugin.getDirectoryPath(initialDirectory: '/example/directory');
+      final String? actualPath =
+          await plugin.getDirectoryPath(initialDirectory: initialDirectory);
 
-      verify(mockApi.showOpenDialog(any, '/example/directory', null));
+      verify(mockDartFileSelectorAPI.getDirectoryPath(
+          initialDirectory: initialDirectory));
+      expect(actualPath, mockedPath);
     });
 
     test('passes confirmButtonText correctly', () async {
-      await plugin.getDirectoryPath(confirmButtonText: 'Open Directory');
-
-      verify(mockApi.showOpenDialog(any, null, 'Open Directory'));
+      final String? actualPath =
+          await plugin.getDirectoryPath(confirmButtonText: confirmText);
+      verify(mockDartFileSelectorAPI.getDirectoryPath(
+          confirmButtonText: confirmText));
+      expect(actualPath, mockedPath);
     });
   });
 
   group('#getSavePath', () {
     setUp(() {
-      when(mockApi.showSaveDialog(any, any, any, any))
-          .thenReturn(<String?>['foo']);
+      when(mockDartFileSelectorAPI.getSavePath(
+              selectionOptions: anyNamed('selectionOptions'),
+              confirmButtonText: anyNamed('confirmButtonText'),
+              initialDirectory: anyNamed('initialDirectory'),
+              suggestedFileName: anyNamed('suggestedFileName')))
+          .thenReturn(mockedPath);
     });
 
     test('simple call works', () async {
-      final String? path = await plugin.getSavePath();
+      final String? actualPath = await plugin.getSavePath();
 
-      expect(path, 'foo');
-      final VerificationResult result =
-          verify(mockApi.showSaveDialog(captureAny, null, null, null));
+      expect(actualPath, mockedPath);
+      final VerificationResult result = verify(
+          mockDartFileSelectorAPI.getSavePath(
+              selectionOptions: captureAnyNamed('selectionOptions'),
+              confirmButtonText: anyNamed('confirmButtonText'),
+              initialDirectory: anyNamed('initialDirectory'),
+              suggestedFileName: anyNamed('suggestedFileName')));
       final SelectionOptions options = result.captured[0] as SelectionOptions;
       expect(options.allowMultiple, false);
       expect(options.selectFolders, false);
@@ -247,8 +299,12 @@ void main() {
       await plugin
           .getSavePath(acceptedTypeGroups: <XTypeGroup>[group, groupTwo]);
 
-      final VerificationResult result =
-          verify(mockApi.showSaveDialog(captureAny, null, null, null));
+      final VerificationResult result = verify(
+          mockDartFileSelectorAPI.getSavePath(
+              selectionOptions: captureAnyNamed('selectionOptions'),
+              confirmButtonText: anyNamed('confirmButtonText'),
+              initialDirectory: anyNamed('initialDirectory'),
+              suggestedFileName: anyNamed('suggestedFileName')));
       final SelectionOptions options = result.captured[0] as SelectionOptions;
       expect(
           _typeGroupListsMatch(options.allowedTypes, <TypeGroup>[
@@ -260,20 +316,31 @@ void main() {
 
     test('passes initialDirectory correctly', () async {
       await plugin.getSavePath(initialDirectory: '/example/directory');
-
-      verify(mockApi.showSaveDialog(any, '/example/directory', null, null));
+      verify(mockDartFileSelectorAPI.getSavePath(
+          selectionOptions: captureAnyNamed('selectionOptions'),
+          confirmButtonText: anyNamed('confirmButtonText'),
+          initialDirectory: '/example/directory',
+          suggestedFileName: anyNamed('suggestedFileName')));
     });
 
     test('passes suggestedName correctly', () async {
       await plugin.getSavePath(suggestedName: 'baz.txt');
 
-      verify(mockApi.showSaveDialog(any, null, 'baz.txt', null));
+      verify(mockDartFileSelectorAPI.getSavePath(
+          selectionOptions: captureAnyNamed('selectionOptions'),
+          confirmButtonText: anyNamed('confirmButtonText'),
+          initialDirectory: anyNamed('initialDirectory'),
+          suggestedFileName: 'baz.txt'));
     });
 
     test('passes confirmButtonText correctly', () async {
       await plugin.getSavePath(confirmButtonText: 'Save File');
 
-      verify(mockApi.showSaveDialog(any, null, null, 'Save File'));
+      verify(mockDartFileSelectorAPI.getSavePath(
+          selectionOptions: anyNamed('selectionOptions'),
+          confirmButtonText: 'Save File',
+          initialDirectory: anyNamed('initialDirectory'),
+          suggestedFileName: anyNamed('suggestedFileName')));
     });
 
     test('throws for a type group that does not support Windows', () async {

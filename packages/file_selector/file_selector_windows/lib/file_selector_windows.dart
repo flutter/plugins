@@ -3,16 +3,23 @@
 // found in the LICENSE file.
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
-
+import 'package:file_selector_windows/src/dart_file_selector_api.dart';
 import 'src/messages.g.dart';
 
 /// An implementation of [FileSelectorPlatform] for Windows.
 class FileSelectorWindows extends FileSelectorPlatform {
-  final FileSelectorApi _hostApi = FileSelectorApi();
+  /// Constructor for filePicker.
+  FileSelectorWindows([this._dartFileSelectorAPI]) {
+    _dartFileSelectorAPI = _dartFileSelectorAPI ?? DartFileSelectorAPI();
+    _api = _dartFileSelectorAPI!;
+  }
+
+  late DartFileSelectorAPI _api;
+  late DartFileSelectorAPI? _dartFileSelectorAPI;
 
   /// Registers the Windows implementation.
-  static void registerWith() {
-    FileSelectorPlatform.instance = FileSelectorWindows();
+  static void registerWith([DartFileSelectorAPI? filePicker]) {
+    FileSelectorPlatform.instance = FileSelectorWindows(filePicker);
   }
 
   @override
@@ -21,15 +28,15 @@ class FileSelectorWindows extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String?> paths = await _hostApi.showOpenDialog(
-        SelectionOptions(
+    final List<String> paths = _api.getFiles(
+        selectionOptions: SelectionOptions(
           allowMultiple: false,
           selectFolders: false,
           allowedTypes: _typeGroupsFromXTypeGroups(acceptedTypeGroups),
         ),
-        initialDirectory,
-        confirmButtonText);
-    return paths.isEmpty ? null : XFile(paths.first!);
+        initialDirectory: initialDirectory,
+        confirmButtonText: confirmButtonText);
+    return paths.isEmpty ? null : XFile(paths.first);
   }
 
   @override
@@ -38,14 +45,14 @@ class FileSelectorWindows extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String?> paths = await _hostApi.showOpenDialog(
-        SelectionOptions(
+    final List<String?> paths = _api.getFiles(
+        selectionOptions: SelectionOptions(
           allowMultiple: true,
           selectFolders: false,
           allowedTypes: _typeGroupsFromXTypeGroups(acceptedTypeGroups),
         ),
-        initialDirectory,
-        confirmButtonText);
+        initialDirectory: initialDirectory,
+        confirmButtonText: confirmButtonText);
     return paths.map((String? path) => XFile(path!)).toList();
   }
 
@@ -56,16 +63,17 @@ class FileSelectorWindows extends FileSelectorPlatform {
     String? suggestedName,
     String? confirmButtonText,
   }) async {
-    final List<String?> paths = await _hostApi.showSaveDialog(
-        SelectionOptions(
-          allowMultiple: false,
-          selectFolders: false,
-          allowedTypes: _typeGroupsFromXTypeGroups(acceptedTypeGroups),
-        ),
-        initialDirectory,
-        suggestedName,
-        confirmButtonText);
-    return paths.isEmpty ? null : paths.first!;
+    final String? path = _api.getSavePath(
+      initialDirectory: initialDirectory,
+      suggestedFileName: suggestedName,
+      confirmButtonText: confirmButtonText,
+      selectionOptions: SelectionOptions(
+        allowMultiple: false,
+        selectFolders: false,
+        allowedTypes: _typeGroupsFromXTypeGroups(acceptedTypeGroups),
+      ),
+    );
+    return path == null ? null : Future<String>.value(path);
   }
 
   @override
@@ -73,15 +81,10 @@ class FileSelectorWindows extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String?> paths = await _hostApi.showOpenDialog(
-        SelectionOptions(
-          allowMultiple: false,
-          selectFolders: true,
-          allowedTypes: <TypeGroup>[],
-        ),
-        initialDirectory,
-        confirmButtonText);
-    return paths.isEmpty ? null : paths.first!;
+    final String? path = _api.getDirectoryPath(
+        initialDirectory: initialDirectory,
+        confirmButtonText: confirmButtonText);
+    return path == null ? null : Future<String>.value(path);
   }
 }
 
