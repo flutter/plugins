@@ -117,6 +117,7 @@ typedef void (^GetSavedPath)(NSString *);
  */
 - (void)processImage:(UIImage *)localImage API_AVAILABLE(ios(14)) {
   PHAsset *originalAsset;
+  // Only if requested, fetch the full "PHAsset" metadata, which requires  "Photo Library Usage" permissions.
   if (self.requestFullMetadata) {
     originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
   }
