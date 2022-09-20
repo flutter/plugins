@@ -88,6 +88,7 @@ final class GoogleMapController
   private List<Object> initialCircles;
   private List<Map<String, ?>> initialTileOverlays;
   private MapsInitializerFunction initializer = MapsInitializer::initialize;
+  private MapsInitializer.Renderer preferredRenderer;
   private Handler handler = new Handler();
 
   GoogleMapController(
@@ -118,17 +119,17 @@ final class GoogleMapController
   }
 
   @VisibleForTesting
-  /*package*/ void setView(MapView view) {
+  /* package */ void setView(MapView view) {
     mapView = view;
   }
 
   @VisibleForTesting
-  /*package*/ void setInitializer(MapsInitializerFunction initializer) {
+  /* package */ void setInitializer(MapsInitializerFunction initializer) {
     this.initializer = initializer;
   }
 
   @VisibleForTesting
-  /*package*/ void setHandler(Handler handler) {
+  /* package */ void setHandler(Handler handler) {
     this.handler = handler;
   }
 
@@ -615,17 +616,23 @@ final class GoogleMapController
   }
 
   // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
-  // does. This will override it when available even with the annotation commented out.
+  // The minimum supported version of Flutter doesn't have this method on the
+  // PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented
+  // out.
   public void onInputConnectionLocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+    // TODO(mklim): Remove this empty override once
+    // https://github.com/flutter/flutter/issues/40126 is fixed in stable.
   }
 
   // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
-  // does. This will override it when available even with the annotation commented out.
+  // The minimum supported version of Flutter doesn't have this method on the
+  // PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented
+  // out.
   public void onInputConnectionUnlocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+    // TODO(mklim): Remove this empty override once
+    // https://github.com/flutter/flutter/issues/40126 is fixed in stable.
   }
 
   // DefaultLifecycleObserver
@@ -635,6 +642,16 @@ final class GoogleMapController
     if (disposed) {
       return;
     }
+
+    OnMapsSdkInitializedCallback mapCallback =
+        renderer -> {
+          preferredRenderer = renderer;
+        };
+
+    // initializer.initialize(context, MapsInitializer.Renderer.LATEST,
+    // mapCallback);
+    initializer.initialize(context, null, mapCallback);
+
     mapView.onCreate(null);
   }
 
@@ -871,11 +888,14 @@ final class GoogleMapController
   @SuppressLint("MissingPermission")
   private void updateMyLocationSettings() {
     if (hasLocationPermission()) {
-      // The plugin doesn't add the location permission by default so that apps that don't need
+      // The plugin doesn't add the location permission by default so that apps that
+      // don't need
       // the feature won't require the permission.
-      // Gradle is doing a static check for missing permission and in some configurations will
-      // fail the build if the permission is missing. The following disables the Gradle lint.
-      //noinspection ResourceType
+      // Gradle is doing a static check for missing permission and in some
+      // configurations will
+      // fail the build if the permission is missing. The following disables the
+      // Gradle lint.
+      // noinspection ResourceType
       googleMap.setMyLocationEnabled(myLocationEnabled);
       googleMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
     } else {
@@ -908,26 +928,21 @@ final class GoogleMapController
     final MapView mapReference = mapView; // keep a reference to the mapView for the callback
     mapView = null;
 
-    // This fixes an issue where the mapView is still being used by the render thread after disposal.
-    // Delaying the actual mapView disposal to the next frame avoids the issue.
+    // This attempts to work around an issue where the mapView is still being used
+    // by the render thread after disposal.
+    // Delaying the actual mapView disposal by some fixed amount of time, attempts
+    // to avoid the issue.
+    // See https://github.com/flutter/flutter/issues/105965.
     Runnable r =
         () -> {
-          Log.e(TAG, "Mapview destroy in callback");
           mapReference.onDestroy();
         };
 
-    OnMapsSdkInitializedCallback mapCallback =
-        renderer -> {
-          if (renderer == MapsInitializer.Renderer.LATEST) {
-            Log.e(TAG, "Renderer LATEST");
-            handler.post(r);
-          } else if (renderer == MapsInitializer.Renderer.LEGACY) {
-            Log.e(TAG, "Renderer LEGACY");
-            handler.postDelayed(r, 100);
-          }
-        };
-
-    initializer.initialize(context, null, mapCallback);
+    if (preferredRenderer == MapsInitializer.Renderer.LATEST) {
+      handler.post(r);
+    } else {
+      handler.postDelayed(r, 1000);
+    }
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
