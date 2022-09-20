@@ -19,7 +19,12 @@ dependencies:
   flutter:
     sdk: flutter
   path: ^1.8.0
-  webview_flutter_platform_interface: ^1.9.3
+  # TODO: Remove. Do not merge.
+  webview_flutter_platform_interface:
+    git:
+      url: git@github.com:Baseflow/plugins.git
+      ref: issue/94051_navigation_delegate_typedefs
+      path: packages/webview_flutter/webview_flutter_platform_interface
 
 dev_dependencies:
   build_runner: ^2.1.5
