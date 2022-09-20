@@ -85,7 +85,7 @@ class _TestCameraSelectorHostApiCodec extends StandardMessageCodec {
 abstract class TestCameraSelectorHostApi {
   static const MessageCodec<Object?> codec = _TestCameraSelectorHostApiCodec();
 
-  void create(int identifier, int? lensDirection);
+  void create(int identifier, int? lensFacing);
   List<int?> filter(int identifier, List<int?> cameraInfoIds);
   static void setup(TestCameraSelectorHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
@@ -103,8 +103,8 @@ abstract class TestCameraSelectorHostApi {
           final int? arg_identifier = (args[0] as int?);
           assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.CameraSelectorHostApi.create was null, expected non-null int.');
-          final int? arg_lensDirection = (args[1] as int?);
-          api.create(arg_identifier!, arg_lensDirection);
+          final int? arg_lensFacing = (args[1] as int?);
+          api.create(arg_identifier!, arg_lensFacing);
           return <Object?, Object?>{};
         });
       }

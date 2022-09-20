@@ -19,40 +19,31 @@ class CameraInfo extends JavaObject {
       : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
-    _api = CameraInfoHostApiImpl(
-      binaryMessenger: binaryMessenger,
-      instanceManager: instanceManager,
-    );
+    this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+    _api = CameraInfoHostApiImpl(binaryMessenger: binaryMessenger);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
   }
+
+  /// Maintains instances stored to communicate with native language objects.
+  late final InstanceManager instanceManager;
 
   late final CameraInfoHostApiImpl _api;
 
   /// Gets sensor orientation degrees of camera.
   Future<int> getSensorRotationDegrees() =>
-      _api.getSensorRotationDegreesFromInstance(this);
+      _api.getSensorRotationDegreesFromInstance(this, instanceManager);
 }
 
 /// Host API implementation of [CameraInfo].
 class CameraInfoHostApiImpl extends CameraInfoHostApi {
   /// Constructs a [CameraInfoHostApiImpl].
-  CameraInfoHostApiImpl({
-    this.binaryMessenger,
-    InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
-
-  /// Sends binary data across the Flutter platform barrier.
-  ///
-  /// If it is null, the default BinaryMessenger will be used which routes to
-  /// the host platform.
-  final BinaryMessenger? binaryMessenger;
-
-  /// Maintains instances stored to communicate with native language objects.
-  final InstanceManager instanceManager;
+  CameraInfoHostApiImpl({super.binaryMessenger});
 
   /// Gets sensor orientation degrees of [CameraInfo].
-  Future<int> getSensorRotationDegreesFromInstance(CameraInfo instance) async {
+  Future<int> getSensorRotationDegreesFromInstance(
+    CameraInfo instance,
+    InstanceManager instanceManager,
+  ) async {
     final int sensorRotationDegrees = await getSensorRotationDegrees(
         instanceManager.getIdentifier(instance)!);
     return sensorRotationDegrees;

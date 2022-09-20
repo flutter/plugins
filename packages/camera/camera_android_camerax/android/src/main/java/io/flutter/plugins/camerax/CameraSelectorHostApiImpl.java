@@ -17,8 +17,7 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
   private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
 
-  @VisibleForTesting
-  public CameraSelector.Builder cameraSelectorBuilder = new CameraSelector.Builder();
+  @VisibleForTesting public CameraSelector.Builder cameraSelectorBuilder;
 
   public CameraSelectorHostApiImpl(
       BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
@@ -27,16 +26,20 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
   }
 
   @Override
-  public void create(@NonNull Long identifier, Long lensDirection) {
+  public void create(@NonNull Long identifier, Long lensFacing) {
     CameraSelector cameraSelector;
-    if (lensDirection != null) {
-      cameraSelector =
-          cameraSelectorBuilder.requireLensFacing(Math.toIntExact(lensDirection)).build();
+    if (cameraSelectorBuilder == null) {
+      cameraSelectorBuilder = new CameraSelector.Builder();
+    }
+
+    if (lensFacing != null) {
+      cameraSelector = cameraSelectorBuilder.requireLensFacing(Math.toIntExact(lensFacing)).build();
     } else {
       cameraSelector = cameraSelectorBuilder.build();
     }
 
     instanceManager.addDartCreatedInstance(cameraSelector, identifier);
+    cameraSelectorBuilder = null;
   }
 
   @Override
@@ -57,11 +60,8 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
     List<Long> filteredCameraInfosIds = new ArrayList<Long>();
 
     for (CameraInfo cameraInfo : filteredCameraInfos) {
-      Long filteredCameraInfoId;
-      if (!instanceManager.containsInstance(cameraInfo)) {
-        cameraInfoFlutterApiImpl.create(cameraInfo, result -> {});
-      }
-      filteredCameraInfoId = instanceManager.getIdentifierForStrongReference(cameraInfo);
+      cameraInfoFlutterApiImpl.create(cameraInfo, result -> {});
+      Long filteredCameraInfoId = instanceManager.getIdentifierForStrongReference(cameraInfo);
       filteredCameraInfosIds.add(filteredCameraInfoId);
     }
 

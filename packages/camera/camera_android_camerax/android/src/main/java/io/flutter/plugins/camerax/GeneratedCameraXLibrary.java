@@ -197,7 +197,7 @@ public class GeneratedCameraXLibrary {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface CameraSelectorHostApi {
-    void create(@NonNull Long identifier, @Nullable Long lensDirection);
+    void create(@NonNull Long identifier, @Nullable Long lensFacing);
 
     @NonNull
     List<Long> filter(@NonNull Long identifier, @NonNull List<Long> cameraInfoIds);
@@ -226,10 +226,10 @@ public class GeneratedCameraXLibrary {
                   if (identifierArg == null) {
                     throw new NullPointerException("identifierArg unexpectedly null.");
                   }
-                  Number lensDirectionArg = (Number) args.get(1);
+                  Number lensFacingArg = (Number) args.get(1);
                   api.create(
                       (identifierArg == null) ? null : identifierArg.longValue(),
-                      (lensDirectionArg == null) ? null : lensDirectionArg.longValue());
+                      (lensFacingArg == null) ? null : lensFacingArg.longValue());
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));

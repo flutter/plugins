@@ -174,12 +174,12 @@ class CameraSelectorHostApi {
 
   static const MessageCodec<Object?> codec = _CameraSelectorHostApiCodec();
 
-  Future<void> create(int arg_identifier, int? arg_lensDirection) async {
+  Future<void> create(int arg_identifier, int? arg_lensFacing) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.CameraSelectorHostApi.create', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_identifier, arg_lensDirection])
+        await channel.send(<Object?>[arg_identifier, arg_lensFacing])
             as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(

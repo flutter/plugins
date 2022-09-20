@@ -17,8 +17,7 @@ public class CameraSelectorFlutterApiImpl extends CameraSelectorFlutterApi {
     this.instanceManager = instanceManager;
   }
 
-  void create(CameraSelector cameraSelector, Long lensDirection, Reply<Void> reply) {
-    instanceManager.addHostCreatedInstance(cameraSelector);
-    create(instanceManager.getIdentifierForStrongReference(cameraSelector), lensDirection, reply);
+  void create(CameraSelector cameraSelector, Long lensFacing, Reply<Void> reply) {
+    create(instanceManager.addHostCreatedInstance(cameraSelector), lensFacing, reply);
   }
 }

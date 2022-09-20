@@ -15,28 +15,26 @@ import 'java_object.dart';
 /// See https://developer.android.com/reference/androidx/camera/core/CameraSelector.
 class CameraSelector extends JavaObject {
   /// Creates a [CameraSelector].
-  CameraSelector({this.binaryMessenger, this.instanceManager, this.lensFacing})
+  CameraSelector(
+      {this.binaryMessenger, InstanceManager? instanceManager, this.lensFacing})
       : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
-    _api = CameraSelectorHostApiImpl(
-      binaryMessenger: binaryMessenger,
-      instanceManager: instanceManager,
-    );
+    this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+    _api = CameraSelectorHostApiImpl(binaryMessenger: binaryMessenger);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
-    _api.createFromInstances(this, lensFacing);
+    _api.createFromInstances(
+        this, this.instanceManager, binaryMessenger, lensFacing);
   }
 
   /// Creates a detached [CameraSelector].
   CameraSelector.detached(
-      {this.binaryMessenger, this.instanceManager, this.lensFacing})
+      {this.binaryMessenger, InstanceManager? instanceManager, this.lensFacing})
       : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
-    _api = CameraSelectorHostApiImpl(
-      binaryMessenger: binaryMessenger,
-      instanceManager: instanceManager,
-    );
+    this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+    _api = CameraSelectorHostApiImpl(binaryMessenger: binaryMessenger);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
   }
 
@@ -79,7 +77,7 @@ class CameraSelector extends JavaObject {
   final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with native language objects.
-  final InstanceManager? instanceManager;
+  late final InstanceManager instanceManager;
 
   /// Lens direction of this selector.
   final int? lensFacing;
@@ -89,6 +87,8 @@ class CameraSelector extends JavaObject {
     return _api.filterFromInstance(
       this,
       cameraInfos,
+      instanceManager,
+      binaryMessenger,
     );
   }
 }
@@ -96,23 +96,14 @@ class CameraSelector extends JavaObject {
 /// Host API implementation of [CameraSelector].
 class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
   /// Constructs a [CameraSelectorHostApiImpl].
-  CameraSelectorHostApiImpl({
-    this.binaryMessenger,
-    InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
-
-  /// Sends binary data across the Flutter platform barrier.
-  ///
-  /// If it is null, the default BinaryMessenger will be used which routes to
-  /// the host platform.
-  final BinaryMessenger? binaryMessenger;
-
-  /// Maintains instances stored to communicate with native language objects.
-  final InstanceManager instanceManager;
+  CameraSelectorHostApiImpl({super.binaryMessenger});
 
   /// Creates a [CameraSelector] with the lens direction provided if specified.
-  void createFromInstances(CameraSelector instance, int? lensFacing) {
+  void createFromInstances(
+      CameraSelector instance,
+      InstanceManager instanceManager,
+      BinaryMessenger? binaryMessenger,
+      int? lensFacing) {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (CameraSelector original) {
@@ -129,6 +120,8 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
   Future<List<CameraInfo>> filterFromInstance(
     CameraSelector instance,
     List<CameraInfo> cameraInfos,
+    InstanceManager instanceManager,
+    BinaryMessenger? binaryMessenger,
   ) async {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
