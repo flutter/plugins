@@ -64,7 +64,7 @@ macos_intel_template: &MACOS_INTEL_TEMPLATE
 macos_arm_template: &MACOS_ARM_TEMPLATE
   << : *MACOS_TEMPLATE
   macos_instance:
-    image: ghcr.io/cirruslabs/macos-monterey-xcode:13.4
+    image: ghcr.io/cirruslabs/macos-ventura-xcode:14
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
@@ -85,20 +85,16 @@ task:
         - cd script/tool
         - dart pub run test
     - name: publishable
-      env:
-        CHANGE_DESC: "$TMPDIR/change-description.txt"
       version_check_script:
-        # For pre-submit, pass the PR label, as well as the PR description or
-        # incremental commit message (for Dependabot checks), to the script to
-        # allow for version check overrides.
+        # For pre-submit, pass the PR labels to the script to allow for version
+        # check overrides.
         # For post-submit, ignore platform version breaking version changes and
-        # missing version/CHANGELOG detection since the overrides aren't
+        # missing version/CHANGELOG detection since the labels aren't
         # available outside of the context of the PR.
         - if [[ $CIRRUS_PR == "" ]]; then
         -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
         - else
-        -   echo "$CIRRUS_CHANGE_MESSAGE" > "$CHANGE_DESC"
-        -   ./script/tool_runner.sh version-check --check-for-missing-changes --change-description-file="$CHANGE_DESC" --pr-labels="$CIRRUS_PR_LABELS"
+        -   ./script/tool_runner.sh version-check --check-for-missing-changes --pr-labels="$CIRRUS_PR_LABELS"
         - fi
       publish_check_script: ./script/tool_runner.sh publish-check
     - name: format
@@ -237,11 +233,11 @@ task:
       skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 5"
-          PLUGIN_SHARDING: "--shardIndex 4 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 0 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 1 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 2 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 3 --shardCount 5"
+          PACKAGE_SHARDING: "--shardIndex 4 --shardCount 5"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -300,8 +296,8 @@ task:
     - name: web-platform_tests
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+          PACKAGE_SHARDING: "--shardIndex 0 --shardCount 2"
+          PACKAGE_SHARDING: "--shardIndex 1 --shardCount 2"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -377,10 +373,10 @@ task:
       env:
         PATH: $PATH:/usr/local/bin
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 0 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 1 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 2 --shardCount 4"
+          PACKAGE_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"

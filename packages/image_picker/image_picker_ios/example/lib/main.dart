@@ -93,10 +93,15 @@ class _MyHomePageState extends State<MyHomePage> {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
-          final List<XFile>? pickedFileList = await _picker.getMultiImage(
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-            imageQuality: quality,
+          final List<XFile> pickedFileList =
+              await _picker.getMultiImageWithOptions(
+            options: MultiImagePickerOptions(
+              imageOptions: ImageOptions(
+                maxWidth: maxWidth,
+                maxHeight: maxHeight,
+                imageQuality: quality,
+              ),
+            ),
           );
           setState(() {
             _imageFileList = pickedFileList;
@@ -111,11 +116,13 @@ class _MyHomePageState extends State<MyHomePage> {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
-          final XFile? pickedFile = await _picker.getImage(
+          final XFile? pickedFile = await _picker.getImageFromSource(
             source: source,
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-            imageQuality: quality,
+            options: ImagePickerOptions(
+              maxWidth: maxWidth,
+              maxHeight: maxHeight,
+              imageQuality: quality,
+            ),
           );
           setState(() {
             _setImageFileListFromFile(pickedFile);

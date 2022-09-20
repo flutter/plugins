@@ -5,8 +5,9 @@
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
 // ignore: unnecessary_import
 import 'dart:typed_data';
+import 'dart:ui';
 
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show BinaryMessenger;
 
 import 'android_webview.dart';
 import 'android_webview.pigeon.dart';
@@ -276,6 +277,13 @@ class WebViewHostApiImpl extends WebViewHostApi {
   /// Helper method to convert instances ids to objects.
   Future<int> getScrollYFromInstance(WebView instance) {
     return getScrollY(instanceManager.getIdentifier(instance)!);
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<Offset> getScrollPositionFromInstance(WebView instance) async {
+    final WebViewPoint position =
+        await getScrollPosition(instanceManager.getIdentifier(instance)!);
+    return Offset(position.x.toDouble(), position.y.toDouble());
   }
 
   /// Helper method to convert instances ids to objects.

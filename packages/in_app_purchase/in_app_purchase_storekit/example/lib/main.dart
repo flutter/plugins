@@ -336,7 +336,7 @@ class _MyAppState extends State<_MyApp> {
         children: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
               // ignore: deprecated_member_use
               primary: Colors.white,
