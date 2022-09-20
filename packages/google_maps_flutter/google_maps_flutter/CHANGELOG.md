@@ -1,7 +1,3 @@
-## NEXT
-
-* Fixes `NullPointerException` that crashes the app, triggered by immediately disposing widget after its creation.
-
 ## 2.1.12
 
 * Fixes violations of new analysis option use_named_constants.
