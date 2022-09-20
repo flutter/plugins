@@ -38,31 +38,30 @@ class MockPlatformNavigationDelegate extends _i1.Mock
           as _i2.PlatformNavigationDelegateCreationParams);
   @override
   _i4.Future<void> setOnNavigationRequest(
-          _i4.FutureOr<bool> Function({bool isForMainFrame, String url})?
-              onNavigationRequest) =>
+          _i3.NavigationRequestCallback? onNavigationRequest) =>
       (super.noSuchMethod(
           Invocation.method(#setOnNavigationRequest, [onNavigationRequest]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i4.Future<void> setOnPageStarted(void Function(String)? onPageStarted) =>
+  _i4.Future<void> setOnPageStarted(_i3.PageEventCallback? onPageStarted) =>
       (super.noSuchMethod(Invocation.method(#setOnPageStarted, [onPageStarted]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i4.Future<void> setOnPageFinished(void Function(String)? onPageFinished) =>
+  _i4.Future<void> setOnPageFinished(_i3.PageEventCallback? onPageFinished) =>
       (super.noSuchMethod(
           Invocation.method(#setOnPageFinished, [onPageFinished]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i4.Future<void> setOnProgress(void Function(int)? onProgress) =>
+  _i4.Future<void> setOnProgress(_i3.ProgressCallback? onProgress) =>
       (super.noSuchMethod(Invocation.method(#setOnProgress, [onProgress]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
   _i4.Future<void> setOnWebResourceError(
-          void Function(_i2.WebResourceError)? onWebResourceError) =>
+          _i3.WebResourceErrorCallback? onWebResourceError) =>
       (super.noSuchMethod(
           Invocation.method(#setOnWebResourceError, [onWebResourceError]),
           returnValue: Future<void>.value(),
