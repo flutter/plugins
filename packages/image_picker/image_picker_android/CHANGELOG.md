@@ -1,3 +1,7 @@
+## 0.8.5+4
+
+* Bumps androidx.core:core to 1.9.0
+
 ## 0.8.5+3
 
 * Updates minimum Flutter version to 2.10.
