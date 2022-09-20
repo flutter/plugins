@@ -15,10 +15,7 @@ import 'webview_controller.dart';
 class NavigationDelegate {
   /// Constructs a [NavigationDelegate].
   NavigationDelegate({
-    FutureOr<bool> Function({
-      required String url,
-      required bool isForMainFrame,
-    })?
+    FutureOr<NavigationDecision> Function(NavigationRequest request)?
         onNavigationRequest,
     void Function(String url)? onPageStarted,
     void Function(String url)? onPageFinished,
@@ -37,10 +34,7 @@ class NavigationDelegate {
   /// platform.
   NavigationDelegate.fromPlatformCreationParams(
     PlatformNavigationDelegateCreationParams params, {
-    FutureOr<bool> Function({
-      required String url,
-      required bool isForMainFrame,
-    })?
+    FutureOr<NavigationDecision> Function(NavigationRequest request)?
         onNavigationRequest,
     void Function(String url)? onPageStarted,
     void Function(String url)? onPageFinished,
@@ -92,20 +86,17 @@ class NavigationDelegate {
   ///
   /// *Important*: Some platforms may also trigger this callback from calls to
   /// [WebViewController.loadRequest].
-  final FutureOr<bool> Function({
-    required String url,
-    required bool isForMainFrame,
-  })? onNavigationRequest;
+  final NavigationRequestCallback? onNavigationRequest;
 
   /// Invoked when a page has started loading.
-  final void Function(String url)? onPageStarted;
+  final PageEventCallback? onPageStarted;
 
   /// Invoked when a page has finished loading.
-  final void Function(String url)? onPageFinished;
+  final PageEventCallback? onPageFinished;
 
   /// Invoked when a page is loading to report the progress.
-  final void Function(int progress)? onProgress;
+  final ProgressCallback? onProgress;
 
   /// Invoked when a resource loading error occurred.
-  final void Function(WebResourceError error)? onWebResourceError;
+  final WebResourceErrorCallback? onWebResourceError;
 }

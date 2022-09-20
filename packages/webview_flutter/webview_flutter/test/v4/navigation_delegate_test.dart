@@ -17,11 +17,8 @@ void main() {
     test('onNavigationRequest', () async {
       WebViewPlatform.instance = TestWebViewPlatform();
 
-      bool onNavigationRequest({
-        required String url,
-        required bool isForMainFrame,
-      }) {
-        return false;
+      NavigationDecision onNavigationRequest(NavigationRequest request) {
+        return NavigationDecision.navigate;
       }
 
       final NavigationDelegate delegate = NavigationDelegate(
