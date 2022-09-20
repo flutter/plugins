@@ -86,6 +86,8 @@ class NavigationDelegate {
   ///
   /// *Important*: Some platforms may also trigger this callback from calls to
   /// [WebViewController.loadRequest].
+  ///
+  /// See [NavigationDecision].
   final NavigationRequestCallback? onNavigationRequest;
 
   /// Invoked when a page has started loading.
