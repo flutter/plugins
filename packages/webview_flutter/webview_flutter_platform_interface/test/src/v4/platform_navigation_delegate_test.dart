@@ -61,7 +61,7 @@ void main() {
 
     expect(
       () => callbackDelegate.setOnNavigationRequest(
-          ({required bool isForMainFrame, required String url}) => true),
+          (NavigationRequest navigationRequest) => NavigationDecision.navigate),
       throwsUnimplementedError,
     );
   });
