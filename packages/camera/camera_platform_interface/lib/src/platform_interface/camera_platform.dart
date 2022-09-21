@@ -247,6 +247,11 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('pausePreview() is not implemented.');
   }
 
+  /// Set the active camera even mid recording
+  Future<void> setDescription(CameraDescription description) {
+    throw UnimplementedError('setDescription() is not implemented.');
+  }
+
   /// Returns a widget showing a live camera preview.
   Widget buildPreview(int cameraId) {
     throw UnimplementedError('buildView() has not been implemented.');
