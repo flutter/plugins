@@ -62,12 +62,12 @@ void main() {
 
     testWidgets('setValue', (WidgetTester tester) async {
       final SharedPreferencesPlugin store = SharedPreferencesPlugin();
-      for (String key in kTestValues.keys) {
+      for (final String key in kTestValues.keys) {
         final dynamic value = kTestValues[key];
         expect(await store.setValue(key.split('.').last, key, value), true);
       }
       expect(html.window.localStorage.keys, hasLength(kTestValues.length));
-      for (String key in html.window.localStorage.keys) {
+      for (final String key in html.window.localStorage.keys) {
         expect(html.window.localStorage[key], json.encode(kTestValues[key]));
       }
 

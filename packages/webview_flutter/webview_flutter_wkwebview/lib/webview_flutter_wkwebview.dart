@@ -3,3 +3,4 @@
 // found in the LICENSE file.
 
 export 'src/webview_cupertino.dart';
+export 'src/wkwebview_cookie_manager.dart';

@@ -6,10 +6,6 @@ part of google_maps_flutter_web;
 
 /// The `PolygonController` class wraps a [gmaps.Polygon] and its `onTap` behavior.
 class PolygonController {
-  gmaps.Polygon? _polygon;
-
-  final bool _consumeTapEvents;
-
   /// Creates a `PolygonController` that wraps a [gmaps.Polygon] object and its `onTap` behavior.
   PolygonController({
     required gmaps.Polygon polygon,
@@ -18,11 +14,15 @@ class PolygonController {
   })  : _polygon = polygon,
         _consumeTapEvents = consumeTapEvents {
     if (onTap != null) {
-      polygon.onClick.listen((event) {
+      polygon.onClick.listen((gmaps.PolyMouseEvent event) {
         onTap.call();
       });
     }
   }
+
+  gmaps.Polygon? _polygon;
+
+  final bool _consumeTapEvents;
 
   /// Returns the wrapped [gmaps.Polygon]. Only used for testing.
   @visibleForTesting

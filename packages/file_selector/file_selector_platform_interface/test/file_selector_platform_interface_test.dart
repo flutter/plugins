@@ -7,10 +7,12 @@ import 'package:file_selector_platform_interface/src/method_channel/method_chann
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  // Store the initial instance before any tests change it.
+  final FileSelectorPlatform initialInstance = FileSelectorPlatform.instance;
+
   group('$FileSelectorPlatform', () {
     test('$MethodChannelFileSelector() is the default instance', () {
-      expect(FileSelectorPlatform.instance,
-          isInstanceOf<MethodChannelFileSelector>());
+      expect(initialInstance, isInstanceOf<MethodChannelFileSelector>());
     });
 
     test('Can be extended', () {

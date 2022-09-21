@@ -67,6 +67,7 @@ class FakeUser {
     this.email,
     this.displayName,
     this.photoUrl,
+    this.serverAuthCode,
     this.idToken,
     this.accessToken,
   });
@@ -83,6 +84,9 @@ class FakeUser {
   /// Will be converted into [GoogleSignInUserData.photoUrl].
   final String? photoUrl;
 
+  /// Will be converted into [GoogleSignInUserData.serverAuthCode].
+  final String? serverAuthCode;
+
   /// Will be converted into [GoogleSignInTokenData.idToken].
   final String? idToken;
 
@@ -94,6 +98,7 @@ class FakeUser {
         'email': email,
         'displayName': displayName,
         'photoUrl': photoUrl,
+        'serverAuthCode': serverAuthCode,
         'idToken': idToken,
       };
 }

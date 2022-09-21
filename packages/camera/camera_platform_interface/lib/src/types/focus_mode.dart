@@ -26,9 +26,9 @@ String serializeFocusMode(FocusMode focusMode) {
 /// Returns the focus mode for a given String.
 FocusMode deserializeFocusMode(String str) {
   switch (str) {
-    case "locked":
+    case 'locked':
       return FocusMode.locked;
-    case "auto":
+    case 'auto':
       return FocusMode.auto;
     default:
       throw ArgumentError('"$str" is not a valid FocusMode value');

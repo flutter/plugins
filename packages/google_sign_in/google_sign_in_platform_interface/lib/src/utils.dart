@@ -10,18 +10,19 @@ GoogleSignInUserData? getUserDataFromMap(Map<String, dynamic>? data) {
     return null;
   }
   return GoogleSignInUserData(
-      email: data['email']!,
-      id: data['id']!,
-      displayName: data['displayName'],
-      photoUrl: data['photoUrl'],
-      idToken: data['idToken']);
+      email: data['email']! as String,
+      id: data['id']! as String,
+      displayName: data['displayName'] as String?,
+      photoUrl: data['photoUrl'] as String?,
+      idToken: data['idToken'] as String?,
+      serverAuthCode: data['serverAuthCode'] as String?);
 }
 
 /// Converts token data coming from native code into the proper platform interface type.
 GoogleSignInTokenData getTokenDataFromMap(Map<String, dynamic> data) {
   return GoogleSignInTokenData(
-    idToken: data['idToken'],
-    accessToken: data['accessToken'],
-    serverAuthCode: data['serverAuthCode'],
+    idToken: data['idToken'] as String?,
+    accessToken: data['accessToken'] as String?,
+    serverAuthCode: data['serverAuthCode'] as String?,
   );
 }

@@ -3,19 +3,19 @@ publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.2.0"
+  flutter: ">=2.10.0"
 
 dependencies:
-  shared_preferences_web:
-    path: ../
   flutter:
     sdk: flutter
+  shared_preferences_web:
+    path: ../
 
 dev_dependencies:
-  js: ^0.6.3
-  flutter_test:
-    sdk: flutter
   flutter_driver:
+    sdk: flutter
+  flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
+  js: ^0.6.3

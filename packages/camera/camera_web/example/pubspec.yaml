@@ -3,14 +3,13 @@ publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.0.0"
+  flutter: ">=2.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  mocktail: ^0.1.4
   camera_web:
     path: ../
   flutter_driver:
@@ -19,3 +18,4 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  mocktail: ^0.3.0

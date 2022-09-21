@@ -7,24 +7,35 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/license_check_command.dart';
+import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import 'common/plugin_command_test.mocks.dart';
+import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  group('$LicenseCheckCommand', () {
+  group('LicenseCheckCommand', () {
     late CommandRunner<void> runner;
     late FileSystem fileSystem;
+    late Platform platform;
     late Directory root;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      platform = MockPlatformWithSeparator();
       final Directory packagesDir =
           fileSystem.currentDirectory.childDirectory('packages');
       root = packagesDir.parent;
 
+      final MockGitDir gitDir = MockGitDir();
+      when(gitDir.path).thenReturn(packagesDir.parent.path);
+
       final LicenseCheckCommand command = LicenseCheckCommand(
         packagesDir,
+        platform: platform,
+        gitDir: gitDir,
       );
       runner =
           CommandRunner<void>('license_test', 'Test for $LicenseCheckCommand');
@@ -48,12 +59,14 @@ void main() {
         'Use of this source code is governed by a BSD-style license that can be',
         'found in the LICENSE file.',
       ],
+      bool useCrlf = false,
     }) {
       final List<String> lines = <String>['$prefix$comment$copyright'];
       for (final String line in license) {
         lines.add('$comment$line');
       }
-      file.writeAsStringSync(lines.join('\n') + suffix + '\n');
+      final String newline = useCrlf ? '\r\n' : '\n';
+      file.writeAsStringSync(lines.join(newline) + suffix + newline);
     }
 
     test('looks at only expected extensions', () async {
@@ -121,6 +134,33 @@ void main() {
       }
     });
 
+    test('ignores submodules', () async {
+      const String submoduleName = 'a_submodule';
+
+      final File submoduleSpec = root.childFile('.gitmodules');
+      submoduleSpec.writeAsStringSync('''
+[submodule "$submoduleName"]
+  path = $submoduleName
+  url = https://github.com/foo/$submoduleName
+''');
+
+      const List<String> submoduleFiles = <String>[
+        '$submoduleName/foo.dart',
+        '$submoduleName/a/b/bar.dart',
+        '$submoduleName/LICENSE',
+      ];
+      for (final String filePath in submoduleFiles) {
+        root.childFile(filePath).createSync(recursive: true);
+      }
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['license-check']);
+
+      for (final String filePath in submoduleFiles) {
+        expect(output, isNot(contains('Checking $filePath')));
+      }
+    });
+
     test('passes if all checked files have license blocks', () async {
       final File checked = root.childFile('checked.cc');
       checked.createSync();
@@ -140,10 +180,27 @@ void main() {
           ]));
     });
 
+    test('passes correct license blocks on Windows', () async {
+      final File checked = root.childFile('checked.cc');
+      checked.createSync();
+      _writeLicense(checked, useCrlf: true);
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['license-check']);
+
+      // Sanity check that the test did actually check a file.
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking checked.cc'),
+            contains('All files passed validation!'),
+          ]));
+    });
+
     test('handles the comment styles for all supported languages', () async {
       final File fileA = root.childFile('file_a.cc');
       fileA.createSync();
-      _writeLicense(fileA, comment: '// ');
+      _writeLicense(fileA);
       final File fileB = root.childFile('file_b.sh');
       fileB.createSync();
       _writeLicense(fileB, comment: '# ');
@@ -406,6 +463,24 @@ void main() {
           ]));
     });
 
+    test('passes correct LICENSE files on Windows', () async {
+      final File license = root.childFile('LICENSE');
+      license.createSync();
+      license
+          .writeAsStringSync(_correctLicenseFileText.replaceAll('\n', '\r\n'));
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['license-check']);
+
+      // Sanity check that the test did actually check the file.
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking LICENSE'),
+            contains('All files passed validation!'),
+          ]));
+    });
+
     test('fails if any first-party LICENSE files are incorrectly formatted',
         () async {
       final File license = root.childFile('LICENSE');
@@ -470,6 +545,11 @@ void main() {
           ]));
     });
   });
+}
+
+class MockPlatformWithSeparator extends MockPlatform {
+  @override
+  String get pathSeparator => isWindows ? r'\' : '/';
 }
 
 const String _correctLicenseFileText = '''

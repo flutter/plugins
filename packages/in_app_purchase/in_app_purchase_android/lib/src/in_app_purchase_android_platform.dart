@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_android/src/in_app_purchase_android_platform_addition.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import '../billing_client_wrappers.dart';
@@ -40,7 +39,8 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
         InAppPurchaseAndroidPlatformAddition(billingClient);
 
     _readyFuture = _connect();
-    _purchaseUpdatedController = StreamController.broadcast();
+    _purchaseUpdatedController =
+        StreamController<List<PurchaseDetails>>.broadcast();
   }
 
   /// Registers this class as the default instance of [InAppPurchasePlatform].
@@ -64,7 +64,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
   late final BillingClient billingClient;
 
   late Future<void> _readyFuture;
-  static Set<String> _productIdsToConsume = Set<String>();
+  static final Set<String> _productIdsToConsume = <String>{};
 
   @override
   Future<bool> isAvailable() async {
@@ -78,7 +78,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     List<SkuDetailsResponseWrapper> responses;
     PlatformException? exception;
     try {
-      responses = await Future.wait([
+      responses = await Future.wait(<Future<SkuDetailsResponseWrapper>>[
         billingClient.querySkuDetails(
             skuType: SkuType.inapp, skusList: identifiers.toList()),
         billingClient.querySkuDetails(
@@ -86,30 +86,31 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
       ]);
     } on PlatformException catch (e) {
       exception = e;
-      responses = [
+      responses = <SkuDetailsResponseWrapper>[
         // ignore: invalid_use_of_visible_for_testing_member
         SkuDetailsResponseWrapper(
             billingResult: BillingResultWrapper(
                 responseCode: BillingResponse.error, debugMessage: e.code),
-            skuDetailsList: []),
+            skuDetailsList: const <SkuDetailsWrapper>[]),
         // ignore: invalid_use_of_visible_for_testing_member
         SkuDetailsResponseWrapper(
             billingResult: BillingResultWrapper(
                 responseCode: BillingResponse.error, debugMessage: e.code),
-            skuDetailsList: [])
+            skuDetailsList: const <SkuDetailsWrapper>[])
       ];
     }
-    List<ProductDetails> productDetailsList =
+    final List<ProductDetails> productDetailsList =
         responses.expand((SkuDetailsResponseWrapper response) {
       return response.skuDetailsList;
     }).map((SkuDetailsWrapper skuDetailWrapper) {
       return GooglePlayProductDetails.fromSkuDetails(skuDetailWrapper);
     }).toList();
 
-    Set<String> successIDS = productDetailsList
+    final Set<String> successIDS = productDetailsList
         .map((ProductDetails productDetails) => productDetails.id)
         .toSet();
-    List<String> notFoundIDS = identifiers.difference(successIDS).toList();
+    final List<String> notFoundIDS =
+        identifiers.difference(successIDS).toList();
     return ProductDetailsResponse(
         productDetails: productDetailsList,
         notFoundIDs: notFoundIDS,
@@ -130,7 +131,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
       changeSubscriptionParam = purchaseParam.changeSubscriptionParam;
     }
 
-    BillingResultWrapper billingResultWrapper =
+    final BillingResultWrapper billingResultWrapper =
         await billingClient.launchBillingFlow(
             sku: purchaseParam.productDetails.id,
             accountId: purchaseParam.applicationUserName,
@@ -158,11 +159,11 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
       'On Android, the `purchase` should always be of type `GooglePlayPurchaseDetails`.',
     );
 
-    GooglePlayPurchaseDetails googlePurchase =
+    final GooglePlayPurchaseDetails googlePurchase =
         purchase as GooglePlayPurchaseDetails;
 
     if (googlePurchase.billingClientPurchase.isAcknowledged) {
-      return BillingResultWrapper(responseCode: BillingResponse.ok);
+      return const BillingResultWrapper(responseCode: BillingResponse.ok);
     }
 
     if (googlePurchase.verificationData == null) {
@@ -180,22 +181,22 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
   }) async {
     List<PurchasesResultWrapper> responses;
 
-    responses = await Future.wait([
+    responses = await Future.wait(<Future<PurchasesResultWrapper>>[
       billingClient.queryPurchases(SkuType.inapp),
       billingClient.queryPurchases(SkuType.subs)
     ]);
 
-    Set errorCodeSet = responses
+    final Set<String> errorCodeSet = responses
         .where((PurchasesResultWrapper response) =>
             response.responseCode != BillingResponse.ok)
         .map((PurchasesResultWrapper response) =>
             response.responseCode.toString())
         .toSet();
 
-    String errorMessage =
+    final String errorMessage =
         errorCodeSet.isNotEmpty ? errorCodeSet.join(', ') : '';
 
-    List<PurchaseDetails> pastPurchases =
+    final List<PurchaseDetails> pastPurchases =
         responses.expand((PurchasesResultWrapper response) {
       return response.purchasesList;
     }).map((PurchaseWrapper purchaseWrapper) {
@@ -229,7 +230,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     }
 
     final BillingResultWrapper billingResult =
-        await (InAppPurchasePlatformAddition.instance
+        await (InAppPurchasePlatformAddition.instance!
                 as InAppPurchaseAndroidPlatformAddition)
             .consumePurchase(purchaseDetails);
     final BillingResponse consumedResponse = billingResult.responseCode;
@@ -260,17 +261,27 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     }
     final List<Future<PurchaseDetails>> purchases =
         resultWrapper.purchasesList.map((PurchaseWrapper purchase) {
-      return _maybeAutoConsumePurchase(
-          GooglePlayPurchaseDetails.fromPurchase(purchase)..error = error);
+      final GooglePlayPurchaseDetails googlePlayPurchaseDetails =
+          GooglePlayPurchaseDetails.fromPurchase(purchase)..error = error;
+      if (resultWrapper.responseCode == BillingResponse.userCanceled) {
+        googlePlayPurchaseDetails.status = PurchaseStatus.canceled;
+      }
+      return _maybeAutoConsumePurchase(googlePlayPurchaseDetails);
     }).toList();
     if (purchases.isNotEmpty) {
       return Future.wait(purchases);
     } else {
-      return [
+      PurchaseStatus status = PurchaseStatus.error;
+      if (resultWrapper.responseCode == BillingResponse.userCanceled) {
+        status = PurchaseStatus.canceled;
+      } else if (resultWrapper.responseCode == BillingResponse.ok) {
+        status = PurchaseStatus.purchased;
+      }
+      return <PurchaseDetails>[
         PurchaseDetails(
             purchaseID: '',
             productID: '',
-            status: PurchaseStatus.error,
+            status: status,
             transactionDate: null,
             verificationData: PurchaseVerificationData(
                 localVerificationData: '',

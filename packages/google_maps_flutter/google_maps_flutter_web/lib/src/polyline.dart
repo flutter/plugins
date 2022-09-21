@@ -6,10 +6,6 @@ part of google_maps_flutter_web;
 
 /// The `PolygonController` class wraps a [gmaps.Polyline] and its `onTap` behavior.
 class PolylineController {
-  gmaps.Polyline? _polyline;
-
-  final bool _consumeTapEvents;
-
   /// Creates a `PolylineController` that wraps a [gmaps.Polyline] object and its `onTap` behavior.
   PolylineController({
     required gmaps.Polyline polyline,
@@ -18,11 +14,15 @@ class PolylineController {
   })  : _polyline = polyline,
         _consumeTapEvents = consumeTapEvents {
     if (onTap != null) {
-      polyline.onClick.listen((event) {
+      polyline.onClick.listen((gmaps.PolyMouseEvent event) {
         onTap.call();
       });
     }
   }
+
+  gmaps.Polyline? _polyline;
+
+  final bool _consumeTapEvents;
 
   /// Returns the wrapped [gmaps.Polyline]. Only used for testing.
   @visibleForTesting

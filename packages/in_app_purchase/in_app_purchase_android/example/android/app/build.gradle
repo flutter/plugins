@@ -63,7 +63,7 @@ android {
         }
     }
 
-    compileSdkVersion 29
+    compileSdkVersion 31
 
     lintOptions {
         disable 'InvalidPackage'
@@ -72,7 +72,7 @@ android {
     defaultConfig {
         applicationId project.APP_ID
         minSdkVersion 16
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode project.VERSION_CODE
         versionName project.VERSION_NAME
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -106,9 +106,9 @@ flutter {
 }
 
 dependencies {
-    implementation 'com.android.billingclient:billing:3.0.2'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:3.6.0'
+    implementation 'com.android.billingclient:billing:5.0.0'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:4.7.0'
     testImplementation 'org.json:json:20180813'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'

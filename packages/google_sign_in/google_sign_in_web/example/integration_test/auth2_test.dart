@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:html' as html;
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
@@ -15,10 +17,10 @@ import 'src/test_utils.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  GoogleSignInTokenData expectedTokenData =
+  final GoogleSignInTokenData expectedTokenData =
       GoogleSignInTokenData(idToken: '70k3n', accessToken: 'access_70k3n');
 
-  GoogleSignInUserData expectedUserData = GoogleSignInUserData(
+  final GoogleSignInUserData expectedUserData = GoogleSignInUserData(
     displayName: 'Foo Bar',
     email: 'foo@example.com',
     id: '123',
@@ -28,49 +30,49 @@ void main() {
 
   late GoogleSignInPlugin plugin;
 
-  group('plugin.init() throws a catchable exception', () {
+  group('plugin.initWithParams() throws a catchable exception', () {
     setUp(() {
       // The pre-configured use case for the instances of the plugin in this test
       gapiUrl = toBase64Url(gapi_mocks.auth2InitError());
       plugin = GoogleSignInPlugin();
     });
 
-    testWidgets('init throws PlatformException', (WidgetTester tester) async {
+    testWidgets('throws PlatformException', (WidgetTester tester) async {
       await expectLater(
-          plugin.init(
+          plugin.initWithParams(const SignInInitParameters(
             hostedDomain: 'foo',
             scopes: <String>['some', 'scope'],
             clientId: '1234',
-          ),
+          )),
           throwsA(isA<PlatformException>()));
     });
 
-    testWidgets('init forwards error code from JS',
-        (WidgetTester tester) async {
+    testWidgets('forwards error code from JS', (WidgetTester tester) async {
       try {
-        await plugin.init(
+        await plugin.initWithParams(const SignInInitParameters(
           hostedDomain: 'foo',
           scopes: <String>['some', 'scope'],
           clientId: '1234',
-        );
-        fail('plugin.init should have thrown an exception!');
+        ));
+        fail('plugin.initWithParams should have thrown an exception!');
       } catch (e) {
-        final String code = js_util.getProperty(e, 'code') as String;
+        final String code = js_util.getProperty<String>(e, 'code');
         expect(code, 'idpiframe_initialization_failed');
       }
     });
   });
 
-  group('other methods also throw catchable exceptions on init fail', () {
-    // This function ensures that init gets called, but for some reason, we
-    // ignored that it has thrown stuff...
+  group('other methods also throw catchable exceptions on initWithParams fail',
+      () {
+    // This function ensures that initWithParams gets called, but for some
+    // reason, we ignored that it has thrown stuff...
     Future<void> _discardInit() async {
       try {
-        await plugin.init(
+        await plugin.initWithParams(const SignInInitParameters(
           hostedDomain: 'foo',
           scopes: <String>['some', 'scope'],
           clientId: '1234',
-        );
+        ));
       } catch (e) {
         // Noop so we can call other stuff
       }
@@ -99,7 +101,7 @@ void main() {
     });
     testWidgets('requestScopes', (WidgetTester tester) async {
       await _discardInit();
-      await expectLater(plugin.requestScopes(['newScope']),
+      await expectLater(plugin.requestScopes(<String>['newScope']),
           throwsA(isA<PlatformException>()));
     });
   });
@@ -112,51 +114,84 @@ void main() {
     });
 
     testWidgets('Init requires clientId', (WidgetTester tester) async {
-      expect(plugin.init(hostedDomain: ''), throwsAssertionError);
-    });
-
-    testWidgets('Init doesn\'t accept spaces in scopes',
-        (WidgetTester tester) async {
       expect(
-          plugin.init(
-            hostedDomain: '',
-            clientId: '',
-            scopes: <String>['scope with spaces'],
-          ),
+          plugin.initWithParams(const SignInInitParameters(hostedDomain: '')),
           throwsAssertionError);
     });
 
-    group('Successful .init, then', () {
+    testWidgets("Init doesn't accept serverClientId",
+        (WidgetTester tester) async {
+      expect(
+          plugin.initWithParams(const SignInInitParameters(
+            clientId: '',
+            serverClientId: '',
+          )),
+          throwsAssertionError);
+    });
+
+    testWidgets("Init doesn't accept spaces in scopes",
+        (WidgetTester tester) async {
+      expect(
+          plugin.initWithParams(const SignInInitParameters(
+            hostedDomain: '',
+            clientId: '',
+            scopes: <String>['scope with spaces'],
+          )),
+          throwsAssertionError);
+    });
+
+    // See: https://github.com/flutter/flutter/issues/88084
+    testWidgets('Init passes plugin_name parameter with the expected value',
+        (WidgetTester tester) async {
+      await plugin.initWithParams(const SignInInitParameters(
+        hostedDomain: 'foo',
+        scopes: <String>['some', 'scope'],
+        clientId: '1234',
+      ));
+
+      final Object? initParameters =
+          js_util.getProperty(html.window, 'gapi2.init.parameters');
+      expect(initParameters, isNotNull);
+
+      final Object? pluginNameParameter =
+          js_util.getProperty(initParameters!, 'plugin_name');
+      expect(pluginNameParameter, isA<String>());
+      expect(pluginNameParameter, 'dart-google_sign_in_web');
+    });
+
+    group('Successful .initWithParams, then', () {
       setUp(() async {
-        await plugin.init(
+        await plugin.initWithParams(const SignInInitParameters(
           hostedDomain: 'foo',
           scopes: <String>['some', 'scope'],
           clientId: '1234',
-        );
+        ));
         await plugin.initialized;
       });
 
       testWidgets('signInSilently', (WidgetTester tester) async {
-        GoogleSignInUserData actualUser = (await plugin.signInSilently())!;
+        final GoogleSignInUserData actualUser =
+            (await plugin.signInSilently())!;
 
         expect(actualUser, expectedUserData);
       });
 
       testWidgets('signIn', (WidgetTester tester) async {
-        GoogleSignInUserData actualUser = (await plugin.signIn())!;
+        final GoogleSignInUserData actualUser = (await plugin.signIn())!;
 
         expect(actualUser, expectedUserData);
       });
 
       testWidgets('getTokens', (WidgetTester tester) async {
-        GoogleSignInTokenData actualToken =
+        final GoogleSignInTokenData actualToken =
             await plugin.getTokens(email: expectedUserData.email);
 
         expect(actualToken, expectedTokenData);
       });
 
       testWidgets('requestScopes', (WidgetTester tester) async {
-        bool scopeGranted = await plugin.requestScopes(['newScope']);
+        final bool scopeGranted =
+            await plugin.requestScopes(<String>['newScope']);
 
         expect(scopeGranted, isTrue);
       });
@@ -168,11 +203,11 @@ void main() {
       // The pre-configured use case for the instances of the plugin in this test
       gapiUrl = toBase64Url(gapi_mocks.auth2SignInError());
       plugin = GoogleSignInPlugin();
-      await plugin.init(
+      await plugin.initWithParams(const SignInInitParameters(
         hostedDomain: 'foo',
         scopes: <String>['some', 'scope'],
         clientId: '1234',
-      );
+      ));
       await plugin.initialized;
     });
 
@@ -187,7 +222,7 @@ void main() {
         await plugin.signIn();
         fail('plugin.signIn() should have thrown an exception!');
       } catch (e) {
-        final String code = js_util.getProperty(e, 'code') as String;
+        final String code = js_util.getProperty<String>(e, 'code');
         expect(code, 'popup_closed_by_user');
       }
     });

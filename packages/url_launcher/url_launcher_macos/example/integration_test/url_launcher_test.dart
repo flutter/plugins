@@ -10,7 +10,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('canLaunch', (WidgetTester _) async {
-    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    final UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
 
     expect(await launcher.canLaunch('randomstring'), false);
 

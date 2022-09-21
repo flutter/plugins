@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:cross_file/cross_file.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -33,7 +32,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [FileSelectorPlatform] when they register themselves.
   static set instance(FileSelectorPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
+    PlatformInterface.verify(instance, _token);
     _instance = instance;
   }
 

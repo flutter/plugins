@@ -18,7 +18,14 @@ void main() {
     test('Cannot be implemented with `implements`', () {
       expect(() {
         CameraPlatform.instance = ImplementsCameraPlatform();
-      }, throwsNoSuchMethodError);
+        // In versions of `package:plugin_platform_interface` prior to fixing
+        // https://github.com/flutter/flutter/issues/109339, an attempt to
+        // implement a platform interface using `implements` would sometimes
+        // throw a `NoSuchMethodError` and other times throw an
+        // `AssertionError`.  After the issue is fixed, an `AssertionError` will
+        // always be thrown.  For the purpose of this test, we don't really care
+        // what exception is thrown, so just allow any exception.
+      }, throwsA(anything));
     });
 
     test('Can be extended', () {
@@ -29,7 +36,7 @@ void main() {
         'Default implementation of availableCameras() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -42,7 +49,7 @@ void main() {
         'Default implementation of onCameraInitialized() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -55,7 +62,7 @@ void main() {
         'Default implementation of onResolutionChanged() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -68,7 +75,7 @@ void main() {
         'Default implementation of onCameraClosing() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -81,7 +88,7 @@ void main() {
         'Default implementation of onCameraError() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -94,7 +101,7 @@ void main() {
         'Default implementation of onDeviceOrientationChanged() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -107,7 +114,7 @@ void main() {
         'Default implementation of lockCaptureOrientation() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -121,7 +128,7 @@ void main() {
         'Default implementation of unlockCaptureOrientation() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -133,7 +140,7 @@ void main() {
     test('Default implementation of dispose() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -146,12 +153,12 @@ void main() {
         'Default implementation of createCamera() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
         () => cameraPlatform.createCamera(
-          CameraDescription(
+          const CameraDescription(
             name: 'back',
             lensDirection: CameraLensDirection.back,
             sensorOrientation: 0,
@@ -166,7 +173,7 @@ void main() {
         'Default implementation of initializeCamera() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -179,7 +186,7 @@ void main() {
         'Default implementation of pauseVideoRecording() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -192,7 +199,7 @@ void main() {
         'Default implementation of prepareForVideoRecording() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -205,7 +212,7 @@ void main() {
         'Default implementation of resumeVideoRecording() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -218,7 +225,7 @@ void main() {
         'Default implementation of setFlashMode() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -231,7 +238,7 @@ void main() {
         'Default implementation of setExposureMode() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -244,7 +251,7 @@ void main() {
         'Default implementation of setExposurePoint() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -257,7 +264,7 @@ void main() {
         'Default implementation of getMinExposureOffset() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -270,7 +277,7 @@ void main() {
         'Default implementation of getMaxExposureOffset() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -283,7 +290,7 @@ void main() {
         'Default implementation of getExposureOffsetStepSize() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -296,7 +303,7 @@ void main() {
         'Default implementation of setExposureOffset() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -309,7 +316,7 @@ void main() {
         'Default implementation of setFocusMode() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -322,7 +329,7 @@ void main() {
         'Default implementation of setFocusPoint() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -335,7 +342,7 @@ void main() {
         'Default implementation of startVideoRecording() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -348,7 +355,7 @@ void main() {
         'Default implementation of stopVideoRecording() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -361,7 +368,7 @@ void main() {
         'Default implementation of takePicture() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -374,7 +381,7 @@ void main() {
         'Default implementation of getMaxZoomLevel() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -387,7 +394,7 @@ void main() {
         'Default implementation of getMinZoomLevel() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -400,7 +407,7 @@ void main() {
         'Default implementation of setZoomLevel() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -413,7 +420,7 @@ void main() {
         'Default implementation of pausePreview() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
@@ -426,7 +433,7 @@ void main() {
         'Default implementation of resumePreview() should throw unimplemented error',
         () {
       // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
+      final ExtendsCameraPlatform cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(

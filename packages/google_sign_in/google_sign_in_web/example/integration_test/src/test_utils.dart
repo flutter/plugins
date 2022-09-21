@@ -6,5 +6,5 @@ import 'dart:convert';
 
 String toBase64Url(String contents) {
   // Open the file
-  return 'data:text/javascript;base64,' + base64.encode(utf8.encode(contents));
+  return 'data:text/javascript;base64,${base64.encode(utf8.encode(contents))}';
 }

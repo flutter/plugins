@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import '../platform_interface/javascript_channel_registry.dart';
 import '../platform_interface/platform_interface.dart';
 import '../types/types.dart';
 
@@ -35,32 +34,34 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   Future<bool?> _onMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'javascriptChannelMessage':
-        final String channel = call.arguments['channel']!;
-        final String message = call.arguments['message']!;
+        final String channel = call.arguments['channel']! as String;
+        final String message = call.arguments['message']! as String;
         _javascriptChannelRegistry.onJavascriptChannelMessage(channel, message);
         return true;
       case 'navigationRequest':
         return await _platformCallbacksHandler.onNavigationRequest(
-          url: call.arguments['url']!,
-          isForMainFrame: call.arguments['isForMainFrame']!,
+          url: call.arguments['url']! as String,
+          isForMainFrame: call.arguments['isForMainFrame']! as bool,
         );
       case 'onPageFinished':
-        _platformCallbacksHandler.onPageFinished(call.arguments['url']!);
+        _platformCallbacksHandler
+            .onPageFinished(call.arguments['url']! as String);
         return null;
       case 'onProgress':
-        _platformCallbacksHandler.onProgress(call.arguments['progress']);
+        _platformCallbacksHandler.onProgress(call.arguments['progress'] as int);
         return null;
       case 'onPageStarted':
-        _platformCallbacksHandler.onPageStarted(call.arguments['url']!);
+        _platformCallbacksHandler
+            .onPageStarted(call.arguments['url']! as String);
         return null;
       case 'onWebResourceError':
         _platformCallbacksHandler.onWebResourceError(
           WebResourceError(
-            errorCode: call.arguments['errorCode']!,
-            description: call.arguments['description']!,
+            errorCode: call.arguments['errorCode']! as int,
+            description: call.arguments['description']! as String,
             // iOS doesn't support `failingUrl`.
-            failingUrl: call.arguments['failingUrl'],
-            domain: call.arguments['domain'],
+            failingUrl: call.arguments['failingUrl'] as String?,
+            domain: call.arguments['domain'] as String?,
             errorType: call.arguments['errorType'] == null
                 ? null
                 : WebResourceErrorType.values.firstWhere(
@@ -80,6 +81,48 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
+  Future<void> loadFile(String absoluteFilePath) async {
+    assert(absoluteFilePath != null);
+
+    try {
+      return await _channel.invokeMethod<void>('loadFile', absoluteFilePath);
+    } on PlatformException catch (ex) {
+      if (ex.code == 'loadFile_failed') {
+        throw ArgumentError(ex.message);
+      }
+
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> loadFlutterAsset(String key) async {
+    assert(key.isNotEmpty);
+
+    try {
+      return await _channel.invokeMethod<void>('loadFlutterAsset', key);
+    } on PlatformException catch (ex) {
+      if (ex.code == 'loadFlutterAsset_invalidKey') {
+        throw ArgumentError(ex.message);
+      }
+
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> loadHtmlString(
+    String html, {
+    String? baseUrl,
+  }) async {
+    assert(html != null);
+    return _channel.invokeMethod<void>('loadHtmlString', <String, dynamic>{
+      'html': html,
+      'baseUrl': baseUrl,
+    });
+  }
+
+  @override
   Future<void> loadUrl(
     String url,
     Map<String, String>? headers,
@@ -92,27 +135,36 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
+  Future<void> loadRequest(WebViewRequest request) async {
+    assert(request != null);
+    return _channel.invokeMethod<void>('loadRequest', <String, dynamic>{
+      'request': request.toJson(),
+    });
+  }
+
+  @override
   Future<String?> currentUrl() => _channel.invokeMethod<String>('currentUrl');
 
   @override
   Future<bool> canGoBack() =>
-      _channel.invokeMethod<bool>("canGoBack").then((result) => result!);
+      _channel.invokeMethod<bool>('canGoBack').then((bool? result) => result!);
 
   @override
-  Future<bool> canGoForward() =>
-      _channel.invokeMethod<bool>("canGoForward").then((result) => result!);
+  Future<bool> canGoForward() => _channel
+      .invokeMethod<bool>('canGoForward')
+      .then((bool? result) => result!);
 
   @override
-  Future<void> goBack() => _channel.invokeMethod<void>("goBack");
+  Future<void> goBack() => _channel.invokeMethod<void>('goBack');
 
   @override
-  Future<void> goForward() => _channel.invokeMethod<void>("goForward");
+  Future<void> goForward() => _channel.invokeMethod<void>('goForward');
 
   @override
-  Future<void> reload() => _channel.invokeMethod<void>("reload");
+  Future<void> reload() => _channel.invokeMethod<void>('reload');
 
   @override
-  Future<void> clearCache() => _channel.invokeMethod<void>("clearCache");
+  Future<void> clearCache() => _channel.invokeMethod<void>('clearCache');
 
   @override
   Future<void> updateSettings(WebSettings settings) async {
@@ -123,10 +175,22 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
-  Future<String> evaluateJavascript(String javascriptString) {
+  Future<String> evaluateJavascript(String javascript) {
     return _channel
-        .invokeMethod<String>('evaluateJavascript', javascriptString)
-        .then((result) => result!);
+        .invokeMethod<String>('evaluateJavascript', javascript)
+        .then((String? result) => result!);
+  }
+
+  @override
+  Future<void> runJavascript(String javascript) async {
+    await _channel.invokeMethod<String>('runJavascript', javascript);
+  }
+
+  @override
+  Future<String> runJavascriptReturningResult(String javascript) {
+    return _channel
+        .invokeMethod<String>('runJavascriptReturningResult', javascript)
+        .then((String? result) => result!);
   }
 
   @override
@@ -142,7 +206,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
-  Future<String?> getTitle() => _channel.invokeMethod<String>("getTitle");
+  Future<String?> getTitle() => _channel.invokeMethod<String>('getTitle');
 
   @override
   Future<void> scrollTo(int x, int y) {
@@ -162,17 +226,23 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
 
   @override
   Future<int> getScrollX() =>
-      _channel.invokeMethod<int>("getScrollX").then((result) => result!);
+      _channel.invokeMethod<int>('getScrollX').then((int? result) => result!);
 
   @override
   Future<int> getScrollY() =>
-      _channel.invokeMethod<int>("getScrollY").then((result) => result!);
+      _channel.invokeMethod<int>('getScrollY').then((int? result) => result!);
 
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {
     return _cookieManagerChannel
         .invokeMethod<bool>('clearCookies')
-        .then<bool>((dynamic result) => result!);
+        .then<bool>((dynamic result) => result! as bool);
+  }
+
+  /// Method channel implementation for [WebViewPlatform.setCookie].
+  static Future<void> setCookie(WebViewCookie cookie) {
+    return _cookieManagerChannel.invokeMethod<void>(
+        'setCookie', cookie.toJson());
   }
 
   static Map<String, dynamic> _webSettingsToMap(WebSettings? settings) {
@@ -200,6 +270,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull(
         'allowsInlineMediaPlayback', settings.allowsInlineMediaPlayback);
     _addSettingIfPresent('userAgent', settings.userAgent);
+    _addIfNonNull('zoomEnabled', settings.zoomEnabled);
     return map;
   }
 
@@ -218,6 +289,10 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
       'usesHybridComposition': usesHybridComposition,
+      'backgroundColor': creationParams.backgroundColor?.value,
+      'cookies': creationParams.cookies
+          .map((WebViewCookie cookie) => cookie.toJson())
+          .toList()
     };
   }
 }

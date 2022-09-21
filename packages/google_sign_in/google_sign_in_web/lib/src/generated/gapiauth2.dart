@@ -12,7 +12,7 @@
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/gapi.auth2
 
-// ignore_for_file: public_member_api_docs, unused_element
+// ignore_for_file: public_member_api_docs, unused_element, non_constant_identifier_names, sort_constructors_first, always_specify_types
 
 @JS()
 library gapiauth2;
@@ -57,8 +57,8 @@ class GoogleAuth {
 
   /// Calls the onInit function when the GoogleAuth object is fully initialized, or calls the onFailure function if
   /// initialization fails.
-  external dynamic then(dynamic onInit(GoogleAuth googleAuth),
-      [dynamic onFailure(GoogleAuthInitFailureError reason)]);
+  external dynamic then(dynamic Function(GoogleAuth googleAuth) onInit,
+      [dynamic Function(GoogleAuthInitFailureError reason) onFailure]);
 
   /// Signs out all accounts from the application.
   external dynamic signOut();
@@ -70,8 +70,8 @@ class GoogleAuth {
   external dynamic attachClickHandler(
       dynamic container,
       SigninOptions options,
-      dynamic onsuccess(GoogleUser googleUser),
-      dynamic onfailure(String reason));
+      dynamic Function(GoogleUser googleUser) onsuccess,
+      dynamic Function(String reason) onfailure);
 }
 
 @anonymous
@@ -104,7 +104,7 @@ abstract class IsSignedIn {
   external bool get();
 
   /// Listen for changes in the current user's sign-in state.
-  external void listen(dynamic listener(bool signedIn));
+  external void listen(dynamic Function(bool signedIn) listener);
 }
 
 @anonymous
@@ -116,7 +116,7 @@ abstract class CurrentUser {
   external GoogleUser get();
 
   /// Listen for changes in currentUser.
-  external void listen(dynamic listener(GoogleUser user));
+  external void listen(dynamic Function(GoogleUser user) listener);
 }
 
 @anonymous
@@ -233,15 +233,23 @@ abstract class ClientConfig {
   /// The default redirect_uri is the current URL stripped of query parameters and hash fragment.
   external String? get redirect_uri;
   external set redirect_uri(String? v);
-  external factory ClientConfig(
-      {String client_id,
-      String cookie_policy,
-      String scope,
-      bool fetch_basic_profile,
-      String? hosted_domain,
-      String openid_realm,
-      String /*'popup'|'redirect'*/ ux_mode,
-      String redirect_uri});
+
+  /// Allows newly created Client IDs to use the Google Platform Library from now until the March 30th, 2023 deprecation date.
+  /// See: https://github.com/flutter/flutter/issues/88084
+  external String? get plugin_name;
+  external set plugin_name(String? v);
+
+  external factory ClientConfig({
+    String client_id,
+    String cookie_policy,
+    String scope,
+    bool fetch_basic_profile,
+    String? hosted_domain,
+    String openid_realm,
+    String /*'popup'|'redirect'*/ ux_mode,
+    String redirect_uri,
+    String plugin_name,
+  });
 }
 
 @JS('gapi.auth2.SigninOptionsBuilder')
@@ -432,7 +440,7 @@ external GoogleAuth? getAuthInstance();
 /// Reference: https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2authorizeparams-callback
 @JS('gapi.auth2.authorize')
 external void authorize(
-    AuthorizeConfig params, void callback(AuthorizeResponse response));
+    AuthorizeConfig params, void Function(AuthorizeResponse response) callback);
 // End module gapi.auth2
 
 // Module gapi.signin2
@@ -489,6 +497,7 @@ external void render(
 @JS()
 abstract class Promise<T> {
   external factory Promise(
-      void executor(void resolve(T result), Function reject));
-  external Promise then(void onFulfilled(T result), [Function onRejected]);
+      void Function(void Function(T result) resolve, Function reject) executor);
+  external Promise then(void Function(T result) onFulfilled,
+      [Function onRejected]);
 }

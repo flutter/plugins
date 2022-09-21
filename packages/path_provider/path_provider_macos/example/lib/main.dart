@@ -8,13 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 /// Sample app
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {

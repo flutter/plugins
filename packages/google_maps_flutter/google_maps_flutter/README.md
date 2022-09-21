@@ -4,6 +4,10 @@
 
 A Flutter plugin that provides a [Google Maps](https://developers.google.com/maps/) widget.
 
+|             | Android | iOS    |
+|-------------|---------|--------|
+| **Support** | SDK 20+ | iOS 9+ |
+
 ## Usage
 
 To use this plugin, add `google_maps_flutter` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
@@ -46,9 +50,15 @@ This means that app will only be available for users that run Android SDK 20 or 
                android:value="YOUR KEY HERE"/>
 ```
 
+#### Display Mode
+
+The Android implementation supports multiple
+[platform view display modes](https://flutter.dev/docs/development/platform-integration/platform-views).
+For details, see [the Android README](https://pub.dev/packages/google_maps_flutter_android#display-mode).
+
 ### iOS
 
-This plugin requires iOS 9.0 or higher. To set up, specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
+To set up, specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
 
 ```objectivec
 #include "AppDelegate.h"

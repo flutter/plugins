@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:platform/platform.dart';
-
-import 'enums.dart';
 
 /// An implementation of [PathProviderPlatform] that uses method channels.
 class MethodChannelPathProvider extends PathProviderPlatform {
@@ -24,6 +22,7 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// This API is only exposed for the unit tests. It should not be used by
   /// any code outside of the plugin itself.
   @visibleForTesting
+  // ignore: use_setters_to_change_properties
   void setMockPathProviderPlatform(Platform platform) {
     _platform = platform;
   }

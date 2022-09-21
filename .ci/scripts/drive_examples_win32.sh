@@ -4,4 +4,4 @@
 # found in the LICENSE file.
 
 dart ./script/tool/bin/flutter_plugin_tools.dart drive-examples --windows \
-   --packages-for-branch
+   --exclude=script/configs/exclude_integration_win32.yaml --packages-for-branch --log-timing

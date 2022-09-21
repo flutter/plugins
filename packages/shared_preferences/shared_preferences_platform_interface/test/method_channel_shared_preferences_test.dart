@@ -4,8 +4,8 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/method_channel_shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +37,7 @@ void main() {
           return await testData.getAll();
         }
         if (methodCall.method == 'remove') {
-          final String key = methodCall.arguments['key'];
+          final String key = (methodCall.arguments['key'] as String?)!;
           return await testData.remove(key);
         }
         if (methodCall.method == 'clear') {
@@ -47,8 +47,8 @@ void main() {
         final Match? match = setterRegExp.matchAsPrefix(methodCall.method);
         if (match?.groupCount == 1) {
           final String valueType = match!.group(1)!;
-          final String key = methodCall.arguments['key'];
-          final Object value = methodCall.arguments['value'];
+          final String key = (methodCall.arguments['key'] as String?)!;
+          final Object value = (methodCall.arguments['value'] as Object?)!;
           return await testData.setValue(valueType, key, value);
         }
         fail('Unexpected method call: ${methodCall.method}');
@@ -78,15 +78,15 @@ void main() {
       });
 
       expect(log, hasLength(4));
-      for (MethodCall call in log) {
+      for (final MethodCall call in log) {
         expect(call.method, 'remove');
       }
     });
 
     test('setValue', () async {
       expect(await testData.getAll(), isEmpty);
-      for (String key in kTestValues.keys) {
-        final dynamic value = kTestValues[key];
+      for (final String key in kTestValues.keys) {
+        final Object value = kTestValues[key]!;
         expect(await store.setValue(key.split('.').last, key, value), true);
       }
       expect(await testData.getAll(), kTestValues);

@@ -13,20 +13,20 @@ import 'package:url_launcher_platform_interface/link.dart';
 void main() {
   testWidgets('Link with Navigator', (WidgetTester tester) async {
     await tester.pumpWidget(MaterialApp(
-      home: Placeholder(key: Key('home')),
+      home: const Placeholder(key: Key('home')),
       routes: <String, WidgetBuilder>{
-        '/a': (BuildContext context) => Placeholder(key: Key('a')),
+        '/a': (BuildContext context) => const Placeholder(key: Key('a')),
       },
     ));
-    expect(find.byKey(Key('home')), findsOneWidget);
-    expect(find.byKey(Key('a')), findsNothing);
+    expect(find.byKey(const Key('home')), findsOneWidget);
+    expect(find.byKey(const Key('a')), findsNothing);
     await tester.runAsync(() => pushRouteNameToFramework(null, '/a'));
     // start animation
     await tester.pump();
     // skip past animation (5s is arbitrary, just needs to be long enough)
     await tester.pump(const Duration(seconds: 5));
-    expect(find.byKey(Key('a')), findsOneWidget);
-    expect(find.byKey(Key('home')), findsNothing);
+    expect(find.byKey(const Key('a')), findsOneWidget);
+    expect(find.byKey(const Key('home')), findsNothing);
   });
 
   testWidgets('Link with Navigator', (WidgetTester tester) async {
@@ -34,15 +34,15 @@ void main() {
       routeInformationParser: _RouteInformationParser(),
       routerDelegate: _RouteDelegate(),
     ));
-    expect(find.byKey(Key('/')), findsOneWidget);
-    expect(find.byKey(Key('/a')), findsNothing);
+    expect(find.byKey(const Key('/')), findsOneWidget);
+    expect(find.byKey(const Key('/a')), findsNothing);
     await tester.runAsync(() => pushRouteNameToFramework(null, '/a'));
     // start animation
     await tester.pump();
     // skip past animation (5s is arbitrary, just needs to be long enough)
     await tester.pump(const Duration(seconds: 5));
-    expect(find.byKey(Key('/a')), findsOneWidget);
-    expect(find.byKey(Key('/')), findsNothing);
+    expect(find.byKey(const Key('/a')), findsOneWidget);
+    expect(find.byKey(const Key('/')), findsNothing);
   });
 }
 
@@ -50,7 +50,7 @@ class _RouteInformationParser extends RouteInformationParser<RouteInformation> {
   @override
   Future<RouteInformation> parseRouteInformation(
       RouteInformation routeInformation) {
-    return SynchronousFuture(routeInformation);
+    return SynchronousFuture<RouteInformation>(routeInformation);
   }
 
   @override
@@ -66,22 +66,22 @@ class _RouteDelegate extends RouterDelegate<RouteInformation>
   @override
   Future<void> setNewRoutePath(RouteInformation configuration) {
     _history.add(configuration);
-    return SynchronousFuture(null);
+    return SynchronousFuture<void>(null);
   }
 
   @override
   Future<bool> popRoute() {
     if (_history.isEmpty) {
-      return SynchronousFuture(false);
+      return SynchronousFuture<bool>(false);
     }
     _history.removeLast();
-    return SynchronousFuture(true);
+    return SynchronousFuture<bool>(true);
   }
 
   @override
   Widget build(BuildContext context) {
     if (_history.isEmpty) {
-      return Placeholder(key: Key('empty'));
+      return const Placeholder(key: Key('empty'));
     }
     return Placeholder(key: Key('${_history.last.location}'));
   }

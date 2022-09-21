@@ -5,6 +5,7 @@
 import 'package:file/file.dart';
 import 'package:platform/platform.dart';
 
+import 'common/cmake.dart';
 import 'common/core.dart';
 import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
@@ -16,9 +17,9 @@ import 'common/xcode.dart';
 const String _unitTestFlag = 'unit';
 const String _integrationTestFlag = 'integration';
 
-const String _iosDestinationFlag = 'ios-destination';
+const String _iOSDestinationFlag = 'ios-destination';
 
-const int _exitNoIosSimulators = 3;
+const int _exitNoIOSSimulators = 3;
 
 /// The command to run native tests for plugins:
 /// - iOS and macOS: XCTests (XCUnitTest and XCUITest)
@@ -33,17 +34,17 @@ class NativeTestCommand extends PackageLoopingCommand {
   })  : _xcode = Xcode(processRunner: processRunner, log: true),
         super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
-      _iosDestinationFlag,
+      _iOSDestinationFlag,
       help: 'Specify the destination when running iOS tests.\n'
           'This is passed to the `-destination` argument in the xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT '
           'for details on how to specify the destination.',
     );
-    argParser.addFlag(kPlatformAndroid, help: 'Runs Android tests');
-    argParser.addFlag(kPlatformIos, help: 'Runs iOS tests');
-    argParser.addFlag(kPlatformLinux, help: 'Runs Linux tests');
-    argParser.addFlag(kPlatformMacos, help: 'Runs macOS tests');
-    argParser.addFlag(kPlatformWindows, help: 'Runs Windows tests');
+    argParser.addFlag(platformAndroid, help: 'Runs Android tests');
+    argParser.addFlag(platformIOS, help: 'Runs iOS tests');
+    argParser.addFlag(platformLinux, help: 'Runs Linux tests');
+    argParser.addFlag(platformMacOS, help: 'Runs macOS tests');
+    argParser.addFlag(platformWindows, help: 'Runs Windows tests');
 
     // By default, both unit tests and integration tests are run, but provide
     // flags to disable one or the other.
@@ -54,7 +55,7 @@ class NativeTestCommand extends PackageLoopingCommand {
   }
 
   // The device destination flags for iOS tests.
-  List<String> _iosDestinationFlags = <String>[];
+  List<String> _iOSDestinationFlags = <String>[];
 
   final Xcode _xcode;
 
@@ -83,11 +84,11 @@ this command.
   @override
   Future<void> initializeRun() async {
     _platforms = <String, _PlatformDetails>{
-      kPlatformAndroid: _PlatformDetails('Android', _testAndroid),
-      kPlatformIos: _PlatformDetails('iOS', _testIos),
-      kPlatformLinux: _PlatformDetails('Linux', _testLinux),
-      kPlatformMacos: _PlatformDetails('macOS', _testMacOS),
-      kPlatformWindows: _PlatformDetails('Windows', _testWindows),
+      platformAndroid: _PlatformDetails('Android', _testAndroid),
+      platformIOS: _PlatformDetails('iOS', _testIOS),
+      platformLinux: _PlatformDetails('Linux', _testLinux),
+      platformMacOS: _PlatformDetails('macOS', _testMacOS),
+      platformWindows: _PlatformDetails('Windows', _testWindows),
     };
     _requestedPlatforms = _platforms.keys
         .where((String platform) => getBoolArg(platform))
@@ -104,29 +105,29 @@ this command.
       throw ToolExit(exitInvalidArguments);
     }
 
-    if (getBoolArg(kPlatformWindows) && getBoolArg(_integrationTestFlag)) {
+    if (getBoolArg(platformWindows) && getBoolArg(_integrationTestFlag)) {
       logWarning('This command currently only supports unit tests for Windows. '
           'See https://github.com/flutter/flutter/issues/70233.');
     }
 
-    if (getBoolArg(kPlatformLinux) && getBoolArg(_integrationTestFlag)) {
+    if (getBoolArg(platformLinux) && getBoolArg(_integrationTestFlag)) {
       logWarning('This command currently only supports unit tests for Linux. '
           'See https://github.com/flutter/flutter/issues/70235.');
     }
 
     // iOS-specific run-level state.
     if (_requestedPlatforms.contains('ios')) {
-      String destination = getStringArg(_iosDestinationFlag);
+      String destination = getStringArg(_iOSDestinationFlag);
       if (destination.isEmpty) {
         final String? simulatorId =
             await _xcode.findBestAvailableIphoneSimulator();
         if (simulatorId == null) {
           printError('Cannot find any available iOS simulators.');
-          throw ToolExit(_exitNoIosSimulators);
+          throw ToolExit(_exitNoIOSSimulators);
         }
         destination = 'id=$simulatorId';
       }
-      _iosDestinationFlags = <String>[
+      _iOSDestinationFlags = <String>[
         '-destination',
         destination,
       ];
@@ -197,22 +198,22 @@ this command.
   Future<_PlatformResult> _testAndroid(
       RepositoryPackage plugin, _TestMode mode) async {
     bool exampleHasUnitTests(RepositoryPackage example) {
-      return example.directory
-              .childDirectory('android')
+      return example
+              .platformDirectory(FlutterPlatform.android)
               .childDirectory('app')
               .childDirectory('src')
               .childDirectory('test')
               .existsSync() ||
-          example.directory.parent
-              .childDirectory('android')
+          plugin
+              .platformDirectory(FlutterPlatform.android)
               .childDirectory('src')
               .childDirectory('test')
               .existsSync();
     }
 
     bool exampleHasNativeIntegrationTests(RepositoryPackage example) {
-      final Directory integrationTestDirectory = example.directory
-          .childDirectory('android')
+      final Directory integrationTestDirectory = example
+          .platformDirectory(FlutterPlatform.android)
           .childDirectory('app')
           .childDirectory('src')
           .childDirectory('androidTest');
@@ -268,7 +269,7 @@ this command.
       _printRunningExampleTestsMessage(example, 'Android');
 
       final GradleProject project = GradleProject(
-        example.directory,
+        example,
         processRunner: processRunner,
         platform: platform,
       );
@@ -332,9 +333,9 @@ this command.
     return _PlatformResult(RunState.succeeded);
   }
 
-  Future<_PlatformResult> _testIos(RepositoryPackage plugin, _TestMode mode) {
+  Future<_PlatformResult> _testIOS(RepositoryPackage plugin, _TestMode mode) {
     return _runXcodeTests(plugin, 'iOS', mode,
-        extraFlags: _iosDestinationFlags);
+        extraFlags: _iOSDestinationFlags);
   }
 
   Future<_PlatformResult> _testMacOS(RepositoryPackage plugin, _TestMode mode) {
@@ -456,8 +457,8 @@ this command.
           file.basename.endsWith('_tests.exe');
     }
 
-    return _runGoogleTestTests(plugin,
-        buildDirectoryName: 'windows', isTestBinary: isTestBinary);
+    return _runGoogleTestTests(plugin, 'Windows', 'Debug',
+        isTestBinary: isTestBinary);
   }
 
   Future<_PlatformResult> _testLinux(
@@ -471,8 +472,16 @@ this command.
           file.basename.endsWith('_tests');
     }
 
-    return _runGoogleTestTests(plugin,
-        buildDirectoryName: 'linux', isTestBinary: isTestBinary);
+    // Since Linux uses a single-config generator, building-examples only
+    // generates the build files for release, so the tests have to be run in
+    // release mode as well.
+    //
+    // TODO(stuartmorgan): Consider adding a command to `flutter` that would
+    // generate build files without doing a build, and using that instead of
+    // relying on running build-examples. See
+    // https://github.com/flutter/flutter/issues/93407.
+    return _runGoogleTestTests(plugin, 'Linux', 'Release',
+        isTestBinary: isTestBinary);
   }
 
   /// Finds every file in the [buildDirectoryName] subdirectory of [plugin]'s
@@ -482,29 +491,57 @@ this command.
   /// The binaries are assumed to be Google Test test binaries, thus returning
   /// zero for success and non-zero for failure.
   Future<_PlatformResult> _runGoogleTestTests(
-    RepositoryPackage plugin, {
-    required String buildDirectoryName,
+    RepositoryPackage plugin,
+    String platformName,
+    String buildMode, {
     required bool Function(File) isTestBinary,
   }) async {
     final List<File> testBinaries = <File>[];
+    bool hasMissingBuild = false;
+    bool buildFailed = false;
     for (final RepositoryPackage example in plugin.getExamples()) {
-      final Directory buildDir = example.directory
-          .childDirectory('build')
-          .childDirectory(buildDirectoryName);
-      if (!buildDir.existsSync()) {
+      final CMakeProject project = CMakeProject(example.directory,
+          buildMode: buildMode,
+          processRunner: processRunner,
+          platform: platform);
+      if (!project.isConfigured()) {
+        printError('ERROR: Run "flutter build" on ${example.displayName}, '
+            'or run this tool\'s "build-examples" command, for the target '
+            'platform before executing tests.');
+        hasMissingBuild = true;
         continue;
       }
-      testBinaries.addAll(buildDir
+
+      // By repository convention, example projects create an aggregate target
+      // called 'unit_tests' that builds all unit tests (usually just an alias
+      // for a specific test target).
+      final int exitCode = await project.runBuild('unit_tests');
+      if (exitCode != 0) {
+        printError('${example.displayName} unit tests failed to build.');
+        buildFailed = true;
+      }
+
+      testBinaries.addAll(project.buildDirectory
           .listSync(recursive: true)
           .whereType<File>()
           .where(isTestBinary)
           .where((File file) {
-        // Only run the release build of the unit tests, to avoid running the
-        // same tests multiple times. Release is used rather than debug since
-        // `build-examples` builds release versions.
+        // Only run the `buildMode` build of the unit tests, to avoid running
+        // the same tests multiple times.
         final List<String> components = path.split(file.path);
-        return components.contains('release') || components.contains('Release');
+        return components.contains(buildMode) ||
+            components.contains(buildMode.toLowerCase());
       }));
+    }
+
+    if (hasMissingBuild) {
+      return _PlatformResult(RunState.failed,
+          error: 'Examples must be built before testing.');
+    }
+
+    if (buildFailed) {
+      return _PlatformResult(RunState.failed,
+          error: 'Failed to build $platformName unit tests.');
     }
 
     if (testBinaries.isEmpty) {
@@ -513,7 +550,7 @@ this command.
           'No test binaries found. At least one *_test(s)$binaryExtension '
           'binary should be built by the example(s)');
       return _PlatformResult(RunState.failed,
-          error: 'No $buildDirectoryName unit tests found');
+          error: 'No $platformName unit tests found');
     }
 
     bool passing = true;

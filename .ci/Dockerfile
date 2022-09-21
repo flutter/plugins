@@ -1,13 +1,9 @@
 # The Flutter version is not important here, since the CI scripts update Flutter
 # before running. What matters is that the base image is pinned to minimize
 # unintended changes when modifying this file.
-FROM cirrusci/flutter:2.2.2
+FROM cirrusci/flutter@sha256:505fe8bce2896c75b4df9ccf500b1604155bf932af7465ffcc66fcae8612f82f
 
 RUN apt-get update -y
-
-# Required by Roboeletric and the Android SDK.
-RUN apt-get install -y openjdk-8-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 RUN apt-get install -y --no-install-recommends gnupg
 
@@ -45,6 +41,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo ap
 RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
 RUN apt-get update && apt-get install -y --no-install-recommends google-chrome-stable
 
-# Make Chrome the default so http: has a handler for url_launcher tests.
+# Make Chrome the default so http: and file: has a handler for url_launcher tests.
 RUN apt-get install -y xdg-utils
 RUN xdg-settings set default-web-browser google-chrome.desktop
+RUN xdg-mime default google-chrome.desktop inode/directory

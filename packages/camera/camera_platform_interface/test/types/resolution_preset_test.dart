@@ -7,13 +7,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('ResolutionPreset should contain 6 options', () {
-    final values = ResolutionPreset.values;
+    const List<ResolutionPreset> values = ResolutionPreset.values;
 
     expect(values.length, 6);
   });
 
-  test("ResolutionPreset enum should have items in correct index", () {
-    final values = ResolutionPreset.values;
+  test('ResolutionPreset enum should have items in correct index', () {
+    const List<ResolutionPreset> values = ResolutionPreset.values;
 
     expect(values[0], ResolutionPreset.low);
     expect(values[1], ResolutionPreset.medium);

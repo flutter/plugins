@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:flutter/services.dart';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 import '../../billing_client_wrappers.dart';
 import '../channel.dart';
-import 'purchase_wrapper.dart';
-import 'sku_details_wrapper.dart';
-import 'enum_converters.dart';
+
+part 'billing_client_wrapper.g.dart';
 
 /// Method identifier for the OnPurchaseUpdated method channel method.
 @visibleForTesting
@@ -35,7 +36,8 @@ const String _kOnBillingServiceDisconnected =
 ///
 /// Wraps a
 /// [`PurchasesUpdatedListener`](https://developer.android.com/reference/com/android/billingclient/api/PurchasesUpdatedListener.html).
-typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
+typedef PurchasesUpdatedListener = void Function(
+    PurchasesResultWrapper purchasesResult);
 
 /// This class can be used directly instead of [InAppPurchaseConnection] to call
 /// Play-specific billing APIs.
@@ -50,12 +52,12 @@ typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
 /// some minor changes to account for language differences. Callbacks have been
 /// converted to futures where appropriate.
 class BillingClient {
-  bool _enablePendingPurchases = false;
-
   /// Creates a billing client.
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
     channel.setMethodCallHandler(callHandler);
-    _callbacks[kOnPurchasesUpdated] = [onPurchasesUpdated];
+    _callbacks[kOnPurchasesUpdated] = <PurchasesUpdatedListener>[
+      onPurchasesUpdated
+    ];
   }
 
   // Occasionally methods in the native layer require a Dart callback to be
@@ -66,7 +68,7 @@ class BillingClient {
   // matching callback here to remember, and then once its twin is triggered it
   // sends the handle back over the platform channel. We then access that handle
   // in this array and call it in Dart code. See also [_callHandler].
-  Map<String, List<Function>> _callbacks = <String, List<Function>>{};
+  final Map<String, List<Function>> _callbacks = <String, List<Function>>{};
 
   /// Calls
   /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
@@ -79,14 +81,14 @@ class BillingClient {
 
   /// Enable the [BillingClientWrapper] to handle pending purchases.
   ///
-  /// Play requires that you call this method when initializing your application.
-  /// It is to acknowledge your application has been updated to support pending purchases.
-  /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
-  /// for more details.
-  ///
-  /// Failure to call this method before any other method in the [startConnection] will throw an exception.
+  /// **Deprecation warning:** it is no longer required to call
+  /// [enablePendingPurchases] when initializing your application.
+  @Deprecated(
+      'The requirement to call `enablePendingPurchases()` has become obsolete '
+      "since Google Play no longer accepts app submissions that don't support "
+      'pending purchases.')
   void enablePendingPurchases() {
-    _enablePendingPurchases = true;
+    // No-op, until it is time to completely remove this method from the API.
   }
 
   /// Calls
@@ -102,17 +104,14 @@ class BillingClient {
   Future<BillingResultWrapper> startConnection(
       {required OnBillingServiceDisconnected
           onBillingServiceDisconnected}) async {
-    assert(_enablePendingPurchases,
-        'enablePendingPurchases() must be called before calling startConnection');
-    List<Function> disconnectCallbacks =
-        _callbacks[_kOnBillingServiceDisconnected] ??= [];
+    final List<Function> disconnectCallbacks =
+        _callbacks[_kOnBillingServiceDisconnected] ??= <Function>[];
     disconnectCallbacks.add(onBillingServiceDisconnected);
     return BillingResultWrapper.fromJson((await channel
             .invokeMapMethod<String, dynamic>(
-                "BillingClient#startConnection(BillingClientStateListener)",
+                'BillingClient#startConnection(BillingClientStateListener)',
                 <String, dynamic>{
               'handle': disconnectCallbacks.length - 1,
-              'enablePendingPurchases': _enablePendingPurchases
             })) ??
         <String, dynamic>{});
   }
@@ -125,7 +124,7 @@ class BillingClient {
   ///
   /// This triggers the destruction of the `BillingClient` instance in Java.
   Future<void> endConnection() async {
-    return channel.invokeMethod<void>("BillingClient#endConnection()", null);
+    return channel.invokeMethod<void>('BillingClient#endConnection()');
   }
 
   /// Returns a list of [SkuDetailsWrapper]s that have [SkuDetailsWrapper.sku]
@@ -140,7 +139,7 @@ class BillingClient {
   Future<SkuDetailsResponseWrapper> querySkuDetails(
       {required SkuType skuType, required List<String> skusList}) async {
     final Map<String, dynamic> arguments = <String, dynamic>{
-      'skuType': SkuTypeConverter().toJson(skuType),
+      'skuType': const SkuTypeConverter().toJson(skuType),
       'skusList': skusList
     };
     return SkuDetailsResponseWrapper.fromJson((await channel.invokeMapMethod<
@@ -201,7 +200,7 @@ class BillingClient {
       'obfuscatedProfileId': obfuscatedProfileId,
       'oldSku': oldSku,
       'purchaseToken': purchaseToken,
-      'prorationMode': ProrationModeConverter().toJson(prorationMode ??
+      'prorationMode': const ProrationModeConverter().toJson(prorationMode ??
           ProrationMode.unknownSubscriptionUpgradeDowngradePolicy)
     };
     return BillingResultWrapper.fromJson(
@@ -227,7 +226,7 @@ class BillingClient {
     return PurchasesResultWrapper.fromJson((await channel
             .invokeMapMethod<String, dynamic>(
                 'BillingClient#queryPurchases(String)', <String, dynamic>{
-          'skuType': SkuTypeConverter().toJson(skuType)
+          'skuType': const SkuTypeConverter().toJson(skuType)
         })) ??
         <String, dynamic>{});
   }
@@ -251,7 +250,7 @@ class BillingClient {
                 String, dynamic>(
             'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)',
             <String, dynamic>{
-              'skuType': SkuTypeConverter().toJson(skuType)
+              'skuType': const SkuTypeConverter().toJson(skuType)
             })) ??
         <String, dynamic>{});
   }
@@ -304,9 +303,9 @@ class BillingClient {
   /// Checks if the specified feature or capability is supported by the Play Store.
   /// Call this to check if a [BillingClientFeature] is supported by the device.
   Future<bool> isFeatureSupported(BillingClientFeature feature) async {
-    var result = await channel.invokeMethod<bool>(
+    final bool? result = await channel.invokeMethod<bool>(
         'BillingClient#isFeatureSupported(String)', <String, dynamic>{
-      'feature': BillingClientFeatureConverter().toJson(feature),
+      'feature': const BillingClientFeatureConverter().toJson(feature),
     });
     return result ?? false;
   }
@@ -341,10 +340,10 @@ class BillingClient {
         final PurchasesUpdatedListener listener =
             _callbacks[kOnPurchasesUpdated]!.first as PurchasesUpdatedListener;
         listener(PurchasesResultWrapper.fromJson(
-            call.arguments.cast<String, dynamic>()));
+            (call.arguments as Map<dynamic, dynamic>).cast<String, dynamic>()));
         break;
       case _kOnBillingServiceDisconnected:
-        final int handle = call.arguments['handle'];
+        final int handle = call.arguments['handle'] as int;
         await _callbacks[_kOnBillingServiceDisconnected]![handle]();
         break;
     }
@@ -356,7 +355,7 @@ class BillingClient {
 /// Wraps
 /// [`com.android.billingclient.api.BillingClientStateListener.onServiceDisconnected()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClientStateListener.html#onBillingServiceDisconnected())
 /// to call back on `BillingClient` disconnect.
-typedef void OnBillingServiceDisconnected();
+typedef OnBillingServiceDisconnected = void Function();
 
 /// Possible `BillingClient` response statuses.
 ///
@@ -364,6 +363,7 @@ typedef void OnBillingServiceDisconnected();
 /// [`BillingClient.BillingResponse`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse).
 /// See the `BillingResponse` docs for more explanation of the different
 /// constants.
+@JsonEnum(alwaysCreate: true)
 enum BillingResponse {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
@@ -418,11 +418,32 @@ enum BillingResponse {
   itemNotOwned,
 }
 
+/// Serializer for [BillingResponse].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@BillingResponseConverter()`.
+class BillingResponseConverter implements JsonConverter<BillingResponse, int?> {
+  /// Default const constructor.
+  const BillingResponseConverter();
+
+  @override
+  BillingResponse fromJson(int? json) {
+    if (json == null) {
+      return BillingResponse.error;
+    }
+    return $enumDecode(_$BillingResponseEnumMap, json);
+  }
+
+  @override
+  int toJson(BillingResponse object) => _$BillingResponseEnumMap[object]!;
+}
+
 /// Enum representing potential [SkuDetailsWrapper.type]s.
 ///
 /// Wraps
 /// [`BillingClient.SkuType`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType)
 /// See the linked documentation for an explanation of the different constants.
+@JsonEnum(alwaysCreate: true)
 enum SkuType {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
@@ -437,6 +458,26 @@ enum SkuType {
   subs,
 }
 
+/// Serializer for [SkuType].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@SkuTypeConverter()`.
+class SkuTypeConverter implements JsonConverter<SkuType, String?> {
+  /// Default const constructor.
+  const SkuTypeConverter();
+
+  @override
+  SkuType fromJson(String? json) {
+    if (json == null) {
+      return SkuType.inapp;
+    }
+    return $enumDecode(_$SkuTypeEnumMap, json);
+  }
+
+  @override
+  String toJson(SkuType object) => _$SkuTypeEnumMap[object]!;
+}
+
 /// Enum representing the proration mode.
 ///
 /// When upgrading or downgrading a subscription, set this mode to provide details
@@ -444,6 +485,7 @@ enum SkuType {
 ///
 /// Wraps [`BillingFlowParams.ProrationMode`](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode)
 /// See the linked documentation for an explanation of the different constants.
+@JsonEnum(alwaysCreate: true)
 enum ProrationMode {
 // WARNING: Changes to this class need to be reflected in our generated code.
 // Run `flutter packages pub run build_runner watch` to rebuild and watch for
@@ -453,7 +495,8 @@ enum ProrationMode {
   @JsonValue(0)
   unknownSubscriptionUpgradeDowngradePolicy,
 
-  /// Replacement takes effect immediately, and the remaining time will be prorated and credited to the user.
+  /// Replacement takes effect immediately, and the remaining time will be prorated
+  /// and credited to the user.
   ///
   /// This is the current default behavior.
   @JsonValue(1)
@@ -466,18 +509,47 @@ enum ProrationMode {
   @JsonValue(2)
   immediateAndChargeProratedPrice,
 
-  /// Replacement takes effect immediately, and the new price will be charged on next recurrence time.
+  /// Replacement takes effect immediately, and the new price will be charged on next
+  /// recurrence time.
   ///
   /// The billing cycle stays the same.
   @JsonValue(3)
   immediateWithoutProration,
 
-  /// Replacement takes effect when the old plan expires, and the new price will be charged at the same time.
+  /// Replacement takes effect when the old plan expires, and the new price will
+  /// be charged at the same time.
   @JsonValue(4)
   deferred,
+
+  /// Replacement takes effect immediately, and the user is charged full price
+  /// of new plan and is given a full billing cycle of subscription, plus
+  /// remaining prorated time from the old plan.
+  @JsonValue(5)
+  immediateAndChargeFullPrice,
+}
+
+/// Serializer for [ProrationMode].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@ProrationModeConverter()`.
+class ProrationModeConverter implements JsonConverter<ProrationMode, int?> {
+  /// Default const constructor.
+  const ProrationModeConverter();
+
+  @override
+  ProrationMode fromJson(int? json) {
+    if (json == null) {
+      return ProrationMode.unknownSubscriptionUpgradeDowngradePolicy;
+    }
+    return $enumDecode(_$ProrationModeEnumMap, json);
+  }
+
+  @override
+  int toJson(ProrationMode object) => _$ProrationModeEnumMap[object]!;
 }
 
 /// Features/capabilities supported by [BillingClient.isFeatureSupported()](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.FeatureType).
+@JsonEnum(alwaysCreate: true)
 enum BillingClientFeature {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
@@ -503,4 +575,25 @@ enum BillingClientFeature {
   /// Subscriptions update/replace.
   @JsonValue('subscriptionsUpdate')
   subscriptionsUpdate
+}
+
+/// Serializer for [BillingClientFeature].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@BillingClientFeatureConverter()`.
+class BillingClientFeatureConverter
+    implements JsonConverter<BillingClientFeature, String> {
+  /// Default const constructor.
+  const BillingClientFeatureConverter();
+
+  @override
+  BillingClientFeature fromJson(String json) {
+    return $enumDecode<BillingClientFeature, dynamic>(
+        _$BillingClientFeatureEnumMap.cast<BillingClientFeature, dynamic>(),
+        json);
+  }
+
+  @override
+  String toJson(BillingClientFeature object) =>
+      _$BillingClientFeatureEnumMap[object]!;
 }

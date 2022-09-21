@@ -10,13 +10,15 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'SharedPreferences Demo',
       home: SharedPreferencesDemo(),
     );
@@ -24,14 +26,14 @@ class MyApp extends StatelessWidget {
 }
 
 class SharedPreferencesDemo extends StatefulWidget {
-  SharedPreferencesDemo({Key? key}) : super(key: key);
+  const SharedPreferencesDemo({Key? key}) : super(key: key);
 
   @override
   SharedPreferencesDemoState createState() => SharedPreferencesDemoState();
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  SharedPreferencesStorePlatform _prefs =
+  final SharedPreferencesStorePlatform _prefs =
       SharedPreferencesStorePlatform.instance;
   late Future<int> _counter;
 
@@ -63,7 +65,7 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("SharedPreferences Demo"),
+        title: const Text('SharedPreferences Demo'),
       ),
       body: Center(
           child: FutureBuilder<int>(

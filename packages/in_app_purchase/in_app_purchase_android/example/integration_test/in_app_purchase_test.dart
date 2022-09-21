@@ -12,7 +12,6 @@ void main() {
 
   testWidgets('Can create InAppPurchaseAndroid instance',
       (WidgetTester tester) async {
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
     InAppPurchaseAndroidPlatform.registerPlatform();
     final InAppPurchasePlatform androidPlatform =
         InAppPurchasePlatform.instance;

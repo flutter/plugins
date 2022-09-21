@@ -12,13 +12,12 @@ import 'package:ios_platform_images_example/main.dart';
 void main() {
   testWidgets('Verify loads image', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(const MyApp());
 
-    // Verify that platform version is retrieved.
     expect(
       find.byWidgetPredicate(
         (Widget widget) =>
-            widget is Image && (Platform.isIOS ? widget.image != null : true),
+            widget is Image && (!Platform.isIOS || widget.image != null),
       ),
       findsOneWidget,
     );

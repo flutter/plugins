@@ -70,10 +70,10 @@ void main() {
   ];
 
   for (final StorageDirectory? type in _allDirs) {
-    test('getExternalStorageDirectories (type: $type)', () async {
+    testWidgets('getExternalStorageDirectories (type: $type)',
+        (WidgetTester tester) async {
       if (Platform.isIOS) {
-        final Future<List<Directory>?> result =
-            getExternalStorageDirectories(type: null);
+        final Future<List<Directory>?> result = getExternalStorageDirectories();
         expect(result, throwsA(isInstanceOf<UnsupportedError>()));
       } else if (Platform.isAndroid) {
         final List<Directory>? directories =
@@ -85,6 +85,23 @@ void main() {
       }
     });
   }
+
+  testWidgets('getDownloadsDirectory', (WidgetTester tester) async {
+    if (Platform.isIOS || Platform.isAndroid) {
+      final Future<Directory?> result = getDownloadsDirectory();
+      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
+    } else {
+      final Directory? result = await getDownloadsDirectory();
+      if (Platform.isMacOS) {
+        // On recent versions of macOS, actually using the downloads directory
+        // requires a user prompt, so will fail on CI. Instead, just check that
+        // it returned a path with the expected directory name.
+        expect(result?.path, endsWith('Downloads'));
+      } else {
+        _verifySampleFile(result, 'downloads');
+      }
+    }
+  });
 }
 
 /// Verify a file called [name] in [directory] by recreating it with test

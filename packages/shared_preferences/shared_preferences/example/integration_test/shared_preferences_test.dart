@@ -2,32 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('$SharedPreferences', () {
-    const Map<String, dynamic> kTestValues = <String, dynamic>{
-      'flutter.String': 'hello world',
-      'flutter.bool': true,
-      'flutter.int': 42,
-      'flutter.double': 3.14159,
-      'flutter.List': <String>['foo', 'bar'],
-    };
+    const String testString = 'hello world';
+    const bool testBool = true;
+    const int testInt = 42;
+    const double testDouble = 3.14159;
+    const List<String> testList = <String>['foo', 'bar'];
 
-    const Map<String, dynamic> kTestValues2 = <String, dynamic>{
-      'flutter.String': 'goodbye world',
-      'flutter.bool': false,
-      'flutter.int': 1337,
-      'flutter.double': 2.71828,
-      'flutter.List': <String>['baz', 'quox'],
-    };
+    const String testString2 = 'goodbye world';
+    const bool testBool2 = false;
+    const int testInt2 = 1337;
+    const double testDouble2 = 2.71828;
+    const List<String> testList2 = <String>['baz', 'quox'];
 
     late SharedPreferences preferences;
 
@@ -54,36 +47,36 @@ void main() {
 
     testWidgets('writing', (WidgetTester _) async {
       await Future.wait(<Future<bool>>[
-        preferences.setString('String', kTestValues2['flutter.String']),
-        preferences.setBool('bool', kTestValues2['flutter.bool']),
-        preferences.setInt('int', kTestValues2['flutter.int']),
-        preferences.setDouble('double', kTestValues2['flutter.double']),
-        preferences.setStringList('List', kTestValues2['flutter.List'])
+        preferences.setString('String', testString2),
+        preferences.setBool('bool', testBool2),
+        preferences.setInt('int', testInt2),
+        preferences.setDouble('double', testDouble2),
+        preferences.setStringList('List', testList2)
       ]);
-      expect(preferences.getString('String'), kTestValues2['flutter.String']);
-      expect(preferences.getBool('bool'), kTestValues2['flutter.bool']);
-      expect(preferences.getInt('int'), kTestValues2['flutter.int']);
-      expect(preferences.getDouble('double'), kTestValues2['flutter.double']);
-      expect(preferences.getStringList('List'), kTestValues2['flutter.List']);
+      expect(preferences.getString('String'), testString2);
+      expect(preferences.getBool('bool'), testBool2);
+      expect(preferences.getInt('int'), testInt2);
+      expect(preferences.getDouble('double'), testDouble2);
+      expect(preferences.getStringList('List'), testList2);
     });
 
     testWidgets('removing', (WidgetTester _) async {
       const String key = 'testKey';
-      await preferences.setString(key, kTestValues['flutter.String']);
-      await preferences.setBool(key, kTestValues['flutter.bool']);
-      await preferences.setInt(key, kTestValues['flutter.int']);
-      await preferences.setDouble(key, kTestValues['flutter.double']);
-      await preferences.setStringList(key, kTestValues['flutter.List']);
+      await preferences.setString(key, testString);
+      await preferences.setBool(key, testBool);
+      await preferences.setInt(key, testInt);
+      await preferences.setDouble(key, testDouble);
+      await preferences.setStringList(key, testList);
       await preferences.remove(key);
       expect(preferences.get('testKey'), isNull);
     });
 
     testWidgets('clearing', (WidgetTester _) async {
-      await preferences.setString('String', kTestValues['flutter.String']);
-      await preferences.setBool('bool', kTestValues['flutter.bool']);
-      await preferences.setInt('int', kTestValues['flutter.int']);
-      await preferences.setDouble('double', kTestValues['flutter.double']);
-      await preferences.setStringList('List', kTestValues['flutter.List']);
+      await preferences.setString('String', testString);
+      await preferences.setBool('bool', testBool);
+      await preferences.setInt('int', testInt);
+      await preferences.setDouble('double', testDouble);
+      await preferences.setStringList('List', testList);
       await preferences.clear();
       expect(preferences.getString('String'), null);
       expect(preferences.getBool('bool'), null);
@@ -94,49 +87,15 @@ void main() {
 
     testWidgets('simultaneous writes', (WidgetTester _) async {
       final List<Future<bool>> writes = <Future<bool>>[];
-      final int writeCount = 100;
+      const int writeCount = 100;
       for (int i = 1; i <= writeCount; i++) {
         writes.add(preferences.setInt('int', i));
       }
-      List<bool> result = await Future.wait(writes, eagerError: true);
+      final List<bool> result = await Future.wait(writes, eagerError: true);
       // All writes should succeed.
-      expect(result.where((element) => !element), isEmpty);
+      expect(result.where((bool element) => !element), isEmpty);
       // The last write should win.
       expect(preferences.getInt('int'), writeCount);
     });
-
-    testWidgets(
-        'string clash with lists, big integers and doubles (Android only)',
-        (WidgetTester _) async {
-      await preferences.clear();
-      // special prefixes plus a string value
-      expect(
-          // prefix for lists
-          preferences.setString(
-              'String',
-              'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu' +
-                  kTestValues2['flutter.String']),
-          throwsA(isA<PlatformException>()));
-      await preferences.reload();
-      expect(preferences.getString('String'), null);
-      expect(
-          // prefix for big integers
-          preferences.setString(
-              'String',
-              'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy' +
-                  kTestValues2['flutter.String']),
-          throwsA(isA<PlatformException>()));
-      await preferences.reload();
-      expect(preferences.getString('String'), null);
-      expect(
-          // prefix for doubles
-          preferences.setString(
-              'String',
-              'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu' +
-                  kTestValues2['flutter.String']),
-          throwsA(isA<PlatformException>()));
-      await preferences.reload();
-      expect(preferences.getString('String'), null);
-    }, skip: !Platform.isAndroid);
   });
 }

@@ -31,15 +31,42 @@ class GitVersionFinder {
   }
 
   /// Get a list of all the changed files.
-  Future<List<String>> getChangedFiles() async {
+  Future<List<String>> getChangedFiles(
+      {bool includeUncommitted = false}) async {
     final String baseSha = await getBaseSha();
     final io.ProcessResult changedFilesCommand = await baseGitDir
-        .runCommand(<String>['diff', '--name-only', baseSha, 'HEAD']);
+        .runCommand(<String>[
+      'diff',
+      '--name-only',
+      baseSha,
+      if (!includeUncommitted) 'HEAD'
+    ]);
     final String changedFilesStdout = changedFilesCommand.stdout.toString();
     if (changedFilesStdout.isEmpty) {
       return <String>[];
     }
     final List<String> changedFiles = changedFilesStdout.split('\n')
+      ..removeWhere((String element) => element.isEmpty);
+    return changedFiles.toList();
+  }
+
+  /// Get a list of all the changed files.
+  Future<List<String>> getDiffContents({
+    String? targetPath,
+    bool includeUncommitted = false,
+  }) async {
+    final String baseSha = await getBaseSha();
+    final io.ProcessResult diffCommand = await baseGitDir.runCommand(<String>[
+      'diff',
+      baseSha,
+      if (!includeUncommitted) 'HEAD',
+      if (targetPath != null) ...<String>['--', targetPath],
+    ]);
+    final String diffStdout = diffCommand.stdout.toString();
+    if (diffStdout.isEmpty) {
+      return <String>[];
+    }
+    final List<String> changedFiles = diffStdout.split('\n')
       ..removeWhere((String element) => element.isEmpty);
     return changedFiles.toList();
   }
@@ -75,8 +102,9 @@ class GitVersionFinder {
     io.ProcessResult baseShaFromMergeBase = await baseGitDir.runCommand(
         <String>['merge-base', '--fork-point', 'FETCH_HEAD', 'HEAD'],
         throwOnError: false);
-    if (baseShaFromMergeBase.stderr != null ||
-        baseShaFromMergeBase.stdout == null) {
+    final String stdout = (baseShaFromMergeBase.stdout as String? ?? '').trim();
+    final String stderr = (baseShaFromMergeBase.stdout as String? ?? '').trim();
+    if (stderr.isNotEmpty || stdout.isEmpty) {
       baseShaFromMergeBase = await baseGitDir
           .runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);
     }

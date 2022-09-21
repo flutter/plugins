@@ -4,227 +4,191 @@
 
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_sign_in/testing.dart';
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
+import 'google_sign_in_test.mocks.dart';
+
+/// Verify that [GoogleSignInAccount] can be mocked even though it's unused
+// ignore: must_be_immutable
+class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
+
+@GenerateMocks(<Type>[GoogleSignInPlatform])
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  late MockGoogleSignInPlatform mockPlatform;
 
   group('GoogleSignIn', () {
-    const MethodChannel channel = MethodChannel(
-      'plugins.flutter.io/google_sign_in',
-    );
-
-    const Map<String, String> kUserData = <String, String>{
-      "email": "john.doe@gmail.com",
-      "id": "8162538176523816253123",
-      "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
-      "displayName": "John Doe",
-    };
-
-    const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
-      'init': null,
-      'signInSilently': kUserData,
-      'signIn': kUserData,
-      'signOut': null,
-      'disconnect': null,
-      'isSignedIn': true,
-      'requestScopes': true,
-      'getTokens': <dynamic, dynamic>{
-        'idToken': '123',
-        'accessToken': '456',
-        'serverAuthCode': '789',
-      },
-    };
-
-    final List<MethodCall> log = <MethodCall>[];
-    late Map<String, dynamic> responses;
-    late GoogleSignIn googleSignIn;
+    final GoogleSignInUserData kDefaultUser = GoogleSignInUserData(
+        email: 'john.doe@gmail.com',
+        id: '8162538176523816253123',
+        photoUrl: 'https://lh5.googleusercontent.com/photo.jpg',
+        displayName: 'John Doe',
+        serverAuthCode: '789');
 
     setUp(() {
-      responses = Map<String, dynamic>.from(kDefaultResponses);
-      channel.setMockMethodCallHandler((MethodCall methodCall) {
-        log.add(methodCall);
-        final dynamic response = responses[methodCall.method];
-        if (response != null && response is Exception) {
-          return Future<dynamic>.error('$response');
-        }
-        return Future<dynamic>.value(response);
-      });
-      googleSignIn = GoogleSignIn();
-      log.clear();
+      mockPlatform = MockGoogleSignInPlatform();
+      when(mockPlatform.isMock).thenReturn(true);
+      when(mockPlatform.signInSilently())
+          .thenAnswer((Invocation _) async => kDefaultUser);
+      when(mockPlatform.signIn())
+          .thenAnswer((Invocation _) async => kDefaultUser);
+
+      GoogleSignInPlatform.instance = mockPlatform;
     });
 
     test('signInSilently', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
       await googleSignIn.signInSilently();
+
       expect(googleSignIn.currentUser, isNotNull);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signInSilently', arguments: null),
-        ],
-      );
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signInSilently());
     });
 
     test('signIn', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
       await googleSignIn.signIn();
+
       expect(googleSignIn.currentUser, isNotNull);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signIn', arguments: null),
-        ],
-      );
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signIn());
     });
 
-    test('signIn prioritize clientId parameter when available', () async {
-      final fakeClientId = 'fakeClientId';
-      googleSignIn = GoogleSignIn(clientId: fakeClientId);
+    test('clientId parameter is forwarded to implementation', () async {
+      const String fakeClientId = 'fakeClientId';
+      final GoogleSignIn googleSignIn = GoogleSignIn(clientId: fakeClientId);
+
       await googleSignIn.signIn();
-      expect(googleSignIn.currentUser, isNotNull);
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-            'clientId': fakeClientId,
-          }),
-          isMethodCall('signIn', arguments: null),
-        ],
-      );
+
+      _verifyInit(mockPlatform, clientId: fakeClientId);
+      verify(mockPlatform.signIn());
+    });
+
+    test('serverClientId parameter is forwarded to implementation', () async {
+      const String fakeServerClientId = 'fakeServerClientId';
+      final GoogleSignIn googleSignIn =
+          GoogleSignIn(serverClientId: fakeServerClientId);
+
+      await googleSignIn.signIn();
+
+      _verifyInit(mockPlatform, serverClientId: fakeServerClientId);
+      verify(mockPlatform.signIn());
     });
 
     test('signOut', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
       await googleSignIn.signOut();
-      expect(googleSignIn.currentUser, isNull);
-      expect(log, <Matcher>[
-        _isSignInMethodCall(),
-        isMethodCall('signOut', arguments: null),
-      ]);
+
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signOut());
     });
 
     test('disconnect; null response', () async {
-      await googleSignIn.disconnect();
-      expect(googleSignIn.currentUser, isNull);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('disconnect', arguments: null),
-        ],
-      );
-    });
+      final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    test('disconnect; empty response as on iOS', () async {
-      responses['disconnect'] = <String, dynamic>{};
       await googleSignIn.disconnect();
+
       expect(googleSignIn.currentUser, isNull);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('disconnect', arguments: null),
-        ],
-      );
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.disconnect());
     });
 
     test('isSignedIn', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      when(mockPlatform.isSignedIn()).thenAnswer((Invocation _) async => true);
+
       final bool result = await googleSignIn.isSignedIn();
+
       expect(result, isTrue);
-      expect(log, <Matcher>[
-        _isSignInMethodCall(),
-        isMethodCall('isSignedIn', arguments: null),
-      ]);
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.isSignedIn());
     });
 
     test('signIn works even if a previous call throws error in other zone',
         () async {
-      responses['signInSilently'] = Exception('Not a user');
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
+      when(mockPlatform.signInSilently()).thenThrow(Exception('Not a user'));
       await runZonedGuarded(() async {
         expect(await googleSignIn.signInSilently(), isNull);
       }, (Object e, StackTrace st) {});
       expect(await googleSignIn.signIn(), isNotNull);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signInSilently', arguments: null),
-          isMethodCall('signIn', arguments: null),
-        ],
-      );
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signInSilently());
+      verify(mockPlatform.signIn());
     });
 
     test('concurrent calls of the same method trigger sign in once', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       final List<Future<GoogleSignInAccount?>> futures =
           <Future<GoogleSignInAccount?>>[
         googleSignIn.signInSilently(),
         googleSignIn.signInSilently(),
       ];
+
       expect(futures.first, isNot(futures.last),
           reason: 'Must return new Future');
+
       final List<GoogleSignInAccount?> users = await Future.wait(futures);
+
       expect(googleSignIn.currentUser, isNotNull);
       expect(users, <GoogleSignInAccount?>[
         googleSignIn.currentUser,
         googleSignIn.currentUser
       ]);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signInSilently', arguments: null),
-        ],
-      );
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signInSilently()).called(1);
     });
 
     test('can sign in after previously failed attempt', () async {
-      responses['signInSilently'] = Exception('Not a user');
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      when(mockPlatform.signInSilently()).thenThrow(Exception('Not a user'));
+
       expect(await googleSignIn.signInSilently(), isNull);
       expect(await googleSignIn.signIn(), isNotNull);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signInSilently', arguments: null),
-          isMethodCall('signIn', arguments: null),
-        ],
-      );
+
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signInSilently());
+      verify(mockPlatform.signIn());
     });
 
     test('concurrent calls of different signIn methods', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       final List<Future<GoogleSignInAccount?>> futures =
           <Future<GoogleSignInAccount?>>[
         googleSignIn.signInSilently(),
         googleSignIn.signIn(),
       ];
       expect(futures.first, isNot(futures.last));
+
       final List<GoogleSignInAccount?> users = await Future.wait(futures);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signInSilently', arguments: null),
-        ],
-      );
+
       expect(users.first, users.last, reason: 'Must return the same user');
       expect(googleSignIn.currentUser, users.last);
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signInSilently());
+      verifyNever(mockPlatform.signIn());
     });
 
     test('can sign in after aborted flow', () async {
-      responses['signIn'] = null;
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
+      when(mockPlatform.signIn()).thenAnswer((Invocation _) async => null);
       expect(await googleSignIn.signIn(), isNull);
-      responses['signIn'] = kUserData;
+
+      when(mockPlatform.signIn())
+          .thenAnswer((Invocation _) async => kDefaultUser);
       expect(await googleSignIn.signIn(), isNotNull);
     });
 
     test('signOut/disconnect methods always trigger native calls', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       final List<Future<GoogleSignInAccount?>> futures =
           <Future<GoogleSignInAccount?>>[
         googleSignIn.signOut(),
@@ -232,20 +196,16 @@ void main() {
         googleSignIn.disconnect(),
         googleSignIn.disconnect(),
       ];
+
       await Future.wait(futures);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signOut', arguments: null),
-          isMethodCall('signOut', arguments: null),
-          isMethodCall('disconnect', arguments: null),
-          isMethodCall('disconnect', arguments: null),
-        ],
-      );
+
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signOut()).called(2);
+      verify(mockPlatform.disconnect()).called(2);
     });
 
     test('queue of many concurrent calls', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       final List<Future<GoogleSignInAccount?>> futures =
           <Future<GoogleSignInAccount?>>[
         googleSignIn.signInSilently(),
@@ -253,181 +213,179 @@ void main() {
         googleSignIn.signIn(),
         googleSignIn.disconnect(),
       ];
+
       await Future.wait(futures);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signInSilently', arguments: null),
-          isMethodCall('signOut', arguments: null),
-          isMethodCall('signIn', arguments: null),
-          isMethodCall('disconnect', arguments: null),
-        ],
-      );
+
+      _verifyInit(mockPlatform);
+      verifyInOrder(<Object>[
+        mockPlatform.signInSilently(),
+        mockPlatform.signOut(),
+        mockPlatform.signIn(),
+        mockPlatform.disconnect(),
+      ]);
     });
 
     test('signInSilently suppresses errors by default', () async {
-      channel.setMockMethodCallHandler((MethodCall methodCall) {
-        throw "I am an error";
-      });
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      when(mockPlatform.signInSilently()).thenThrow(Exception('I am an error'));
       expect(await googleSignIn.signInSilently(), isNull); // should not throw
     });
 
-    test('signInSilently forwards errors', () async {
-      channel.setMockMethodCallHandler((MethodCall methodCall) {
-        throw "I am an error";
-      });
+    test('signInSilently forwards exceptions', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      when(mockPlatform.signInSilently()).thenThrow(Exception('I am an error'));
       expect(googleSignIn.signInSilently(suppressErrors: false),
-          throwsA(isInstanceOf<PlatformException>()));
+          throwsA(isInstanceOf<Exception>()));
     });
 
     test('signInSilently allows re-authentication to be requested', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       await googleSignIn.signInSilently();
       expect(googleSignIn.currentUser, isNotNull);
 
       await googleSignIn.signInSilently(reAuthenticate: true);
 
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signInSilently', arguments: null),
-          isMethodCall('signInSilently', arguments: null),
-        ],
-      );
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signInSilently()).called(2);
     });
 
     test('can sign in after init failed before', () async {
-      int initCount = 0;
-      channel.setMockMethodCallHandler((MethodCall methodCall) {
-        if (methodCall.method == 'init') {
-          initCount++;
-          if (initCount == 1) {
-            throw "First init fails";
-          }
-        }
-        return Future<dynamic>.value(responses[methodCall.method]);
-      });
-      expect(googleSignIn.signIn(), throwsA(isInstanceOf<PlatformException>()));
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
+      when(mockPlatform.initWithParams(any))
+          .thenThrow(Exception('First init fails'));
+      expect(googleSignIn.signIn(), throwsA(isInstanceOf<Exception>()));
+
+      when(mockPlatform.initWithParams(any))
+          .thenAnswer((Invocation _) async {});
       expect(await googleSignIn.signIn(), isNotNull);
     });
 
     test('created with standard factory uses correct options', () async {
-      googleSignIn = GoogleSignIn.standard();
+      final GoogleSignIn googleSignIn = GoogleSignIn.standard();
 
       await googleSignIn.signInSilently();
       expect(googleSignIn.currentUser, isNotNull);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signInSilently', arguments: null),
-        ],
-      );
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signInSilently());
     });
 
     test('created with defaultGamesSignIn factory uses correct options',
         () async {
-      googleSignIn = GoogleSignIn.games();
+      final GoogleSignIn googleSignIn = GoogleSignIn.games();
 
       await googleSignIn.signInSilently();
       expect(googleSignIn.currentUser, isNotNull);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(signInOption: 'SignInOption.games'),
-          isMethodCall('signInSilently', arguments: null),
-        ],
-      );
+      _verifyInit(mockPlatform, signInOption: SignInOption.games);
+      verify(mockPlatform.signInSilently());
     });
 
     test('authentication', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      when(mockPlatform.getTokens(
+              email: anyNamed('email'),
+              shouldRecoverAuth: anyNamed('shouldRecoverAuth')))
+          .thenAnswer((Invocation _) async => GoogleSignInTokenData(
+                idToken: '123',
+                accessToken: '456',
+                serverAuthCode: '789',
+              ));
+
       await googleSignIn.signIn();
-      log.clear();
 
       final GoogleSignInAccount user = googleSignIn.currentUser!;
       final GoogleSignInAuthentication auth = await user.authentication;
 
       expect(auth.accessToken, '456');
       expect(auth.idToken, '123');
-      expect(auth.serverAuthCode, '789');
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getTokens', arguments: <String, dynamic>{
-            'email': 'john.doe@gmail.com',
-            'shouldRecoverAuth': true,
-          }),
-        ],
-      );
+      verify(mockPlatform.getTokens(
+          email: 'john.doe@gmail.com', shouldRecoverAuth: true));
     });
 
     test('requestScopes returns true once new scope is granted', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      when(mockPlatform.requestScopes(any))
+          .thenAnswer((Invocation _) async => true);
+
       await googleSignIn.signIn();
-      final result = await googleSignIn.requestScopes(['testScope']);
+      final bool result =
+          await googleSignIn.requestScopes(<String>['testScope']);
 
       expect(result, isTrue);
-      expect(
-        log,
-        <Matcher>[
-          _isSignInMethodCall(),
-          isMethodCall('signIn', arguments: null),
-          isMethodCall('requestScopes', arguments: <String, dynamic>{
-            'scopes': ['testScope'],
-          }),
-        ],
-      );
-    });
-  });
-
-  group('GoogleSignIn with fake backend', () {
-    const FakeUser kUserData = FakeUser(
-      id: "8162538176523816253123",
-      displayName: "John Doe",
-      email: "john.doe@gmail.com",
-      photoUrl: "https://lh5.googleusercontent.com/photo.jpg",
-    );
-
-    late GoogleSignIn googleSignIn;
-
-    setUp(() {
-      final MethodChannelGoogleSignIn platformInstance =
-          GoogleSignInPlatform.instance as MethodChannelGoogleSignIn;
-      platformInstance.channel.setMockMethodCallHandler(
-          (FakeSignInBackend()..user = kUserData).handleMethodCall);
-      googleSignIn = GoogleSignIn();
+      _verifyInit(mockPlatform);
+      verify(mockPlatform.signIn());
+      verify(mockPlatform.requestScopes(<String>['testScope']));
     });
 
     test('user starts as null', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       expect(googleSignIn.currentUser, isNull);
     });
 
     test('can sign in and sign out', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       await googleSignIn.signIn();
 
       final GoogleSignInAccount user = googleSignIn.currentUser!;
 
-      expect(user.displayName, equals(kUserData.displayName));
-      expect(user.email, equals(kUserData.email));
-      expect(user.id, equals(kUserData.id));
-      expect(user.photoUrl, equals(kUserData.photoUrl));
+      expect(user.displayName, equals(kDefaultUser.displayName));
+      expect(user.email, equals(kDefaultUser.email));
+      expect(user.id, equals(kDefaultUser.id));
+      expect(user.photoUrl, equals(kDefaultUser.photoUrl));
+      expect(user.serverAuthCode, equals(kDefaultUser.serverAuthCode));
 
       await googleSignIn.disconnect();
       expect(googleSignIn.currentUser, isNull);
     });
 
     test('disconnect when signout already succeeds', () async {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       await googleSignIn.disconnect();
       expect(googleSignIn.currentUser, isNull);
     });
   });
 }
 
-Matcher _isSignInMethodCall({String signInOption = 'SignInOption.standard'}) {
-  return isMethodCall('init', arguments: <String, dynamic>{
-    'signInOption': signInOption,
-    'scopes': <String>[],
-    'hostedDomain': null,
-    'clientId': null,
-  });
+void _verifyInit(
+  MockGoogleSignInPlatform mockSignIn, {
+  List<String> scopes = const <String>[],
+  SignInOption signInOption = SignInOption.standard,
+  String? hostedDomain,
+  String? clientId,
+  String? serverClientId,
+  bool forceCodeForRefreshToken = false,
+}) {
+  verify(mockSignIn.initWithParams(argThat(
+    isA<SignInInitParameters>()
+        .having(
+          (SignInInitParameters p) => p.scopes,
+          'scopes',
+          scopes,
+        )
+        .having(
+          (SignInInitParameters p) => p.signInOption,
+          'signInOption',
+          signInOption,
+        )
+        .having(
+          (SignInInitParameters p) => p.hostedDomain,
+          'hostedDomain',
+          hostedDomain,
+        )
+        .having(
+          (SignInInitParameters p) => p.clientId,
+          'clientId',
+          clientId,
+        )
+        .having(
+          (SignInInitParameters p) => p.serverClientId,
+          'serverClientId',
+          serverClientId,
+        )
+        .having(
+          (SignInInitParameters p) => p.forceCodeForRefreshToken,
+          'forceCodeForRefreshToken',
+          forceCodeForRefreshToken,
+        ),
+  )));
 }

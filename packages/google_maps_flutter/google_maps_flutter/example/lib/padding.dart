@@ -9,7 +9,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PaddingPage extends GoogleMapExampleAppPage {
-  PaddingPage() : super(const Icon(Icons.map), 'Add padding to the map');
+  const PaddingPage({Key? key})
+      : super(const Icon(Icons.map), 'Add padding to the map', key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class PaddingPage extends GoogleMapExampleAppPage {
 }
 
 class MarkerIconsBody extends StatefulWidget {
-  const MarkerIconsBody();
+  const MarkerIconsBody({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => MarkerIconsBodyState();
@@ -29,7 +30,7 @@ const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 class MarkerIconsBodyState extends State<MarkerIconsBody> {
   GoogleMapController? controller;
 
-  EdgeInsets _padding = const EdgeInsets.all(0);
+  EdgeInsets _padding = EdgeInsets.zero;
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +54,11 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
           ),
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.only(top: 20),
+      const Padding(
+        padding: EdgeInsets.only(top: 20),
         child: Center(
           child: Text(
-            "Enter Padding Below",
+            'Enter Padding Below',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
@@ -67,7 +68,6 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     columnChildren.addAll(<Widget>[_paddingInput(), _buttons()]);
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: columnChildren,
     );
@@ -79,10 +79,10 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     });
   }
 
-  TextEditingController _topController = TextEditingController();
-  TextEditingController _bottomController = TextEditingController();
-  TextEditingController _leftController = TextEditingController();
-  TextEditingController _rightController = TextEditingController();
+  final TextEditingController _topController = TextEditingController();
+  final TextEditingController _bottomController = TextEditingController();
+  final TextEditingController _leftController = TextEditingController();
+  final TextEditingController _rightController = TextEditingController();
 
   Widget _paddingInput() {
     return Padding(
@@ -96,7 +96,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
-                hintText: "Top",
+                hintText: 'Top',
               ),
             ),
           ),
@@ -108,7 +108,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
-                hintText: "Bottom",
+                hintText: 'Bottom',
               ),
             ),
           ),
@@ -120,7 +120,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
-                hintText: "Left",
+                hintText: 'Left',
               ),
             ),
           ),
@@ -132,7 +132,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
-                hintText: "Right",
+                hintText: 'Right',
               ),
             ),
           ),
@@ -148,7 +148,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           TextButton(
-            child: const Text("Set Padding"),
+            child: const Text('Set Padding'),
             onPressed: () {
               setState(() {
                 _padding = EdgeInsets.fromLTRB(
@@ -160,14 +160,14 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
             },
           ),
           TextButton(
-            child: const Text("Reset Padding"),
+            child: const Text('Reset Padding'),
             onPressed: () {
               setState(() {
                 _topController.clear();
                 _bottomController.clear();
                 _leftController.clear();
                 _rightController.clear();
-                _padding = const EdgeInsets.all(0);
+                _padding = EdgeInsets.zero;
               });
             },
           )

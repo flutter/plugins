@@ -35,18 +35,18 @@ void main() {
       );
     });
 
-    test("serializeDeviceOrientation() should serialize correctly", () {
+    test('serializeDeviceOrientation() should serialize correctly', () {
       expect(serializeDeviceOrientation(DeviceOrientation.portraitUp),
-          "portraitUp");
+          'portraitUp');
       expect(serializeDeviceOrientation(DeviceOrientation.portraitDown),
-          "portraitDown");
+          'portraitDown');
       expect(serializeDeviceOrientation(DeviceOrientation.landscapeRight),
-          "landscapeRight");
+          'landscapeRight');
       expect(serializeDeviceOrientation(DeviceOrientation.landscapeLeft),
-          "landscapeLeft");
+          'landscapeLeft');
     });
 
-    test("deserializeDeviceOrientation() should deserialize correctly", () {
+    test('deserializeDeviceOrientation() should deserialize correctly', () {
       expect(deserializeDeviceOrientation('portraitUp'),
           DeviceOrientation.portraitUp);
       expect(deserializeDeviceOrientation('portraitDown'),

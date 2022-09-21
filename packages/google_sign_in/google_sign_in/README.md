@@ -6,6 +6,10 @@ _Note_: This plugin is still under development, and some APIs might not be
 available yet. [Feedback](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
+|             | Android | iOS    | Web |
+|-------------|---------|--------|-----|
+| **Support** | SDK 16+ | iOS 9+ | Any |
+
 ## Platform integration
 
 ### Android integration
@@ -60,6 +64,22 @@ This plugin requires iOS 9.0 or higher.
 </array>
 <!-- End of the Google Sign-in Section -->
 ```
+
+As an alternative to adding `GoogleService-Info.plist` to your Xcode project, you can instead
+configure your app in Dart code. In this case, skip steps 3-6 and pass `clientId` and
+`serverClientId` to the `GoogleSignIn` constructor:
+
+```dart
+GoogleSignIn _googleSignIn = GoogleSignIn(
+  ...
+  // The OAuth client id of your app. This is required.
+  clientId: ...,
+  // If you need to authenticate to a backend server, specify its OAuth client. This is optional.
+  serverClientId: ...,
+);
+```
+
+Note that step 7 is still required.
 
 #### iOS additional requirement
 
@@ -122,4 +142,4 @@ Future<void> _handleSignIn() async {
 ## Example
 
 Find the example wiring in the
-[Google sign-in example application](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in/example/lib/main.dart).
+[Google sign-in example application](https://github.com/flutter/plugins/blob/main/packages/google_sign_in/google_sign_in/example/lib/main.dart).

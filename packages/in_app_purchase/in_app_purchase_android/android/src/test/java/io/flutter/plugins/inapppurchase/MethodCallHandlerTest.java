@@ -13,26 +13,25 @@ import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.L
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.ON_DISCONNECT;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.ON_PURCHASES_UPDATED;
-import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_PURCHASES;
+import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_PURCHASES_ASYNC;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_PURCHASE_HISTORY_ASYNC;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_SKU_DETAILS;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.START_CONNECTION;
 import static io.flutter.plugins.inapppurchase.Translator.fromBillingResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromPurchaseHistoryRecordList;
 import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesList;
-import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -56,9 +55,11 @@ import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.PriceChangeConfirmationListener;
 import com.android.billingclient.api.PriceChangeFlowParams;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
+import com.android.billingclient.api.PurchasesResponseListener;
+import com.android.billingclient.api.QueryPurchaseHistoryParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
@@ -66,9 +67,12 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,6 +80,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class MethodCallHandlerTest {
   private MethodCallHandlerImpl methodChannelHandler;
@@ -90,10 +96,7 @@ public class MethodCallHandlerTest {
   @Before
   public void setUp() {
     MockitoAnnotations.openMocks(this);
-    factory =
-        (@NonNull Context context,
-            @NonNull MethodChannel channel,
-            boolean enablePendingPurchases) -> mockBillingClient;
+    factory = (@NonNull Context context, @NonNull MethodChannel channel) -> mockBillingClient;
     methodChannelHandler = new MethodCallHandlerImpl(activity, context, mockMethodChannel, factory);
     when(mockActivityPluginBinding.getActivity()).thenReturn(activity);
   }
@@ -153,7 +156,6 @@ public class MethodCallHandlerTest {
   public void startConnection_multipleCalls() {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", 1);
-    arguments.put("enablePendingPurchases", true);
     MethodCall call = new MethodCall(START_CONNECTION, arguments);
     ArgumentCaptor<BillingClientStateListener> captor =
         ArgumentCaptor.forClass(BillingClientStateListener.class);
@@ -191,7 +193,6 @@ public class MethodCallHandlerTest {
     final int disconnectCallbackHandle = 22;
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", disconnectCallbackHandle);
-    arguments.put("enablePendingPurchases", true);
     MethodCall connectCall = new MethodCall(START_CONNECTION, arguments);
     ArgumentCaptor<BillingClientStateListener> captor =
         ArgumentCaptor.forClass(BillingClientStateListener.class);
@@ -299,7 +300,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -332,8 +332,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
-    assertNull(params.getOldSku());
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
     verify(result, times(1)).success(fromBillingResult(billingResult));
@@ -385,8 +383,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
-    assertEquals(params.getOldSku(), oldSkuId);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -418,7 +414,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -456,10 +451,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
-    assertEquals(params.getOldSku(), oldSkuId);
-    assertEquals(params.getOldSkuPurchaseToken(), purchaseToken);
-    assertEquals(params.getReplaceSkusProrationMode(), prorationMode);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -498,6 +489,43 @@ public class MethodCallHandlerTest {
             contains("launchBillingFlow failed because oldSku is null"),
             any());
     verify(result, never()).success(any());
+  }
+
+  @Test
+  public void launchBillingFlow_ok_Full() {
+    // Fetch the sku details first and query the method call
+    String skuId = "foo";
+    String oldSkuId = "oldFoo";
+    String purchaseToken = "purchaseTokenFoo";
+    String accountId = "account";
+    int prorationMode = BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE;
+    queryForSkus(unmodifiableList(asList(skuId, oldSkuId)));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    arguments.put("accountId", accountId);
+    arguments.put("oldSku", oldSkuId);
+    arguments.put("purchaseToken", purchaseToken);
+    arguments.put("prorationMode", prorationMode);
+    MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
+
+    // Launch the billing flow
+    BillingResult billingResult =
+        BillingResult.newBuilder()
+            .setResponseCode(100)
+            .setDebugMessage("dummy debug message")
+            .build();
+    when(mockBillingClient.launchBillingFlow(any(), any())).thenReturn(billingResult);
+    methodChannelHandler.onMethodCall(launchCall, result);
+
+    // Verify we pass the arguments to the billing flow
+    ArgumentCaptor<BillingFlowParams> billingFlowParamsCaptor =
+        ArgumentCaptor.forClass(BillingFlowParams.class);
+    verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
+    BillingFlowParams params = billingFlowParamsCaptor.getValue();
+
+    // Verify we pass the response code to result
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(fromBillingResult(billingResult));
   }
 
   @Test
@@ -559,42 +587,69 @@ public class MethodCallHandlerTest {
   }
 
   @Test
-  public void queryPurchases() {
-    establishConnectedBillingClient(null, null);
-    PurchasesResult purchasesResult = mock(PurchasesResult.class);
-    Purchase purchase = buildPurchase("foo");
-    when(purchasesResult.getPurchasesList()).thenReturn(asList(purchase));
-    BillingResult billingResult =
-        BillingResult.newBuilder()
-            .setResponseCode(100)
-            .setDebugMessage("dummy debug message")
-            .build();
-    when(purchasesResult.getBillingResult()).thenReturn(billingResult);
-    when(mockBillingClient.queryPurchases(SkuType.INAPP)).thenReturn(purchasesResult);
-
-    HashMap<String, Object> arguments = new HashMap<>();
-    arguments.put("skuType", SkuType.INAPP);
-    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES, arguments), result);
-
-    // Verify we pass the response to result
-    ArgumentCaptor<HashMap<String, Object>> resultCaptor = ArgumentCaptor.forClass(HashMap.class);
-    verify(result, never()).error(any(), any(), any());
-    verify(result, times(1)).success(resultCaptor.capture());
-    assertEquals(fromPurchasesResult(purchasesResult), resultCaptor.getValue());
-  }
-
-  @Test
   public void queryPurchases_clientDisconnected() {
     // Prepare the launch call after disconnecting the client
     methodChannelHandler.onMethodCall(new MethodCall(END_CONNECTION, null), mock(Result.class));
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("skuType", SkuType.INAPP);
-    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES, arguments), result);
+    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
 
     // Assert that we sent an error back.
     verify(result).error(contains("UNAVAILABLE"), contains("BillingClient"), any());
     verify(result, never()).success(any());
+  }
+
+  @Test
+  public void queryPurchases_returns_success() throws Exception {
+    establishConnectedBillingClient(null, null);
+
+    CountDownLatch lock = new CountDownLatch(1);
+    doAnswer(
+            new Answer() {
+              public Object answer(InvocationOnMock invocation) {
+                lock.countDown();
+                return null;
+              }
+            })
+        .when(result)
+        .success(any(HashMap.class));
+
+    ArgumentCaptor<PurchasesResponseListener> purchasesResponseListenerArgumentCaptor =
+        ArgumentCaptor.forClass(PurchasesResponseListener.class);
+    doAnswer(
+            new Answer() {
+              public Object answer(InvocationOnMock invocation) {
+                BillingResult.Builder resultBuilder =
+                    BillingResult.newBuilder()
+                        .setResponseCode(BillingClient.BillingResponseCode.OK)
+                        .setDebugMessage("hello message");
+                purchasesResponseListenerArgumentCaptor
+                    .getValue()
+                    .onQueryPurchasesResponse(resultBuilder.build(), new ArrayList<Purchase>());
+                return null;
+              }
+            })
+        .when(mockBillingClient)
+        .queryPurchasesAsync(
+            any(QueryPurchasesParams.class), purchasesResponseListenerArgumentCaptor.capture());
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", SkuType.INAPP);
+    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
+
+    lock.await(5000, TimeUnit.MILLISECONDS);
+
+    verify(result, never()).error(any(), any(), any());
+
+    ArgumentCaptor<HashMap> hashMapCaptor = ArgumentCaptor.forClass(HashMap.class);
+    verify(result, times(1)).success(hashMapCaptor.capture());
+
+    HashMap<String, Object> map = hashMapCaptor.getValue();
+    assert (map.containsKey("responseCode"));
+    assert (map.containsKey("billingResult"));
+    assert (map.containsKey("purchasesList"));
+    assert ((int) map.get("responseCode") == 0);
   }
 
   @Test
@@ -618,7 +673,7 @@ public class MethodCallHandlerTest {
 
     // Verify we pass the data to result
     verify(mockBillingClient)
-        .queryPurchaseHistoryAsync(eq(SkuType.INAPP), listenerCaptor.capture());
+        .queryPurchaseHistoryAsync(any(QueryPurchaseHistoryParams.class), listenerCaptor.capture());
     listenerCaptor.getValue().onPurchaseHistoryResponse(billingResult, purchasesList);
     verify(result).success(resultCaptor.capture());
     HashMap<String, Object> resultData = resultCaptor.getValue();
@@ -865,7 +920,6 @@ public class MethodCallHandlerTest {
   private ArgumentCaptor<BillingClientStateListener> mockStartConnection() {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", 1);
-    arguments.put("enablePendingPurchases", true);
     MethodCall call = new MethodCall(START_CONNECTION, arguments);
     ArgumentCaptor<BillingClientStateListener> captor =
         ArgumentCaptor.forClass(BillingClientStateListener.class);
@@ -880,7 +934,6 @@ public class MethodCallHandlerTest {
     if (arguments == null) {
       arguments = new HashMap<>();
       arguments.put("handle", 1);
-      arguments.put("enablePendingPurchases", true);
     }
     if (result == null) {
       result = mock(Result.class);

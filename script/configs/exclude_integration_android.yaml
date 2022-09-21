@@ -1,18 +1,2 @@
-# Currently missing harness files: https://github.com/flutter/flutter/issues/86749)
-- camera/camera
-- in_app_purchase/in_app_purchase
-- in_app_purchase_android
-- shared_preferences/shared_preferences
-- url_launcher/url_launcher
-- video_player/video_player
-
-# Deprecated; no plan to backfill the missing files
-- android_intent
-- connectivity/connectivity
-- device_info/device_info
-- sensors
-- share
-- wifi_info_flutter/wifi_info_flutter
-
 # No integration tests to run:
 - espresso

@@ -1,3 +1,39 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 2.6.1
+
+* Exports new types added for `getMultiImageWithOptions` in 2.6.0.
+
+## 2.6.0
+
+* Deprecates `getMultiImage` in favor of a new method `getMultiImageWithOptions`.
+    * Adds `requestFullMetadata` option that allows disabling extra permission requests
+      on certain platforms.
+    * Moves optional image picking parameters to `MultiImagePickerOptions` class.
+
+## 2.5.0
+
+* Deprecates `getImage` in favor of a new method `getImageFromSource`.
+    * Adds `requestFullMetadata` option that allows disabling extra permission requests
+      on certain platforms.
+    * Moves optional image picking parameters to `ImagePickerOptions` class.
+* Minor fixes for new analysis options. 
+
+## 2.4.4
+
+* Internal code cleanup for stricter analysis options.
+
+## 2.4.3
+
+* Removes dependency on `meta`.
+
+## 2.4.2
+
+* Update to use the `verify` method introduced in plugin_platform_interface 2.1.0.
+
 ## 2.4.1
 
 * Reverts the changes from 2.4.0, which was a breaking change that

@@ -16,7 +16,7 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  group('$LintAndroidCommand', () {
+  group('LintAndroidCommand', () {
     FileSystem fileSystem;
     late Directory packagesDir;
     late CommandRunner<void> runner;
@@ -24,7 +24,7 @@ void main() {
     late RecordingProcessRunner processRunner;
 
     setUp(() {
-      fileSystem = MemoryFileSystem(style: FileSystemStyle.posix);
+      fileSystem = MemoryFileSystem();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       mockPlatform = MockPlatform();
       processRunner = RecordingProcessRunner();
@@ -40,15 +40,15 @@ void main() {
     });
 
     test('runs gradle lint', () async {
-      final Directory pluginDir =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
         'example/android/gradlew',
       ], platformSupport: <String, PlatformDetails>{
-        kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+        platformAndroid: const PlatformDetails(PlatformSupport.inline)
       });
 
       final Directory androidDir =
-          pluginDir.childDirectory('example').childDirectory('android');
+          plugin.getExamples().first.platformDirectory(FlutterPlatform.android);
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['lint-android']);
@@ -72,10 +72,49 @@ void main() {
           ]));
     });
 
+    test('runs on all examples', () async {
+      final List<String> examples = <String>['example1', 'example2'];
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir,
+          examples: examples,
+          extraFiles: <String>[
+            'example/example1/android/gradlew',
+            'example/example2/android/gradlew',
+          ],
+          platformSupport: <String, PlatformDetails>{
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
+          });
+
+      final Iterable<Directory> exampleAndroidDirs = plugin.getExamples().map(
+          (RepositoryPackage example) =>
+              example.platformDirectory(FlutterPlatform.android));
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['lint-android']);
+
+      expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          for (final Directory directory in exampleAndroidDirs)
+            ProcessCall(
+              directory.childFile('gradlew').path,
+              const <String>['plugin1:lintDebug'],
+              directory.path,
+            ),
+        ]),
+      );
+
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin1'),
+            contains('No issues found!'),
+          ]));
+    });
+
     test('fails if gradlew is missing', () async {
       createFakePlugin('plugin1', packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           });
 
       Error? commandError;
@@ -89,18 +128,26 @@ void main() {
           output,
           containsAllInOrder(
             <Matcher>[
-              contains('Build example before linting'),
+              contains('Build examples before linting'),
             ],
           ));
     });
 
     test('fails if linting finds issues', () async {
-      createFakePlugin('plugin1', packagesDir,
-          platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
-          });
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
+        'example/android/gradlew',
+      ], platformSupport: <String, PlatformDetails>{
+        platformAndroid: const PlatformDetails(PlatformSupport.inline)
+      });
 
-      processRunner.mockProcessesForExecutable['gradlew'] = <io.Process>[
+      final String gradlewPath = plugin
+          .getExamples()
+          .first
+          .platformDirectory(FlutterPlatform.android)
+          .childFile('gradlew')
+          .path;
+      processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
         MockProcess(exitCode: 1),
       ];
 
@@ -115,7 +162,7 @@ void main() {
           output,
           containsAllInOrder(
             <Matcher>[
-              contains('Build example before linting'),
+              contains('The following packages had errors:'),
             ],
           ));
     });
@@ -131,7 +178,7 @@ void main() {
           containsAllInOrder(
             <Matcher>[
               contains(
-                  'SKIPPING: Plugin does not have an Android implemenatation.')
+                  'SKIPPING: Plugin does not have an Android implementation.')
             ],
           ));
     });
@@ -139,7 +186,7 @@ void main() {
     test('skips non-inline plugins', () async {
       createFakePlugin('plugin1', packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.federated)
+            platformAndroid: const PlatformDetails(PlatformSupport.federated)
           });
 
       final List<String> output =
@@ -150,7 +197,7 @@ void main() {
           containsAllInOrder(
             <Matcher>[
               contains(
-                  'SKIPPING: Plugin does not have an Android implemenatation.')
+                  'SKIPPING: Plugin does not have an Android implementation.')
             ],
           ));
     });

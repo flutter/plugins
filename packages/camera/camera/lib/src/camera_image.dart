@@ -2,23 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:flutter/foundation.dart';
+
+// TODO(stuartmorgan): Remove all of these classes in a breaking change, and
+// vend the platform interface versions directly. See
+// https://github.com/flutter/flutter/issues/104188
 
 /// A single color plane of image data.
 ///
 /// The number and meaning of the planes in an image are determined by the
 /// format of the Image.
 class Plane {
+  Plane._fromPlatformInterface(CameraImagePlane plane)
+      : bytes = plane.bytes,
+        bytesPerPixel = plane.bytesPerPixel,
+        bytesPerRow = plane.bytesPerRow,
+        height = plane.height,
+        width = plane.width;
+
+  // Only used by the deprecated codepath that's kept to avoid breaking changes.
+  // Never called by the plugin itself.
   Plane._fromPlatformData(Map<dynamic, dynamic> data)
-      : bytes = data['bytes'],
-        bytesPerPixel = data['bytesPerPixel'],
-        bytesPerRow = data['bytesPerRow'],
-        height = data['height'],
-        width = data['width'];
+      : bytes = data['bytes'] as Uint8List,
+        bytesPerPixel = data['bytesPerPixel'] as int?,
+        bytesPerRow = data['bytesPerRow'] as int,
+        height = data['height'] as int?,
+        width = data['width'] as int?;
 
   /// Bytes representing this plane.
   final Uint8List bytes;
@@ -44,6 +58,12 @@ class Plane {
 
 /// Describes how pixels are represented in an image.
 class ImageFormat {
+  ImageFormat._fromPlatformInterface(CameraImageFormat format)
+      : group = format.group,
+        raw = format.raw;
+
+  // Only used by the deprecated codepath that's kept to avoid breaking changes.
+  // Never called by the plugin itself.
   ImageFormat._fromPlatformData(this.raw) : group = _asImageFormatGroup(raw);
 
   /// Describes the format group the raw image format falls into.
@@ -59,6 +79,8 @@ class ImageFormat {
   final dynamic raw;
 }
 
+// Only used by the deprecated codepath that's kept to avoid breaking changes.
+// Never called by the plugin itself.
 ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
   if (defaultTargetPlatform == TargetPlatform.android) {
     switch (rawFormat) {
@@ -95,16 +117,29 @@ ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
 /// Although not all image formats are planar on iOS, we treat 1-dimensional
 /// images as single planar images.
 class CameraImage {
-  /// CameraImage Constructor
+  /// Creates a [CameraImage] from the platform interface version.
+  CameraImage.fromPlatformInterface(CameraImageData data)
+      : format = ImageFormat._fromPlatformInterface(data.format),
+        height = data.height,
+        width = data.width,
+        planes = List<Plane>.unmodifiable(data.planes.map<Plane>(
+            (CameraImagePlane plane) => Plane._fromPlatformInterface(plane))),
+        lensAperture = data.lensAperture,
+        sensorExposureTime = data.sensorExposureTime,
+        sensorSensitivity = data.sensorSensitivity;
+
+  /// Creates a [CameraImage] from method channel data.
+  @Deprecated('Use fromPlatformInterface instead')
   CameraImage.fromPlatformData(Map<dynamic, dynamic> data)
       : format = ImageFormat._fromPlatformData(data['format']),
-        height = data['height'],
-        width = data['width'],
-        lensAperture = data['lensAperture'],
-        sensorExposureTime = data['sensorExposureTime'],
-        sensorSensitivity = data['sensorSensitivity'],
-        planes = List<Plane>.unmodifiable(data['planes']
-            .map((dynamic planeData) => Plane._fromPlatformData(planeData)));
+        height = data['height'] as int,
+        width = data['width'] as int,
+        lensAperture = data['lensAperture'] as double?,
+        sensorExposureTime = data['sensorExposureTime'] as int?,
+        sensorSensitivity = data['sensorSensitivity'] as double?,
+        planes = List<Plane>.unmodifiable((data['planes'] as List<dynamic>)
+            .map<Plane>((dynamic planeData) =>
+                Plane._fromPlatformData(planeData as Map<dynamic, dynamic>)));
 
   /// Format of the image provided.
   ///

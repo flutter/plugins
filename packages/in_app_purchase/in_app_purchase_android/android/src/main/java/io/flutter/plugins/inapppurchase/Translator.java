@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import com.android.billingclient.api.AccountIdentifiers;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.SkuDetails;
 import java.util.ArrayList;
@@ -56,17 +55,19 @@ import java.util.Locale;
 
   static HashMap<String, Object> fromPurchase(Purchase purchase) {
     HashMap<String, Object> info = new HashMap<>();
+    List<String> skus = purchase.getSkus();
     info.put("orderId", purchase.getOrderId());
     info.put("packageName", purchase.getPackageName());
     info.put("purchaseTime", purchase.getPurchaseTime());
     info.put("purchaseToken", purchase.getPurchaseToken());
     info.put("signature", purchase.getSignature());
-    info.put("sku", purchase.getSku());
+    info.put("skus", skus);
     info.put("isAutoRenewing", purchase.isAutoRenewing());
     info.put("originalJson", purchase.getOriginalJson());
     info.put("developerPayload", purchase.getDeveloperPayload());
     info.put("isAcknowledged", purchase.isAcknowledged());
     info.put("purchaseState", purchase.getPurchaseState());
+    info.put("quantity", purchase.getQuantity());
     AccountIdentifiers accountIdentifiers = purchase.getAccountIdentifiers();
     if (accountIdentifiers != null) {
       info.put("obfuscatedAccountId", accountIdentifiers.getObfuscatedAccountId());
@@ -78,12 +79,14 @@ import java.util.Locale;
   static HashMap<String, Object> fromPurchaseHistoryRecord(
       PurchaseHistoryRecord purchaseHistoryRecord) {
     HashMap<String, Object> info = new HashMap<>();
+    List<String> skus = purchaseHistoryRecord.getSkus();
     info.put("purchaseTime", purchaseHistoryRecord.getPurchaseTime());
     info.put("purchaseToken", purchaseHistoryRecord.getPurchaseToken());
     info.put("signature", purchaseHistoryRecord.getSignature());
-    info.put("sku", purchaseHistoryRecord.getSku());
+    info.put("skus", skus);
     info.put("developerPayload", purchaseHistoryRecord.getDeveloperPayload());
     info.put("originalJson", purchaseHistoryRecord.getOriginalJson());
+    info.put("quantity", purchaseHistoryRecord.getQuantity());
     return info;
   }
 
@@ -110,14 +113,6 @@ import java.util.Locale;
       serialized.add(fromPurchaseHistoryRecord(purchaseHistoryRecord));
     }
     return serialized;
-  }
-
-  static HashMap<String, Object> fromPurchasesResult(PurchasesResult purchasesResult) {
-    HashMap<String, Object> info = new HashMap<>();
-    info.put("responseCode", purchasesResult.getResponseCode());
-    info.put("billingResult", fromBillingResult(purchasesResult.getBillingResult()));
-    info.put("purchasesList", fromPurchasesList(purchasesResult.getPurchasesList()));
-    return info;
   }
 
   static HashMap<String, Object> fromBillingResult(BillingResult billingResult) {

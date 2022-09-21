@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 # To set FETCH_HEAD for "git merge-base" to work
-git fetch origin master
+git fetch origin main
 
 cd script/tool
 dart pub get

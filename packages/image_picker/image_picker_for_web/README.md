@@ -43,7 +43,8 @@ Each browser may implement `capture` any way they please, so it may (or may not)
 difference in your users' experience.
 
 ### pickImage()
-The arguments `maxWidth`, `maxHeight` and `imageQuality` are not supported on the web.
+The arguments `maxWidth`, `maxHeight` and `imageQuality` are not supported for gif images.
+The argument `imageQuality` only works for jpeg and webp images.
 
 ### pickVideo()
 The argument `maxDuration` is not supported on the web.
@@ -63,7 +64,7 @@ You should be able to use `package:image_picker` _almost_ as normal.
 Once the user has picked a file, the returned `PickedFile` instance will contain a
 `network`-accessible URL (pointing to a location within the browser).
 
-The instace will also let you retrieve the bytes of the selected file across all platforms.
+The instance will also let you retrieve the bytes of the selected file across all platforms.
 
 If you want to use the path directly, your code would need look like this:
 

@@ -1,0 +1,30 @@
+name: quick_actions_android
+description: An implementation for the Android platform of the Flutter `quick_actions` plugin.
+repository: https://github.com/flutter/plugins/tree/main/packages/quick_actions/quick_actions_android
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+in_app_purchase%22
+version: 1.0.0
+
+environment:
+  sdk: ">=2.15.0 <3.0.0"
+  flutter: ">=2.10.0"
+
+flutter:
+  plugin:
+    implements: quick_actions
+    platforms:
+      android:
+        package: io.flutter.plugins.quickactions
+        pluginClass: QuickActionsPlugin
+        dartPluginClass: QuickActionsAndroid
+
+dependencies:
+  flutter:
+    sdk: flutter
+  quick_actions_platform_interface: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  plugin_platform_interface: ^2.1.2

@@ -44,7 +44,6 @@ abstract class PluginCommand extends Command<void> {
   }) : _gitDir = gitDir {
     argParser.addMultiOption(
       _packagesArg,
-      splitCommas: true,
       help:
           'Specifies which packages the command should run on (before sharding).\n',
       valueHelp: 'package1,package2,...',
@@ -75,30 +74,43 @@ abstract class PluginCommand extends Command<void> {
         help: 'Run the command on changed packages/plugins.\n'
             'If no packages have changed, or if there have been changes that may\n'
             'affect all packages, the command runs on all packages.\n'
-            'The packages excluded with $_excludeArg is also excluded even if changed.\n'
-            'See $_kBaseSha if a custom base is needed to determine the diff.\n\n'
+            'Packages excluded with $_excludeArg are excluded even if changed.\n'
+            'See $_baseShaArg if a custom base is needed to determine the diff.\n\n'
             'Cannot be combined with $_packagesArg.\n');
+    argParser.addFlag(_runOnDirtyPackagesArg,
+        help:
+            'Run the command on packages with changes that have not been committed.\n'
+            'Packages excluded with $_excludeArg are excluded even if changed.\n'
+            'Cannot be combined with $_packagesArg.\n',
+        hide: true);
     argParser.addFlag(_packagesForBranchArg,
         help:
             'This runs on all packages (equivalent to no package selection flag)\n'
-            'on master, and behaves like --run-on-changed-packages on any other branch.\n\n'
+            'on main (or master), and behaves like --run-on-changed-packages on '
+            'any other branch.\n\n'
             'Cannot be combined with $_packagesArg.\n\n'
             'This is intended for use in CI.\n',
         hide: true);
-    argParser.addOption(_kBaseSha,
+    argParser.addOption(_baseShaArg,
         help: 'The base sha used to determine git diff. \n'
             'This is useful when $_runOnChangedPackagesArg is specified.\n'
             'If not specified, merge-base is used as base sha.');
+    argParser.addFlag(_logTimingArg,
+        help: 'Logs timing information.\n\n'
+            'Currently only logs per-package timing for multi-package commands, '
+            'but more information may be added in the future.');
   }
 
-  static const String _pluginsArg = 'plugins';
-  static const String _packagesArg = 'packages';
-  static const String _shardIndexArg = 'shardIndex';
-  static const String _shardCountArg = 'shardCount';
+  static const String _baseShaArg = 'base-sha';
   static const String _excludeArg = 'exclude';
-  static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
+  static const String _logTimingArg = 'log-timing';
+  static const String _packagesArg = 'packages';
   static const String _packagesForBranchArg = 'packages-for-branch';
-  static const String _kBaseSha = 'base-sha';
+  static const String _pluginsArg = 'plugins';
+  static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
+  static const String _runOnDirtyPackagesArg = 'run-on-dirty-packages';
+  static const String _shardCountArg = 'shardCount';
+  static const String _shardIndexArg = 'shardIndex';
 
   /// The directory containing the plugin packages.
   final Directory packagesDir;
@@ -179,8 +191,15 @@ abstract class PluginCommand extends Command<void> {
 
   /// Convenience accessor for List<String> arguments.
   List<String> getStringListArg(String key) {
-    return (argResults![key] as List<String>?) ?? <String>[];
+    // Clone the list so that if a caller modifies the result it won't change
+    // the actual arguments list for future queries.
+    return List<String>.from(argResults![key] as List<String>? ?? <String>[]);
   }
+
+  /// If true, commands should log timing information that might be useful in
+  /// analyzing their runtime (e.g., the per-package time for multi-package
+  /// commands).
+  bool get shouldLogTiming => getBoolArg(_logTimingArg);
 
   void _checkSharding() {
     final int? shardIndex = int.tryParse(getStringArg(_shardIndexArg));
@@ -278,6 +297,7 @@ abstract class PluginCommand extends Command<void> {
     final Set<String> packageSelectionFlags = <String>{
       _packagesArg,
       _runOnChangedPackagesArg,
+      _runOnDirtyPackagesArg,
       _packagesForBranchArg,
     };
     if (packageSelectionFlags
@@ -289,7 +309,7 @@ abstract class PluginCommand extends Command<void> {
       throw ToolExit(exitInvalidArguments);
     }
 
-    Set<String> plugins = Set<String>.from(getStringListArg(_packagesArg));
+    Set<String> packages = Set<String>.from(getStringListArg(_packagesArg));
 
     final bool runOnChangedPackages;
     if (getBoolArg(_runOnChangedPackagesArg)) {
@@ -301,7 +321,7 @@ abstract class PluginCommand extends Command<void> {
             'only be used in a git repository.');
         throw ToolExit(exitInvalidArguments);
       } else {
-        runOnChangedPackages = branch != 'master';
+        runOnChangedPackages = branch != 'master' && branch != 'main';
         // Log the mode for auditing what was intended to run.
         print('--$_packagesForBranchArg: running on '
             '${runOnChangedPackages ? 'changed' : 'all'} packages');
@@ -320,7 +340,21 @@ abstract class PluginCommand extends Command<void> {
       final List<String> changedFiles =
           await gitVersionFinder.getChangedFiles();
       if (!_changesRequireFullTest(changedFiles)) {
-        plugins = _getChangedPackages(changedFiles);
+        packages = _getChangedPackageNames(changedFiles);
+      }
+    } else if (getBoolArg(_runOnDirtyPackagesArg)) {
+      final GitVersionFinder gitVersionFinder =
+          GitVersionFinder(await gitDir, 'HEAD');
+      print('Running for all packages that have uncommitted changes\n');
+      // _changesRequireFullTest is deliberately not used here, as this flag is
+      // intended for use in CI to re-test packages changed by
+      // 'make-deps-path-based'.
+      packages = _getChangedPackageNames(
+          await gitVersionFinder.getChangedFiles(includeUncommitted: true));
+      // For the same reason, empty is not treated as "all packages" as it is
+      // for other flags.
+      if (packages.isEmpty) {
+        return;
       }
     }
 
@@ -335,8 +369,8 @@ abstract class PluginCommand extends Command<void> {
       await for (final FileSystemEntity entity
           in dir.list(followLinks: false)) {
         // A top-level Dart package is a plugin package.
-        if (_isDartPackage(entity)) {
-          if (plugins.isEmpty || plugins.contains(p.basename(entity.path))) {
+        if (isPackage(entity)) {
+          if (packages.isEmpty || packages.contains(p.basename(entity.path))) {
             yield PackageEnumerationEntry(
                 RepositoryPackage(entity as Directory),
                 excluded: excludedPluginNames.contains(entity.basename));
@@ -345,22 +379,24 @@ abstract class PluginCommand extends Command<void> {
           // Look for Dart packages under this top-level directory.
           await for (final FileSystemEntity subdir
               in entity.list(followLinks: false)) {
-            if (_isDartPackage(subdir)) {
-              // If --plugin=my_plugin is passed, then match all federated
-              // plugins under 'my_plugin'. Also match if the exact plugin is
-              // passed.
-              final String relativePath =
-                  path.relative(subdir.path, from: dir.path);
-              final String packageName = path.basename(subdir.path);
-              final String basenamePath = path.basename(entity.path);
-              if (plugins.isEmpty ||
-                  plugins.contains(relativePath) ||
-                  plugins.contains(basenamePath)) {
+            if (isPackage(subdir)) {
+              // There are three ways for a federated plugin to match:
+              // - package name (path_provider_android)
+              // - fully specified name (path_provider/path_provider_android)
+              // - group name (path_provider), which matches all packages in
+              //   the group
+              final Set<String> possibleMatches = <String>{
+                path.basename(subdir.path), // package name
+                path.basename(entity.path), // group name
+                path.relative(subdir.path, from: dir.path), // fully specified
+              };
+              if (packages.isEmpty ||
+                  packages.intersection(possibleMatches).isNotEmpty) {
                 yield PackageEnumerationEntry(
                     RepositoryPackage(subdir as Directory),
-                    excluded: excludedPluginNames.contains(basenamePath) ||
-                        excludedPluginNames.contains(packageName) ||
-                        excludedPluginNames.contains(relativePath));
+                    excluded: excludedPluginNames
+                        .intersection(possibleMatches)
+                        .isNotEmpty);
               }
             }
           }
@@ -374,19 +410,28 @@ abstract class PluginCommand extends Command<void> {
   ///
   /// By default, packages excluded via --exclude will not be in the stream, but
   /// they can be included by passing false for [filterExcluded].
+  ///
+  /// Subpackages are guaranteed to be after the containing package in the
+  /// stream.
   Stream<PackageEnumerationEntry> getTargetPackagesAndSubpackages(
       {bool filterExcluded = true}) async* {
     await for (final PackageEnumerationEntry plugin
         in getTargetPackages(filterExcluded: filterExcluded)) {
       yield plugin;
-      yield* plugin.package.directory
-          .list(recursive: true, followLinks: false)
-          .where(_isDartPackage)
-          .map((FileSystemEntity directory) => PackageEnumerationEntry(
-              // _isDartPackage guarantees that this cast is valid.
-              RepositoryPackage(directory as Directory),
-              excluded: plugin.excluded));
+      yield* getSubpackages(plugin.package).map((RepositoryPackage package) =>
+          PackageEnumerationEntry(package, excluded: plugin.excluded));
     }
+  }
+
+  /// Returns all Dart package folders (e.g., examples) under the given package.
+  Stream<RepositoryPackage> getSubpackages(RepositoryPackage package,
+      {bool filterExcluded = true}) async* {
+    yield* package.directory
+        .list(recursive: true, followLinks: false)
+        .where(isPackage)
+        .map((FileSystemEntity directory) =>
+            // isPackage guarantees that this cast is valid.
+            RepositoryPackage(directory as Directory));
   }
 
   /// Returns the files contained, recursively, within the packages
@@ -404,34 +449,59 @@ abstract class PluginCommand extends Command<void> {
         .cast<File>();
   }
 
-  /// Returns whether the specified entity is a directory containing a
-  /// `pubspec.yaml` file.
-  bool _isDartPackage(FileSystemEntity entity) {
-    return entity is Directory && entity.childFile('pubspec.yaml').existsSync();
-  }
-
-  /// Retrieve an instance of [GitVersionFinder] based on `_kBaseSha` and [gitDir].
+  /// Retrieve an instance of [GitVersionFinder] based on `_baseShaArg` and [gitDir].
   ///
   /// Throws tool exit if [gitDir] nor root directory is a git directory.
   Future<GitVersionFinder> retrieveVersionFinder() async {
-    final String baseSha = getStringArg(_kBaseSha);
+    final String baseSha = getStringArg(_baseShaArg);
 
     final GitVersionFinder gitVersionFinder =
         GitVersionFinder(await gitDir, baseSha);
     return gitVersionFinder;
   }
 
-  // Returns packages that have been changed given a list of changed files.
+  // Returns the names of packages that have been changed given a list of
+  // changed files.
+  //
+  // The names will either be the actual package names, or potentially
+  // group/name specifiers (for example, path_provider/path_provider) for
+  // packages in federated plugins.
   //
   // The paths must use POSIX separators (e.g., as provided by git output).
-  Set<String> _getChangedPackages(List<String> changedFiles) {
+  Set<String> _getChangedPackageNames(List<String> changedFiles) {
     final Set<String> packages = <String>{};
+
+    // A helper function that returns true if candidatePackageName looks like an
+    // implementation package of a plugin called pluginName. Used to determine
+    // if .../packages/parentName/candidatePackageName/...
+    // looks like a path in a federated plugin package (candidatePackageName)
+    // rather than a top-level package (parentName).
+    bool isFederatedPackage(String candidatePackageName, String parentName) {
+      return candidatePackageName == parentName ||
+          candidatePackageName.startsWith('${parentName}_');
+    }
+
     for (final String path in changedFiles) {
       final List<String> pathComponents = p.posix.split(path);
       final int packagesIndex =
           pathComponents.indexWhere((String element) => element == 'packages');
       if (packagesIndex != -1) {
-        packages.add(pathComponents[packagesIndex + 1]);
+        // Find the name of the directory directly under packages. This is
+        // either the name of the package, or a plugin group directory for
+        // a federated plugin.
+        final String topLevelName = pathComponents[packagesIndex + 1];
+        String packageName = topLevelName;
+        if (packagesIndex + 2 < pathComponents.length &&
+            isFederatedPackage(
+                pathComponents[packagesIndex + 2], topLevelName)) {
+          // This looks like a federated package; use the full specifier if
+          // the name would be ambiguous (i.e., for the app-facing package).
+          packageName = pathComponents[packagesIndex + 2];
+          if (packageName == topLevelName) {
+            packageName = '$topLevelName/$packageName';
+          }
+        }
+        packages.add(packageName);
       }
     }
     if (packages.isEmpty) {

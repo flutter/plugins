@@ -58,7 +58,7 @@ void main() {
       test('skip if iOS is not supported', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         final List<String> output =
@@ -71,7 +71,7 @@ void main() {
       test('skip if iOS is implemented in a federated package', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformIos: const PlatformDetails(PlatformSupport.federated)
+              platformIOS: const PlatformDetails(PlatformSupport.federated)
             });
 
         final List<String> output =
@@ -82,13 +82,12 @@ void main() {
       });
 
       test('runs for iOS plugin', () async {
-        final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir, platformSupport: <String, PlatformDetails>{
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline)
-        });
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              platformIOS: const PlatformDetails(PlatformSupport.inline)
+            });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',
@@ -124,10 +123,51 @@ void main() {
             ]));
       });
 
+      test('passes min iOS deployment version when requested', () async {
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              platformIOS: const PlatformDetails(PlatformSupport.inline)
+            });
+
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
+
+        final List<String> output = await runCapturingPrint(runner,
+            <String>['xcode-analyze', '--ios', '--ios-min-version=14.0']);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Running for plugin'),
+              contains('plugin/example (iOS) passed analysis.')
+            ]));
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'analyze',
+                    '-workspace',
+                    'ios/Runner.xcworkspace',
+                    '-scheme',
+                    'Runner',
+                    '-configuration',
+                    'Debug',
+                    '-destination',
+                    'generic/platform=iOS Simulator',
+                    'IPHONEOS_DEPLOYMENT_TARGET=14.0',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+            ]));
+      });
+
       test('fails if xcrun fails', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformIos: const PlatformDetails(PlatformSupport.inline)
+              platformIOS: const PlatformDetails(PlatformSupport.inline)
             });
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
@@ -173,7 +213,7 @@ void main() {
       test('skip if macOS is implemented in a federated package', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
+              platformMacOS: const PlatformDetails(PlatformSupport.federated),
             });
 
         final List<String> output = await runCapturingPrint(
@@ -184,14 +224,12 @@ void main() {
       });
 
       test('runs for macOS plugin', () async {
-        final Directory pluginDirectory1 = createFakePlugin(
-            'plugin', packagesDir,
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory1.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',
@@ -221,10 +259,45 @@ void main() {
             ]));
       });
 
+      test('passes min macOS deployment version when requested', () async {
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
+            });
+
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
+
+        final List<String> output = await runCapturingPrint(runner,
+            <String>['xcode-analyze', '--macos', '--macos-min-version=12.0']);
+
+        expect(output,
+            contains(contains('plugin/example (macOS) passed analysis.')));
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'analyze',
+                    '-workspace',
+                    'macos/Runner.xcworkspace',
+                    '-scheme',
+                    'Runner',
+                    '-configuration',
+                    'Debug',
+                    'MACOSX_DEPLOYMENT_TARGET=12.0',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+            ]));
+      });
+
       test('fails if xcrun fails', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
@@ -251,15 +324,13 @@ void main() {
 
     group('combined', () {
       test('runs both iOS and macOS when supported', () async {
-        final Directory pluginDirectory1 = createFakePlugin(
-            'plugin', packagesDir,
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformIos: const PlatformDetails(PlatformSupport.inline),
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformIOS: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory1.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',
@@ -311,14 +382,12 @@ void main() {
       });
 
       test('runs only macOS for a macOS plugin', () async {
-        final Directory pluginDirectory1 = createFakePlugin(
-            'plugin', packagesDir,
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory1.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',
@@ -353,13 +422,12 @@ void main() {
       });
 
       test('runs only iOS for a iOS plugin', () async {
-        final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir, platformSupport: <String, PlatformDetails>{
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline)
-        });
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              platformIOS: const PlatformDetails(PlatformSupport.inline)
+            });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',

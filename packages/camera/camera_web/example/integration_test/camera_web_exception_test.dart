@@ -10,24 +10,27 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('CameraWebException', () {
-    testWidgets('sets all properties', (tester) async {
-      final cameraId = 1;
-      final code = CameraErrorCode.notFound;
-      final description = 'The camera is not found.';
+    testWidgets('sets all properties', (WidgetTester tester) async {
+      const int cameraId = 1;
+      const CameraErrorCode code = CameraErrorCode.notFound;
+      const String description = 'The camera is not found.';
 
-      final exception = CameraWebException(cameraId, code, description);
+      final CameraWebException exception =
+          CameraWebException(cameraId, code, description);
 
       expect(exception.cameraId, equals(cameraId));
       expect(exception.code, equals(code));
       expect(exception.description, equals(description));
     });
 
-    testWidgets('toString includes all properties', (tester) async {
-      final cameraId = 2;
-      final code = CameraErrorCode.notReadable;
-      final description = 'The camera is not readable.';
+    testWidgets('toString includes all properties',
+        (WidgetTester tester) async {
+      const int cameraId = 2;
+      const CameraErrorCode code = CameraErrorCode.notReadable;
+      const String description = 'The camera is not readable.';
 
-      final exception = CameraWebException(cameraId, code, description);
+      final CameraWebException exception =
+          CameraWebException(cameraId, code, description);
 
       expect(
         exception.toString(),

@@ -3,7 +3,7 @@ publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.2.0"
+  flutter: ">=2.10.0"
 
 dependencies:
   flutter:
@@ -12,11 +12,11 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  http: ^0.13.0
-  js: ^0.6.3
   flutter_driver:
     sdk: flutter
   flutter_test:
     sdk: flutter
+  http: ^0.13.0
   integration_test:
     sdk: flutter
+  js: ^0.6.3

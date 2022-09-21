@@ -113,8 +113,8 @@ class FakeElementStream<T extends Event> extends Fake
   final Stream<T> _stream;
 
   @override
-  StreamSubscription<T> listen(void onData(T event)?,
-      {Function? onError, void onDone()?, bool? cancelOnError}) {
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     return _stream.listen(
       onData,
       onError: onError,
@@ -160,12 +160,12 @@ class FakeErrorEvent extends Fake implements ErrorEvent {
 /// final videoStream = videoElement.captureStream();
 /// ```
 VideoElement getVideoElementWithBlankStream(Size videoSize) {
-  final canvasElement = CanvasElement(
+  final CanvasElement canvasElement = CanvasElement(
     width: videoSize.width.toInt(),
     height: videoSize.height.toInt(),
   )..context2D.fillRect(0, 0, videoSize.width, videoSize.height);
 
-  final videoElement = VideoElement()
+  final VideoElement videoElement = VideoElement()
     ..srcObject = canvasElement.captureStream();
 
   return videoElement;

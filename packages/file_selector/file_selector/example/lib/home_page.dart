@@ -6,10 +6,16 @@ import 'package:flutter/material.dart';
 
 /// Home Page of the application
 class HomePage extends StatelessWidget {
+  /// Default Constructor
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ElevatedButton.styleFrom(
+      // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+      // ignore: deprecated_member_use
       primary: Colors.blue,
+      // ignore: deprecated_member_use
       onPrimary: Colors.white,
     );
     return Scaffold(

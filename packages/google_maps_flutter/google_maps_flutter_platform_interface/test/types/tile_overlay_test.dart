@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
 class _TestTileProvider extends TileProvider {
   @override
   Future<Tile> getTile(int x, int y, int? zoom) async {
-    return Tile(0, 0, null);
+    return const Tile(0, 0, null);
   }
 }
 
@@ -37,7 +35,6 @@ void main() {
       const TileOverlay tileOverlay = TileOverlay(
           tileOverlayId: TileOverlayId('id'),
           fadeIn: false,
-          tileProvider: null,
           transparency: 0.1,
           zIndex: 1,
           visible: false,
@@ -67,7 +64,7 @@ void main() {
     test('equality', () async {
       final TileProvider tileProvider = _TestTileProvider();
       final TileOverlay tileOverlay1 = TileOverlay(
-          tileOverlayId: TileOverlayId('id1'),
+          tileOverlayId: const TileOverlayId('id1'),
           fadeIn: false,
           tileProvider: tileProvider,
           transparency: 0.1,
@@ -75,7 +72,7 @@ void main() {
           visible: false,
           tileSize: 128);
       final TileOverlay tileOverlaySameValues = TileOverlay(
-          tileOverlayId: TileOverlayId('id1'),
+          tileOverlayId: const TileOverlayId('id1'),
           fadeIn: false,
           tileProvider: tileProvider,
           transparency: 0.1,
@@ -83,17 +80,16 @@ void main() {
           visible: false,
           tileSize: 128);
       final TileOverlay tileOverlayDifferentId = TileOverlay(
-          tileOverlayId: TileOverlayId('id2'),
+          tileOverlayId: const TileOverlayId('id2'),
           fadeIn: false,
           tileProvider: tileProvider,
           transparency: 0.1,
           zIndex: 1,
           visible: false,
           tileSize: 128);
-      final TileOverlay tileOverlayDifferentProvider = TileOverlay(
+      const TileOverlay tileOverlayDifferentProvider = TileOverlay(
           tileOverlayId: TileOverlayId('id1'),
           fadeIn: false,
-          tileProvider: null,
           transparency: 0.1,
           zIndex: 1,
           visible: false,
@@ -107,7 +103,7 @@ void main() {
       final TileProvider tileProvider = _TestTileProvider();
       // Set non-default values for every parameter.
       final TileOverlay tileOverlay = TileOverlay(
-          tileOverlayId: TileOverlayId('id1'),
+          tileOverlayId: const TileOverlayId('id1'),
           fadeIn: false,
           tileProvider: tileProvider,
           transparency: 0.1,
@@ -130,7 +126,7 @@ void main() {
           tileSize: 128);
       expect(
           tileOverlay.hashCode,
-          hashValues(
+          Object.hash(
               tileOverlay.tileOverlayId,
               tileOverlay.fadeIn,
               tileOverlay.tileProvider,

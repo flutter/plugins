@@ -6,8 +6,8 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 
 /// Class to manipulate the DOM with the intention of reading files from it.
 class DomHelper {

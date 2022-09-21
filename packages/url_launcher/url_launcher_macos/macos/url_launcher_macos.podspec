@@ -8,10 +8,10 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
   A macOS implementation of the url_launcher plugin.
                        DESC
-  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_macos'
+  s.homepage         = 'https://github.com/flutter/plugins/tree/main/packages/url_launcher/url_launcher_macos'
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_macos' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/url_launcher/url_launcher_macos' }
   s.source_files     = 'Classes/**/*'
   s.dependency 'FlutterMacOS'
 

@@ -4,10 +4,75 @@
 # These names are just suggestions. It is fine to have your changes
 # reviewed by someone else.
 
+# Plugin-level rules.
+packages/camera/**                                       @bparrishMines
+packages/file_selector/**                                @stuartmorgan
+packages/google_maps_flutter/**                          @stuartmorgan
+packages/google_sign_in/**                               @stuartmorgan
+packages/image_picker/**                                 @stuartmorgan
+packages/in_app_purchase/**                              @bparrishMines
+packages/local_auth/**                                   @stuartmorgan
+packages/path_provider/**                                @gaaclarke
+packages/plugin_platform_interface/**                    @stuartmorgan
+packages/quick_actions/**                                @stuartmorgan
+packages/shared_preferences/**                           @tarrinneal
+packages/url_launcher/**                                 @stuartmorgan
+packages/video_player/**                                 @gaaclarke
+packages/webview_flutter/**                              @bparrishMines
 
-packages/camera/**                             @bparrishMines
-packages/file_selector/**                      @ditman
-packages/google_maps_flutter/**                @cyanglaz
-packages/image_picker/**                       @cyanglaz
-packages/in_app_purchase/**                    @cyanglaz @LHLL
-packages/ios_platform_images/**                @gaaclarke
+# Sub-package-level rules. These should stay last, since the last matching
+# entry takes precedence.
+
+# - Web
+packages/**/*_web/**                                     @ditman
+
+# - Android
+packages/camera/camera_android/**                        @camsim99
+packages/espresso/**                                     @GaryQian
+packages/flutter_plugin_android_lifecycle/**             @GaryQian
+packages/google_maps_flutter/google_maps_flutter_android/**  @GaryQian
+packages/google_sign_in/google_sign_in_android/**        @camsim99
+packages/image_picker/image_picker_android/**            @GaryQian
+packages/in_app_purchase/in_app_purchase_android/**      @GaryQian
+packages/local_auth/local_auth_android/**                @camsim99
+packages/path_provider/path_provider_android/**          @camsim99
+packages/quick_actions/quick_actions_android/**          @camsim99
+packages/url_launcher/url_launcher_android/**            @GaryQian
+packages/video_player/video_player_android/**            @camsim99
+
+# - iOS
+packages/camera/camera_avfoundation/**                   @hellohuanlin
+packages/file_selector/file_selector_ios/**              @jmagman
+packages/google_maps_flutter/google_maps_flutter_ios/**  @cyanglaz
+packages/google_sign_in/google_sign_in_ios/**            @jmagman
+packages/image_picker/image_picker_ios/**                @cyanglaz
+packages/in_app_purchase/in_app_purchase_storekit/**     @cyanglaz
+packages/ios_platform_images/ios/**                      @jmagman
+packages/local_auth/local_auth_ios/**                    @hellohuanlin
+packages/path_provider/path_provider_ios/**              @jmagman
+packages/quick_actions/quick_actions_ios/**              @hellohuanlin
+packages/shared_preferences/shared_preferences_ios/**    @cyanglaz
+packages/url_launcher/url_launcher_ios/**                @jmagman
+packages/video_player/video_player_avfoundation/**       @hellohuanlin
+packages/webview_flutter/webview_flutter_wkwebview/**    @cyanglaz
+
+# - Linux
+packages/file_selector/file_selector_linux/**            @cbracken
+packages/path_provider/path_provider_linux/**            @cbracken
+packages/shared_preferences/shared_preferences_linux/**  @cbracken
+packages/url_launcher/url_launcher_linux/**              @cbracken
+
+# - macOS
+packages/file_selector/file_selector_macos/**            @cbracken
+packages/path_provider/path_provider_macos/**            @cbracken
+packages/shared_preferences/shared_preferences_macos/**  @cbracken
+packages/url_launcher/url_launcher_macos/**              @cbracken
+
+# - Windows
+packages/camera/camera_windows/**                        @cbracken
+packages/file_selector/file_selector_windows/**          @cbracken
+packages/image_picker/image_picker_windows/**            @cbracken
+packages/local_auth/local_auth_windows/**                @cbracken
+packages/path_provider/path_provider_windows/**          @cbracken
+packages/shared_preferences/shared_preferences_windows/** @cbracken
+packages/url_launcher/url_launcher_windows/**            @cbracken

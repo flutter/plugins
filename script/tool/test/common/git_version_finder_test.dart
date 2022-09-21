@@ -14,7 +14,7 @@ void main() {
   late List<List<String>?> gitDirCommands;
   late String gitDiffResponse;
   late MockGitDir gitDir;
-  String? mergeBaseResponse;
+  String mergeBaseResponse = '';
 
   setUp(() {
     gitDirCommands = <List<String>?>[];
@@ -74,7 +74,7 @@ file2/file2.cc
     final GitVersionFinder finder = GitVersionFinder(gitDir, null);
     await finder.getChangedFiles();
     verify(gitDir.runCommand(
-        <String>['diff', '--name-only', mergeBaseResponse!, 'HEAD']));
+        <String>['diff', '--name-only', mergeBaseResponse, 'HEAD']));
   });
 
   test('use correct base sha if specified', () async {
@@ -87,6 +87,18 @@ file2/file2.cc
     await finder.getChangedFiles();
     verify(gitDir
         .runCommand(<String>['diff', '--name-only', customBaseSha, 'HEAD']));
+  });
+
+  test('include uncommitted files if requested', () async {
+    const String customBaseSha = 'aklsjdcaskf12312';
+    gitDiffResponse = '''
+file1/pubspec.yaml
+file2/file2.cc
+''';
+    final GitVersionFinder finder = GitVersionFinder(gitDir, customBaseSha);
+    await finder.getChangedFiles(includeUncommitted: true);
+    // The call should not have HEAD as a final argument like the default diff.
+    verify(gitDir.runCommand(<String>['diff', '--name-only', customBaseSha]));
   });
 }
 

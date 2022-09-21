@@ -13,7 +13,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$MethodChannelQuickActions', () {
-    MethodChannelQuickActions quickActions = MethodChannelQuickActions();
+    final MethodChannelQuickActions quickActions = MethodChannelQuickActions();
 
     final List<MethodCall> log = <MethodCall>[];
 
@@ -29,9 +29,7 @@ void main() {
 
     group('#initialize', () {
       test('passes getLaunchAction on launch method', () {
-        quickActions.initialize((type) {
-          'launch';
-        });
+        quickActions.initialize((String type) {});
 
         expect(
           log,
@@ -59,19 +57,18 @@ void main() {
 
     group('#setShortCutItems', () {
       test('passes shortcutItem through channel', () {
-        quickActions.initialize((type) {
-          'launch';
-        });
-        quickActions.setShortcutItems([
-          ShortcutItem(type: 'test', localizedTitle: 'title', icon: 'icon.svg')
+        quickActions.initialize((String type) {});
+        quickActions.setShortcutItems(<ShortcutItem>[
+          const ShortcutItem(
+              type: 'test', localizedTitle: 'title', icon: 'icon.svg')
         ]);
 
         expect(
           log,
           <Matcher>[
             isMethodCall('getLaunchAction', arguments: null),
-            isMethodCall('setShortcutItems', arguments: [
-              {
+            isMethodCall('setShortcutItems', arguments: <Map<String, String>>[
+              <String, String>{
                 'type': 'test',
                 'localizedTitle': 'title',
                 'icon': 'icon.svg',
@@ -111,9 +108,7 @@ void main() {
 
     group('#clearShortCutItems', () {
       test('send clearShortcutItems through channel', () {
-        quickActions.initialize((type) {
-          'launch';
-        });
+        quickActions.initialize((String type) {});
         quickActions.clearShortcutItems();
 
         expect(

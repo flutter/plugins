@@ -1,6 +1,6 @@
 # path\_provider\_macos
 
-The macos implementation of [`path_provider`].
+The macos implementation of [`path_provider`][1].
 
 ## Usage
 

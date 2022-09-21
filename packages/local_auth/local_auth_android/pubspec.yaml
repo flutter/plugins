@@ -1,0 +1,29 @@
+name: local_auth_android
+description: Android implementation of the local_auth plugin.
+repository: https://github.com/flutter/plugins/tree/main/packages/local_auth/local_auth_android
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+local_auth%22
+version: 1.0.12
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+  flutter: ">=2.10.0"
+
+flutter:
+  plugin:
+    implements: local_auth
+    platforms:
+      android:
+        package: io.flutter.plugins.localauth
+        pluginClass: LocalAuthPlugin
+        dartPluginClass: LocalAuthAndroid
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_plugin_android_lifecycle: ^2.0.1
+  intl: ^0.17.0
+  local_auth_platform_interface: ^1.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

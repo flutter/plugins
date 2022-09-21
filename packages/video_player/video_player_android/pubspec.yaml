@@ -1,0 +1,28 @@
+name: video_player_android
+description: Android implementation of the video_player plugin.
+repository: https://github.com/flutter/plugins/tree/main/packages/video_player/video_player_android
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+video_player%22
+version: 2.3.9
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+  flutter: ">=2.10.0"
+
+flutter:
+  plugin:
+    implements: video_player
+    platforms:
+      android:
+        dartPluginClass: AndroidVideoPlayer
+        package: io.flutter.plugins.videoplayer
+        pluginClass: VideoPlayerPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+  video_player_platform_interface: ^5.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  pigeon: ^2.0.1

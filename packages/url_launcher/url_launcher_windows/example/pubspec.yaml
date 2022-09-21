@@ -4,7 +4,7 @@ publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.20.0"
+  flutter: ">=2.10.0"
 
 dependencies:
   flutter:
@@ -19,11 +19,10 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  integration_test:
-    sdk: flutter
   flutter_driver:
     sdk: flutter
-  pedantic: ^1.10.0
+  integration_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true

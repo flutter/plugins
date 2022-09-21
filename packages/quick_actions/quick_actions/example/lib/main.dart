@@ -8,10 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:quick_actions/quick_actions.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,16 +21,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -38,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    final QuickActions quickActions = QuickActions();
+    const QuickActions quickActions = QuickActions();
     quickActions.initialize((String shortcutType) {
       setState(() {
         if (shortcutType != null) {
@@ -61,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
           type: 'action_two',
           localizedTitle: 'Action two',
           icon: 'ic_launcher'),
-    ]).then((value) {
+    ]).then((void _) {
       setState(() {
         if (shortcut == 'no action set') {
           shortcut = 'actions ready';
@@ -74,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$shortcut'),
+        title: Text(shortcut),
       ),
       body: const Center(
         child: Text('On home screen, long press the app icon to '

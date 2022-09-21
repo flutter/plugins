@@ -3,46 +3,43 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart'
+    show SynchronousFuture, describeIdentity, immutable, objectRuntimeType;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/foundation.dart'
-    show SynchronousFuture, describeIdentity;
 
 class _FutureImageStreamCompleter extends ImageStreamCompleter {
   _FutureImageStreamCompleter({
     required Future<ui.Codec> codec,
     required this.futureScale,
-    this.informationCollector,
   }) {
-    codec.then<void>(_onCodecReady, onError: (dynamic error, StackTrace stack) {
+    codec.then<void>(_onCodecReady, onError: (Object error, StackTrace stack) {
       reportError(
         context: ErrorDescription('resolving a single-frame image stream'),
         exception: error,
         stack: stack,
-        informationCollector: informationCollector,
         silent: true,
       );
     });
   }
 
   final Future<double> futureScale;
-  final InformationCollector? informationCollector;
 
   Future<void> _onCodecReady(ui.Codec codec) async {
     try {
-      ui.FrameInfo nextFrame = await codec.getNextFrame();
-      double scale = await futureScale;
+      final ui.FrameInfo nextFrame = await codec.getNextFrame();
+      final double scale = await futureScale;
       setImage(ImageInfo(image: nextFrame.image, scale: scale));
     } catch (exception, stack) {
       reportError(
         context: ErrorDescription('resolving an image frame'),
         exception: exception,
         stack: stack,
-        informationCollector: this.informationCollector,
         silent: true,
       );
     }
@@ -51,6 +48,7 @@ class _FutureImageStreamCompleter extends ImageStreamCompleter {
 
 /// Performs exactly like a [MemoryImage] but instead of taking in bytes it takes
 /// in a future that represents bytes.
+@immutable
 class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
   /// Constructor for FutureMemoryImage.  [_futureBytes] is the bytes that will
   /// be loaded into an image and [_futureScale] is the scale that will be applied to
@@ -66,8 +64,11 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
     return SynchronousFuture<_FutureMemoryImage>(this);
   }
 
+  // ignore:deprecated_member_use
   /// See [ImageProvider.load].
+  // TODO(jmagman): Implement the new API once it lands, https://github.com/flutter/flutter/issues/103556
   @override
+  // ignore: deprecated_member_use
   ImageStreamCompleter load(_FutureMemoryImage key, DecoderCallback decode) {
     return _FutureImageStreamCompleter(
       codec: _loadAsync(key, decode),
@@ -77,6 +78,7 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
 
   Future<ui.Codec> _loadAsync(
     _FutureMemoryImage key,
+    // ignore: deprecated_member_use
     DecoderCallback decode,
   ) async {
     assert(key == this);
@@ -87,23 +89,26 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
 
   /// See [ImageProvider.operator==].
   @override
-  bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final _FutureMemoryImage typedOther = other;
-    return _futureBytes == typedOther._futureBytes &&
-        _futureScale == typedOther._futureScale;
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is _FutureMemoryImage &&
+        _futureBytes == other._futureBytes &&
+        _futureScale == other._futureScale;
   }
 
   /// See [ImageProvider.hashCode].
   @override
-  int get hashCode => hashValues(_futureBytes.hashCode, _futureScale);
+  int get hashCode => Object.hash(_futureBytes.hashCode, _futureScale);
 
   /// See [ImageProvider.toString].
   @override
-  String toString() =>
-      '$runtimeType(${describeIdentity(_futureBytes)}, scale: $_futureScale)';
+  String toString() => '${objectRuntimeType(this, '_FutureMemoryImage')}'
+      '(${describeIdentity(_futureBytes)}, scale: $_futureScale)';
 }
 
+// ignore: avoid_classes_with_only_static_members
 /// Class to help loading of iOS platform images into Flutter.
 ///
 /// For example, loading an image that is in `Assets.xcassts`.
@@ -118,10 +123,11 @@ class IosPlatformImages {
   ///
   /// See [https://developer.apple.com/documentation/uikit/uiimage/1624146-imagenamed?language=objc]
   static ImageProvider load(String name) {
-    Future<Map?> loadInfo = _channel.invokeMapMethod('loadImage', name);
-    Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
-    Completer<double> scaleCompleter = Completer<double>();
-    loadInfo.then((map) {
+    final Future<Map<String, dynamic>?> loadInfo =
+        _channel.invokeMapMethod<String, dynamic>('loadImage', name);
+    final Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
+    final Completer<double> scaleCompleter = Completer<double>();
+    loadInfo.then((Map<String, dynamic>? map) {
       if (map == null) {
         scaleCompleter.completeError(
           Exception("Image couldn't be found: $name"),
@@ -131,8 +137,8 @@ class IosPlatformImages {
         );
         return;
       }
-      scaleCompleter.complete(map["scale"]);
-      bytesCompleter.complete(map["data"]);
+      scaleCompleter.complete(map['scale']! as double);
+      bytesCompleter.complete(map['data']! as Uint8List);
     });
     return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
   }
@@ -144,6 +150,7 @@ class IosPlatformImages {
   ///
   /// See [https://developer.apple.com/documentation/foundation/nsbundle/1411540-urlforresource?language=objc]
   static Future<String?> resolveURL(String name, {String? extension}) {
-    return _channel.invokeMethod<String>('resolveURL', [name, extension]);
+    return _channel
+        .invokeMethod<String>('resolveURL', <Object?>[name, extension]);
   }
 }

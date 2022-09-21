@@ -5,11 +5,11 @@
 import 'dart:async';
 import 'dart:html' as html;
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:js/js.dart';
-import 'package:meta/meta.dart';
 
 import 'src/generated/gapiauth2.dart' as auth2;
 import 'src/load_gapi.dart' as gapi;
@@ -41,13 +41,15 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   late Future<void> _isAuthInitialized;
   bool _isInitCalled = false;
 
-  // This method throws if init hasn't been called at some point in the past.
-  // It is used by the [initialized] getter to ensure that users can't await
-  // on a Future that will never resolve.
+  // This method throws if init or initWithParams hasn't been called at some
+  // point in the past. It is used by the [initialized] getter to ensure that
+  // users can't await on a Future that will never resolve.
   void _assertIsInitCalled() {
     if (!_isInitCalled) {
       throw StateError(
-          'GoogleSignInPlugin::init() must be called before any other method in this plugin.');
+        'GoogleSignInPlugin::init() or GoogleSignInPlugin::initWithParams() '
+        'must be called before any other method in this plugin.',
+      );
     }
   }
 
@@ -55,7 +57,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   @visibleForTesting
   Future<void> get initialized {
     _assertIsInitCalled();
-    return Future.wait([_isGapiInitialized, _isAuthInitialized]);
+    return Future.wait(<Future<void>>[_isGapiInitialized, _isAuthInitialized]);
   }
 
   String? _autoDetectedClientId;
@@ -71,37 +73,51 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     SignInOption signInOption = SignInOption.standard,
     String? hostedDomain,
     String? clientId,
-  }) async {
-    final String? appClientId = clientId ?? _autoDetectedClientId;
+  }) {
+    return initWithParams(SignInInitParameters(
+      scopes: scopes,
+      signInOption: signInOption,
+      hostedDomain: hostedDomain,
+      clientId: clientId,
+    ));
+  }
+
+  @override
+  Future<void> initWithParams(SignInInitParameters params) async {
+    final String? appClientId = params.clientId ?? _autoDetectedClientId;
     assert(
         appClientId != null,
         'ClientID not set. Either set it on a '
         '<meta name="google-signin-client_id" content="CLIENT_ID" /> tag,'
-        ' or pass clientId when calling init()');
+        ' or pass clientId when initializing GoogleSignIn');
+
+    assert(params.serverClientId == null,
+        'serverClientId is not supported on Web.');
 
     assert(
-        !scopes.any((String scope) => scope.contains(' ')),
-        'OAuth 2.0 Scopes for Google APIs can\'t contain spaces.'
+        !params.scopes.any((String scope) => scope.contains(' ')),
+        "OAuth 2.0 Scopes for Google APIs can't contain spaces. "
         'Check https://developers.google.com/identity/protocols/googlescopes '
         'for a list of valid OAuth 2.0 scopes.');
 
     await _isGapiInitialized;
 
     final auth2.GoogleAuth auth = auth2.init(auth2.ClientConfig(
-      hosted_domain: hostedDomain,
+      hosted_domain: params.hostedDomain,
       // The js lib wants a space-separated list of values
-      scope: scopes.join(' '),
+      scope: params.scopes.join(' '),
       client_id: appClientId!,
+      plugin_name: 'dart-google_sign_in_web',
     ));
 
-    Completer<void> isAuthInitialized = Completer<void>();
+    final Completer<void> isAuthInitialized = Completer<void>();
     _isAuthInitialized = isAuthInitialized.future;
     _isInitCalled = true;
 
     auth.then(allowInterop((auth2.GoogleAuth initializedAuth) {
       // onSuccess
 
-      // TODO: https://github.com/flutter/flutter/issues/48528
+      // TODO(ditman): https://github.com/flutter/flutter/issues/48528
       // This plugin doesn't notify the app of external changes to the
       // state of the authentication, i.e: if you logout elsewhere...
 
@@ -124,7 +140,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     await initialized;
 
     return gapiUserToPluginUserData(
-        await auth2.getAuthInstance()?.currentUser?.get());
+        auth2.getAuthInstance()?.currentUser?.get());
   }
 
   @override
@@ -169,7 +185,9 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     final auth2.GoogleUser? currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
 
-    if (currentUser == null) return;
+    if (currentUser == null) {
+      return;
+    }
 
     return currentUser.disconnect();
   }
@@ -181,7 +199,9 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     final auth2.GoogleUser? currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
 
-    if (currentUser == null) return false;
+    if (currentUser == null) {
+      return false;
+    }
 
     return currentUser.isSignedIn();
   }
@@ -197,17 +217,22 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   Future<bool> requestScopes(List<String> scopes) async {
     await initialized;
 
-    final currentUser = auth2.getAuthInstance()?.currentUser?.get();
+    final auth2.GoogleUser? currentUser =
+        auth2.getAuthInstance()?.currentUser?.get();
 
-    if (currentUser == null) return false;
+    if (currentUser == null) {
+      return false;
+    }
 
-    final grantedScopes = currentUser.getGrantedScopes() ?? '';
-    final missingScopes =
-        scopes.where((scope) => !grantedScopes.contains(scope));
+    final String grantedScopes = currentUser.getGrantedScopes() ?? '';
+    final Iterable<String> missingScopes =
+        scopes.where((String scope) => !grantedScopes.contains(scope));
 
-    if (missingScopes.isEmpty) return true;
+    if (missingScopes.isEmpty) {
+      return true;
+    }
 
-    final response = await currentUser
+    final Object? response = await currentUser
         .grant(auth2.SigninOptions(scope: missingScopes.join(' ')));
 
     return response != null;

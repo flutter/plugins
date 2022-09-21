@@ -4,32 +4,24 @@
 # for every commit.
 #
 # More information at:
-#  * https://github.com/flutter/cocoon/blob/master/CI_YAML.md
+#  * https://github.com/flutter/cocoon/blob/main/CI_YAML.md
 enabled_branches:
-  - master
+  - main
 
 platform_properties:
   linux:
     properties:
-      caches: >-
-        [
-        ]
       dependencies: >
         [
-          {"dependency": "curl"}
+          {"dependency": "curl", "version": "version:7.64.0"}
         ]
       device_type: none
       os: Linux
   windows:
     properties:
-      caches: >-
-        [
-          {"name": "vsbuild", "path": "vsbuild"},
-          {"name": "pub_cache", "path": ".pub-cache"}
-        ]
       dependencies: >
         [
-          {"dependency": "certs"}
+          {"dependency": "certs", "version": "version:9563bb"}
         ]
       device_type: none
       os: Windows
@@ -41,11 +33,12 @@ targets:
     properties:
       add_recipes_cq: "true"
       target_file: windows_build_and_platform_tests.yaml
+      channel: master
+      version_file: flutter_master.version
       dependencies: >
         [
-          {"dependency": "vs_build"}
+          {"dependency": "vs_build", "version": "version:vs2019"}
         ]
-    scheduler: luci
 
   - name: Windows win32-platform_tests stable
     recipe: plugins/plugins
@@ -54,11 +47,11 @@ targets:
       add_recipes_cq: "true"
       target_file: windows_build_and_platform_tests.yaml
       channel: stable
+      version_file: flutter_stable.version
       dependencies: >
         [
-          {"dependency": "vs_build"}
+          {"dependency": "vs_build", "version": "version:vs2019"}
         ]
-    scheduler: luci
 
   - name: Windows windows-build_all_plugins master
     recipe: plugins/plugins
@@ -66,11 +59,12 @@ targets:
     properties:
       add_recipes_cq: "true"
       target_file: build_all_plugins.yaml
+      channel: master
+      version_file: flutter_master.version
       dependencies: >
         [
-          {"dependency": "vs_build"}
+          {"dependency": "vs_build", "version": "version:vs2019"}
         ]
-    scheduler: luci
 
   - name: Windows windows-build_all_plugins stable
     recipe: plugins/plugins
@@ -79,23 +73,11 @@ targets:
       add_recipes_cq: "true"
       target_file: build_all_plugins.yaml
       channel: stable
+      version_file: flutter_stable.version
       dependencies: >
         [
-          {"dependency": "vs_build"}
+          {"dependency": "vs_build", "version": "version:vs2019"}
         ]
-    scheduler: luci
-
-  - name: Windows uwp-platform_tests master
-    recipe: plugins/plugins
-    timeout: 30
-    properties:
-      add_recipes_cq: "true"
-      target_file: uwp_build_and_platform_tests.yaml
-      dependencies: >
-        [
-          {"dependency": "vs_build"}
-        ]
-    scheduler: luci
 
   - name: Windows plugin_tools_tests
     recipe: plugins/plugins
@@ -103,11 +85,11 @@ targets:
     properties:
       add_recipes_cq: "true"
       target_file: plugin_tools_tests.yaml
-    scheduler: luci
+      channel: master
+      version_file: flutter_master.version
 
   - name: Linux ci_yaml plugins roller
     recipe: infra/ci_yaml
     timeout: 30
-    scheduler: luci
     runIf:
       - .ci.yaml

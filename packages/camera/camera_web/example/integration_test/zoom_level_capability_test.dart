@@ -12,12 +12,12 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('ZoomLevelCapability', () {
-    testWidgets('sets all properties', (tester) async {
-      const minimum = 100.0;
-      const maximum = 400.0;
-      final videoTrack = MockMediaStreamTrack();
+    testWidgets('sets all properties', (WidgetTester tester) async {
+      const double minimum = 100.0;
+      const double maximum = 400.0;
+      final MockMediaStreamTrack videoTrack = MockMediaStreamTrack();
 
-      final capability = ZoomLevelCapability(
+      final ZoomLevelCapability capability = ZoomLevelCapability(
         minimum: minimum,
         maximum: maximum,
         videoTrack: videoTrack,
@@ -28,8 +28,8 @@ void main() {
       expect(capability.videoTrack, equals(videoTrack));
     });
 
-    testWidgets('supports value equality', (tester) async {
-      final videoTrack = MockMediaStreamTrack();
+    testWidgets('supports value equality', (WidgetTester tester) async {
+      final MockMediaStreamTrack videoTrack = MockMediaStreamTrack();
 
       expect(
         ZoomLevelCapability(

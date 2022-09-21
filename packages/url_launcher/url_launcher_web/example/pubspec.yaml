@@ -3,20 +3,20 @@ publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.2.0"
+  flutter: ">=2.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  build_runner: ^1.10.0
-  mockito: ^5.0.0
-  url_launcher_web:
-    path: ../
+  build_runner: ^2.1.1
   flutter_driver:
     sdk: flutter
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
+  mockito: ^5.0.0
+  url_launcher_web:
+    path: ../
