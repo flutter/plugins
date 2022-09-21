@@ -856,7 +856,9 @@ NSString *const errorMethod = @"error";
                           result:(FLTThreadSafeFlutterResult *)result {
     
     if(!_isRecording){
-        // TODO: what happens if we are not recording
+        [result sendErrorWithCode:@"setDescriptionWhileRecording"
+                          message:@"Device was not recording"
+                          details:nil];
         return;
     }
     
