@@ -9,12 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:webview_flutter/src/v4/src/webview_controller.dart';
+import 'package:webview_flutter/src/v4/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 
 import 'webview_controller_test.mocks.dart';
 
-@GenerateMocks(<Type>[PlatformWebViewController])
+@GenerateMocks(<Type>[PlatformWebViewController, PlatformNavigationDelegate])
 void main() {
   test('loadFile', () async {
     final MockPlatformWebViewController mockPlatformWebViewController =
@@ -349,5 +349,23 @@ void main() {
 
     await webViewController.setUserAgent('userAgent');
     verify(mockPlatformWebViewController.setUserAgent('userAgent'));
+  });
+
+  test('setNavigationDelegate', () async {
+    final MockPlatformWebViewController mockPlatformWebViewController =
+        MockPlatformWebViewController();
+    final WebViewController webViewController = WebViewController.fromPlatform(
+      mockPlatformWebViewController,
+    );
+
+    final MockPlatformNavigationDelegate mockPlatformNavigationDelegate =
+        MockPlatformNavigationDelegate();
+    final NavigationDelegate navigationDelegate =
+        NavigationDelegate.fromPlatform(mockPlatformNavigationDelegate);
+
+    await webViewController.setNavigationDelegate(navigationDelegate);
+    verify(mockPlatformWebViewController.setPlatformNavigationDelegate(
+      mockPlatformNavigationDelegate,
+    ));
   });
 }

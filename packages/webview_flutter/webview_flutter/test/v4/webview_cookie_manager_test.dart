@@ -5,7 +5,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:webview_flutter/src/v4/src/webview_cookie_manager.dart';
+import 'package:webview_flutter/src/v4/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 
 import 'webview_cookie_manager_test.mocks.dart';

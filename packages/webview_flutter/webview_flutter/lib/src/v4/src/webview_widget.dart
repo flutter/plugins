@@ -35,8 +35,7 @@ class WebViewWidget extends StatelessWidget {
   }) : this.fromPlatform(key: key, platform: PlatformWebViewWidget(params));
 
   /// Constructs a [WebViewWidget] from a specific platform implementation.
-  WebViewWidget.fromPlatform({Key? key, required this.platform})
-      : super(key: key);
+  WebViewWidget.fromPlatform({super.key, required this.platform});
 
   /// Implementation of [PlatformWebViewWidget] for the current platform.
   final PlatformWebViewWidget platform;

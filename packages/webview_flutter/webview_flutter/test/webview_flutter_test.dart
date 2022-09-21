@@ -1234,10 +1234,10 @@ List<dynamic> captureBuildArgs(
 // for the WebView.
 class TestPlatformWebView extends StatefulWidget {
   const TestPlatformWebView({
-    Key? key,
+    super.key,
     required this.mockWebViewPlatformController,
     this.onWebViewPlatformCreated,
-  }) : super(key: key);
+  });
 
   final MockWebViewPlatformController mockWebViewPlatformController;
   final WebViewPlatformCreatedCallback? onWebViewPlatformCreated;

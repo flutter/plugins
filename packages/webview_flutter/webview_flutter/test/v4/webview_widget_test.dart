@@ -77,8 +77,7 @@ class TestWebViewPlatform extends WebViewPlatform {
 }
 
 class TestPlatformWebViewWidget extends PlatformWebViewWidget {
-  TestPlatformWebViewWidget(PlatformWebViewWidgetCreationParams params)
-      : super.implementation(params);
+  TestPlatformWebViewWidget(super.params) : super.implementation();
 
   @override
   Widget build(BuildContext context) {

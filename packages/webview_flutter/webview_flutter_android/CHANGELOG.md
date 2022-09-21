@@ -1,7 +1,3 @@
-## 2.10.2
-
-* Updates internal code to release native objects automatically with InstanceManager.
-
 ## 2.10.1
 
 * Adds a method to the `WebView` wrapper to retrieve the X and Y positions simultaneously.

@@ -5,8 +5,18 @@
 library webview_flutter;
 
 export 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart'
-    show JavaScriptMessage, LoadRequestMethod, WebViewCookie;
+    show
+        JavaScriptMessage,
+        LoadRequestMethod,
+        NavigationDecision,
+        NavigationRequestCallback,
+        PageEventCallback,
+        ProgressCallback,
+        WebResourceError,
+        WebResourceErrorCallback,
+        WebViewCookie;
 
+export 'src/navigation_delegate.dart';
 export 'src/webview_controller.dart';
 export 'src/webview_cookie_manager.dart';
 export 'src/webview_widget.dart';
