@@ -47,20 +47,6 @@ public class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
         callback);
   }
 
-  /**
-   * Communicates to Dart that the reference to a {@link DownloadListener} was removed.
-   *
-   * @param downloadListener the instance whose reference will be removed
-   * @param callback reply callback with return value from Dart
-   */
-  public void dispose(DownloadListener downloadListener, Reply<Void> callback) {
-    if (instanceManager.containsInstance(downloadListener)) {
-      dispose(getIdentifierForListener(downloadListener), callback);
-    } else {
-      callback.reply(null);
-    }
-  }
-
   private long getIdentifierForListener(DownloadListener listener) {
     final Long identifier = instanceManager.getIdentifierForStrongReference(listener);
     if (identifier == null) {

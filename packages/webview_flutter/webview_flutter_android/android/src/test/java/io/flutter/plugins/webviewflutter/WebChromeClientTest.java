@@ -10,13 +10,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.net.Uri;
 import android.os.Message;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebView.WebViewTransport;
@@ -50,21 +48,20 @@ public class WebChromeClientTest {
     instanceManager = InstanceManager.open(identifier -> {});
 
     instanceManager.addDartCreatedInstance(mockWebView, 0L);
-    instanceManager.addDartCreatedInstance(mockWebViewClient, 1L);
 
     final WebChromeClientCreator webChromeClientCreator =
         new WebChromeClientCreator() {
           @Override
           public WebChromeClientImpl createWebChromeClient(
-              WebChromeClientFlutterApiImpl flutterApi, WebViewClient webViewClient) {
-            webChromeClient = super.createWebChromeClient(flutterApi, webViewClient);
+              WebChromeClientFlutterApiImpl flutterApi) {
+            webChromeClient = super.createWebChromeClient(flutterApi);
             return webChromeClient;
           }
         };
 
     hostApiImpl =
         new WebChromeClientHostApiImpl(instanceManager, webChromeClientCreator, mockFlutterApi);
-    hostApiImpl.create(2L, 1L);
+    hostApiImpl.create(2L);
   }
 
   @After
@@ -76,11 +73,6 @@ public class WebChromeClientTest {
   public void onProgressChanged() {
     webChromeClient.onProgressChanged(mockWebView, 23);
     verify(mockFlutterApi).onProgressChanged(eq(webChromeClient), eq(mockWebView), eq(23L), any());
-
-    reset(mockFlutterApi);
-    webChromeClient.release();
-    webChromeClient.onProgressChanged(mockWebView, 11);
-    verify(mockFlutterApi, never()).onProgressChanged((WebChromeClient) any(), any(), any(), any());
   }
 
   @Test
@@ -91,6 +83,7 @@ public class WebChromeClientTest {
     final Message message = new Message();
     message.obj = mock(WebViewTransport.class);
 
+    webChromeClient.setWebViewClient(mockWebViewClient);
     assertTrue(webChromeClient.onCreateWindow(mockWebView, message, mockOnCreateWindowWebView));
 
     /// Capture the WebViewClient used with onCreateWindow WebView.

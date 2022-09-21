@@ -303,30 +303,6 @@ class WebViewHostApi {
     }
   }
 
-  Future<void> dispose(int arg_instanceId) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewHostApi.dispose', codec,
-        binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
-      throw PlatformException(
-        code: (error['code'] as String?)!,
-        message: error['message'] as String?,
-        details: error['details'],
-      );
-    } else {
-      return;
-    }
-  }
-
   Future<void> loadData(int arg_instanceId, String arg_data,
       String? arg_mimeType, String? arg_encoding) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -1027,30 +1003,6 @@ class WebSettingsHostApi {
     }
   }
 
-  Future<void> dispose(int arg_instanceId) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebSettingsHostApi.dispose', codec,
-        binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
-      throw PlatformException(
-        code: (error['code'] as String?)!,
-        message: error['message'] as String?,
-        details: error['details'],
-      );
-    } else {
-      return;
-    }
-  }
-
   Future<void> setDomStorageEnabled(int arg_instanceId, bool arg_flag) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WebSettingsHostApi.setDomStorageEnabled', codec,
@@ -1401,29 +1353,9 @@ abstract class JavaScriptChannelFlutterApi {
   static const MessageCodec<Object?> codec =
       _JavaScriptChannelFlutterApiCodec();
 
-  void dispose(int instanceId);
   void postMessage(int instanceId, String message);
   static void setup(JavaScriptChannelFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.JavaScriptChannelFlutterApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.JavaScriptChannelFlutterApi.dispose was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.JavaScriptChannelFlutterApi.dispose was null, expected non-null int.');
-          api.dispose(arg_instanceId!);
-          return;
-        });
-      }
-    }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.JavaScriptChannelFlutterApi.postMessage', codec,
@@ -1524,7 +1456,6 @@ class _WebViewClientFlutterApiCodec extends StandardMessageCodec {
 abstract class WebViewClientFlutterApi {
   static const MessageCodec<Object?> codec = _WebViewClientFlutterApiCodec();
 
-  void dispose(int instanceId);
   void onPageStarted(int instanceId, int webViewInstanceId, String url);
   void onPageFinished(int instanceId, int webViewInstanceId, String url);
   void onReceivedRequestError(int instanceId, int webViewInstanceId,
@@ -1536,25 +1467,6 @@ abstract class WebViewClientFlutterApi {
   void urlLoading(int instanceId, int webViewInstanceId, String url);
   static void setup(WebViewClientFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewClientFlutterApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.dispose was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.dispose was null, expected non-null int.');
-          api.dispose(arg_instanceId!);
-          return;
-        });
-      }
-    }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.WebViewClientFlutterApi.onPageStarted', codec,
@@ -1771,30 +1683,10 @@ class _DownloadListenerFlutterApiCodec extends StandardMessageCodec {
 abstract class DownloadListenerFlutterApi {
   static const MessageCodec<Object?> codec = _DownloadListenerFlutterApiCodec();
 
-  void dispose(int instanceId);
   void onDownloadStart(int instanceId, String url, String userAgent,
       String contentDisposition, String mimetype, int contentLength);
   static void setup(DownloadListenerFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.DownloadListenerFlutterApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.DownloadListenerFlutterApi.dispose was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.DownloadListenerFlutterApi.dispose was null, expected non-null int.');
-          api.dispose(arg_instanceId!);
-          return;
-        });
-      }
-    }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.DownloadListenerFlutterApi.onDownloadStart',
@@ -1849,14 +1741,12 @@ class WebChromeClientHostApi {
 
   static const MessageCodec<Object?> codec = _WebChromeClientHostApiCodec();
 
-  Future<void> create(
-      int arg_instanceId, int arg_webViewClientInstanceId) async {
+  Future<void> create(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WebChromeClientHostApi.create', codec,
         binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap = await channel
-            .send(<Object?>[arg_instanceId, arg_webViewClientInstanceId])
-        as Map<Object?, Object?>?;
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1958,29 +1848,9 @@ class _WebChromeClientFlutterApiCodec extends StandardMessageCodec {
 abstract class WebChromeClientFlutterApi {
   static const MessageCodec<Object?> codec = _WebChromeClientFlutterApiCodec();
 
-  void dispose(int instanceId);
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
   static void setup(WebChromeClientFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebChromeClientFlutterApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.dispose was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.dispose was null, expected non-null int.');
-          api.dispose(arg_instanceId!);
-          return;
-        });
-      }
-    }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged',

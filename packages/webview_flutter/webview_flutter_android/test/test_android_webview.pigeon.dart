@@ -73,7 +73,6 @@ abstract class TestWebViewHostApi {
   static const MessageCodec<Object?> codec = _TestWebViewHostApiCodec();
 
   void create(int instanceId, bool useHybridComposition);
-  void dispose(int instanceId);
   void loadData(
       int instanceId, String data, String? mimeType, String? encoding);
   void loadDataWithBaseUrl(int instanceId, String? baseUrl, String data,
@@ -121,25 +120,6 @@ abstract class TestWebViewHostApi {
           assert(arg_useHybridComposition != null,
               'Argument for dev.flutter.pigeon.WebViewHostApi.create was null, expected non-null bool.');
           api.create(arg_instanceId!, arg_useHybridComposition!);
-          return <Object?, Object?>{};
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewHostApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMockMessageHandler(null);
-      } else {
-        channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.WebViewHostApi.dispose was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.WebViewHostApi.dispose was null, expected non-null int.');
-          api.dispose(arg_instanceId!);
           return <Object?, Object?>{};
         });
       }
@@ -692,7 +672,6 @@ abstract class TestWebSettingsHostApi {
   static const MessageCodec<Object?> codec = _TestWebSettingsHostApiCodec();
 
   void create(int instanceId, int webViewInstanceId);
-  void dispose(int instanceId);
   void setDomStorageEnabled(int instanceId, bool flag);
   void setJavaScriptCanOpenWindowsAutomatically(int instanceId, bool flag);
   void setSupportMultipleWindows(int instanceId, bool support);
@@ -725,25 +704,6 @@ abstract class TestWebSettingsHostApi {
           assert(arg_webViewInstanceId != null,
               'Argument for dev.flutter.pigeon.WebSettingsHostApi.create was null, expected non-null int.');
           api.create(arg_instanceId!, arg_webViewInstanceId!);
-          return <Object?, Object?>{};
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebSettingsHostApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMockMessageHandler(null);
-      } else {
-        channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.WebSettingsHostApi.dispose was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.WebSettingsHostApi.dispose was null, expected non-null int.');
-          api.dispose(arg_instanceId!);
           return <Object?, Object?>{};
         });
       }
@@ -1130,7 +1090,7 @@ class _TestWebChromeClientHostApiCodec extends StandardMessageCodec {
 abstract class TestWebChromeClientHostApi {
   static const MessageCodec<Object?> codec = _TestWebChromeClientHostApiCodec();
 
-  void create(int instanceId, int webViewClientInstanceId);
+  void create(int instanceId);
   static void setup(TestWebChromeClientHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -1147,10 +1107,7 @@ abstract class TestWebChromeClientHostApi {
           final int? arg_instanceId = (args[0] as int?);
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.WebChromeClientHostApi.create was null, expected non-null int.');
-          final int? arg_webViewClientInstanceId = (args[1] as int?);
-          assert(arg_webViewClientInstanceId != null,
-              'Argument for dev.flutter.pigeon.WebChromeClientHostApi.create was null, expected non-null int.');
-          api.create(arg_instanceId!, arg_webViewClientInstanceId!);
+          api.create(arg_instanceId!);
           return <Object?, Object?>{};
         });
       }
