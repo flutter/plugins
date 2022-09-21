@@ -27,11 +27,11 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
 
   @Override
   public void create(@NonNull Long identifier, Long lensFacing) {
-    CameraSelector cameraSelector;
     if (cameraSelectorBuilder == null) {
       cameraSelectorBuilder = new CameraSelector.Builder();
     }
 
+    CameraSelector cameraSelector;
     if (lensFacing != null) {
       cameraSelector = cameraSelectorBuilder.requireLensFacing(Math.toIntExact(lensFacing)).build();
     } else {
