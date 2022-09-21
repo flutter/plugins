@@ -256,7 +256,9 @@
       [_camera pausePreviewWithResult:result];
     } else if ([@"resumePreview" isEqualToString:call.method]) {
       [_camera resumePreviewWithResult:result];
-    } else {
+    } else if([@"setDescription" isEqualToString:call.method]) {
+        [_camera setDescription:(call.arguments[@"cameraName"]) result:result];
+    }else {
       [result sendNotImplemented];
     }
   }

@@ -838,6 +838,11 @@ NSString *const errorMethod = @"error";
   [result sendSuccess];
 }
 
+- (void)setDescription:(NSString *)cameraName
+                          result:(FLTThreadSafeFlutterResult *)result {
+    
+}
+
 - (CGPoint)getCGPointForCoordsWithOrientation:(UIDeviceOrientation)orientation
                                             x:(double)x
                                             y:(double)y {
