@@ -91,17 +91,12 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"));
 
-    int allowedAuthenticators =
-        BiometricManager.Authenticators.BIOMETRIC_WEAK
-            | BiometricManager.Authenticators.BIOMETRIC_STRONG;
-
-    if (allowCredentials) {
-      allowedAuthenticators |= BiometricManager.Authenticators.DEVICE_CREDENTIAL;
-    } else {
+    if (!allowCredentials) {
+      promptBuilder.setAllowedAuthenticators(
+          BiometricManager.Authenticators.BIOMETRIC_WEAK | BiometricManager.Authenticators.BIOMETRIC_STRONG);
       promptBuilder.setNegativeButtonText((String) call.argument("cancelButton"));
     }
 
-    promptBuilder.setAllowedAuthenticators(allowedAuthenticators);
     this.promptInfo = promptBuilder.build();
   }
 
