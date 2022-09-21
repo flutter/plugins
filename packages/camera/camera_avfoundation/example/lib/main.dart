@@ -642,7 +642,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     final bool isRecording =
         controller != null && controller!.value.isRecordingVideo;
     if (isRecording) {
-      controller!.setDescription(cameraDescription);
+      controller!.setDescriptionWhileRecording(cameraDescription);
       return;
     }
 

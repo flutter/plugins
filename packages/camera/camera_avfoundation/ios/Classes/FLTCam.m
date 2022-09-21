@@ -852,7 +852,7 @@ NSString *const errorMethod = @"error";
   [result sendSuccess];
 }
 
-- (void)setDescription:(NSString *)cameraName
+- (void)setDescriptionWhileRecording:(NSString *)cameraName
                           result:(FLTThreadSafeFlutterResult *)result {
     
     if(!_isRecording){

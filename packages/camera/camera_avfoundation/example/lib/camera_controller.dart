@@ -278,9 +278,9 @@ class CameraController extends ValueNotifier<CameraValue> {
         previewPauseOrientation: const Optional<DeviceOrientation>.absent());
   }
 
-    /// Sets the focus mode for taking pictures.
-  Future<void> setDescription(CameraDescription description) async {
-    await CameraPlatform.instance.setDescription(description);
+    /// Sets the description while the camera is recording
+  Future<void> setDescriptionWhileRecording(CameraDescription description) async {
+    await CameraPlatform.instance.setDescriptionWhileRecording(description);
     value = value.copyWith(description: description);
   }
 
