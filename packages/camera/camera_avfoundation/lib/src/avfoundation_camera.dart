@@ -488,6 +488,16 @@ class AVFoundationCamera extends CameraPlatform {
   }
 
   @override
+  Future<void> setDescription(CameraDescription description) async {
+    await _channel.invokeMethod<double>(
+      'setDescription',
+      <String, dynamic>{
+        'cameraName': description.name,
+      },
+    );
+  }
+
+  @override
   Widget buildPreview(int cameraId) {
     return Texture(textureId: cameraId);
   }
