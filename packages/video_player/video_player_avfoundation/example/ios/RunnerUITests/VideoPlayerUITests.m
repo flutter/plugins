@@ -46,7 +46,7 @@
   XCTAssertTrue(foundPlaybackSpeed5x);
 
   // Cycle through tabs.
-  for (NSString *tabName in @[ @"Asset", @"Remote" ]) {
+  for (NSString *tabName in @[ @"Asset mp4", @"Remote mp4" ]) {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"label BEGINSWITH %@", tabName];
     XCUIElement *unselectedTab = [app.staticTexts elementMatchingPredicate:predicate];
     XCTAssertTrue([unselectedTab waitForExistenceWithTimeout:30.0]);
@@ -58,6 +58,36 @@
     XCTAssertTrue([selectedTab waitForExistenceWithTimeout:30.0]);
     XCTAssertTrue(selectedTab.isSelected);
   }
+}
+
+- (void)testEncryptedVideoStream {
+  // This is to fix a bug (https://github.com/flutter/flutter/issues/111457) in iOS 16 with blank
+  // video for encrypted video streams.
+
+  NSString *tabName = @"Remote enc m3u8";
+
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"label BEGINSWITH %@", tabName];
+  XCUIElement *unselectedTab = [self.app.staticTexts elementMatchingPredicate:predicate];
+  XCTAssertTrue([unselectedTab waitForExistenceWithTimeout:30.0]);
+  XCTAssertFalse(unselectedTab.isSelected);
+  [unselectedTab tap];
+
+  XCUIElement *selectedTab = [self.app.otherElements
+      elementMatchingPredicate:[NSPredicate predicateWithFormat:@"label BEGINSWITH %@", tabName]];
+  XCTAssertTrue([selectedTab waitForExistenceWithTimeout:30.0]);
+  XCTAssertTrue(selectedTab.isSelected);
+
+  NSMutableSet *frames = [NSMutableSet set];
+  int numberOfFrames = 5;
+  for (int i = 0; i < numberOfFrames; i++) {
+    NSLog(@"Snapshotting frame %d", i);
+    UIImage *image = self.app.screenshot.image;
+    [frames addObject:UIImagePNGRepresentation(image)];
+    [NSThread sleepForTimeInterval:1];
+  }
+
+  // At least 1 loading and 2 distinct frames (3 in total) to validate that the video is playing.
+  XCTAssert(frames.count >= 3, @"Must have at least 3 distinct frames.");
 }
 
 @end
