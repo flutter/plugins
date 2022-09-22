@@ -117,6 +117,7 @@ class Camera
    */
   private CameraFeatures cameraFeatures;
   private String imageFormatGroup;
+  private VideoRenderer videoRenderer;
 
   private final SurfaceTextureEntry flutterTexture;
   private final ResolutionPreset resolutionPreset;
@@ -254,6 +255,7 @@ class Camera
     if (mediaRecorder != null) {
       mediaRecorder.release();
     }
+    closeRenderer();
 
     final PlatformChannel.DeviceOrientation lockedOrientation =
         ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
@@ -275,6 +277,9 @@ class Camera
                     ? getDeviceOrientationManager().getVideoOrientation()
                     : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
             .build();
+    final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
+    videoRenderer = new VideoRenderer(mediaRecorder.getSurface(),resolutionFeature.getCaptureSize().getWidth(),
+              resolutionFeature.getCaptureSize().getHeight());
   }
 
   // default to opening as image stream
@@ -764,12 +769,19 @@ class Camera
     recordingVideo = true;
     try {
       createCaptureSession(
-          CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
+          CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(),videoRenderer.getInputSurface());
       result.success(null);
-    } catch (CameraAccessException e) {
+    } catch (CameraAccessException | InterruptedException e) {
       recordingVideo = false;
       captureFile = null;
       result.error("videoRecordingFailed", e.getMessage(), null);
+    }
+  }
+
+  private void closeRenderer() {
+    if(videoRenderer != null){
+      videoRenderer.close();
+      videoRenderer = null;
     }
   }
 
@@ -783,6 +795,7 @@ class Camera
         cameraFeatureFactory.createAutoFocusFeature(cameraProperties, false));
     recordingVideo = false;
     try {
+      closeRenderer();
       captureSession.abortCaptures();
       mediaRecorder.stop();
     } catch (CameraAccessException | IllegalStateException e) {
