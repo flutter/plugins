@@ -46,14 +46,11 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
             ProcessCameraProvider processCameraProvider = cameraProviderFuture.get();
 
             if (!instanceManager.containsInstance(processCameraProvider)) {
-              // If cameraProvider is already defined, this method will have no effect.
               final ProcessCameraProviderFlutterApiImpl flutterApi =
                   new ProcessCameraProviderFlutterApiImpl(binaryMessenger, instanceManager);
-
               flutterApi.create(processCameraProvider, reply -> {});
-
-              result.success(processCameraProviderId);
             }
+            result.success(instanceManager.getIdentifierForStrongReference(processCameraProvider));
           } catch (Exception e) {
             result.error(e);
           }
@@ -65,7 +62,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
   @Override
   public List<Long> getAvailableCameraInfos(@NonNull Long instanceId) {
     ProcessCameraProvider processCameraProvider =
-        (ProcessCameraProvider) instanceManager.getInstance(instanceId); // may return null?
+        (ProcessCameraProvider) instanceManager.getInstance(instanceId);
 
     List<CameraInfo> availableCameras = processCameraProvider.getAvailableCameraInfos();
     List<Long> availableCamerasIds = new ArrayList<Long>();
@@ -74,8 +71,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
 
     for (CameraInfo cameraInfo : availableCameras) {
       cameraInfoFlutterApi.create(cameraInfo, result -> {});
-      Long cameraInfoId2 = instanceManager.getIdentifierForStrongReference(cameraInfo);
-      availableCamerasIds.add(cameraInfoId);
+      availableCamerasIds.add(instanceManager.getIdentifierForStrongReference(cameraInfo));
     }
     return availableCamerasIds;
   }

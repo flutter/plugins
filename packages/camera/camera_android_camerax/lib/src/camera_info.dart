@@ -15,7 +15,7 @@ import 'java_object.dart';
 class CameraInfo extends JavaObject {
   /// Constructs a [CameraInfo] that is not automatically attached to a native object.
   CameraInfo.detached(
-      {this.binaryMessenger, InstanceManager? instanceManager})
+      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
       : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {

@@ -6,6 +6,7 @@ import 'camera_info.dart';
 import 'camera_selector.dart';
 import 'camerax_library.pigeon.dart';
 import 'java_object.dart';
+import 'process_camera_provider.dart';
 
 /// Handles initialization of Flutter APIs for the Android CameraX library.
 class AndroidCameraXCameraFlutterApis {
@@ -43,7 +44,8 @@ class AndroidCameraXCameraFlutterApis {
   late final CameraSelectorFlutterApiImpl cameraSelectorFlutterApi;
 
   /// Flutter Api for [ProcessCameraProvider].
-  late final ProcessCameraProviderFlutterApiImpl processCameraProviderFlutterApi;
+  late final ProcessCameraProviderFlutterApiImpl
+      processCameraProviderFlutterApi;
 
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
