@@ -16,25 +16,28 @@ import 'java_object.dart';
 class CameraSelector extends JavaObject {
   /// Creates a [CameraSelector].
   CameraSelector(
-      {this.binaryMessenger, InstanceManager? instanceManager, this.lensFacing})
+      {BinaryMessenger? binaryMessenger,
+      InstanceManager? instanceManager,
+      this.lensFacing})
       : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
-    this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
-    _api = CameraSelectorHostApiImpl(binaryMessenger: binaryMessenger);
+    _api = CameraSelectorHostApiImpl(
+        binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
-    _api.createFromInstances(
-        this, this.instanceManager, binaryMessenger, lensFacing);
+    _api.createFromInstance(this, lensFacing);
   }
 
   /// Creates a detached [CameraSelector].
   CameraSelector.detached(
-      {this.binaryMessenger, InstanceManager? instanceManager, this.lensFacing})
+      {BinaryMessenger? binaryMessenger,
+      InstanceManager? instanceManager,
+      this.lensFacing})
       : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
-    this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
-    _api = CameraSelectorHostApiImpl(binaryMessenger: binaryMessenger);
+    _api = CameraSelectorHostApiImpl(
+        binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
   }
 
@@ -70,6 +73,24 @@ class CameraSelector extends JavaObject {
     );
   }
 
+  /// Lens direction of this selector.
+  final int? lensFacing;
+
+  /// Filters available cameras based on provided [CameraInfo]s.
+  Future<List<CameraInfo>> filter(List<CameraInfo> cameraInfos) {
+    return _api.filterFromInstance(this, cameraInfos);
+  }
+}
+
+/// Host API implementation of [CameraSelector].
+class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
+  /// Constructs a [CameraSelectorHostApiImpl].
+  CameraSelectorHostApiImpl(
+      {this.binaryMessenger, InstanceManager? instanceManager})
+      : super(binaryMessenger: binaryMessenger) {
+    this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+  }
+
   /// Receives binary data across the Flutter platform barrier.
   ///
   /// If it is null, the default BinaryMessenger will be used which routes to
@@ -79,31 +100,8 @@ class CameraSelector extends JavaObject {
   /// Maintains instances stored to communicate with native language objects.
   late final InstanceManager instanceManager;
 
-  /// Lens direction of this selector.
-  final int? lensFacing;
-
-  /// Filters available cameras based on provided [CameraInfo]s.
-  Future<List<CameraInfo>> filter(List<CameraInfo> cameraInfos) {
-    return _api.filterFromInstance(
-      this,
-      cameraInfos,
-      instanceManager,
-      binaryMessenger,
-    );
-  }
-}
-
-/// Host API implementation of [CameraSelector].
-class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
-  /// Constructs a [CameraSelectorHostApiImpl].
-  CameraSelectorHostApiImpl({super.binaryMessenger});
-
   /// Creates a [CameraSelector] with the lens direction provided if specified.
-  void createFromInstances(
-      CameraSelector instance,
-      InstanceManager instanceManager,
-      BinaryMessenger? binaryMessenger,
-      int? lensFacing) {
+  void createFromInstance(CameraSelector instance, int? lensFacing) {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (CameraSelector original) {
@@ -120,8 +118,6 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
   Future<List<CameraInfo>> filterFromInstance(
     CameraSelector instance,
     List<CameraInfo> cameraInfos,
-    InstanceManager instanceManager,
-    BinaryMessenger? binaryMessenger,
   ) async {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
