@@ -15,10 +15,14 @@ class OpenMultipleImagesPage extends StatelessWidget {
 
   Future<void> _openImageFile(BuildContext context) async {
     // #docregion MultiOpen
+    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+    // ignore: prefer_const_constructors
     final XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'JPEGs',
       extensions: <String>['jpg', 'jpeg'],
     );
+    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+    // ignore: prefer_const_constructors
     final XTypeGroup pngTypeGroup = XTypeGroup(
       label: 'PNGs',
       extensions: <String>['png'],

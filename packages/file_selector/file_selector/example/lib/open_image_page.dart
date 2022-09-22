@@ -15,6 +15,8 @@ class OpenImagePage extends StatelessWidget {
 
   Future<void> _openImageFile(BuildContext context) async {
     // #docregion SingleOpen
+    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+    // ignore: prefer_const_constructors
     final XTypeGroup typeGroup = XTypeGroup(
       label: 'images',
       extensions: <String>['jpg', 'png'],

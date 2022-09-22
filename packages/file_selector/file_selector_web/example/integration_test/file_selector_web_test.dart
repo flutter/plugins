@@ -26,6 +26,8 @@ void main() {
         final FileSelectorWeb plugin =
             FileSelectorWeb(domHelper: mockDomHelper);
 
+        // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+        // ignore: prefer_const_constructors
         final XTypeGroup typeGroup = XTypeGroup(
           label: 'images',
           extensions: <String>['jpg', 'jpeg'],
@@ -56,6 +58,8 @@ void main() {
         final FileSelectorWeb plugin =
             FileSelectorWeb(domHelper: mockDomHelper);
 
+        // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+        // ignore: prefer_const_constructors
         final XTypeGroup typeGroup = XTypeGroup(
           label: 'files',
           extensions: <String>['.txt'],

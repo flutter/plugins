@@ -13,10 +13,14 @@ void main() {
   const String confirmButtonText = 'Use this profile picture';
   const String suggestedName = 'suggested_name';
   final List<XTypeGroup> acceptedTypeGroups = <XTypeGroup>[
+    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+    // ignore: prefer_const_constructors
     XTypeGroup(label: 'documents', mimeTypes: <String>[
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessing',
     ]),
+    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+    // ignore: prefer_const_constructors
     XTypeGroup(label: 'images', extensions: <String>[
       'jpg',
       'png',

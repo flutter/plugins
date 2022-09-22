@@ -12,6 +12,8 @@ class OpenTextPage extends StatelessWidget {
   const OpenTextPage({Key? key}) : super(key: key);
 
   Future<void> _openTextFile(BuildContext context) async {
+    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+    // ignore: prefer_const_constructors
     final XTypeGroup typeGroup = XTypeGroup(
       label: 'text',
       extensions: <String>['txt', 'json'],
