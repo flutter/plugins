@@ -116,6 +116,7 @@ class Camera
    * one changes.
    */
   private CameraFeatures cameraFeatures;
+  private String imageFormatGroup;
 
   private final SurfaceTextureEntry flutterTexture;
   private final ResolutionPreset resolutionPreset;
@@ -276,7 +277,14 @@ class Camera
             .build();
   }
 
+  // default to opening as image stream
   public void open(String imageFormatGroup) throws CameraAccessException {
+    open(imageFormatGroup, false);
+  }
+
+  @SuppressLint("MissingPermission")
+  private void open(String imageFormatGroup, boolean openAsVideo) throws CameraAccessException{
+    this.imageFormatGroup = imageFormatGroup;
     final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
 
     if (!resolutionFeature.checkIsSupported()) {
@@ -311,11 +319,6 @@ class Camera
             imageFormat,
             1);
 
-    openCameraAndStartPreview(resolutionFeature); // TODO: can we just includet this entire function in this parent one or do we have to bypass pictureImageReader stuff on switch?
-  }
-
-  @SuppressLint("MissingPermission")
-  private void openCameraAndStartPreview(ResolutionFeature resolutionFeature) throws CameraAccessException {
     // Open the camera.
     CameraManager cameraManager = CameraUtils.getCameraManager(activity);
     cameraManager.openCamera(
@@ -325,7 +328,7 @@ class Camera
               public void onOpened(@NonNull CameraDevice device) {
                 cameraDevice = new DefaultCameraDeviceWrapper(device);
                 try {
-                  startPreview();
+                  startPreview(openAsVideo);
 
                   // TODO: do we send this ?
                   dartMessenger.sendCameraInitializedEvent(
@@ -787,7 +790,7 @@ class Camera
     }
     mediaRecorder.reset();
     try {
-      startPreview();
+      startPreview(false);
     } catch (CameraAccessException | IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
       return;
@@ -1072,11 +1075,15 @@ class Camera
         null, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
   }
 
-  public void startPreview() throws CameraAccessException {
+  public void startPreview(boolean useMediaRecorderSurface) throws CameraAccessException {
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
     Log.i(TAG, "startPreview");
-
-    createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
+    if(useMediaRecorderSurface){
+      createCaptureSession(
+              CameraDevice.TEMPLATE_RECORD, mediaRecorder.getSurface());
+    }else{
+      createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
+    }
   }
 
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
@@ -1220,7 +1227,7 @@ class Camera
     // set camera stuff
     final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
     try {
-      openCameraAndStartPreview(resolutionFeature);
+      open(imageFormatGroup, true);
     } catch (CameraAccessException e) {
       e.printStackTrace(); // TODO: throw flutter error
     }
