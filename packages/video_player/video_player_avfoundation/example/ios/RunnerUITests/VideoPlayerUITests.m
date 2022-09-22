@@ -81,7 +81,7 @@
   [NSThread sleepForTimeInterval:60];
 
   NSMutableSet *frames = [NSMutableSet set];
-  int numberOfFrames = 5;
+  int numberOfFrames = 60;
   for (int i = 0; i < numberOfFrames; i++) {
     UIImage *image = self.app.screenshot.image;
     [frames addObject:UIImagePNGRepresentation(image)];
