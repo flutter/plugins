@@ -4,7 +4,6 @@
 
 import 'package:file/file.dart';
 import 'package:git/git.dart';
-import 'package:http/http.dart';
 import 'package:platform/platform.dart';
 import 'package:yaml/yaml.dart';
 
