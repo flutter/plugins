@@ -83,7 +83,14 @@
   NSMutableSet *frames = [NSMutableSet set];
   int numberOfFrames = 60;
   for (int i = 0; i < numberOfFrames; i++) {
-    UIImage *image = self.app.screenshot.image;
+    XCUIScreenshot *screenshot = self.app.screenshot;
+
+    // Attach the screenshots for debugging if the test fails.
+    XCTAttachment *attachment = [XCTAttachment attachmentWithScreenshot:screenshot];
+    attachment.lifetime = XCTAttachmentLifetimeKeepAlways;
+    [self addAttachment:attachment];
+
+    UIImage *image = screenshot.image;
     [frames addObject:UIImagePNGRepresentation(image)];
     // Take random interval between [1, 2) seconds, since the video length could be the same as a
     // fixed interval, which would always result in the same frame.
