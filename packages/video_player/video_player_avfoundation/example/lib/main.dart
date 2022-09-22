@@ -206,9 +206,7 @@ class _BumbleBeeEncryptedLiveStreamState
                     aspectRatio: _controller.value.aspectRatio,
                     child: VideoPlayer(_controller),
                   )
-                : Container(
-                    child: const Text('loading...'),
-                  ),
+                : const Text('loading...'),
           ),
         ],
       ),

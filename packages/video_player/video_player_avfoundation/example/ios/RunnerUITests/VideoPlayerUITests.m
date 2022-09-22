@@ -77,10 +77,12 @@
   XCTAssertTrue([selectedTab waitForExistenceWithTimeout:30.0]);
   XCTAssertTrue(selectedTab.isSelected);
 
+  // Wait until the video is loaded.
+  [NSThread sleepForTimeInterval:60];
+
   NSMutableSet *frames = [NSMutableSet set];
   int numberOfFrames = 5;
   for (int i = 0; i < numberOfFrames; i++) {
-    NSLog(@"Snapshotting frame %d", i);
     UIImage *image = self.app.screenshot.image;
     [frames addObject:UIImagePNGRepresentation(image)];
     [NSThread sleepForTimeInterval:1];
