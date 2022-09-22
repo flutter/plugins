@@ -1220,12 +1220,12 @@ class Camera
   public void setDescriptionWhileRecording(@NonNull final Result result, CameraProperties properties) {
       // TODO: save some camera settings
     stopAndReleaseCamera();
-    this.cameraProperties = properties;
-    this.cameraFeatures =
+    cameraProperties = properties;
+    cameraFeatures =
             CameraFeatures.init(
                     cameraFeatureFactory, cameraProperties, activity, dartMessenger, resolutionPreset);
-    // set camera stuff
-    final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
+    cameraFeatures.setAutoFocus(
+            cameraFeatureFactory.createAutoFocusFeature(cameraProperties, true));
     try {
       open(imageFormatGroup, true);
     } catch (CameraAccessException e) {
