@@ -92,10 +92,9 @@
 
     UIImage *image = screenshot.image;
     [frames addObject:UIImagePNGRepresentation(image)];
-    // Take random interval between [1, 2) seconds, since the video length could be the same as a
-    // fixed interval, which would always result in the same frame.
-    NSTimeInterval sampleInterval = 1 + ((double)arc4random() / UINT32_MAX);
-    [NSThread sleepForTimeInterval:sampleInterval];
+    // The sample interval must NOT be the same as video length.
+    // Otherwise it would always result in the same frame.
+    [NSThread sleepForTimeInterval:1];
   }
 
   // At least 1 loading and 2 distinct frames (3 in total) to validate that the video is playing.
