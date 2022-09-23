@@ -360,6 +360,30 @@ void main() {
           )));
     });
 
+    test(
+        'setDescriptionWhileRecording() throws $CameraException when not currenctly recording',
+        () async {
+      final CameraController cameraController = CameraController(
+          const CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      const CameraDescription newDescription = CameraDescription(
+          name: 'cam2',
+          lensDirection: CameraLensDirection.front,
+          sensorOrientation: 90);
+      expect(
+          cameraController.setDescriptionWhileRecording(newDescription),
+          throwsA(isA<CameraException>().having(
+            (CameraException error) => error.description,
+            'Video was not being recording',
+            'setDescriptionWhileRecording was called while a video was not being recorded',
+          )));
+    });
+
     test('getMaxZoomLevel() throws $CameraException when uninitialized',
         () async {
       final CameraController cameraController = CameraController(

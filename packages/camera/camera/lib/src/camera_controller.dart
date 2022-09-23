@@ -387,6 +387,14 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Sets the description while the camera is recording
   Future<void> setDescriptionWhileRecording(CameraDescription description) async {
+
+    if (!value.isRecordingVideo) {
+      throw CameraException(
+        'Video was not being recording',
+        'setDescriptionWhileRecording was called while a video was not being recorded',
+      );
+    }
+
     await CameraPlatform.instance.setDescriptionWhileRecording(description);
     value = value.copyWith(description: description);
   }
