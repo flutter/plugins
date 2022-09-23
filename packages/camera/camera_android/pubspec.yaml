@@ -30,3 +30,9 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  camera_platform_interface:
+    path: ../../camera/camera_platform_interface

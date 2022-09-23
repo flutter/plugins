@@ -27,3 +27,9 @@ dev_dependencies:
   async: ^2.5.0
   flutter_test:
     sdk: flutter
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  camera_platform_interface:
+    path: ../../camera/camera_platform_interface
