@@ -117,6 +117,8 @@ class Camera
    */
   private CameraFeatures cameraFeatures;
   private String imageFormatGroup;
+
+  /** Takes an input/output surface and orients the recording correctly. This is needed because switching cameras while recording causes bad orientation */
   private VideoRenderer videoRenderer;
 
   private final SurfaceTextureEntry flutterTexture;
@@ -333,7 +335,11 @@ class Camera
               public void onOpened(@NonNull CameraDevice device) {
                 cameraDevice = new DefaultCameraDeviceWrapper(device);
                 try {
-                  startPreview(openAsVideo);
+                  if(recordingVideo){
+                    startPreviewWithVideoStream();
+                  }else{
+                    startPreview();
+                  }
 
                   // TODO: do we send this ?
                   dartMessenger.sendCameraInitializedEvent(
@@ -343,7 +349,7 @@ class Camera
                           cameraFeatures.getAutoFocus().getValue(),
                           cameraFeatures.getExposurePoint().checkIsSupported(),
                           cameraFeatures.getFocusPoint().checkIsSupported());
-                } catch (CameraAccessException e) {
+                } catch (CameraAccessException | InterruptedException e) {
                   dartMessenger.sendCameraErrorEvent(e.getMessage());
                   close();
                 }
@@ -803,7 +809,7 @@ class Camera
     }
     mediaRecorder.reset();
     try {
-      startPreview(false);
+      startPreview();
     } catch (CameraAccessException | IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
       return;
@@ -1088,15 +1094,16 @@ class Camera
         null, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
   }
 
-  public void startPreview(boolean useMediaRecorderSurface) throws CameraAccessException {
+  public void startPreview() throws CameraAccessException {
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
     Log.i(TAG, "startPreview");
-    if(useMediaRecorderSurface){
-      createCaptureSession(
-              CameraDevice.TEMPLATE_RECORD, mediaRecorder.getSurface());
-    }else{
       createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
-    }
+  }
+
+  private void startPreviewWithVideoStream() throws CameraAccessException, InterruptedException {
+    if (videoRenderer == null) return;
+    createCaptureSession(
+            CameraDevice.TEMPLATE_RECORD, videoRenderer.getInputSurface());
   }
 
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
