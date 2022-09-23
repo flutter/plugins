@@ -4,6 +4,7 @@
 
 @import os.log;
 @import XCTest;
+@import CoreGraphics;
 
 @interface VideoPlayerUITests : XCTestCase
 @property(nonatomic, strong) XCUIApplication *app;
@@ -83,15 +84,24 @@
   NSMutableSet *frames = [NSMutableSet set];
   int numberOfFrames = 60;
   for (int i = 0; i < numberOfFrames; i++) {
-    XCUIScreenshot *screenshot = self.app.screenshot;
+    UIImage *image = self.app.screenshot.image;
 
-    // Attach the screenshots for debugging if the test fails.
-    XCTAttachment *attachment = [XCTAttachment attachmentWithScreenshot:screenshot];
-    attachment.lifetime = XCTAttachmentLifetimeKeepAlways;
-    [self addAttachment:attachment];
+    // Plugin CI does not support attaching screenshot.
+    // Convert the image to base64 encoded string, and print it out for debugging purpose.
+    // NSLog truncates long strings, so need to scale downn image.
+    CGSize smallerSize = CGSizeMake(100, 200);
+    UIGraphicsBeginImageContextWithOptions(smallerSize, NO, 0.0);
+    [image drawInRect:CGRectMake(0, 0, smallerSize.width, smallerSize.height)];
+    UIImage *smallerImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
 
-    UIImage *image = screenshot.image;
-    [frames addObject:UIImagePNGRepresentation(image)];
+    // 0.5 compression is good enough for debugging purpose.
+    NSData *imageData = UIImageJPEGRepresentation(smallerImage, 0.5);
+    NSString *imageString = [imageData base64EncodedStringWithOptions:0];
+    NSLog(@"frame %d image data:\n%@", i, imageString);
+
+    [frames addObject:imageString];
+
     // The sample interval must NOT be the same as video length.
     // Otherwise it would always result in the same frame.
     [NSThread sleepForTimeInterval:1];
