@@ -603,6 +603,33 @@ public class CameraTest {
   }
 
   @Test
+  public void setDescriptionWhileRecording() {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+    VideoRenderer mockVideoRenderer = mock(VideoRenderer.class);
+    TestUtils.setPrivateField(camera, "mediaRecorder", mockMediaRecorder);
+    TestUtils.setPrivateField(camera, "recordingVideo", true);
+    TestUtils.setPrivateField(camera, "videoRenderer", mockVideoRenderer);
+
+    final CameraProperties newCameraProperties =  mock(CameraProperties.class);
+    camera.setDescriptionWhileRecording(mockResult, newCameraProperties);
+
+    verify(mockResult, times(1)).success(null);
+    verify(mockResult, never()).error(any(), any(), any());
+  }
+
+  @Test
+  public void setDescriptionWhileRecording_shouldErrorWhenNotRecording() {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    TestUtils.setPrivateField(camera, "recordingVideo", false);
+    final CameraProperties newCameraProperties =  mock(CameraProperties.class);
+    camera.setDescriptionWhileRecording(mockResult, newCameraProperties);
+
+    verify(mockResult, times(1)).error("setDescriptionWhileRecordingFailed", "Device was not recording", null);
+    verify(mockResult, never()).success(any());
+  }
+
+  @Test
   public void
       resumeVideoRecording_shouldSendVideoRecordingFailedErrorWhenVersionCodeSmallerThanN() {
     TestUtils.setPrivateField(camera, "recordingVideo", true);
