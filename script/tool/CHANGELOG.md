@@ -1,3 +1,7 @@
+## 0.10.0+1
+
+* Recognizes `run_test.sh` as a developer-only file in `version-check`.
+
 ## 0.10.0
 
 * Improves the logic in `version-check` to determine what changes don't require
