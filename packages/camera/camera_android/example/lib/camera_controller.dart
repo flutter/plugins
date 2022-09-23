@@ -94,7 +94,7 @@ class CameraValue {
   /// The orientation of the currently running video recording.
   final DeviceOrientation? recordingOrientation;
 
-    /// The properties of the camera device controlled by this controller.
+  /// The properties of the camera device controlled by this controller.
   final CameraDescription description;
 
   /// Creates a modified copy of the object.

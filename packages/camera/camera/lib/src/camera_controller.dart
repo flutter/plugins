@@ -48,6 +48,7 @@ class CameraValue {
     required this.exposurePointSupported,
     required this.focusPointSupported,
     required this.deviceOrientation,
+    required this.description,
     this.lockedCaptureOrientation,
     this.recordingOrientation,
     this.isPreviewPaused = false,
@@ -55,7 +56,7 @@ class CameraValue {
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
-  const CameraValue.uninitialized()
+  const CameraValue.uninitialized(CameraDescription description)
       : this(
           isInitialized: false,
           isRecordingVideo: false,
@@ -69,6 +70,7 @@ class CameraValue {
           focusPointSupported: false,
           deviceOrientation: DeviceOrientation.portraitUp,
           isPreviewPaused: false,
+          description: description,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -142,6 +144,10 @@ class CameraValue {
   /// The orientation of the currently running video recording.
   final DeviceOrientation? recordingOrientation;
 
+
+  /// The properties of the camera device controlled by this controller.
+  final CameraDescription description;
+
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -164,6 +170,7 @@ class CameraValue {
     Optional<DeviceOrientation>? recordingOrientation,
     bool? isPreviewPaused,
     Optional<DeviceOrientation>? previewPauseOrientation,
+    CameraDescription? description,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -190,6 +197,7 @@ class CameraValue {
       previewPauseOrientation: previewPauseOrientation == null
           ? this.previewPauseOrientation
           : previewPauseOrientation.orNull,
+          description: description ?? this.description,
     );
   }
 
@@ -210,7 +218,8 @@ class CameraValue {
         'lockedCaptureOrientation: $lockedCaptureOrientation, '
         'recordingOrientation: $recordingOrientation, '
         'isPreviewPaused: $isPreviewPaused, '
-        'previewPausedOrientation: $previewPauseOrientation)';
+        'previewPausedOrientation: $previewPauseOrientation, ' 
+        'description: $description)';
   }
 }
 
@@ -224,14 +233,11 @@ class CameraValue {
 class CameraController extends ValueNotifier<CameraValue> {
   /// Creates a new camera controller in an uninitialized state.
   CameraController(
-    this.description,
+    CameraDescription description,
     this.resolutionPreset, {
     this.enableAudio = true,
     this.imageFormatGroup,
-  }) : super(const CameraValue.uninitialized());
-
-  /// The properties of the camera device controlled by this controller.
-  final CameraDescription description;
+  }) : super(CameraValue.uninitialized(description));
 
   /// The resolution this controller is targeting.
   ///
@@ -293,7 +299,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       });
 
       _cameraId = await CameraPlatform.instance.createCamera(
-        description,
+        value.description,
         resolutionPreset,
         enableAudio: enableAudio,
       );
@@ -377,6 +383,12 @@ class CameraController extends ValueNotifier<CameraValue> {
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
+  }
+
+  /// Sets the description while the camera is recording
+  Future<void> setDescriptionWhileRecording(CameraDescription description) async {
+    await CameraPlatform.instance.setDescriptionWhileRecording(description);
+    value = value.copyWith(description: description);
   }
 
   /// Captures an image and returns the file where it was saved.

@@ -56,7 +56,7 @@ void main() {
       CameraController controller, ResolutionPreset preset) async {
     final Size expectedSize = presetExpectedSizes[preset]!;
     print(
-        'Capturing photo at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
+        'Capturing photo at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.value.description.name}');
 
     // Take Picture
     final XFile file = await controller.takePicture();
@@ -105,7 +105,7 @@ void main() {
       CameraController controller, ResolutionPreset preset) async {
     final Size expectedSize = presetExpectedSizes[preset]!;
     print(
-        'Capturing video at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
+        'Capturing video at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.value.description.name}');
 
     // Take Video
     await controller.startVideoRecording();

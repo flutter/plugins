@@ -12,7 +12,10 @@ import 'package:quiver/core.dart';
 
 class FakeController extends ValueNotifier<CameraValue>
     implements CameraController {
-  FakeController() : super(const CameraValue.uninitialized());
+  FakeController() : super(const CameraValue.uninitialized(fakeDescription));
+
+    static const CameraDescription fakeDescription = CameraDescription(
+      name: '', lensDirection: CameraLensDirection.back, sensorOrientation: 0);
 
   @override
   Future<void> dispose() async {
@@ -29,10 +32,6 @@ class FakeController extends ValueNotifier<CameraValue>
 
   @override
   void debugCheckIsDisposed() {}
-
-  @override
-  CameraDescription get description => const CameraDescription(
-      name: '', lensDirection: CameraLensDirection.back, sensorOrientation: 0);
 
   @override
   bool get enableAudio => false;
@@ -117,6 +116,10 @@ class FakeController extends ValueNotifier<CameraValue>
 
   @override
   Future<void> resumePreview() async {}
+  
+  @override
+  Future<void> setDescriptionWhileRecording(CameraDescription description) async {}
+
 }
 
 void main() {

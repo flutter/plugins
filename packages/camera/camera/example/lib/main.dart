@@ -121,7 +121,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (state == AppLifecycleState.inactive) {
       cameraController.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      onNewCameraSelected(cameraController.description);
+      onNewCameraSelected(cameraController.value.description);
     }
   }
   // #enddocregion AppLifecycle
@@ -596,12 +596,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             width: 90.0,
             child: RadioListTile<CameraDescription>(
               title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
-              groupValue: controller?.description,
+              groupValue: controller?.value.description,
               value: cameraDescription,
-              onChanged:
-                  controller != null && controller!.value.isRecordingVideo
-                      ? null
-                      : onChanged,
+              onChanged: onChanged,
             ),
           ),
         );
@@ -634,6 +631,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
+
+    // if we are currently recording then switch the camera description of the controller to flip the camera
+    final bool isRecording =
+        controller != null && controller!.value.isRecordingVideo;
+    if (isRecording) {
+      controller!.setDescriptionWhileRecording(cameraDescription);
+      return;
+    }
+
     final CameraController? oldController = controller;
     if (oldController != null) {
       // `controller` needs to be set to null before getting disposed,
@@ -768,7 +774,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   void onAudioModeButtonPressed() {
     enableAudio = !enableAudio;
     if (controller != null) {
-      onNewCameraSelected(controller!.description);
+      onNewCameraSelected(controller!.value.description);
     }
   }
 
