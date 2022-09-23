@@ -1,3 +1,7 @@
+## 0.10.0+3
+
+* Allow camera to be switched while video recording.
+
 ## 0.10.0+2
 
 * Removes call to `join` on the camera's background `HandlerThread`.
