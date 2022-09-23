@@ -7,8 +7,8 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 
-/// ShellItemApi provider to interact with Shell Items.
-class ShellItemAPI {
+/// ShellItemWrapper to interact with Shell Item related functions.
+class ShellItemWrapper {
   /// Create a shell item from a given pointer.
   IShellItem createShellItem(Pointer<Pointer<COMObject>> ptrShellItem) {
     return IShellItem(ptrShellItem.cast());

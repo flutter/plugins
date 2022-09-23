@@ -1,6 +1,6 @@
 ## 0.10.0
 
-* Migrate CCP implementation to Dart.
+* Migrates CCP implementation to Dart.
 * Updates minimum Flutter version to 2.10.
 
 ## 0.9.1+2

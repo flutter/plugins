@@ -3,23 +3,20 @@
 // found in the LICENSE file.
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
-import 'package:file_selector_windows/src/dart_file_selector_api.dart';
+import 'src/file_selector.dart';
 import 'src/messages.g.dart';
 
 /// An implementation of [FileSelectorPlatform] for Windows.
 class FileSelectorWindows extends FileSelectorPlatform {
-  /// Constructor for filePicker.
-  FileSelectorWindows([this._dartFileSelectorAPI]) {
-    _dartFileSelectorAPI = _dartFileSelectorAPI ?? DartFileSelectorAPI();
-    _api = _dartFileSelectorAPI!;
-  }
+  /// Constructor for FileSelectorWindows. It receives a DartFileSelectorApi parameter allowing dependency injection.
+  FileSelectorWindows(FileSelector? api)
+      : _api = api ?? FileSelector.withoutParameters();
 
-  late DartFileSelectorAPI _api;
-  late DartFileSelectorAPI? _dartFileSelectorAPI;
+  final FileSelector _api;
 
-  /// Registers the Windows implementation.
-  static void registerWith([DartFileSelectorAPI? filePicker]) {
-    FileSelectorPlatform.instance = FileSelectorWindows(filePicker);
+  /// Registers the Windows implementation. It receives a DartFileSelectorApi parameter allowing dependency injection.
+  static void registerWith(FileSelector? api) {
+    FileSelectorPlatform.instance = FileSelectorWindows(api);
   }
 
   @override
@@ -73,7 +70,7 @@ class FileSelectorWindows extends FileSelectorPlatform {
         allowedTypes: _typeGroupsFromXTypeGroups(acceptedTypeGroups),
       ),
     );
-    return path == null ? null : Future<String>.value(path);
+    return Future<String>.value(path);
   }
 
   @override
@@ -84,7 +81,7 @@ class FileSelectorWindows extends FileSelectorPlatform {
     final String? path = _api.getDirectoryPath(
         initialDirectory: initialDirectory,
         confirmButtonText: confirmButtonText);
-    return path == null ? null : Future<String>.value(path);
+    return Future<String>.value(path);
   }
 }
 
