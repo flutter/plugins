@@ -26,7 +26,7 @@ public class VideoRenderer {
 
     private static String TAG = "VideoRenderer";
 
-    private String vertexShaderCode = "  precision highp float;\n"+
+    private final static String vertexShaderCode = "  precision highp float;\n"+
             "            attribute vec3 vertexPosition;\n"+
             "            attribute vec2 uvs;\n"+
             "            varying vec2 varUvs;\n"+
@@ -39,7 +39,7 @@ public class VideoRenderer {
             "                gl_Position = mvp * vec4(vertexPosition, 1.0);\n"+
             "            }";;
 
-    private String fragmentShaderCode =
+    private final static String fragmentShaderCode =
             " #extension GL_OES_EGL_image_external : require\n"+
                     "            precision mediump float;\n"+
                     "\n"+
@@ -52,9 +52,9 @@ public class VideoRenderer {
                     "                gl_FragColor = vec4(c.r, c.g, c.b, c.a);\n"+
                     "            }";
 
-    private int[] textureHandles = new int[1];
+    private final int[] textureHandles = new int[1];
 
-    private float[] vertices = new float[]{
+    private final float[] vertices = new float[]{
             // x, y, z, u, v
             -1.0f, -1.0f, 0.0f, 0f, 0f,
             -1.0f, 1.0f, 0.0f, 0f, 1f,
@@ -62,7 +62,7 @@ public class VideoRenderer {
             1.0f, -1.0f, 0.0f, 1f, 0f
     };
 
-    private int[] indices = new int[]
+    private final int[] indices = new int[]
 
             {
                     2, 1, 0, 0, 3, 2
@@ -70,15 +70,10 @@ public class VideoRenderer {
 
     private int program;
     private int vertexHandle = 0;
-    private int[] bufferHandles = new int[2];
+    private final int[] bufferHandles = new int[2];
     private int uvsHandle = 0;
     private int texMatrixHandle = 0;
     private int mvpHandle = 0;
-    private int samplerHandle = 0;
-
-    private ByteBuffer vertexBuffer;
-
-    private ByteBuffer indexBuffer ;
 
     EGLDisplay display;
     EGLContext context;
@@ -177,13 +172,13 @@ public class VideoRenderer {
             if (!EGL14.eglMakeCurrent(display, surface, surface, context))
                 throw new RuntimeException("eglMakeCurrent(): " + GLUtils.getEGLErrorString(EGL14.eglGetError()));
 
-            vertexBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
+            ByteBuffer vertexBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
             vertexBuffer.order(ByteOrder.nativeOrder());
             vertexBuffer.asFloatBuffer().put(vertices);
             vertexBuffer.asFloatBuffer().position(0);
 
 
-            indexBuffer = ByteBuffer.allocateDirect(indices.length * 4);
+            ByteBuffer indexBuffer = ByteBuffer.allocateDirect(indices.length * 4);
             indexBuffer.order(ByteOrder.nativeOrder());
             indexBuffer.asIntBuffer().put(indices);
             indexBuffer.position(0);
@@ -202,8 +197,6 @@ public class VideoRenderer {
             uvsHandle = GLES20.glGetAttribLocation(program, "uvs");
             texMatrixHandle = GLES20.glGetUniformLocation(program, "texMatrix");
             mvpHandle = GLES20.glGetUniformLocation(program, "mvp");
-            samplerHandle = GLES20.glGetUniformLocation(program, "texSampler");
-
 
             // Initialize buffers
             GLES20.glGenBuffers(2, bufferHandles, 0);
