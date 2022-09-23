@@ -279,9 +279,6 @@ class Camera
                     ? getDeviceOrientationManager().getVideoOrientation()
                     : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
             .build();
-    final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
-    videoRenderer = new VideoRenderer(mediaRecorder.getSurface(),resolutionFeature.getCaptureSize().getWidth(),
-              resolutionFeature.getCaptureSize().getHeight());
   }
 
   // default to opening as image stream
@@ -336,7 +333,7 @@ class Camera
                 cameraDevice = new DefaultCameraDeviceWrapper(device);
                 try {
                   if(recordingVideo){
-                    startPreviewWithVideoStream();
+                    startPreviewWithVideoRendererStream();
                   }else{
                     startPreview();
                   }
@@ -775,9 +772,9 @@ class Camera
     recordingVideo = true;
     try {
       createCaptureSession(
-          CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(),videoRenderer.getInputSurface());
+          CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(),mediaRecorder.getSurface());
       result.success(null);
-    } catch (CameraAccessException | InterruptedException e) {
+    } catch (CameraAccessException e) {
       recordingVideo = false;
       captureFile = null;
       result.error("videoRecordingFailed", e.getMessage(), null);
@@ -1100,7 +1097,7 @@ class Camera
       createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
 
-  private void startPreviewWithVideoStream() throws CameraAccessException, InterruptedException {
+  private void startPreviewWithVideoRendererStream() throws CameraAccessException, InterruptedException {
     if (videoRenderer == null) return;
     createCaptureSession(
             CameraDevice.TEMPLATE_RECORD, videoRenderer.getInputSurface());
@@ -1237,9 +1234,17 @@ class Camera
     }
   }
 
+  private void prepareVideoRenderer() {
+    if(videoRenderer != null) return;
+    final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
+    videoRenderer = new VideoRenderer(mediaRecorder.getSurface(),resolutionFeature.getCaptureSize().getWidth(),
+            resolutionFeature.getCaptureSize().getHeight());
+  }
+
   public void setDescriptionWhileRecording(@NonNull final Result result, CameraProperties properties) {
       // TODO: save some camera settings
     stopAndReleaseCamera();
+    prepareVideoRenderer();
     cameraProperties = properties;
     cameraFeatures =
             CameraFeatures.init(

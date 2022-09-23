@@ -94,7 +94,7 @@ public class VideoRenderer {
 
     private final int recordingWidth;
     private final int recordingHeight;
-    private int rotation = 90;
+    private int rotation = 0;
 
     private final Object lock = new Object();
 
