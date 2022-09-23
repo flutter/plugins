@@ -16,16 +16,6 @@ RUN apt-get update && apt-get install -y google-cloud-sdk && \
     gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true
 
-# Install Android SDK 27.
-# TODO(stuartmorgan): See if this is still necessary with current images and
-# configurations (see https://github.com/flutter/plugins/pull/1091).
-RUN yes | sdkmanager \
-    "platforms;android-27" \
-    "build-tools;27.0.3" \
-    "extras;google;m2repository" \
-    "extras;android;m2repository"
-RUN yes | sdkmanager --licenses
-
 # Install formatter for C-based languages.
 RUN apt-get install -y clang-format
 
