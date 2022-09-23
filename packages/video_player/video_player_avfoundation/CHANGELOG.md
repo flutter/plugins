@@ -1,3 +1,7 @@
+## 2.3.7
+
+* Fixes a bug in pre-iOS 16 where videos from protected live streams are not shown.
+
 ## 2.3.6
 
 * Fixes a bug in iOS 16 where videos from protected live streams are not shown. 
