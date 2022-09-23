@@ -121,6 +121,9 @@ class Camera
   /** Takes an input/output surface and orients the recording correctly. This is needed because switching cameras while recording causes bad orientation */
   private VideoRenderer videoRenderer;
 
+  /** When we flip the camera we need to know if it aligns with the initial way the camera was facing or not */
+  private int initialCameraFacing;
+
   private final SurfaceTextureEntry flutterTexture;
   private final ResolutionPreset resolutionPreset;
   private final boolean enableAudio;
@@ -766,6 +769,7 @@ class Camera
       result.error("videoRecordingFailed", e.getMessage(), null);
       return;
     }
+    initialCameraFacing = cameraProperties.getLensFacing();
     // Re-create autofocus feature so it's using video focus mode now.
     cameraFeatures.setAutoFocus(
         cameraFeatureFactory.createAutoFocusFeature(cameraProperties, true));
@@ -1099,6 +1103,21 @@ class Camera
 
   private void startPreviewWithVideoRendererStream() throws CameraAccessException, InterruptedException {
     if (videoRenderer == null) return;
+
+    // get rotation for rendered video
+    final PlatformChannel.DeviceOrientation lockedOrientation =
+            ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
+                    .getLockedCaptureOrientation();
+    int rotation = lockedOrientation== null
+            ? cameraFeatures.getSensorOrientation().getDeviceOrientationManager().getVideoOrientation()
+            : cameraFeatures.getSensorOrientation().getDeviceOrientationManager().getVideoOrientation(lockedOrientation);
+
+
+    if(cameraProperties.getLensFacing() != initialCameraFacing){ // if we are facing the opposite way than the initial recording we need to flip 180 degrees
+      rotation = (rotation + 180) % 360;
+    }
+    videoRenderer.setRotation(rotation);
+
     createCaptureSession(
             CameraDevice.TEMPLATE_RECORD, videoRenderer.getInputSurface());
   }

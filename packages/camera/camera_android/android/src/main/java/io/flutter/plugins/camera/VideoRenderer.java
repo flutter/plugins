@@ -102,7 +102,7 @@ public class VideoRenderer {
     public Surface getInputSurface() throws InterruptedException {
         synchronized (lock) {
             while (inputSurface == null) {
-                lock.wait(500);
+                lock.wait();
             }
         }
         return inputSurface;
