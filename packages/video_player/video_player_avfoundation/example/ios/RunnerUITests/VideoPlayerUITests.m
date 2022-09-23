@@ -81,7 +81,8 @@
   // Wait until the video is loaded.
   [NSThread sleepForTimeInterval:60];
 
-  NSMutableSet *frames = [NSMutableSet set];
+  NSMutableSet *distinctFrames = [NSMutableSet set];
+  NSMutableArray *allFrames = [NSMutableArray array];
   int numberOfFrames = 60;
   for (int i = 0; i < numberOfFrames; i++) {
     UIImage *image = self.app.screenshot.image;
@@ -98,9 +99,9 @@
     // 0.5 compression is good enough for debugging purpose.
     NSData *imageData = UIImageJPEGRepresentation(smallerImage, 0.5);
     NSString *imageString = [imageData base64EncodedStringWithOptions:0];
-    NSLog(@"frame %d image data:\n%@", i, imageString);
 
-    [frames addObject:imageString];
+    [distinctFrames addObject:imageString];
+    [allFrames addObject:imageString];
 
     // The sample interval must NOT be the same as video length.
     // Otherwise it would always result in the same frame.
@@ -108,7 +109,12 @@
   }
 
   // At least 1 loading and 2 distinct frames (3 in total) to validate that the video is playing.
-  XCTAssert(frames.count >= 3, @"Must have at least 3 distinct frames.");
+  if (distinctFrames.count < 3) {
+    for (int i = 0; i < allFrames.count; i++) {
+      NSLog(@"Frame %i is:\n%@", i, allFrames[i]);
+    }
+  }
+  XCTAssert(distinctFrames.count >= 3, @"Must have at least 3 distinct frames.");
 }
 
 @end
