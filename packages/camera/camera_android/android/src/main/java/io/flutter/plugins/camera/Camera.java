@@ -1261,7 +1261,6 @@ class Camera
   }
 
   public void setDescriptionWhileRecording(@NonNull final Result result, CameraProperties properties) {
-      // TODO: save some camera settings
     stopAndReleaseCamera();
     prepareVideoRenderer();
     cameraProperties = properties;
@@ -1273,8 +1272,9 @@ class Camera
     try {
       open(imageFormatGroup, true);
     } catch (CameraAccessException e) {
-      e.printStackTrace(); // TODO: throw flutter error
+      result.error("setDescriptionWhileRecordingFailed", e.getMessage(), null);
     }
+    result.success(null);
   }
 
   public void dispose() {

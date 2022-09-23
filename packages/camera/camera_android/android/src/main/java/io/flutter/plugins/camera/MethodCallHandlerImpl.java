@@ -357,7 +357,6 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           CameraProperties cameraProperties =
                   new CameraPropertiesImpl(cameraName, CameraUtils.getCameraManager(activity));
           camera.setDescriptionWhileRecording(result,cameraProperties);
-          result.success(null);
         } catch (Exception e) {
           handleException(e, result);
         }
