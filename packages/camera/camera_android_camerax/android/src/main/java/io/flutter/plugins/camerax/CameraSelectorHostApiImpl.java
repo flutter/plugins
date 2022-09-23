@@ -17,7 +17,7 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
   private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
 
-  @VisibleForTesting public CameraSelector.Builder cameraSelectorBuilder;
+  @VisibleForTesting public CameraXProxy cameraXProxy = new CameraXProxy();
 
   public CameraSelectorHostApiImpl(
       BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
@@ -27,11 +27,9 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
 
   @Override
   public void create(@NonNull Long identifier, Long lensFacing) {
-    if (cameraSelectorBuilder == null) {
-      cameraSelectorBuilder = new CameraSelector.Builder();
-    }
-
+    CameraSelector.Builder cameraSelectorBuilder = cameraXProxy.createCameraSelectorBuilder();
     CameraSelector cameraSelector;
+
     if (lensFacing != null) {
       cameraSelector = cameraSelectorBuilder.requireLensFacing(Math.toIntExact(lensFacing)).build();
     } else {
@@ -39,7 +37,6 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
     }
 
     instanceManager.addDartCreatedInstance(cameraSelector, identifier);
-    cameraSelectorBuilder = null;
   }
 
   @Override

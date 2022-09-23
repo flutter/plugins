@@ -48,9 +48,11 @@ public class CameraSelectorTest {
   public void createTest() {
     final CameraSelectorHostApiImpl cameraSelectorHostApi =
         new CameraSelectorHostApiImpl(mockBinaryMessenger, testInstanceManager);
+    final CameraXProxy mockCameraXProxy = mock(CameraXProxy.class);
     final CameraSelector.Builder mockCameraSelectorBuilder = mock(CameraSelector.Builder.class);
 
-    cameraSelectorHostApi.cameraSelectorBuilder = mockCameraSelectorBuilder;
+    cameraSelectorHostApi.cameraXProxy = mockCameraXProxy;
+    when(mockCameraXProxy.createCameraSelectorBuilder()).thenReturn(mockCameraSelectorBuilder);
 
     when(mockCameraSelectorBuilder.requireLensFacing(1)).thenReturn(mockCameraSelectorBuilder);
     when(mockCameraSelectorBuilder.build()).thenReturn(mockCameraSelector);
