@@ -1,9 +1,9 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart' show immutable;
 
-/// A set of allowed XTypes
+/// A set of allowed XTypes.
 @immutable
 class XTypeGroup {
   /// Creates a new group with the given label and file extensions.
@@ -18,26 +18,26 @@ class XTypeGroup {
     this.webWildCards,
   }) : _extensions = extensions;
 
-  /// The 'name' or reference to this group of types
+  /// The 'name' or reference to this group of types.
   final String? label;
 
-  /// The MIME types for this group
+  /// The MIME types for this group.
   final List<String>? mimeTypes;
 
-  /// The UTIs for this group
+  /// The UTIs for this group.
   final List<String>? macUTIs;
 
-  /// The web wild cards for this group (ex: image/*, video/*)
+  /// The web wild cards for this group (ex: image/*, video/*).
   final List<String>? webWildCards;
 
   final List<String>? _extensions;
 
-  /// The extensions for this group
+  /// The extensions for this group.
   List<String>? get extensions {
     return _removeLeadingDots(_extensions);
   }
 
-  /// Converts this object into a JSON formatted object
+  /// Converts this object into a JSON formatted object.
   Map<String, dynamic> toJSON() {
     return <String, dynamic>{
       'label': label,
