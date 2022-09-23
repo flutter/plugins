@@ -1261,6 +1261,12 @@ class Camera
   }
 
   public void setDescriptionWhileRecording(@NonNull final Result result, CameraProperties properties) {
+
+    if(!recordingVideo){
+      result.error("setDescriptionWhileRecording", "Device was not recording", null);
+      return;
+    }
+
     stopAndReleaseCamera();
     prepareVideoRenderer();
     cameraProperties = properties;
