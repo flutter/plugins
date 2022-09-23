@@ -16,7 +16,7 @@ import 'android_webview_cookie_manager_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('clearCookies should call android_webview.clearCookies', () {
+  test('clearCookies should call android_webview.clearCookies', () async {
     final android_webview.CookieManager mockCookieManager = MockCookieManager();
 
     when(mockCookieManager.clearCookies())
@@ -27,9 +27,12 @@ void main() {
             .fromPlatformWebViewCookieManagerCreationParams(
                 const PlatformWebViewCookieManagerCreationParams());
 
-    AndroidWebViewCookieManager.fromNativeApi(params,
-            cookieManager: mockCookieManager)
-        .clearCookies();
+    final bool hasClearedCookies =
+        await AndroidWebViewCookieManager.fromNativeApi(params,
+                cookieManager: mockCookieManager)
+            .clearCookies();
+
+    expect(hasClearedCookies, true);
     verify(mockCookieManager.clearCookies());
   });
 
