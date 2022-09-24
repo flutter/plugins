@@ -40,7 +40,11 @@ class UnknownMapObjectIdError extends Error {
 }
 
 /// Android specific settings for [GoogleMap].
+@Deprecated(
+    'See https://pub.dev/packages/google_maps_flutter_android#display-mode')
 class AndroidGoogleMapsFlutter {
+  @Deprecated(
+      'See https://pub.dev/packages/google_maps_flutter_android#display-mode')
   AndroidGoogleMapsFlutter._();
 
   /// Whether to render [GoogleMap] with a [AndroidViewSurface] to build the Google Maps widget.
@@ -50,12 +54,12 @@ class AndroidGoogleMapsFlutter {
   /// versions below 10. See
   /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
   /// information.
-  ///
-  /// Defaults to false.
+  @Deprecated(
+      'See https://pub.dev/packages/google_maps_flutter_android#display-mode')
   static bool get useAndroidViewSurface {
     final GoogleMapsFlutterPlatform platform =
         GoogleMapsFlutterPlatform.instance;
-    if (platform is MethodChannelGoogleMapsFlutter) {
+    if (platform is GoogleMapsFlutterAndroid) {
       return platform.useAndroidViewSurface;
     }
     return false;
@@ -68,12 +72,12 @@ class AndroidGoogleMapsFlutter {
   /// versions below 10. See
   /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
   /// information.
-  ///
-  /// Defaults to false.
+  @Deprecated(
+      'See https://pub.dev/packages/google_maps_flutter_android#display-mode')
   static set useAndroidViewSurface(bool useAndroidViewSurface) {
     final GoogleMapsFlutterPlatform platform =
         GoogleMapsFlutterPlatform.instance;
-    if (platform is MethodChannelGoogleMapsFlutter) {
+    if (platform is GoogleMapsFlutterAndroid) {
       platform.useAndroidViewSurface = useAndroidViewSurface;
     }
   }
@@ -105,7 +109,7 @@ class GoogleMap extends StatefulWidget {
     this.layoutDirection,
 
     /// If no padding is specified default padding will be 0.
-    this.padding = const EdgeInsets.all(0),
+    this.padding = EdgeInsets.zero,
     this.indoorViewEnabled = false,
     this.trafficEnabled = false,
     this.buildingsEnabled = true,

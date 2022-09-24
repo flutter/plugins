@@ -184,12 +184,12 @@ class MockInAppPurchasePlatform extends Fake
   @override
   Future<void> completePurchase(PurchaseDetails purchase) {
     log.add(const MethodCall('completePurchase'));
-    return Future<void>.value(null);
+    return Future<void>.value();
   }
 
   @override
   Future<void> restorePurchases({String? applicationUserName}) {
     log.add(const MethodCall('restorePurchases'));
-    return Future<void>.value(null);
+    return Future<void>.value();
   }
 }

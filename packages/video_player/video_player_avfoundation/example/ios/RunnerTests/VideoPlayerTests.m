@@ -11,6 +11,10 @@
 
 @interface FLTVideoPlayer : NSObject <FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer *player;
+// This is to fix a bug (https://github.com/flutter/flutter/issues/111457) in iOS 16 with blank
+// video for encrypted video streams. An invisible AVPlayerLayer is used to overwrite the
+// protection of pixel buffers in those streams.
+@property(readonly, nonatomic) AVPlayerLayer *playerLayer;
 @end
 
 @interface FLTVideoPlayerPlugin (Test) <FLTAVFoundationVideoPlayerApi>
@@ -60,6 +64,45 @@
 @end
 
 @implementation VideoPlayerTests
+
+- (void)testIOS16BugWithEncryptedVideoStream {
+  // This is to fix a bug (https://github.com/flutter/flutter/issues/111457) in iOS 16 with blank
+  // video for encrypted video streams. An invisible AVPlayerLayer is used to overwrite the
+  // protection of pixel buffers in those streams.
+  // Note that a better unit test is to validate that `copyPixelBuffer` API returns the pixel
+  // buffers as expected, which requires setting up the video player properly with a protected video
+  // stream (.m3u8 file).
+  NSObject<FlutterPluginRegistry> *registry =
+      (NSObject<FlutterPluginRegistry> *)[[UIApplication sharedApplication] delegate];
+  NSObject<FlutterPluginRegistrar> *registrar =
+      [registry registrarForPlugin:@"testPlayerLayerWorkaround"];
+  FLTVideoPlayerPlugin *videoPlayerPlugin =
+      [[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
+
+  FlutterError *error;
+  [videoPlayerPlugin initialize:&error];
+  XCTAssertNil(error);
+
+  FLTCreateMessage *create = [FLTCreateMessage
+      makeWithAsset:nil
+                uri:@"https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"
+        packageName:nil
+         formatHint:nil
+        httpHeaders:@{}];
+  FLTTextureMessage *textureMessage = [videoPlayerPlugin create:create error:&error];
+  XCTAssertNil(error);
+  XCTAssertNotNil(textureMessage);
+  FLTVideoPlayer *player = videoPlayerPlugin.playersByTextureId[textureMessage.textureId];
+  XCTAssertNotNil(player);
+
+  if (@available(iOS 16.0, *)) {
+    XCTAssertNotNil(player.playerLayer, @"AVPlayerLayer should be present for iOS 16.");
+    XCTAssertNotNil(player.playerLayer.superlayer,
+                    @"AVPlayerLayer should be added on screen for iOS 16.");
+  } else {
+    XCTAssertNil(player.playerLayer, @"AVPlayerLayer should not be present before iOS 16.");
+  }
+}
 
 - (void)testSeekToInvokesTextureFrameAvailableOnTextureRegistry {
   NSObject<FlutterTextureRegistry> *mockTextureRegistry =

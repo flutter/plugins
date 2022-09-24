@@ -504,7 +504,7 @@ void main() {
       });
 
       test('skips non-Flutter examples', () async {
-        createFakePackage('package', packagesDir, isFlutter: false);
+        createFakePackage('package', packagesDir);
 
         final List<String> output = await runCapturingPrint(
             runner, <String>['build-examples', '--ios']);

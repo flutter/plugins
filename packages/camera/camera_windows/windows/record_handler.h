@@ -16,6 +16,8 @@ namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
 enum class RecordingType {
+  // Camera is not recording.
+  kNone,
   // Recording continues until it is stopped with a separate stop command.
   kContinuous,
   // Recording stops automatically after requested record time is passed.
@@ -43,7 +45,6 @@ class RecordHandler {
   // Initializes record sink and requests capture engine to start recording.
   //
   // Sets record state to: starting.
-  // Returns false if recording cannot be started.
   //
   // file_path:       A string that hold file path for video capture.
   // max_duration:    A int64 value of maximun recording duration.
@@ -53,16 +54,15 @@ class RecordHandler {
   //                  the actual recording.
   // base_media_type: A pointer to base media type used as a base
   //                  for the actual video capture media type.
-  bool StartRecord(const std::string& file_path, int64_t max_duration,
-                   IMFCaptureEngine* capture_engine,
-                   IMFMediaType* base_media_type);
+  HRESULT StartRecord(const std::string& file_path, int64_t max_duration,
+                      IMFCaptureEngine* capture_engine,
+                      IMFMediaType* base_media_type);
 
   // Stops existing recording.
-  // Returns false if recording cannot be stopped.
   //
   // capture_engine:  A pointer to capture engine instance. Used to stop
   //                  the ongoing recording.
-  bool StopRecord(IMFCaptureEngine* capture_engine);
+  HRESULT StopRecord(IMFCaptureEngine* capture_engine);
 
   // Set the record handler recording state to: running.
   void OnRecordStarted();
@@ -109,7 +109,7 @@ class RecordHandler {
   uint64_t recording_duration_us_ = 0;
   std::string file_path_;
   RecordState recording_state_ = RecordState::kNotStarted;
-  RecordingType type_;
+  RecordingType type_ = RecordingType::kNone;
   ComPtr<IMFCaptureRecordSink> record_sink_;
 };
 

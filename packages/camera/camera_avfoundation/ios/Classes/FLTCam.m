@@ -20,16 +20,18 @@
 }
 
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
+  __weak typeof(self) weakSelf = self;
   dispatch_async(self.captureSessionQueue, ^{
-    self.eventSink = nil;
+    weakSelf.eventSink = nil;
   });
   return nil;
 }
 
 - (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
                                        eventSink:(nonnull FlutterEventSink)events {
+  __weak typeof(self) weakSelf = self;
   dispatch_async(self.captureSessionQueue, ^{
-    self.eventSink = events;
+    weakSelf.eventSink = events;
   });
   return nil;
 }
@@ -247,16 +249,18 @@ NSString *const errorMethod = @"error";
     return;
   }
 
+  __weak typeof(self) weakSelf = self;
   FLTSavePhotoDelegate *savePhotoDelegate = [[FLTSavePhotoDelegate alloc]
            initWithPath:path
                 ioQueue:self.photoIOQueue
       completionHandler:^(NSString *_Nullable path, NSError *_Nullable error) {
-        dispatch_async(self.captureSessionQueue, ^{
-          // Dispatch back to capture session queue to delete reference.
-          // Retain cycle is broken after the dictionary entry is cleared.
-          // This is to keep the behavior with the previous `selfReference` approach in the
-          // FLTSavePhotoDelegate, where delegate is released only after capture completion.
-          [self.inProgressSavePhotoDelegates removeObjectForKey:@(settings.uniqueID)];
+        typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        dispatch_async(strongSelf.captureSessionQueue, ^{
+          // cannot use the outter `strongSelf`
+          typeof(self) strongSelf = weakSelf;
+          if (!strongSelf) return;
+          [strongSelf.inProgressSavePhotoDelegates removeObjectForKey:@(settings.uniqueID)];
         });
 
         if (error) {
@@ -387,6 +391,7 @@ NSString *const errorMethod = @"error";
     // Under rare contest scenarios, it will not block for too long since the critical section is
     // quite lightweight.
     dispatch_sync(self.pixelBufferSynchronizationQueue, ^{
+      // No need weak self because it's dispatch_sync.
       previousPixelBuffer = self.latestPixelBuffer;
       self.latestPixelBuffer = newBuffer;
     });
@@ -610,6 +615,7 @@ NSString *const errorMethod = @"error";
   __block CVPixelBufferRef pixelBuffer = nil;
   // Use `dispatch_sync` because `copyPixelBuffer` API requires synchronous return.
   dispatch_sync(self.pixelBufferSynchronizationQueue, ^{
+    // No need weak self because it's dispatch_sync.
     pixelBuffer = self.latestPixelBuffer;
     self.latestPixelBuffer = nil;
   });
@@ -917,11 +923,19 @@ NSString *const errorMethod = @"error";
         [[FLTThreadSafeEventChannel alloc] initWithEventChannel:eventChannel];
 
     _imageStreamHandler = imageStreamHandler;
+    __weak typeof(self) weakSelf = self;
     [threadSafeEventChannel setStreamHandler:_imageStreamHandler
                                   completion:^{
-                                    dispatch_async(self->_captureSessionQueue, ^{
-                                      self.isStreamingImages = YES;
-                                      self.streamingPendingFramesCount = 0;
+                                    typeof(self) strongSelf = weakSelf;
+                                    if (!strongSelf) return;
+
+                                    dispatch_async(strongSelf.captureSessionQueue, ^{
+                                      // cannot use the outter strongSelf
+                                      typeof(self) strongSelf = weakSelf;
+                                      if (!strongSelf) return;
+
+                                      strongSelf.isStreamingImages = YES;
+                                      strongSelf.streamingPendingFramesCount = 0;
                                     });
                                   }];
   } else {

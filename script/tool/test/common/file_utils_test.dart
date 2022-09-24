@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 void main() {
   test('works on Posix', () async {
     final FileSystem fileSystem =
-        MemoryFileSystem(style: FileSystemStyle.posix);
+        MemoryFileSystem();
 
     final Directory base = fileSystem.directory('/').childDirectory('base');
     final File file =
