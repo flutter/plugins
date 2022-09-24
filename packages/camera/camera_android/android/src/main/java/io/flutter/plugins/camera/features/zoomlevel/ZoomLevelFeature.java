@@ -11,11 +11,11 @@ import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
 /** Controls the zoom configuration on the {@link android.hardware.camera2} API. */
-public class ZoomLevelFeature extends CameraFeature<Float> {
-  private static final Float defaultZoomLevel = 1.0f;
+public class ZoomLevelFeature extends CameraFeaFture<Float> {
+  private static final Float DEFAULT_ZOOM_LEVEL = 1.0f;
   private final boolean hasSupport;
   private final Rect sensorArraySize;
-  private Float currentSetting = defaultZoomLevel;
+  private Float currentSetting = DEFAULT_ZOOM_LEVEL;
   private Float minimumZoomLevel = currentSetting;
   private Float maximumZoomLevel;
 
@@ -34,12 +34,12 @@ public class ZoomLevelFeature extends CameraFeature<Float> {
       hasSupport = false;
       return;
     }
-    // On Android 11+ CONTROL_ZOOM_RATIO_RANGE should be use to get the zoom ratio directly as minimum zoom does not have to be 1.0f
+    // On Android 11+ CONTROL_ZOOM_RATIO_RANGE should be use to get the zoom ratio directly as minimum zoom does not have to be 1.0f.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       minimumZoomLevel = cameraProperties.getScalerMinZoomRatio();
       maximumZoomLevel = cameraProperties.getScalerMaxZoomRatio();
     } else {
-      minimumZoomLevel = defaultZoomLevel;
+      minimumZoomLevel = DEFAULT_ZOOM_LEVEL;
       Float maxDigitalZoom = cameraProperties.getScalerAvailableMaxDigitalZoom();
       maximumZoomLevel =
           ((maxDigitalZoom == null) || (maxDigitalZoom < minimumZoomLevel))
