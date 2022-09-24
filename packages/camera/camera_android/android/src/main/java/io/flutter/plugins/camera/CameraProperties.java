@@ -155,7 +155,8 @@ public interface CameraProperties {
   Float getScalerAvailableMaxDigitalZoom();
 
   /**
-   * Returns the minimum ratio between the default camera zoom setting and all of the available zoom.
+   * Returns the minimum ratio between the default camera zoom setting and all of the available
+   * zoom.
    *
    * <p>By default maps to the @see
    * android.hardware.camera2.CameraCharacteristics#CONTROL_ZOOM_RATIO_RANGE key's lower value.
@@ -166,7 +167,8 @@ public interface CameraProperties {
   Float getScalerMinZoomRatio();
 
   /**
-   * Returns the maximum ratio between the default camera zoom setting and all of the available zoom.
+   * Returns the maximum ratio between the default camera zoom setting and all of the available
+   * zoom.
    *
    * <p>By default maps to the @see
    * android.hardware.camera2.CameraCharacteristics#CONTROL_ZOOM_RATIO_RANGE key's upper value.
