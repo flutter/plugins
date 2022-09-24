@@ -1,3 +1,13 @@
+## 5.4.2
+
+* Updates minimum Flutter version to 2.10.
+* Adds override for `GoogleSignInPlatform.initWithParams`.
+* Fixes tests to recognize new default `forceCodeForRefreshToken` request attribute.
+
+## 5.4.1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 5.4.0
 
 * Adds support for configuring `serverClientId` through `GoogleSignIn` constructor.

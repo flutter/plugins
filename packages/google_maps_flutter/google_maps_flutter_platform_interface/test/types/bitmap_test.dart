@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore:unnecessary_import
 import 'dart:typed_data';
+import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
@@ -24,6 +27,56 @@ void main() {
 
       expect(descriptorFromJson, isNot(descriptor)); // New instance
       expect(identical(descriptorFromJson.toJson(), json), isTrue); // Same JSON
+    });
+
+    group('fromBytes constructor', () {
+      test('with empty byte array, throws assertion error', () {
+        expect(() {
+          BitmapDescriptor.fromBytes(Uint8List.fromList(<int>[]));
+        }, throwsAssertionError);
+      });
+
+      test('with bytes', () {
+        final BitmapDescriptor descriptor = BitmapDescriptor.fromBytes(
+          Uint8List.fromList(<int>[1, 2, 3]),
+        );
+        expect(descriptor, isA<BitmapDescriptor>());
+        expect(
+            descriptor.toJson(),
+            equals(<Object>[
+              'fromBytes',
+              <int>[1, 2, 3],
+            ]));
+      });
+
+      test('with size, not on the web, size is ignored', () {
+        final BitmapDescriptor descriptor = BitmapDescriptor.fromBytes(
+          Uint8List.fromList(<int>[1, 2, 3]),
+          size: const Size(40, 20),
+        );
+
+        expect(
+            descriptor.toJson(),
+            equals(<Object>[
+              'fromBytes',
+              <int>[1, 2, 3],
+            ]));
+      }, skip: kIsWeb);
+
+      test('with size, on the web, size is preserved', () {
+        final BitmapDescriptor descriptor = BitmapDescriptor.fromBytes(
+          Uint8List.fromList(<int>[1, 2, 3]),
+          size: const Size(40, 20),
+        );
+
+        expect(
+            descriptor.toJson(),
+            equals(<Object>[
+              'fromBytes',
+              <int>[1, 2, 3],
+              <int>[40, 20],
+            ]));
+      }, skip: !kIsWeb);
     });
 
     group('fromJson validation', () {

@@ -15,6 +15,14 @@ instead. (It is marked as Discontinued since it is no longer maintained as
 a general-purpose tool, but updates are still published for use in
 flutter/packages.)
 
+The commands in tools require the Flutter-bundled version of Dart to be the first `dart` loaded in the path.
+
+### Extra Setup
+
+When updating sample code excerpts (`update-excerpts`) for the README.md files,
+there is some [extra setup for
+submodules](#update-readmemd-from-example-sources) that is necessary.
+
 ### From Source (flutter/plugins only)
 
 Set up:
@@ -105,6 +113,8 @@ cd <repository root>
 dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --ios --android --no-integration --packages plugin_name
 # Run all tests for macOS:
 dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --macos --packages plugin_name
+# Run all tests for Windows:
+dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --windows --packages plugin_name
 ```
 
 ### Update README.md from Example Sources

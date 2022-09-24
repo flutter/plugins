@@ -1,3 +1,16 @@
+## 0.2.3+4
+
+* Updates minimum Flutter version to 2.10.
+* Adds IMMEDIATE_AND_CHARGE_FULL_PRICE to the `ProrationMode`.
+
+## 0.2.3+3
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 0.2.3+2
+
+* Fixes incorrect json key in `queryPurchasesAsync` that fixes restore purchases functionality.
+
 ## 0.2.3+1
 
 * Updates `json_serializable` to fix warnings in generated code.

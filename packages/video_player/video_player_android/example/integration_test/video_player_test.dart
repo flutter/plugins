@@ -57,7 +57,7 @@ void main() {
       await _controller.initialize();
 
       expect(_controller.value.isInitialized, true);
-      expect(await _controller.position, const Duration(seconds: 0));
+      expect(await _controller.position, Duration.zero);
       expect(_controller.value.duration,
           const Duration(seconds: 7, milliseconds: 540));
     });
@@ -68,8 +68,7 @@ void main() {
       await _controller.play();
       await tester.pumpAndSettle(_playDuration);
 
-      expect(
-          await _controller.position, greaterThan(const Duration(seconds: 0)));
+      expect(await _controller.position, greaterThan(Duration.zero));
     });
 
     testWidgets('can seek', (WidgetTester tester) async {
@@ -117,8 +116,7 @@ void main() {
       await _controller.play();
       await tester.pumpAndSettle(_playDuration);
 
-      expect(
-          await _controller.position, greaterThan(const Duration(seconds: 0)));
+      expect(await _controller.position, greaterThan(Duration.zero));
     });
   });
 
@@ -149,8 +147,7 @@ void main() {
       await tester.pumpAndSettle(_playDuration);
       await _controller.pause();
 
-      expect(
-          await _controller.position, greaterThan(const Duration(seconds: 0)));
+      expect(await _controller.position, greaterThan(Duration.zero));
 
       await expectLater(started.future, completes);
       await expectLater(ended.future, completes);

@@ -1,5 +1,9 @@
-## NEXT
+## 2.3.6
 
+* Fixes a bug in iOS 16 where videos from protected live streams are not shown. 
+* Updates minimum Flutter version to 2.10.
+* Fixes violations of new analysis option use_named_constants.
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 2.3.5

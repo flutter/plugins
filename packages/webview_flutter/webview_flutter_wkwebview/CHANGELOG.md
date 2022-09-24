@@ -1,3 +1,18 @@
+## 2.9.4
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Fixes typo in an internal method name, from `setCookieForInsances` to `setCookieForInstances`.
+
+## 2.9.3
+
+* Updates `webview_flutter_platform_interface` constraint to the correct minimum
+  version.
+
+## 2.9.2
+
+* Fixes crash when an Objective-C object in `FWFInstanceManager` is released, but the dealloc
+  callback is no longer available.
+
 ## 2.9.1
 
 * Fixes regression where the behavior for the `UIScrollView` insets were removed.

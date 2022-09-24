@@ -63,7 +63,7 @@ void main() {
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': 'A Company',
       'ProductName': 'Amazing App',
-    }, language: languageEn, encoding: encodingCP1252);
+    }, encoding: encodingCP1252);
     final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, isNotNull);
     if (path != null) {
@@ -77,7 +77,7 @@ void main() {
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': 'A Company',
       'ProductName': 'Amazing App',
-    }, language: languageEn, encoding: encodingUnicode);
+    });
     final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, isNotNull);
     if (path != null) {
