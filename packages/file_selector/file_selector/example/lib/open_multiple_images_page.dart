@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 
 import 'package:file_selector/file_selector.dart';
@@ -15,14 +18,10 @@ class OpenMultipleImagesPage extends StatelessWidget {
 
   Future<void> _openImageFile(BuildContext context) async {
     // #docregion MultiOpen
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
     final XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'JPEGs',
       extensions: <String>['jpg', 'jpeg'],
     );
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
     final XTypeGroup pngTypeGroup = XTypeGroup(
       label: 'PNGs',
       extensions: <String>['png'],
