@@ -144,18 +144,12 @@ NSString *const errorMethod = @"error";
   // https://github.com/flutter/plugins/pull/4520#discussion_r766335637
   _maxStreamingPendingFramesCount = 4;
 
-  NSError *localError = nil;
-  _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
-                                                             error:&localError];
-
-  if (localError) {
-    *error = localError;
-    return nil;
-  }
-
-    [self setupCaptureVideoOutput];
-    AVCaptureConnection *connection = [self createConnectionWithInput:_captureVideoInput];
-
+    NSError *localError = nil;
+    AVCaptureConnection *connection = [self configureConnection:localError];
+    if (localError != nil) {
+      *error = localError;
+      return nil;
+    }
 
   [_videoCaptureSession addInputWithNoConnections:_captureVideoInput];
   [_videoCaptureSession addOutputWithNoConnections:_captureVideoOutput];
@@ -175,23 +169,33 @@ NSString *const errorMethod = @"error";
   return self;
 }
 
-- (AVCaptureConnection *) createConnectionWithInput:(AVCaptureInput *) captureVideoInput {
-    AVCaptureConnection *connection =
-        [AVCaptureConnection connectionWithInputPorts:captureVideoInput.ports
-                                               output:_captureVideoOutput];
-
-    if ([_captureDevice position] == AVCaptureDevicePositionFront) {
-      connection.videoMirrored = YES;
+- (AVCaptureConnection *) configureConnection:(NSError *)error {
+    
+    // setup input
+    _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
+                                                               error:&error];
+    
+    if (error != nil) {
+      return nil;
     }
-    return connection;
-}
 
-- (void) setupCaptureVideoOutput {
+    // setup output
     _captureVideoOutput = [AVCaptureVideoDataOutput new];
     _captureVideoOutput.videoSettings =
         @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)};
     [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
     [_captureVideoOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
+    
+
+    // setup connection
+    AVCaptureConnection *connection =
+        [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
+                                               output:_captureVideoOutput];
+    if ([_captureDevice position] == AVCaptureDevicePositionFront) {
+      connection.videoMirrored = YES;
+    }
+    
+    return connection;
 }
 
 - (void)start {
@@ -873,41 +877,34 @@ NSString *const errorMethod = @"error";
     
     _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
     
-    AVCaptureInput *oldInput = _captureVideoInput;
-    AVCaptureVideoDataOutput *oldOutput = _captureVideoOutput;
-    AVCaptureConnection *oldConnection = [oldOutput connectionWithMediaType:AVMediaTypeVideo];
+    AVCaptureConnection *oldConnection = [_captureVideoOutput connectionWithMediaType:AVMediaTypeVideo];
     
     // stop video capture from old output
-    // this also automatically removes old output's connection from captureSession
-    [oldOutput setSampleBufferDelegate:nil queue:nil];
+    [_captureVideoOutput setSampleBufferDelegate:nil queue:nil];
     
-    // get new video input
+    // remove old connections
+    [_videoCaptureSession beginConfiguration];
+    [_videoCaptureSession removeInput:_captureVideoInput];
+    [_videoCaptureSession removeOutput:_captureVideoOutput];
+
     NSError *error = nil;
-    AVCaptureInput *newInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
-                                                                      error:&error];
-    
-    if (error) {
+    AVCaptureConnection *newConnection = [self configureConnection:error];
+    if (error != nil) {
         [result sendError:error];
+        return;
     }
-    
-    [self setupCaptureVideoOutput];
-    
-    AVCaptureConnection *newConnection = [self createConnectionWithInput:newInput];
     
    // keep orientation
     if (oldConnection && newConnection.isVideoOrientationSupported) {
         newConnection.videoOrientation = oldConnection.videoOrientation;
     }
     
-    // replace old with new in session
-    [_videoCaptureSession beginConfiguration];
-    [_videoCaptureSession removeInput:oldInput];
-    [_videoCaptureSession removeOutput:oldOutput];
-    if(![_videoCaptureSession canAddInput:newInput])
+    // add new connections
+    if(![_videoCaptureSession canAddInput:_captureVideoInput])
         [result sendErrorWithCode:@"VideoError"
                           message:@"Unable switch video input"
                           details:nil];
-    [_videoCaptureSession addInputWithNoConnections:newInput];
+    [_videoCaptureSession addInputWithNoConnections:_captureVideoInput];
     if(![_videoCaptureSession canAddOutput:_captureVideoOutput])
         [result sendErrorWithCode:@"VideoError"
                           message:@"Unable switch video output"
@@ -918,7 +915,6 @@ NSString *const errorMethod = @"error";
                           message:@"Unable switch video connection"
                           details:nil];
     [_videoCaptureSession addConnection:newConnection];
-    _captureVideoInput = newInput;
     [_videoCaptureSession commitConfiguration];
     
     [result sendSuccess];
