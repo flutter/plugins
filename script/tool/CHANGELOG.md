@@ -1,3 +1,10 @@
+## 0.10.0+1
+
+* Recognizes `run_test.sh` as a developer-only file in `version-check`.
+* Adds `readme-check` validation that the example/README.md for a federated
+  plugin's implementation packages has a warning about the intended use of the
+  example instead of the template boilerplate.
+
 ## 0.10.0
 
 * Improves the logic in `version-check` to determine what changes don't require
