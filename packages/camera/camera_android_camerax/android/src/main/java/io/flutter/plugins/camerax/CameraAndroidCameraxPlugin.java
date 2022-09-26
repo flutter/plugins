@@ -86,7 +86,7 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
   }
 
   /**
-   * Updates context that is used to fetch the corresponding instance of a{@code
+   * Updates context that is used to fetch the corresponding instance of a {@code
    * ProcessCameraProvider}.
    */
   private void updateContext(Context context) {

@@ -41,7 +41,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
 
   /**
    * Returns the instance of the ProcessCameraProvider to manage the lifecycle of the camera for the
-   * supplied {@code Context}.
+   * current {@code Context}.
    */
   @Override
   public void getInstance(GeneratedCameraXLibrary.Result<Long> result) {
