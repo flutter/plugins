@@ -1,8 +1,8 @@
 # The Flutter version is not important here, since the CI scripts update Flutter
 # before running. What matters is that the base image is pinned to minimize
 # unintended changes when modifying this file.
-# This is the hash for the 3.3.1 image.
-FROM cirrusci/flutter@sha256:33ef98157e7c39ae17db40f01a52c8526ac7dc2cf40f1fea60402daa8e0760ad
+# This is the hash for the 3.0.0 image.
+FROM cirrusci/flutter@sha256:0224587bba33241cf908184283ec2b544f1b672d87043ead1c00521c368cf844
 
 RUN apt-get update -y
 
