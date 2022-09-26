@@ -1,4 +1,9 @@
-# `file_selector_windows` Example
+# Platform Implementation Test App
 
-Demonstrates Windows implementation of the
-[`file_selector` plugin](https://pub.dev/packages/file_selector).
+This is a test app for manual testing and automated integration testing
+of this platform implementation. It is not intended to demonstrate actual use of
+this package, since the intent is that plugin clients use the app-facing
+package.
+
+Unless you are making changes to this implementation package, this example is
+very unlikely to be relevant.

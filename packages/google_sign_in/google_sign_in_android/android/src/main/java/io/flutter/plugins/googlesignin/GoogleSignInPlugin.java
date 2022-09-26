@@ -356,16 +356,12 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         // Android apps are identified by their package name and the SHA-1 of their signing key.
         // https://developers.google.com/android/guides/client-auth
         // https://developers.google.com/identity/sign-in/android/start#configure-a-google-api-project
-        if (!Strings.isNullOrEmpty(clientId)) {
-          if (Strings.isNullOrEmpty(serverClientId)) {
-            Log.w(
-                "google_sing_in",
-                "clientId is not supported on Android and is interpreted as serverClientId."
-                    + "Use serverClientId instead to suppress this warning.");
-            serverClientId = clientId;
-          } else {
-            Log.w("google_sing_in", "clientId is not supported on Android and is ignored.");
-          }
+        if (!Strings.isNullOrEmpty(clientId) && Strings.isNullOrEmpty(serverClientId)) {
+          Log.w(
+              "google_sign_in",
+              "clientId is not supported on Android and is interpreted as serverClientId. "
+                  + "Use serverClientId instead to suppress this warning.");
+          serverClientId = clientId;
         }
 
         if (Strings.isNullOrEmpty(serverClientId)) {

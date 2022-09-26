@@ -481,7 +481,7 @@ class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
   }
 
   /// Calls [setCookie] with the ids of the provided object instances.
-  Future<void> setCookieForInsances(
+  Future<void> setCookieForInstances(
     WKHttpCookieStore instance,
     NSHttpCookie cookie,
   ) {
