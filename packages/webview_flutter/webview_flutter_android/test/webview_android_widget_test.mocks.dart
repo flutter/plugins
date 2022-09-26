@@ -30,8 +30,8 @@ class _FakeOffset_2 extends _i1.Fake implements _i3.Offset {}
 
 class _FakeWebView_3 extends _i1.Fake implements _i2.WebView {}
 
-class _FakeDownloadListener_4 extends _i1.Fake
-    implements _i2.DownloadListener {}
+class _FakeDownloadListener_4 extends _i1.Fake implements _i2.DownloadListener {
+}
 
 class _FakeJavascriptChannelRegistry_5 extends _i1.Fake
     implements _i4.JavascriptChannelRegistry {}
