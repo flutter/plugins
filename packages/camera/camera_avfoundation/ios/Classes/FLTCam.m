@@ -887,17 +887,17 @@ NSString *const errorMethod = @"error";
     [newOutput setAlwaysDiscardsLateVideoFrames:YES];
     [newOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
     
-    AVCaptureConnection *_newConnection =
+    AVCaptureConnection *newConnection =
     [AVCaptureConnection connectionWithInputPorts:newInput.ports
                                            output:newOutput];
     // set mirrored if needed
     if ([_captureDevice position] == AVCaptureDevicePositionFront) {
-        _newConnection.videoMirrored = YES;
+        newConnection.videoMirrored = YES;
     }
     
    // keep orientation
-    if (oldConnection && _newConnection.isVideoOrientationSupported) {
-        _newConnection.videoOrientation = oldConnection.videoOrientation;
+    if (oldConnection && newConnection.isVideoOrientationSupported) {
+        newConnection.videoOrientation = oldConnection.videoOrientation;
     }
     
     // replace old with new in session
@@ -914,11 +914,11 @@ NSString *const errorMethod = @"error";
                           message:@"Unable switch video output"
                           details:nil];
     [_videoCaptureSession addOutputWithNoConnections:newOutput];
-    if(![_videoCaptureSession canAddConnection:_newConnection])
+    if(![_videoCaptureSession canAddConnection:newConnection])
         [result sendErrorWithCode:@"VideoError"
                           message:@"Unable switch video connection"
                           details:nil];
-    [_videoCaptureSession addConnection:_newConnection];
+    [_videoCaptureSession addConnection:newConnection];
     _captureVideoInput = newInput;
     _captureVideoOutput = newOutput;
     [_videoCaptureSession commitConfiguration];
