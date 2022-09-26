@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+// ignore_for_file: prefer_const_literals_to_create_immutables
+
 import 'dart:io';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
