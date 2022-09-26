@@ -63,10 +63,10 @@ abstract class ProcessCameraProviderHostApi {
   @async
   int getInstance();
 
-  List<int> getAvailableCameraInfos(int instanceId);
+  List<int> getAvailableCameraInfos(int identifier);
 }
 
 @FlutterApi()
 abstract class ProcessCameraProviderFlutterApi {
-  void create(int instanceId);
+  void create(int identifier);
 }

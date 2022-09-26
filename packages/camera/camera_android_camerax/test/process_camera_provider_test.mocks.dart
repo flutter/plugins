@@ -34,7 +34,7 @@ class MockTestProcessCameraProviderHostApi extends _i1.Mock
       (super.noSuchMethod(Invocation.method(#getInstance, []),
           returnValue: _i3.Future<int>.value(0)) as _i3.Future<int>);
   @override
-  List<int?> getAvailableCameraInfos(int? instanceId) => (super.noSuchMethod(
-      Invocation.method(#getAvailableCameraInfos, [instanceId]),
+  List<int?> getAvailableCameraInfos(int? identifier) => (super.noSuchMethod(
+      Invocation.method(#getAvailableCameraInfos, [identifier]),
       returnValue: <int?>[]) as List<int?>);
 }

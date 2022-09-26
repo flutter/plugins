@@ -309,13 +309,13 @@ class ProcessCameraProviderHostApi {
     }
   }
 
-  Future<List<int?>> getAvailableCameraInfos(int arg_instanceId) async {
+  Future<List<int?>> getAvailableCameraInfos(int arg_identifier) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.ProcessCameraProviderHostApi.getAvailableCameraInfos',
         codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_identifier]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -348,7 +348,7 @@ abstract class ProcessCameraProviderFlutterApi {
   static const MessageCodec<Object?> codec =
       _ProcessCameraProviderFlutterApiCodec();
 
-  void create(int instanceId);
+  void create(int identifier);
   static void setup(ProcessCameraProviderFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -362,10 +362,10 @@ abstract class ProcessCameraProviderFlutterApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.ProcessCameraProviderFlutterApi.create was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.ProcessCameraProviderFlutterApi.create was null, expected non-null int.');
-          api.create(arg_instanceId!);
+          api.create(arg_identifier!);
           return;
         });
       }

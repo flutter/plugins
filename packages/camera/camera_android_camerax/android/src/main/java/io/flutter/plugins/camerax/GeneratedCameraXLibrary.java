@@ -330,7 +330,7 @@ public class GeneratedCameraXLibrary {
     void getInstance(Result<Long> result);
 
     @NonNull
-    List<Long> getAvailableCameraInfos(@NonNull Long instanceId);
+    List<Long> getAvailableCameraInfos(@NonNull Long identifier);
 
     /** The codec used by ProcessCameraProviderHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -388,13 +388,13 @@ public class GeneratedCameraXLibrary {
                 Map<String, Object> wrapped = new HashMap<>();
                 try {
                   ArrayList<Object> args = (ArrayList<Object>) message;
-                  Number instanceIdArg = (Number) args.get(0);
-                  if (instanceIdArg == null) {
-                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
                   }
                   List<Long> output =
                       api.getAvailableCameraInfos(
-                          (instanceIdArg == null) ? null : instanceIdArg.longValue());
+                          (identifierArg == null) ? null : identifierArg.longValue());
                   wrapped.put("result", output);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
@@ -431,14 +431,14 @@ public class GeneratedCameraXLibrary {
       return ProcessCameraProviderFlutterApiCodec.INSTANCE;
     }
 
-    public void create(@NonNull Long instanceIdArg, Reply<Void> callback) {
+    public void create(@NonNull Long identifierArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(
               binaryMessenger,
               "dev.flutter.pigeon.ProcessCameraProviderFlutterApi.create",
               getCodec());
       channel.send(
-          new ArrayList<Object>(Arrays.asList(instanceIdArg)),
+          new ArrayList<Object>(Arrays.asList(identifierArg)),
           channelReply -> {
             callback.reply(null);
           });

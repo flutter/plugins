@@ -28,7 +28,13 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
     this.context = context;
   }
 
-  // TODO(cs): Add documentation about this
+  /**
+   * Sets the context that the {@code ProcessCameraProvider} will use to attach the lifecycle of the
+   * camera to.
+   *
+   * <p>If using the camera plugin in an add-to-app context, ensure that a new instance of the
+   * {@code ProcessCameraProvider} is fetched via {@code #getInstance} anytime the context changes.
+   */
   public void setContext(Context context) {
     this.context = context;
   }
@@ -60,9 +66,9 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
 
   /** Returns cameras available to the ProcessCameraProvider. */
   @Override
-  public List<Long> getAvailableCameraInfos(@NonNull Long instanceId) {
+  public List<Long> getAvailableCameraInfos(@NonNull Long identifier) {
     ProcessCameraProvider processCameraProvider =
-        (ProcessCameraProvider) instanceManager.getInstance(instanceId);
+        (ProcessCameraProvider) instanceManager.getInstance(identifier);
 
     List<CameraInfo> availableCameras = processCameraProvider.getAvailableCameraInfos();
     List<Long> availableCamerasIds = new ArrayList<Long>();
