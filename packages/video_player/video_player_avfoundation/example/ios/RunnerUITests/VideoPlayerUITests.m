@@ -4,6 +4,7 @@
 
 @import os.log;
 @import XCTest;
+@import CoreGraphics;
 #import <AVKit/AVKit.h>
 
 @interface VideoPlayerUITests : XCTestCase
@@ -71,7 +72,7 @@
   XCTAssertTrue(foundPlaybackSpeed5x);
 
   // Cycle through tabs.
-  for (NSString *tabName in @[ @"Asset", @"Remote" ]) {
+  for (NSString *tabName in @[ @"Asset mp4", @"Remote mp4" ]) {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"label BEGINSWITH %@", tabName];
     XCUIElement *unselectedTab = [app.staticTexts elementMatchingPredicate:predicate];
     XCTAssertTrue([unselectedTab waitForExistenceWithTimeout:30.0]);
