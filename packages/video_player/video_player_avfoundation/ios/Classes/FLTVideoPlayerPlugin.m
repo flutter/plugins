@@ -39,6 +39,7 @@
 /// An invisible player layer used to access the pixel buffers in protected video streams in iOS 16.
 @property(readonly, nonatomic) AVPlayerLayer *playerLayer;
 @property(readonly, nonatomic) CADisplayLink *displayLink;
+@property(nonatomic) AVPictureInPictureController *pictureInPictureController;
 @property(nonatomic) FlutterEventChannel *eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(nonatomic) CGAffineTransform preferredTransform;
@@ -59,8 +60,6 @@ static void *durationContext = &durationContext;
 static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void *playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void *playbackBufferFullContext = &playbackBufferFullContext;
-
-AVPictureInPictureController *pictureInPictureController;
 
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset frameUpdater:(FLTFrameUpdater *)frameUpdater {
@@ -273,18 +272,18 @@ NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
 
 - (void)setupPipController {
   if ([AVPictureInPictureController isPictureInPictureSupported]) {
-    pictureInPictureController =
+    self.pictureInPictureController =
         [[AVPictureInPictureController alloc] initWithPlayerLayer:self.playerLayer];
     [self setAutomaticallyStartPictureInPicture:NO];
-    pictureInPictureController.delegate = self;
+    self.pictureInPictureController.delegate = self;
   }
 }
 
 - (void)setAutomaticallyStartPictureInPicture:
     (BOOL)canStartPictureInPictureAutomaticallyFromInline {
-  if (!pictureInPictureController) return;
+  if (!self.pictureInPictureController) return;
   if (@available(iOS 14.2, *)) {
-    pictureInPictureController.canStartPictureInPictureAutomaticallyFromInline =
+    self.pictureInPictureController.canStartPictureInPictureAutomaticallyFromInline =
         canStartPictureInPictureAutomaticallyFromInline;
   }
 }
@@ -301,17 +300,17 @@ NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
   }
 
   self.isPictureInPictureStarted = shouldPictureInPictureStart;
-  if (pictureInPictureController && self.isPictureInPictureStarted &&
-      ![pictureInPictureController isPictureInPictureActive]) {
+  if (self.pictureInPictureController && self.isPictureInPictureStarted &&
+      ![self.pictureInPictureController isPictureInPictureActive]) {
     if (_eventSink != nil) {
       // The event is already send here to make sure that Flutter UI can be updates as soon as
       // possible
       _eventSink(@{@"event" : @"startingPictureInPicture"});
     }
-    [pictureInPictureController startPictureInPicture];
-  } else if (pictureInPictureController && !self.isPictureInPictureStarted &&
-             [pictureInPictureController isPictureInPictureActive]) {
-    [pictureInPictureController stopPictureInPicture];
+    [self.pictureInPictureController startPictureInPicture];
+  } else if (self.pictureInPictureController && !self.isPictureInPictureStarted &&
+             [self.pictureInPictureController isPictureInPictureActive]) {
+    [self.pictureInPictureController stopPictureInPicture];
   }
 }
 

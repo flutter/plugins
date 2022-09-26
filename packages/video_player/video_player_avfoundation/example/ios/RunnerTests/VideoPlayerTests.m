@@ -263,7 +263,8 @@
   XCTAssertEqual(avPlayer.volume, 0.1f);
 
   // Set Picture In Picture
-  FLTPiPRect *pictureInPictureRect = [FLTPiPRect makeWithTop:@0 left:@0 width:@300 height:@200];
+  FLTPictureInPictureOverlayRect *pictureInPictureRect =
+      [FLTPictureInPictureOverlayRect makeWithTop:@0 left:@0 width:@300 height:@200];
   FLTSetPictureInPictureOverlayRectMessage *setPictureInPictureOverlayRectMessage =
       [FLTSetPictureInPictureOverlayRectMessage makeWithTextureId:textureId
                                                              rect:pictureInPictureRect];
@@ -274,10 +275,11 @@
   // Set Picture In Picture Start
   FLTSetPictureInPictureMessage *setPictureInPictureStart =
       [FLTSetPictureInPictureMessage makeWithTextureId:textureId enabled:@YES];
-  XCTestExpectation *startingPiPExpectation = [self expectationWithDescription:@"startingPiP"];
+  XCTestExpectation *startingPiPExpectation =
+      [self expectationWithDescription:@"startingPictureInPicture"];
   [player onListenWithArguments:nil
                       eventSink:^(NSDictionary<NSString *, id> *event) {
-                        if ([event[@"event"] isEqualToString:@"startingPiP"]) {
+                        if ([event[@"event"] isEqualToString:@"startingPictureInPicture"]) {
                           [startingPiPExpectation fulfill];
                         }
                       }];
