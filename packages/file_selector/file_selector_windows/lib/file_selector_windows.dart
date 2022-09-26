@@ -8,15 +8,18 @@ import 'src/messages.g.dart';
 
 /// An implementation of [FileSelectorPlatform] for Windows.
 class FileSelectorWindows extends FileSelectorPlatform {
+  /// Constructor for FileSelectorWindows. It uses default parameters for the [FileSelector].
+  FileSelectorWindows() : this.withFileSelectorAPI(null);
+
   /// Constructor for FileSelectorWindows. It receives a DartFileSelectorApi parameter allowing dependency injection.
-  FileSelectorWindows(FileSelector? api)
+  FileSelectorWindows.withFileSelectorAPI(FileSelector? api)
       : _api = api ?? FileSelector.withoutParameters();
 
   final FileSelector _api;
 
-  /// Registers the Windows implementation. It receives a DartFileSelectorApi parameter allowing dependency injection.
-  static void registerWith(FileSelector? api) {
-    FileSelectorPlatform.instance = FileSelectorWindows(api);
+  /// Registers the Windows implementation. It uses default parameters for the [FileSelector].
+  static void registerWith() {
+    FileSelectorPlatform.instance = FileSelectorWindows();
   }
 
   @override

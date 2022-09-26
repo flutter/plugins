@@ -23,7 +23,7 @@ void main() {
 
   setUp(() {
     mockFileSelector = MockFileSelector();
-    plugin = FileSelectorWindows(mockFileSelector);
+    plugin = FileSelectorWindows.withFileSelectorAPI(mockFileSelector);
   });
 
   tearDown(() {
@@ -31,7 +31,7 @@ void main() {
   });
 
   test('registered instance', () {
-    FileSelectorWindows.registerWith(mockFileSelector);
+    FileSelectorWindows.registerWith();
     expect(FileSelectorPlatform.instance, isA<FileSelectorWindows>());
   });
 

@@ -15,7 +15,7 @@ import 'package:mockito/mockito.dart';
 import 'package:win32/win32.dart';
 
 import 'file_selector_api_test.mocks.dart';
-import 'open_file_dialog_mock.dart';
+import 'mock_open_file_dialog.dart';
 
 @GenerateMocks(<Type>[FileOpenDialogWrapper, ShellItemWrapper])
 void main() {
