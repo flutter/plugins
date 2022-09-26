@@ -16,35 +16,41 @@ import 'package:pigeon/pigeon.dart';
 ))
 class TextureMessage {
   TextureMessage(this.textureId);
+
   int textureId;
 }
 
 class LoopingMessage {
   LoopingMessage(this.textureId, this.isLooping);
+
   int textureId;
   bool isLooping;
 }
 
 class VolumeMessage {
   VolumeMessage(this.textureId, this.volume);
+
   int textureId;
   double volume;
 }
 
 class PlaybackSpeedMessage {
   PlaybackSpeedMessage(this.textureId, this.speed);
+
   int textureId;
   double speed;
 }
 
 class PositionMessage {
   PositionMessage(this.textureId, this.position);
+
   int textureId;
   int position;
 }
 
 class CreateMessage {
   CreateMessage({required this.httpHeaders});
+
   String? asset;
   String? uri;
   String? packageName;
@@ -58,15 +64,23 @@ class MixWithOthersMessage {
   bool mixWithOthers;
 }
 
-class PreparePictureInPictureMessage {
-  PreparePictureInPictureMessage(
+class AutomaticallyStartPictureInPictureMessage {
+  AutomaticallyStartPictureInPictureMessage(
     this.textureId,
     this.enableStartPictureInPictureAutomaticallyFromInline,
+  );
+
+  int textureId;
+  bool enableStartPictureInPictureAutomaticallyFromInline;
+}
+
+class SetPictureInPictureOverlayRectMessage {
+  SetPictureInPictureOverlayRectMessage(
+    this.textureId,
     this.rect,
   );
 
   int textureId;
-  int enableStartPictureInPictureAutomaticallyFromInline;
   PiPRect? rect;
 }
 
@@ -84,41 +98,59 @@ class PiPRect {
   double height;
 }
 
-class PictureInPictureMessage {
-  PictureInPictureMessage(this.textureId, this.enabled);
+class SetPictureInPictureMessage {
+  SetPictureInPictureMessage(this.textureId, this.enabled);
 
   int textureId;
-  int enabled;
+  bool enabled;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class AVFoundationVideoPlayerApi {
   @ObjCSelector('initialize')
   void initialize();
+
   @ObjCSelector('create:')
   TextureMessage create(CreateMessage msg);
+
   @ObjCSelector('dispose:')
   void dispose(TextureMessage msg);
+
   @ObjCSelector('setLooping:')
   void setLooping(LoopingMessage msg);
+
   @ObjCSelector('setVolume:')
   void setVolume(VolumeMessage msg);
+
   @ObjCSelector('setPlaybackSpeed:')
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+
   @ObjCSelector('play:')
   void play(TextureMessage msg);
+
   @ObjCSelector('position:')
   PositionMessage position(TextureMessage msg);
+
   @ObjCSelector('seekTo:')
   void seekTo(PositionMessage msg);
+
   @ObjCSelector('pause:')
   void pause(TextureMessage msg);
+
   @ObjCSelector('setMixWithOthers:')
   void setMixWithOthers(MixWithOthersMessage msg);
+
   @ObjCSelector('isPictureInPictureSupported')
   bool isPictureInPictureSupported();
-  @ObjCSelector('preparePictureInPicture:')
-  void preparePictureInPicture(PreparePictureInPictureMessage msg);
+
+  @ObjCSelector('setPictureInPictureOverlayRect:')
+  void setPictureInPictureOverlayRect(
+      SetPictureInPictureOverlayRectMessage msg);
+
+  @ObjCSelector('setAutomaticallyStartPictureInPicture:')
+  void setAutomaticallyStartPictureInPicture(
+      AutomaticallyStartPictureInPictureMessage msg);
+
   @ObjCSelector('setPictureInPicture:')
-  void setPictureInPicture(PictureInPictureMessage msg);
+  void setPictureInPicture(SetPictureInPictureMessage msg);
 }

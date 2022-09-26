@@ -23,8 +23,10 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
   MixWithOthersMessage? mixWithOthersMessage;
-  PreparePictureInPictureMessage? preparePictureInPictureMessage;
-  PictureInPictureMessage? pictureInPictureMessage;
+  SetPictureInPictureOverlayRectMessage? setPictureInPictureOverlayRectMessage;
+  AutomaticallyStartPictureInPictureMessage?
+      automaticallyStartPictureInPictureMessage;
+  SetPictureInPictureMessage? setPictureInPictureMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
@@ -100,15 +102,23 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   }
 
   @override
-  void preparePictureInPicture(PreparePictureInPictureMessage msg) {
-    log.add('preparePictureInPicture');
-    preparePictureInPictureMessage = msg;
+  void setAutomaticallyStartPictureInPicture(
+      AutomaticallyStartPictureInPictureMessage msg) {
+    log.add('setAutomaticallyStartPictureInPicture');
+    automaticallyStartPictureInPictureMessage = msg;
   }
 
   @override
-  void setPictureInPicture(PictureInPictureMessage msg) {
+  void setPictureInPictureOverlayRect(
+      SetPictureInPictureOverlayRectMessage msg) {
+    log.add('setPictureInPictureOverlayRect');
+    setPictureInPictureOverlayRectMessage = msg;
+  }
+
+  @override
+  void setPictureInPicture(SetPictureInPictureMessage msg) {
     log.add('setPictureInPicture');
-    pictureInPictureMessage = msg;
+    setPictureInPictureMessage = msg;
   }
 }
 
@@ -259,18 +269,53 @@ void main() {
       expect(isSupported, true);
     });
 
+    test('setAutomaticallyStartPictureInPicture true', () async {
+      await player.setAutomaticallyStartPictureInPicture(
+          textureId: 1,
+          enableStartPictureInPictureAutomaticallyFromInline: true);
+      expect(log.log.last, 'setAutomaticallyStartPictureInPicture');
+      expect(log.automaticallyStartPictureInPictureMessage?.textureId, 1);
+      expect(
+          log.automaticallyStartPictureInPictureMessage
+              ?.enableStartPictureInPictureAutomaticallyFromInline,
+          true);
+    });
+
+    test('setAutomaticallyStartPictureInPicture false', () async {
+      await player.setAutomaticallyStartPictureInPicture(
+          textureId: 1,
+          enableStartPictureInPictureAutomaticallyFromInline: false);
+      expect(log.log.last, 'setAutomaticallyStartPictureInPicture');
+      expect(log.automaticallyStartPictureInPictureMessage?.textureId, 1);
+      expect(
+          log.automaticallyStartPictureInPictureMessage
+              ?.enableStartPictureInPictureAutomaticallyFromInline,
+          false);
+    });
+
+    test('setPictureInPictureOverlayRect', () async {
+      await player.setPictureInPictureOverlayRect(
+          textureId: 1, rect: const Rect.fromLTWH(0, 1, 2, 3));
+      expect(log.log.last, 'setPictureInPictureOverlayRect');
+      expect(log.setPictureInPictureOverlayRectMessage?.textureId, 1);
+      expect(log.setPictureInPictureOverlayRectMessage?.rect?.left, 0);
+      expect(log.setPictureInPictureOverlayRectMessage?.rect?.top, 1);
+      expect(log.setPictureInPictureOverlayRectMessage?.rect?.width, 2);
+      expect(log.setPictureInPictureOverlayRectMessage?.rect?.height, 3);
+    });
+
     test('setPictureInPicture true', () async {
       await player.setPictureInPicture(1, true);
       expect(log.log.last, 'setPictureInPicture');
-      expect(log.pictureInPictureMessage?.textureId, 1);
-      expect(log.pictureInPictureMessage?.enabled, 1);
+      expect(log.setPictureInPictureMessage?.textureId, 1);
+      expect(log.setPictureInPictureMessage?.enabled, true);
     });
 
     test('setPictureInPicture false', () async {
       await player.setPictureInPicture(1, false);
       expect(log.log.last, 'setPictureInPicture');
-      expect(log.pictureInPictureMessage?.textureId, 1);
-      expect(log.pictureInPictureMessage?.enabled, 0);
+      expect(log.setPictureInPictureMessage?.textureId, 1);
+      expect(log.setPictureInPictureMessage?.enabled, false);
     });
 
     test('videoEventsFor', () async {

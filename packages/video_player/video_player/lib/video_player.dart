@@ -536,19 +536,29 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<bool> isPictureInPictureSupported() =>
       _videoPlayerPlatform.isPictureInPictureSupported();
 
-  /// Prepare picture in picture by passing the location of the video player view
-  /// nableStartPictureInPictureAutomaticallyFromInline indicates whether Picture in Picture should be allowed to start automatically when transitioning to background when the receiver’s content is embedded inline. Default is false.
-  Future<void> preparePictureInPicture({
-    required Rect rect,
-    bool enableStartPictureInPictureAutomaticallyFromInline = false,
+  /// Enable/disable to start picture in picture automatically when the app goes to the background.
+  Future<void> setAutomaticallyStartPictureInPicture({
+    required bool enableStartPictureInPictureAutomaticallyFromInline,
   }) async {
     if (!value.isInitialized || _isDisposed) {
       return;
     }
-    await _videoPlayerPlatform.preparePictureInPicture(
+    await _videoPlayerPlatform.setAutomaticallyStartPictureInPicture(
       textureId: _textureId,
       enableStartPictureInPictureAutomaticallyFromInline:
           enableStartPictureInPictureAutomaticallyFromInline,
+    );
+  }
+
+  /// Set the location of the video player view. So picture in picture can use it for animating
+  Future<void> setPictureInPictureOverlayRect({
+    required Rect rect,
+  }) async {
+    if (!value.isInitialized || _isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.setPictureInPictureOverlayRect(
+      textureId: _textureId,
       rect: rect,
     );
   }

@@ -281,15 +281,13 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                 return;
               }
               final Offset offset = box.localToGlobal(Offset.zero);
-              _controller.preparePictureInPicture(
+              _controller.setPictureInPictureOverlayRect(
                 rect: Rect.fromLTWH(
                   offset.dx,
                   offset.dy,
                   box.size.width,
                   box.size.height,
                 ),
-                enableStartPictureInPictureAutomaticallyFromInline:
-                    _enableStartPictureInPictureAutomaticallyFromInline,
               );
             },
             child: const Text('Prepare'),

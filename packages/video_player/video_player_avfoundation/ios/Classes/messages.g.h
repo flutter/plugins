@@ -18,9 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTPositionMessage;
 @class FLTCreateMessage;
 @class FLTMixWithOthersMessage;
-@class FLTPreparePictureInPictureMessage;
+@class FLTAutomaticallyStartPictureInPictureMessage;
+@class FLTSetPictureInPictureOverlayRectMessage;
 @class FLTPiPRect;
-@class FLTPictureInPictureMessage;
+@class FLTSetPictureInPictureMessage;
 
 @interface FLTTextureMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
@@ -83,15 +84,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSNumber *mixWithOthers;
 @end
 
-@interface FLTPreparePictureInPictureMessage : NSObject
+@interface FLTAutomaticallyStartPictureInPictureMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithTextureId:(NSNumber *)textureId
     enableStartPictureInPictureAutomaticallyFromInline:
-        (NSNumber *)enableStartPictureInPictureAutomaticallyFromInline
-                                                  rect:(nullable FLTPiPRect *)rect;
+        (NSNumber *)enableStartPictureInPictureAutomaticallyFromInline;
 @property(nonatomic, strong) NSNumber *textureId;
 @property(nonatomic, strong) NSNumber *enableStartPictureInPictureAutomaticallyFromInline;
+@end
+
+@interface FLTSetPictureInPictureOverlayRectMessage : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithTextureId:(NSNumber *)textureId rect:(nullable FLTPiPRect *)rect;
+@property(nonatomic, strong) NSNumber *textureId;
 @property(nonatomic, strong, nullable) FLTPiPRect *rect;
 @end
 
@@ -108,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSNumber *height;
 @end
 
-@interface FLTPictureInPictureMessage : NSObject
+@interface FLTSetPictureInPictureMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithTextureId:(NSNumber *)textureId enabled:(NSNumber *)enabled;
@@ -139,9 +146,11 @@ NSObject<FlutterMessageCodec> *FLTAVFoundationVideoPlayerApiGetCodec(void);
                    error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
 - (nullable NSNumber *)isPictureInPictureSupported:(FlutterError *_Nullable *_Nonnull)error;
-- (void)preparePictureInPicture:(FLTPreparePictureInPictureMessage *)msg
-                          error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setPictureInPicture:(FLTPictureInPictureMessage *)msg
+- (void)setPictureInPictureOverlayRect:(FLTSetPictureInPictureOverlayRectMessage *)msg
+                                 error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setAutomaticallyStartPictureInPicture:(FLTAutomaticallyStartPictureInPictureMessage *)msg
+                                        error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setPictureInPicture:(FLTSetPictureInPictureMessage *)msg
                       error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 

@@ -20,19 +20,19 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
   const _TestHostVideoPlayerApiCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is CreateMessage) {
+    if (value is AutomaticallyStartPictureInPictureMessage) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is LoopingMessage) {
+    } else if (value is CreateMessage) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is MixWithOthersMessage) {
+    } else if (value is LoopingMessage) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is PiPRect) {
+    } else if (value is MixWithOthersMessage) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PictureInPictureMessage) {
+    } else if (value is PiPRect) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else if (value is PlaybackSpeedMessage) {
@@ -41,14 +41,17 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is PositionMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is PreparePictureInPictureMessage) {
+    } else if (value is SetPictureInPictureMessage) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    } else if (value is TextureMessage) {
+    } else if (value is SetPictureInPictureOverlayRectMessage) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    } else if (value is VolumeMessage) {
+    } else if (value is TextureMessage) {
       buffer.putUint8(137);
+      writeValue(buffer, value.encode());
+    } else if (value is VolumeMessage) {
+      buffer.putUint8(138);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -59,19 +62,20 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128:
-        return CreateMessage.decode(readValue(buffer)!);
+        return AutomaticallyStartPictureInPictureMessage.decode(
+            readValue(buffer)!);
 
       case 129:
-        return LoopingMessage.decode(readValue(buffer)!);
+        return CreateMessage.decode(readValue(buffer)!);
 
       case 130:
-        return MixWithOthersMessage.decode(readValue(buffer)!);
+        return LoopingMessage.decode(readValue(buffer)!);
 
       case 131:
-        return PiPRect.decode(readValue(buffer)!);
+        return MixWithOthersMessage.decode(readValue(buffer)!);
 
       case 132:
-        return PictureInPictureMessage.decode(readValue(buffer)!);
+        return PiPRect.decode(readValue(buffer)!);
 
       case 133:
         return PlaybackSpeedMessage.decode(readValue(buffer)!);
@@ -80,12 +84,15 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
         return PositionMessage.decode(readValue(buffer)!);
 
       case 135:
-        return PreparePictureInPictureMessage.decode(readValue(buffer)!);
+        return SetPictureInPictureMessage.decode(readValue(buffer)!);
 
       case 136:
-        return TextureMessage.decode(readValue(buffer)!);
+        return SetPictureInPictureOverlayRectMessage.decode(readValue(buffer)!);
 
       case 137:
+        return TextureMessage.decode(readValue(buffer)!);
+
+      case 138:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:
@@ -109,8 +116,11 @@ abstract class TestHostVideoPlayerApi {
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
   bool isPictureInPictureSupported();
-  void preparePictureInPicture(PreparePictureInPictureMessage msg);
-  void setPictureInPicture(PictureInPictureMessage msg);
+  void setPictureInPictureOverlayRect(
+      SetPictureInPictureOverlayRectMessage msg);
+  void setAutomaticallyStartPictureInPicture(
+      AutomaticallyStartPictureInPictureMessage msg);
+  void setPictureInPicture(SetPictureInPictureMessage msg);
   static void setup(TestHostVideoPlayerApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -338,7 +348,7 @@ abstract class TestHostVideoPlayerApi {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.AVFoundationVideoPlayerApi.preparePictureInPicture',
+          'dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPictureOverlayRect',
           codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
@@ -346,13 +356,34 @@ abstract class TestHostVideoPlayerApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.preparePictureInPicture was null.');
+              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPictureOverlayRect was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final PreparePictureInPictureMessage? arg_msg =
-              (args[0] as PreparePictureInPictureMessage?);
+          final SetPictureInPictureOverlayRectMessage? arg_msg =
+              (args[0] as SetPictureInPictureOverlayRectMessage?);
           assert(arg_msg != null,
-              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.preparePictureInPicture was null, expected non-null PreparePictureInPictureMessage.');
-          api.preparePictureInPicture(arg_msg!);
+              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPictureOverlayRect was null, expected non-null SetPictureInPictureOverlayRectMessage.');
+          api.setPictureInPictureOverlayRect(arg_msg!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.AVFoundationVideoPlayerApi.setAutomaticallyStartPictureInPicture',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.setAutomaticallyStartPictureInPicture was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final AutomaticallyStartPictureInPictureMessage? arg_msg =
+              (args[0] as AutomaticallyStartPictureInPictureMessage?);
+          assert(arg_msg != null,
+              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.setAutomaticallyStartPictureInPicture was null, expected non-null AutomaticallyStartPictureInPictureMessage.');
+          api.setAutomaticallyStartPictureInPicture(arg_msg!);
           return <Object?, Object?>{};
         });
       }
@@ -369,10 +400,10 @@ abstract class TestHostVideoPlayerApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPicture was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final PictureInPictureMessage? arg_msg =
-              (args[0] as PictureInPictureMessage?);
+          final SetPictureInPictureMessage? arg_msg =
+              (args[0] as SetPictureInPictureMessage?);
           assert(arg_msg != null,
-              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPicture was null, expected non-null PictureInPictureMessage.');
+              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPicture was null, expected non-null SetPictureInPictureMessage.');
           api.setPictureInPicture(arg_msg!);
           return <Object?, Object?>{};
         });

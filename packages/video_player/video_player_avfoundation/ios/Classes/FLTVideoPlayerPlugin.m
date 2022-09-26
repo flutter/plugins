@@ -46,7 +46,6 @@
 @property(nonatomic, readonly) BOOL isPlaying;
 @property(nonatomic) BOOL isLooping;
 @property(nonatomic, readonly) BOOL isInitialized;
-@property(nonatomic) AVPlayerLayer *playerLayer;
 @property(nonatomic) BOOL isPiPStarted;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
@@ -61,7 +60,7 @@ static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void *playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void *playbackBufferFullContext = &playbackBufferFullContext;
 
-AVPictureInPictureController *pipController;
+AVPictureInPictureController *pictureInPictureController;
 
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset frameUpdater:(FLTFrameUpdater *)frameUpdater {
@@ -249,10 +248,19 @@ NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
   // This is to fix a bug (https://github.com/flutter/flutter/issues/111457) in iOS 16 with blank
   // video for encrypted video streams. An invisible AVPlayerLayer is used to overwrite the
   // protection of pixel buffers in those streams.
+  // It is also used to start picture in picture
+  _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
+  // We set the opacity to 0.001 because it is an overlay.
+  // Picture in picture will show a placeholder over other widgets when video_player is used in a
+  // ScrollView, PageView or in a widget that changes location.
+  _playerLayer.opacity = 0.001;
   if (@available(iOS 16.0, *)) {
-    _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
     [rootViewController().view.layer addSublayer:_playerLayer];
+  } else {
+    UIViewController *vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    [vc.view.layer addSublayer:self.playerLayer];
   }
+  [self setupPipController];
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
@@ -263,45 +271,45 @@ NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
   return self;
 }
 
+- (void)setupPipController {
+  if ([AVPictureInPictureController isPictureInPictureSupported]) {
+    pictureInPictureController =
+        [[AVPictureInPictureController alloc] initWithPlayerLayer:self.playerLayer];
+    [self setAutomaticallyStartPictureInPicture:NO];
+    pictureInPictureController.delegate = self;
+  }
+}
+
+- (void)setAutomaticallyStartPictureInPicture:
+    (BOOL)canStartPictureInPictureAutomaticallyFromInline {
+  if (!pictureInPictureController) return;
+  if (@available(iOS 14.2, *)) {
+    pictureInPictureController.canStartPictureInPictureAutomaticallyFromInline =
+        canStartPictureInPictureAutomaticallyFromInline;
+  }
+}
+
+- (void)setPictureInPictureOverlayRect:(CGRect)frame {
+  if (_player) {
+    self.playerLayer.frame = frame;
+  }
+}
+
 - (void)setPictureInPicture:(BOOL)isPiPStarted {
   if (self.isPiPStarted == isPiPStarted) {
     return;
   }
 
   self.isPiPStarted = isPiPStarted;
-  if (pipController && self.isPiPStarted && ![pipController isPictureInPictureActive]) {
+  if (pictureInPictureController && self.isPiPStarted &&
+      ![pictureInPictureController isPictureInPictureActive]) {
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"startingPiP"});
     }
-    [pipController startPictureInPicture];
-  } else if (pipController && !self.isPiPStarted && [pipController isPictureInPictureActive]) {
-    [pipController stopPictureInPicture];
-  }
-}
-
-- (void)setupPipController:(BOOL)canStartPictureInPictureAutomaticallyFromInline {
-  if ([AVPictureInPictureController isPictureInPictureSupported]) {
-    pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:self.playerLayer];
-    if (@available(iOS 14.2, *)) {
-      pipController.canStartPictureInPictureAutomaticallyFromInline =
-          canStartPictureInPictureAutomaticallyFromInline;
-    }
-    pipController.delegate = self;
-  }
-}
-
-- (void)usePlayerLayer:(CGRect)frame
-    canStartPictureInPictureAutomaticallyFromInline:
-        (BOOL)canStartPictureInPictureAutomaticallyFromInline {
-  if (_player) {
-    self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
-    UIViewController *vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-    self.playerLayer.frame = frame;
-    self.playerLayer.needsDisplayOnBoundsChange = YES;
-    self.playerLayer.opacity = 0.001;
-    [vc.view.layer addSublayer:self.playerLayer];
-    vc.view.layer.needsDisplayOnBoundsChange = YES;
-    [self setupPipController:canStartPictureInPictureAutomaticallyFromInline];
+    [pictureInPictureController startPictureInPicture];
+  } else if (pictureInPictureController && !self.isPiPStarted &&
+             [pictureInPictureController isPictureInPictureActive]) {
+    [pictureInPictureController stopPictureInPicture];
   }
 }
 
@@ -725,23 +733,31 @@ NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
   }
 }
 
-- (void)preparePictureInPicture:(FLTPreparePictureInPictureMessage *)input
-                          error:(FlutterError **)error {
-  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player usePlayerLayer:CGRectMake(input.rect.left.floatValue, input.rect.top.floatValue,
-                                    input.rect.width.floatValue, input.rect.height.floatValue)
-      canStartPictureInPictureAutomaticallyFromInline:
-          input.enableStartPictureInPictureAutomaticallyFromInline.boolValue];
-}
-
-- (void)setPictureInPicture:(FLTPictureInPictureMessage *)input error:(FlutterError **)error {
-  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player setPictureInPicture:input.enabled.boolValue];
-}
-
 - (nullable NSNumber *)isPictureInPictureSupported:
     (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   return @(AVPictureInPictureController.isPictureInPictureSupported);
+}
+
+- (void)setAutomaticallyStartPictureInPicture:(FLTAutomaticallyStartPictureInPictureMessage *)input
+                                        error:(FlutterError **)error {
+  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+  [player
+      setAutomaticallyStartPictureInPicture:input.enableStartPictureInPictureAutomaticallyFromInline
+                                                .boolValue];
+}
+
+- (void)setPictureInPictureOverlayRect:(FLTSetPictureInPictureOverlayRectMessage *)input
+                                 error:(FlutterError **)error {
+  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+  [player setPictureInPictureOverlayRect:CGRectMake(input.rect.left.floatValue,
+                                                    input.rect.top.floatValue,
+                                                    input.rect.width.floatValue,
+                                                    input.rect.height.floatValue)];
+}
+
+- (void)setPictureInPicture:(FLTSetPictureInPictureMessage *)input error:(FlutterError **)error {
+  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+  [player setPictureInPicture:input.enabled.boolValue];
 }
 
 @end

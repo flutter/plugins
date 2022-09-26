@@ -106,14 +106,22 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   /// Returns true if picture in picture is supported on the device.
   Future<bool> isPictureInPictureSupported() async => false;
 
-  /// Prepare picture in picture by passing the location of the video player view
-  Future<void> preparePictureInPicture({
+  /// Enable/disable to start picture in picture automatically when the app goes to the background.
+  Future<void> setAutomaticallyStartPictureInPicture({
     required int textureId,
     required bool enableStartPictureInPictureAutomaticallyFromInline,
+  }) {
+    throw UnimplementedError(
+        'setAutomaticallyStartPictureInPicture() has not been implemented.');
+  }
+
+  /// Set the location of the video player view. So picture in picture can use it for animating.
+  Future<void> setPictureInPictureOverlayRect({
+    required int textureId,
     required Rect rect,
   }) {
     throw UnimplementedError(
-        'preparePictureInPicture() has not been implemented.');
+        'setPictureInPictureOverlayRect() has not been implemented.');
   }
 
   /// Start/stop picture in picture mode

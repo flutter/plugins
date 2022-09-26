@@ -191,33 +191,54 @@ class MixWithOthersMessage {
   }
 }
 
-class PreparePictureInPictureMessage {
-  PreparePictureInPictureMessage({
+class AutomaticallyStartPictureInPictureMessage {
+  AutomaticallyStartPictureInPictureMessage({
     required this.textureId,
     required this.enableStartPictureInPictureAutomaticallyFromInline,
-    this.rect,
   });
 
   int textureId;
-  int enableStartPictureInPictureAutomaticallyFromInline;
-  PiPRect? rect;
+  bool enableStartPictureInPictureAutomaticallyFromInline;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
     pigeonMap['textureId'] = textureId;
     pigeonMap['enableStartPictureInPictureAutomaticallyFromInline'] =
         enableStartPictureInPictureAutomaticallyFromInline;
+    return pigeonMap;
+  }
+
+  static AutomaticallyStartPictureInPictureMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return AutomaticallyStartPictureInPictureMessage(
+      textureId: pigeonMap['textureId']! as int,
+      enableStartPictureInPictureAutomaticallyFromInline:
+          pigeonMap['enableStartPictureInPictureAutomaticallyFromInline']!
+              as bool,
+    );
+  }
+}
+
+class SetPictureInPictureOverlayRectMessage {
+  SetPictureInPictureOverlayRectMessage({
+    required this.textureId,
+    this.rect,
+  });
+
+  int textureId;
+  PiPRect? rect;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['textureId'] = textureId;
     pigeonMap['rect'] = rect == null ? null : rect!.encode();
     return pigeonMap;
   }
 
-  static PreparePictureInPictureMessage decode(Object message) {
+  static SetPictureInPictureOverlayRectMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
-    return PreparePictureInPictureMessage(
+    return SetPictureInPictureOverlayRectMessage(
       textureId: pigeonMap['textureId']! as int,
-      enableStartPictureInPictureAutomaticallyFromInline:
-          pigeonMap['enableStartPictureInPictureAutomaticallyFromInline']!
-              as int,
       rect:
           pigeonMap['rect'] != null ? PiPRect.decode(pigeonMap['rect']!) : null,
     );
@@ -257,14 +278,14 @@ class PiPRect {
   }
 }
 
-class PictureInPictureMessage {
-  PictureInPictureMessage({
+class SetPictureInPictureMessage {
+  SetPictureInPictureMessage({
     required this.textureId,
     required this.enabled,
   });
 
   int textureId;
-  int enabled;
+  bool enabled;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -273,11 +294,11 @@ class PictureInPictureMessage {
     return pigeonMap;
   }
 
-  static PictureInPictureMessage decode(Object message) {
+  static SetPictureInPictureMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
-    return PictureInPictureMessage(
+    return SetPictureInPictureMessage(
       textureId: pigeonMap['textureId']! as int,
-      enabled: pigeonMap['enabled']! as int,
+      enabled: pigeonMap['enabled']! as bool,
     );
   }
 }
@@ -286,19 +307,19 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
   const _AVFoundationVideoPlayerApiCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is CreateMessage) {
+    if (value is AutomaticallyStartPictureInPictureMessage) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is LoopingMessage) {
+    } else if (value is CreateMessage) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is MixWithOthersMessage) {
+    } else if (value is LoopingMessage) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is PiPRect) {
+    } else if (value is MixWithOthersMessage) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PictureInPictureMessage) {
+    } else if (value is PiPRect) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else if (value is PlaybackSpeedMessage) {
@@ -307,14 +328,17 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is PositionMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is PreparePictureInPictureMessage) {
+    } else if (value is SetPictureInPictureMessage) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    } else if (value is TextureMessage) {
+    } else if (value is SetPictureInPictureOverlayRectMessage) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    } else if (value is VolumeMessage) {
+    } else if (value is TextureMessage) {
       buffer.putUint8(137);
+      writeValue(buffer, value.encode());
+    } else if (value is VolumeMessage) {
+      buffer.putUint8(138);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -325,19 +349,20 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128:
-        return CreateMessage.decode(readValue(buffer)!);
+        return AutomaticallyStartPictureInPictureMessage.decode(
+            readValue(buffer)!);
 
       case 129:
-        return LoopingMessage.decode(readValue(buffer)!);
+        return CreateMessage.decode(readValue(buffer)!);
 
       case 130:
-        return MixWithOthersMessage.decode(readValue(buffer)!);
+        return LoopingMessage.decode(readValue(buffer)!);
 
       case 131:
-        return PiPRect.decode(readValue(buffer)!);
+        return MixWithOthersMessage.decode(readValue(buffer)!);
 
       case 132:
-        return PictureInPictureMessage.decode(readValue(buffer)!);
+        return PiPRect.decode(readValue(buffer)!);
 
       case 133:
         return PlaybackSpeedMessage.decode(readValue(buffer)!);
@@ -346,12 +371,15 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
         return PositionMessage.decode(readValue(buffer)!);
 
       case 135:
-        return PreparePictureInPictureMessage.decode(readValue(buffer)!);
+        return SetPictureInPictureMessage.decode(readValue(buffer)!);
 
       case 136:
-        return TextureMessage.decode(readValue(buffer)!);
+        return SetPictureInPictureOverlayRectMessage.decode(readValue(buffer)!);
 
       case 137:
+        return TextureMessage.decode(readValue(buffer)!);
+
+      case 138:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:
@@ -675,10 +703,10 @@ class AVFoundationVideoPlayerApi {
     }
   }
 
-  Future<void> preparePictureInPicture(
-      PreparePictureInPictureMessage arg_msg) async {
+  Future<void> setPictureInPictureOverlayRect(
+      SetPictureInPictureOverlayRectMessage arg_msg) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AVFoundationVideoPlayerApi.preparePictureInPicture',
+        'dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPictureOverlayRect',
         codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
@@ -701,7 +729,33 @@ class AVFoundationVideoPlayerApi {
     }
   }
 
-  Future<void> setPictureInPicture(PictureInPictureMessage arg_msg) async {
+  Future<void> setAutomaticallyStartPictureInPicture(
+      AutomaticallyStartPictureInPictureMessage arg_msg) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.AVFoundationVideoPlayerApi.setAutomaticallyStartPictureInPicture',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_msg]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setPictureInPicture(SetPictureInPictureMessage arg_msg) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPicture',
         codec,

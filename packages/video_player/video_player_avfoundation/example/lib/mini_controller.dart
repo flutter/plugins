@@ -355,15 +355,23 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
     return _platform.isPictureInPictureSupported();
   }
 
-  /// Prepare picture in picture by passing the location of the video player view
-  Future<void> preparePictureInPicture({
-    required Rect rect,
-    bool enableStartPictureInPictureAutomaticallyFromInline = false,
+  /// Enable/disable to start picture in picture automatically when the app goes to the background.
+  Future<void> setAutomaticallyStartPictureInPicture({
+    required bool enableStartPictureInPictureAutomaticallyFromInline,
   }) {
-    return _platform.preparePictureInPicture(
+    return _platform.setAutomaticallyStartPictureInPicture(
       textureId: textureId,
       enableStartPictureInPictureAutomaticallyFromInline:
           enableStartPictureInPictureAutomaticallyFromInline,
+    );
+  }
+
+  /// Set the location of the video player view. So picture in picture can use it for animating
+  Future<void> setPictureInPictureOverlayRect({
+    required Rect rect,
+  }) {
+    return _platform.setPictureInPictureOverlayRect(
+      textureId: textureId,
       rect: rect,
     );
   }

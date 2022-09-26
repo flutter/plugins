@@ -95,12 +95,12 @@
   FLTVideoPlayer *player = videoPlayerPlugin.playersByTextureId[textureMessage.textureId];
   XCTAssertNotNil(player);
 
+  XCTAssertNotNil(
+      player.playerLayer,
+      @"AVPlayerLayer should be present on any iOS version to support picture in picture.");
   if (@available(iOS 16.0, *)) {
-    XCTAssertNotNil(player.playerLayer, @"AVPlayerLayer should be present for iOS 16.");
     XCTAssertNotNil(player.playerLayer.superlayer,
                     @"AVPlayerLayer should be added on screen for iOS 16.");
-  } else {
-    XCTAssertNil(player.playerLayer, @"AVPlayerLayer should not be present before iOS 16.");
   }
 }
 
@@ -263,19 +263,17 @@
   XCTAssertEqual(avPlayer.volume, 0.1f);
 
   // Set Picture In Picture
-  FLTPreparePictureInPictureMessage *preparePictureInPicture =
-      [FLTPreparePictureInPictureMessage makeWithTextureId:textureId
-          enableStartPictureInPictureAutomaticallyFromInline:@1
-                                                         top:@0
-                                                        left:@0
-                                                       width:@300
-                                                      height:@200];
-  [videoPlayerPlugin preparePictureInPicture:preparePictureInPicture error:&error];
+  FLTPiPRect *pictureInPictureRect = [FLTPiPRect makeWithTop:@0 left:@0 width:@300 height:@200];
+  FLTSetPictureInPictureOverlayRectMessage *setPictureInPictureOverlayRectMessage =
+      [FLTSetPictureInPictureOverlayRectMessage makeWithTextureId:textureId
+                                                             rect:pictureInPictureRect];
+  [videoPlayerPlugin setPictureInPictureOverlayRect:setPictureInPictureOverlayRectMessage
+                                              error:&error];
   XCTAssertNil(error);
 
   // Set Picture In Picture Start
-  FLTPictureInPictureMessage *setPictureInPictureStart =
-      [FLTPictureInPictureMessage makeWithTextureId:textureId enabled:@YES];
+  FLTSetPictureInPictureMessage *setPictureInPictureStart =
+      [FLTSetPictureInPictureMessage makeWithTextureId:textureId enabled:@YES];
   XCTestExpectation *startingPiPExpectation = [self expectationWithDescription:@"startingPiP"];
   [player onListenWithArguments:nil
                       eventSink:^(NSDictionary<NSString *, id> *event) {
@@ -288,8 +286,8 @@
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 
   // Set Picture In Picture Stop
-  FLTPictureInPictureMessage *setPictureInPictureStop =
-      [FLTPictureInPictureMessage makeWithTextureId:textureId enabled:@NO];
+  FLTSetPictureInPictureMessage *setPictureInPictureStop =
+      [FLTSetPictureInPictureMessage makeWithTextureId:textureId enabled:@NO];
   XCTAssertNil(error);
   [videoPlayerPlugin setPictureInPicture:setPictureInPictureStop error:&error];
 

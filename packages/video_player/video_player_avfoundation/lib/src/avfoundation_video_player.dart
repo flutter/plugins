@@ -173,16 +173,27 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> preparePictureInPicture({
+  Future<void> setAutomaticallyStartPictureInPicture({
     required int textureId,
     required bool enableStartPictureInPictureAutomaticallyFromInline,
-    required Rect rect,
   }) {
-    return _api.preparePictureInPicture(
-      PreparePictureInPictureMessage(
+    return _api.setAutomaticallyStartPictureInPicture(
+      AutomaticallyStartPictureInPictureMessage(
         textureId: textureId,
         enableStartPictureInPictureAutomaticallyFromInline:
-            enableStartPictureInPictureAutomaticallyFromInline ? 1 : 0,
+            enableStartPictureInPictureAutomaticallyFromInline,
+      ),
+    );
+  }
+
+  @override
+  Future<void> setPictureInPictureOverlayRect({
+    required int textureId,
+    required Rect rect,
+  }) {
+    return _api.setPictureInPictureOverlayRect(
+      SetPictureInPictureOverlayRectMessage(
+        textureId: textureId,
         rect: PiPRect(
           top: rect.top,
           left: rect.left,
@@ -195,9 +206,9 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> setPictureInPicture(int textureId, bool enabled) {
-    return _api.setPictureInPicture(PictureInPictureMessage(
+    return _api.setPictureInPicture(SetPictureInPictureMessage(
       textureId: textureId,
-      enabled: enabled ? 1 : 0,
+      enabled: enabled,
     ));
   }
 

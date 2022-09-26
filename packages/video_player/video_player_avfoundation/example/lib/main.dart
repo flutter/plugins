@@ -38,7 +38,7 @@ class _App extends StatelessWidget {
               ),
               Tab(
                 icon: Icon(Icons.insert_drive_file),
-                text: 'Asset',
+                text: 'Asset mp4',
               ),
             ],
           ),
@@ -121,7 +121,6 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   final GlobalKey<State<StatefulWidget>> _playerKey =
       GlobalKey<State<StatefulWidget>>();
   final Key _pictureInPictureKey = UniqueKey();
-
   bool _enableStartPictureInPictureAutomaticallyFromInline = false;
 
   @override
@@ -155,13 +154,15 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
             future: _controller.isPictureInPictureSupported(),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) =>
                 Text(snapshot.data ?? false
-                    ? 'PiP is supported'
-                    : 'PiP is not supported'),
+                    ? 'Picture in picture is supported'
+                    : 'Picture in picture is not supported'),
           ),
           Row(
             children: <Widget>[
+              const SizedBox(width: 16),
               const Expanded(
-                child: Text('Start PiP automaticly when going to background'),
+                child: Text(
+                    'Start picture in picture automatically when going to background'),
               ),
               Switch(
                 value: _enableStartPictureInPictureAutomaticallyFromInline,
@@ -170,8 +171,12 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                     _enableStartPictureInPictureAutomaticallyFromInline =
                         newValue;
                   });
+                  _controller.setAutomaticallyStartPictureInPicture(
+                      enableStartPictureInPictureAutomaticallyFromInline:
+                          _enableStartPictureInPictureAutomaticallyFromInline);
                 },
               ),
+              const SizedBox(width: 16),
             ],
           ),
           MaterialButton(
@@ -183,9 +188,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                 return;
               }
               final Offset offset = box.localToGlobal(Offset.zero);
-              _controller.preparePictureInPicture(
-                enableStartPictureInPictureAutomaticallyFromInline:
-                    _enableStartPictureInPictureAutomaticallyFromInline,
+              _controller.setPictureInPictureOverlayRect(
                 rect: Rect.fromLTWH(
                   offset.dx,
                   offset.dy,
@@ -194,14 +197,15 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                 ),
               );
             },
-            child: const Text('Prepare'),
+            child: const Text('Set picture in picture overlay rect'),
           ),
           MaterialButton(
             color: Colors.blue,
             onPressed: () =>
                 _controller.setPictureInPicture(!_controller.value.isPipActive),
-            child:
-                Text(_controller.value.isPipActive ? 'Stop PiP' : 'Start PiP'),
+            child: Text(_controller.value.isPipActive
+                ? 'Stop picture in picture'
+                : 'Start picture in picture'),
           ),
           Container(
             padding: const EdgeInsets.all(20),
