@@ -864,17 +864,17 @@ NSString *const errorMethod = @"error";
     
     _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
     
-    AVCaptureInput *_oldInput = _captureVideoInput;
-    AVCaptureVideoDataOutput *_oldOutput = _captureVideoOutput;
-    AVCaptureConnection *_oldConnection = [_oldOutput connectionWithMediaType:AVMediaTypeVideo];
+    AVCaptureInput *oldInput = _captureVideoInput;
+    AVCaptureVideoDataOutput *oldOutput = _captureVideoOutput;
+    AVCaptureConnection *oldConnection = [oldOutput connectionWithMediaType:AVMediaTypeVideo];
     
     // stop video capture from old output
     // this also automatically removes old output's connection from captureSession
-    [_oldOutput setSampleBufferDelegate:nil queue:nil];
+    [oldOutput setSampleBufferDelegate:nil queue:nil];
     
     // get new video input
     NSError *error = nil;
-    AVCaptureInput *_newInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
+    AVCaptureInput *newInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                                       error:&error];
     
     if (error) {
@@ -882,45 +882,45 @@ NSString *const errorMethod = @"error";
     }
     
     // get new output
-    AVCaptureVideoDataOutput *_newOutput = [AVCaptureVideoDataOutput new];
-    _newOutput.videoSettings = _oldOutput.videoSettings;
-    [_newOutput setAlwaysDiscardsLateVideoFrames:YES];
-    [_newOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    AVCaptureVideoDataOutput *newOutput = [AVCaptureVideoDataOutput new];
+    newOutput.videoSettings = oldOutput.videoSettings;
+    [newOutput setAlwaysDiscardsLateVideoFrames:YES];
+    [newOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
     
     AVCaptureConnection *_newConnection =
-    [AVCaptureConnection connectionWithInputPorts:_newInput.ports
-                                           output:_newOutput];
+    [AVCaptureConnection connectionWithInputPorts:newInput.ports
+                                           output:newOutput];
     // set mirrored if needed
     if ([_captureDevice position] == AVCaptureDevicePositionFront) {
         _newConnection.videoMirrored = YES;
     }
     
    // keep orientation
-    if (_oldConnection && _newConnection.isVideoOrientationSupported) {
-        _newConnection.videoOrientation = _oldConnection.videoOrientation;
+    if (oldConnection && _newConnection.isVideoOrientationSupported) {
+        _newConnection.videoOrientation = oldConnection.videoOrientation;
     }
     
     // replace old with new in session
     [_videoCaptureSession beginConfiguration];
-    [_videoCaptureSession removeInput:_oldInput];
-    [_videoCaptureSession removeOutput:_oldOutput];
-    if(![_videoCaptureSession canAddInput:_newInput])
+    [_videoCaptureSession removeInput:oldInput];
+    [_videoCaptureSession removeOutput:oldOutput];
+    if(![_videoCaptureSession canAddInput:newInput])
         [result sendErrorWithCode:@"VideoError"
                           message:@"Unable switch video input"
                           details:nil];
-    [_videoCaptureSession addInputWithNoConnections:_newInput];
-    if(![_videoCaptureSession canAddOutput:_newOutput])
+    [_videoCaptureSession addInputWithNoConnections:newInput];
+    if(![_videoCaptureSession canAddOutput:newOutput])
         [result sendErrorWithCode:@"VideoError"
                           message:@"Unable switch video output"
                           details:nil];
-    [_videoCaptureSession addOutputWithNoConnections:_newOutput];
+    [_videoCaptureSession addOutputWithNoConnections:newOutput];
     if(![_videoCaptureSession canAddConnection:_newConnection])
         [result sendErrorWithCode:@"VideoError"
                           message:@"Unable switch video connection"
                           details:nil];
     [_videoCaptureSession addConnection:_newConnection];
-    _captureVideoInput = _newInput;
-    _captureVideoOutput = _newOutput;
+    _captureVideoInput = newInput;
+    _captureVideoOutput = newOutput;
     [_videoCaptureSession commitConfiguration];
     
     [result sendSuccess];
