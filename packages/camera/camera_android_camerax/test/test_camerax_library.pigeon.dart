@@ -145,7 +145,7 @@ abstract class TestProcessCameraProviderHostApi {
       _TestProcessCameraProviderHostApiCodec();
 
   Future<int> getInstance();
-  List<int?> getAvailableCameraInfos(int instanceId);
+  List<int?> getAvailableCameraInfos(int identifier);
   static void setup(TestProcessCameraProviderHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -174,11 +174,11 @@ abstract class TestProcessCameraProviderHostApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.ProcessCameraProviderHostApi.getAvailableCameraInfos was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.ProcessCameraProviderHostApi.getAvailableCameraInfos was null, expected non-null int.');
           final List<int?> output =
-              api.getAvailableCameraInfos(arg_instanceId!);
+              api.getAvailableCameraInfos(arg_identifier!);
           return <Object?, Object?>{'result': output};
         });
       }
