@@ -45,10 +45,14 @@ final XFile? file =
 #### Open multiple files at once
 <?code-excerpt "open_multiple_images_page.dart (MultiOpen)"?>
 ``` dart
+// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+// ignore: prefer_const_constructors
 final XTypeGroup jpgsTypeGroup = XTypeGroup(
   label: 'JPEGs',
   extensions: <String>['jpg', 'jpeg'],
 );
+// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+// ignore: prefer_const_constructors
 final XTypeGroup pngTypeGroup = XTypeGroup(
   label: 'PNGs',
   extensions: <String>['png'],
