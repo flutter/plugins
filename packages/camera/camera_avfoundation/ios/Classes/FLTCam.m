@@ -154,14 +154,8 @@ NSString *const errorMethod = @"error";
   }
 
     [self setupCaptureVideoOutput];
+    AVCaptureConnection *connection = [self createConnectionWithInput:_captureVideoInput];
 
-  AVCaptureConnection *connection =
-      [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
-                                             output:_captureVideoOutput];
-
-  if ([_captureDevice position] == AVCaptureDevicePositionFront) {
-    connection.videoMirrored = YES;
-  }
 
   [_videoCaptureSession addInputWithNoConnections:_captureVideoInput];
   [_videoCaptureSession addOutputWithNoConnections:_captureVideoOutput];
@@ -179,6 +173,17 @@ NSString *const errorMethod = @"error";
   [self updateOrientation];
 
   return self;
+}
+
+- (AVCaptureConnection *) createConnectionWithInput:(AVCaptureInput *) captureVideoInput {
+    AVCaptureConnection *connection =
+        [AVCaptureConnection connectionWithInputPorts:captureVideoInput.ports
+                                               output:_captureVideoOutput];
+
+    if ([_captureDevice position] == AVCaptureDevicePositionFront) {
+      connection.videoMirrored = YES;
+    }
+    return connection;
 }
 
 - (void) setupCaptureVideoOutput {
@@ -887,13 +892,7 @@ NSString *const errorMethod = @"error";
     
     [self setupCaptureVideoOutput];
     
-    AVCaptureConnection *newConnection =
-    [AVCaptureConnection connectionWithInputPorts:newInput.ports
-                                           output:_captureVideoOutput];
-    // set mirrored if needed
-    if ([_captureDevice position] == AVCaptureDevicePositionFront) {
-        newConnection.videoMirrored = YES;
-    }
+    AVCaptureConnection *newConnection = [self createConnectionWithInput:newInput];
     
    // keep orientation
     if (oldConnection && newConnection.isVideoOrientationSupported) {
