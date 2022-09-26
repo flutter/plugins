@@ -107,10 +107,12 @@ class ProcessCameraProviderFlutterApiImpl
   @override
   void create(int identifier) {
     instanceManager.addHostCreatedInstance(
-      ProcessCameraProvider.detached(),
+      ProcessCameraProvider.detached(
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager),
       identifier,
       onCopy: (ProcessCameraProvider original) {
-        return ProcessCameraProvider.detached();
+        return ProcessCameraProvider.detached(
+            binaryMessenger: binaryMessenger, instanceManager: instanceManager);
       },
     );
   }
