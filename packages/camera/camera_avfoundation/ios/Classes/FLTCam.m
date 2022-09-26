@@ -174,7 +174,6 @@ NSString *const errorMethod = @"error";
     // setup input
     _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                                error:&error];
-    
     if (error != nil) {
       return nil;
     }
@@ -186,7 +185,6 @@ NSString *const errorMethod = @"error";
     [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
     [_captureVideoOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
     
-
     // setup connection
     AVCaptureConnection *connection =
         [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
