@@ -39,17 +39,20 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
     this.context = context;
   }
 
-  /** Returns the instance of the ProcessCameraProvider. */
+  /**
+   * Returns the instance of the ProcessCameraProvider to manage the lifecycle of the camera for the
+   * supplied {@code Context}.
+   */
   @Override
   public void getInstance(GeneratedCameraXLibrary.Result<Long> result) {
-    ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
+    ListenableFuture<ProcessCameraProvider> processCameraProviderFuture =
         ProcessCameraProvider.getInstance(context);
 
-    cameraProviderFuture.addListener(
+    processCameraProviderFuture.addListener(
         () -> {
           try {
             // Camera provider is now guaranteed to be available.
-            ProcessCameraProvider processCameraProvider = cameraProviderFuture.get();
+            ProcessCameraProvider processCameraProvider = processCameraProviderFuture.get();
 
             if (!instanceManager.containsInstance(processCameraProvider)) {
               final ProcessCameraProviderFlutterApiImpl flutterApi =
