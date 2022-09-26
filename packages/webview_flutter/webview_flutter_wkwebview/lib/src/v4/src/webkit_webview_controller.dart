@@ -22,7 +22,7 @@ import 'webkit_proxy.dart';
 class WebKitWebViewControllerCreationParams
     extends PlatformWebViewControllerCreationParams {
   /// Constructs a [WebKitWebViewControllerCreationParams].
-  WebKitWebViewControllerCreationParams({
+  WebKitWebViewControllerCreationParams._({
     @visibleForTesting this.webKitProxy = const WebKitProxy(),
   }) : _configuration = webKitProxy.createWebViewConfiguration();
 
@@ -33,7 +33,7 @@ class WebKitWebViewControllerCreationParams
     // ignore: avoid_unused_constructor_parameters
     PlatformWebViewControllerCreationParams params, {
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  }) : this(webKitProxy: webKitProxy);
+  }) : this._(webKitProxy: webKitProxy);
 
   final WKWebViewConfiguration _configuration;
 
@@ -398,7 +398,7 @@ class WebKitJavaScriptChannelParams extends JavaScriptChannelParams {
 class WebKitWebViewWidgetCreationParams
     extends PlatformWebViewWidgetCreationParams {
   /// Constructs a [WebKitWebViewWidgetCreationParams].
-  WebKitWebViewWidgetCreationParams({
+  WebKitWebViewWidgetCreationParams._({
     super.key,
     required super.controller,
     super.layoutDirection,
@@ -411,7 +411,7 @@ class WebKitWebViewWidgetCreationParams
   WebKitWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
     PlatformWebViewWidgetCreationParams params, {
     InstanceManager? instanceManager,
-  }) : this(
+  }) : this._(
           key: params.key,
           controller: params.controller,
           layoutDirection: params.layoutDirection,
@@ -489,7 +489,7 @@ class WebKitWebResourceError extends WebResourceError {
 class WebKitNavigationDelegateCreationParams
     extends PlatformNavigationDelegateCreationParams {
   /// Constructs a [WebKitNavigationDelegateCreationParams].
-  const WebKitNavigationDelegateCreationParams({
+  const WebKitNavigationDelegateCreationParams._({
     @visibleForTesting this.webKitProxy = const WebKitProxy(),
   });
 
@@ -500,7 +500,7 @@ class WebKitNavigationDelegateCreationParams
     // ignore: avoid_unused_constructor_parameters
     PlatformNavigationDelegateCreationParams params, {
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  }) : this(webKitProxy: webKitProxy);
+  }) : this._(webKitProxy: webKitProxy);
 
   /// Handles constructing objects and calling static methods for the WebKit
   /// native library.

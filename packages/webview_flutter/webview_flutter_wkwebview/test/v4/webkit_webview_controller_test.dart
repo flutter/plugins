@@ -55,7 +55,9 @@ void main() {
       late final MockWKWebView nonNullMockWebView;
 
       final PlatformWebViewControllerCreationParams controllerCreationParams =
-          WebKitWebViewControllerCreationParams(
+          WebKitWebViewControllerCreationParams
+              .fromPlatformWebViewControllerCreationParams(
+        const PlatformWebViewControllerCreationParams(),
         webKitProxy: WebKitProxy(
           createWebViewConfiguration: () => nonNullMockWebViewConfiguration,
           createWebView: (
@@ -713,7 +715,9 @@ void main() {
 
       final WebKitNavigationDelegate navigationDelegate =
           WebKitNavigationDelegate(
-        const WebKitNavigationDelegateCreationParams(
+        const WebKitNavigationDelegateCreationParams
+            .fromPlatformNavigationDelegateCreationParams(
+          PlatformNavigationDelegateCreationParams(),
           webKitProxy: WebKitProxy(
             createNavigationDelegate: CapturingNavigationDelegate.new,
           ),
@@ -765,7 +769,9 @@ void main() {
 
       final WebKitNavigationDelegate navigationDelegate =
           WebKitNavigationDelegate(
-        const WebKitNavigationDelegateCreationParams(
+        const WebKitNavigationDelegateCreationParams
+            .fromPlatformNavigationDelegateCreationParams(
+          PlatformNavigationDelegateCreationParams(),
           webKitProxy: WebKitProxy(
             createNavigationDelegate: CapturingNavigationDelegate.new,
           ),

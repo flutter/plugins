@@ -18,11 +18,7 @@ void main() {
   group('WebKitNavigationDelegate', () {
     test('setOnPageFinished', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const WebKitNavigationDelegateCreationParams(
-          webKitProxy: WebKitProxy(
-            createNavigationDelegate: CapturingNavigationDelegate.new,
-          ),
-        ),
+        _buildCreationParams(),
       );
 
       late final String callbackUrl;
@@ -38,11 +34,7 @@ void main() {
 
     test('setOnPageStarted', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const WebKitNavigationDelegateCreationParams(
-          webKitProxy: WebKitProxy(
-            createNavigationDelegate: CapturingNavigationDelegate.new,
-          ),
-        ),
+        _buildCreationParams(),
       );
 
       late final String callbackUrl;
@@ -59,11 +51,7 @@ void main() {
 
     test('onWebResourceError from didFailNavigation', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const WebKitNavigationDelegateCreationParams(
-          webKitProxy: WebKitProxy(
-            createNavigationDelegate: CapturingNavigationDelegate.new,
-          ),
-        ),
+        _buildCreationParams(),
       );
 
       late final WebKitWebResourceError callbackError;
@@ -90,11 +78,7 @@ void main() {
 
     test('onWebResourceError from didFailProvisionalNavigation', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const WebKitNavigationDelegateCreationParams(
-          webKitProxy: WebKitProxy(
-            createNavigationDelegate: CapturingNavigationDelegate.new,
-          ),
-        ),
+        _buildCreationParams(),
       );
 
       late final WebKitWebResourceError callbackError;
@@ -122,11 +106,7 @@ void main() {
 
     test('onWebResourceError from webViewWebContentProcessDidTerminate', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const WebKitNavigationDelegateCreationParams(
-          webKitProxy: WebKitProxy(
-            createNavigationDelegate: CapturingNavigationDelegate.new,
-          ),
-        ),
+        _buildCreationParams(),
       );
 
       late final WebKitWebResourceError callbackError;
@@ -152,11 +132,7 @@ void main() {
 
     test('onNavigationRequest from decidePolicyForNavigationAction', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const WebKitNavigationDelegateCreationParams(
-          webKitProxy: WebKitProxy(
-            createNavigationDelegate: CapturingNavigationDelegate.new,
-          ),
-        ),
+        _buildCreationParams(),
       );
 
       late final NavigationRequest callbackRequest;
@@ -184,6 +160,16 @@ void main() {
       expect(callbackRequest.isMainFrame, isFalse);
     });
   });
+}
+
+WebKitNavigationDelegateCreationParams _buildCreationParams() {
+  return const WebKitNavigationDelegateCreationParams
+      .fromPlatformNavigationDelegateCreationParams(
+    PlatformNavigationDelegateCreationParams(),
+    webKitProxy: WebKitProxy(
+      createNavigationDelegate: CapturingNavigationDelegate.new,
+    ),
+  );
 }
 
 // Records the last created instance of itself.

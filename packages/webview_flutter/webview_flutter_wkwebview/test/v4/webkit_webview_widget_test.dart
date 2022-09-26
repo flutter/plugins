@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/v4/src/webkit_proxy.dart';
@@ -20,7 +21,9 @@ void main() {
       );
 
       final WebKitWebViewController controller = WebKitWebViewController(
-        WebKitWebViewControllerCreationParams(
+        WebKitWebViewControllerCreationParams
+            .fromPlatformWebViewControllerCreationParams(
+          const PlatformWebViewControllerCreationParams(),
           webKitProxy: WebKitProxy(
             createWebView: (
               WKWebViewConfiguration configuration, {
@@ -43,8 +46,9 @@ void main() {
       );
 
       final WebKitWebViewWidget widget = WebKitWebViewWidget(
-        WebKitWebViewWidgetCreationParams(
-          controller: controller,
+        WebKitWebViewWidgetCreationParams
+            .fromPlatformWebViewWidgetCreationParams(
+          PlatformWebViewWidgetCreationParams(controller: controller),
           instanceManager: instanceManager,
         ),
       );
