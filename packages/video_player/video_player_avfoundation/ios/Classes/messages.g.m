@@ -69,8 +69,8 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 + (FLTSetPictureInPictureOverlayRectMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-@interface FLTPiPRect ()
-+ (FLTPiPRect *)fromMap:(NSDictionary *)dict;
+@interface FLTPictureInPictureOverlayRect ()
++ (FLTPictureInPictureOverlayRect *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
 @interface FLTSetPictureInPictureMessage ()
@@ -275,7 +275,8 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @end
 
 @implementation FLTSetPictureInPictureOverlayRectMessage
-+ (instancetype)makeWithTextureId:(NSNumber *)textureId rect:(nullable FLTPiPRect *)rect {
++ (instancetype)makeWithTextureId:(NSNumber *)textureId
+                             rect:(nullable FLTPictureInPictureOverlayRect *)rect {
   FLTSetPictureInPictureOverlayRectMessage *pigeonResult =
       [[FLTSetPictureInPictureOverlayRectMessage alloc] init];
   pigeonResult.textureId = textureId;
@@ -287,7 +288,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
       [[FLTSetPictureInPictureOverlayRectMessage alloc] init];
   pigeonResult.textureId = GetNullableObject(dict, @"textureId");
   NSAssert(pigeonResult.textureId != nil, @"");
-  pigeonResult.rect = [FLTPiPRect fromMap:GetNullableObject(dict, @"rect")];
+  pigeonResult.rect = [FLTPictureInPictureOverlayRect fromMap:GetNullableObject(dict, @"rect")];
   return pigeonResult;
 }
 - (NSDictionary *)toMap {
@@ -297,20 +298,20 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 }
 @end
 
-@implementation FLTPiPRect
+@implementation FLTPictureInPictureOverlayRect
 + (instancetype)makeWithTop:(NSNumber *)top
                        left:(NSNumber *)left
                       width:(NSNumber *)width
                      height:(NSNumber *)height {
-  FLTPiPRect *pigeonResult = [[FLTPiPRect alloc] init];
+  FLTPictureInPictureOverlayRect *pigeonResult = [[FLTPictureInPictureOverlayRect alloc] init];
   pigeonResult.top = top;
   pigeonResult.left = left;
   pigeonResult.width = width;
   pigeonResult.height = height;
   return pigeonResult;
 }
-+ (FLTPiPRect *)fromMap:(NSDictionary *)dict {
-  FLTPiPRect *pigeonResult = [[FLTPiPRect alloc] init];
++ (FLTPictureInPictureOverlayRect *)fromMap:(NSDictionary *)dict {
+  FLTPictureInPictureOverlayRect *pigeonResult = [[FLTPictureInPictureOverlayRect alloc] init];
   pigeonResult.top = GetNullableObject(dict, @"top");
   NSAssert(pigeonResult.top != nil, @"");
   pigeonResult.left = GetNullableObject(dict, @"left");
@@ -370,7 +371,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
       return [FLTMixWithOthersMessage fromMap:[self readValue]];
 
     case 132:
-      return [FLTPiPRect fromMap:[self readValue]];
+      return [FLTPictureInPictureOverlayRect fromMap:[self readValue]];
 
     case 133:
       return [FLTPlaybackSpeedMessage fromMap:[self readValue]];
@@ -412,7 +413,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   } else if ([value isKindOfClass:[FLTMixWithOthersMessage class]]) {
     [self writeByte:131];
     [self writeValue:[value toMap]];
-  } else if ([value isKindOfClass:[FLTPiPRect class]]) {
+  } else if ([value isKindOfClass:[FLTPictureInPictureOverlayRect class]]) {
     [self writeByte:132];
     [self writeValue:[value toMap]];
   } else if ([value isKindOfClass:[FLTPlaybackSpeedMessage class]]) {

@@ -226,7 +226,7 @@ class SetPictureInPictureOverlayRectMessage {
   });
 
   int textureId;
-  PiPRect? rect;
+  PictureInPictureOverlayRect? rect;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -239,14 +239,15 @@ class SetPictureInPictureOverlayRectMessage {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return SetPictureInPictureOverlayRectMessage(
       textureId: pigeonMap['textureId']! as int,
-      rect:
-          pigeonMap['rect'] != null ? PiPRect.decode(pigeonMap['rect']!) : null,
+      rect: pigeonMap['rect'] != null
+          ? PictureInPictureOverlayRect.decode(pigeonMap['rect']!)
+          : null,
     );
   }
 }
 
-class PiPRect {
-  PiPRect({
+class PictureInPictureOverlayRect {
+  PictureInPictureOverlayRect({
     required this.top,
     required this.left,
     required this.width,
@@ -267,9 +268,9 @@ class PiPRect {
     return pigeonMap;
   }
 
-  static PiPRect decode(Object message) {
+  static PictureInPictureOverlayRect decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
-    return PiPRect(
+    return PictureInPictureOverlayRect(
       top: pigeonMap['top']! as double,
       left: pigeonMap['left']! as double,
       width: pigeonMap['width']! as double,
@@ -319,7 +320,7 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is MixWithOthersMessage) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PiPRect) {
+    } else if (value is PictureInPictureOverlayRect) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else if (value is PlaybackSpeedMessage) {
@@ -362,7 +363,7 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
         return MixWithOthersMessage.decode(readValue(buffer)!);
 
       case 132:
-        return PiPRect.decode(readValue(buffer)!);
+        return PictureInPictureOverlayRect.decode(readValue(buffer)!);
 
       case 133:
         return PlaybackSpeedMessage.decode(readValue(buffer)!);

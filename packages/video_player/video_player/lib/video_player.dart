@@ -47,7 +47,7 @@ class VideoPlayerValue {
     this.isPlaying = false,
     this.isLooping = false,
     this.isBuffering = false,
-    this.isPipActive = false,
+    this.isPictureInPictureActive = false,
     this.volume = 1.0,
     this.playbackSpeed = 1.0,
     this.rotationCorrection = 0,
@@ -107,7 +107,7 @@ class VideoPlayerValue {
   final double playbackSpeed;
 
   /// True if picture in picture is currently active.
-  final bool isPipActive;
+  final bool isPictureInPictureActive;
 
   /// A description of the error if present.
   ///
@@ -157,7 +157,7 @@ class VideoPlayerValue {
     bool? isPlaying,
     bool? isLooping,
     bool? isBuffering,
-    bool? isPipActive,
+    bool? isPictureInPictureActive,
     double? volume,
     double? playbackSpeed,
     int? rotationCorrection,
@@ -174,7 +174,8 @@ class VideoPlayerValue {
       isPlaying: isPlaying ?? this.isPlaying,
       isLooping: isLooping ?? this.isLooping,
       isBuffering: isBuffering ?? this.isBuffering,
-      isPipActive: isPipActive ?? this.isPipActive,
+      isPictureInPictureActive:
+          isPictureInPictureActive ?? this.isPictureInPictureActive,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       rotationCorrection: rotationCorrection ?? this.rotationCorrection,
@@ -197,7 +198,7 @@ class VideoPlayerValue {
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
         'isBuffering: $isBuffering, '
-        'isPipActive: $isPipActive, '
+        'isPictureInPictureActive: $isPictureInPictureActive, '
         'volume: $volume, '
         'playbackSpeed: $playbackSpeed, '
         'errorDescription: $errorDescription)';
@@ -407,11 +408,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
           break;
-        case VideoEventType.startingPiP:
-          value = value.copyWith(isPipActive: true);
+        case VideoEventType.startingPictureInPicture:
+          value = value.copyWith(isPictureInPictureActive: true);
           break;
-        case VideoEventType.stoppedPiP:
-          value = value.copyWith(isPipActive: false);
+        case VideoEventType.stoppedPictureInPicture:
+          value = value.copyWith(isPictureInPictureActive: false);
           break;
         case VideoEventType.unknown:
           break;
@@ -744,7 +745,7 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
   _VideoAppLifeCycleObserver(this._controller);
 
   bool _wasPlayingBeforePause = false;
-  bool _showingPip = false;
+  bool _isPictureInPictureActive = false;
   final VideoPlayerController _controller;
 
   void initialize() {
@@ -756,8 +757,8 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.paused:
         _wasPlayingBeforePause = _controller.value.isPlaying;
-        _showingPip = _controller.value.isPipActive;
-        if (!_showingPip) {
+        _isPictureInPictureActive = _controller.value.isPictureInPictureActive;
+        if (!_isPictureInPictureActive) {
           _controller.pause();
         }
         break;

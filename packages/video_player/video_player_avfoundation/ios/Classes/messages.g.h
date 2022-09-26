@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTMixWithOthersMessage;
 @class FLTAutomaticallyStartPictureInPictureMessage;
 @class FLTSetPictureInPictureOverlayRectMessage;
-@class FLTPiPRect;
+@class FLTPictureInPictureOverlayRect;
 @class FLTSetPictureInPictureMessage;
 
 @interface FLTTextureMessage : NSObject
@@ -97,12 +97,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FLTSetPictureInPictureOverlayRectMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithTextureId:(NSNumber *)textureId rect:(nullable FLTPiPRect *)rect;
++ (instancetype)makeWithTextureId:(NSNumber *)textureId
+                             rect:(nullable FLTPictureInPictureOverlayRect *)rect;
 @property(nonatomic, strong) NSNumber *textureId;
-@property(nonatomic, strong, nullable) FLTPiPRect *rect;
+@property(nonatomic, strong, nullable) FLTPictureInPictureOverlayRect *rect;
 @end
 
-@interface FLTPiPRect : NSObject
+@interface FLTPictureInPictureOverlayRect : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithTop:(NSNumber *)top

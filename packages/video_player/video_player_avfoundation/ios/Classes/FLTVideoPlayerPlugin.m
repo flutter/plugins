@@ -46,7 +46,7 @@
 @property(nonatomic, readonly) BOOL isPlaying;
 @property(nonatomic) BOOL isLooping;
 @property(nonatomic, readonly) BOOL isInitialized;
-@property(nonatomic) BOOL isPiPStarted;
+@property(nonatomic) BOOL isPictureInPictureStarted;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
                 httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers;
@@ -295,19 +295,21 @@ NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
   }
 }
 
-- (void)setPictureInPicture:(BOOL)isPiPStarted {
-  if (self.isPiPStarted == isPiPStarted) {
+- (void)setPictureInPicture:(BOOL)shouldPictureInPictureStart {
+  if (self.isPictureInPictureStarted == shouldPictureInPictureStart) {
     return;
   }
 
-  self.isPiPStarted = isPiPStarted;
-  if (pictureInPictureController && self.isPiPStarted &&
+  self.isPictureInPictureStarted = shouldPictureInPictureStart;
+  if (pictureInPictureController && self.isPictureInPictureStarted &&
       ![pictureInPictureController isPictureInPictureActive]) {
     if (_eventSink != nil) {
-      _eventSink(@{@"event" : @"startingPiP"});
+      // The event is already send here to make sure that Flutter UI can be updates as soon as
+      // possible
+      _eventSink(@{@"event" : @"startingPictureInPicture"});
     }
     [pictureInPictureController startPictureInPicture];
-  } else if (pictureInPictureController && !self.isPiPStarted &&
+  } else if (pictureInPictureController && !self.isPictureInPictureStarted &&
              [pictureInPictureController isPictureInPictureActive]) {
     [pictureInPictureController stopPictureInPicture];
   }
@@ -317,17 +319,17 @@ NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
 
 - (void)pictureInPictureControllerDidStopPictureInPicture:
     (AVPictureInPictureController *)pictureInPictureController {
-  self.isPiPStarted = NO;
+  self.isPictureInPictureStarted = NO;
   if (_eventSink != nil) {
-    _eventSink(@{@"event" : @"stoppedPiP"});
+    _eventSink(@{@"event" : @"stoppedPictureInPicture"});
   }
 }
 
 - (void)pictureInPictureControllerDidStartPictureInPicture:
     (AVPictureInPictureController *)pictureInPictureController {
-  self.isPiPStarted = YES;
+  self.isPictureInPictureStarted = YES;
   if (_eventSink != nil) {
-    _eventSink(@{@"event" : @"startingPiP"});
+    _eventSink(@{@"event" : @"startingPictureInPicture"});
   }
   [self updatePlayingState];
 }

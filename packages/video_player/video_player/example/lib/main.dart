@@ -253,13 +253,15 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
             future: _controller.isPictureInPictureSupported(),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) =>
                 Text(snapshot.data ?? false
-                    ? 'PiP is supported'
-                    : 'PiP is not supported'),
+                    ? 'Picture in picture is supported'
+                    : 'Picture in picture is not supported'),
           ),
           Row(
             children: <Widget>[
+              const SizedBox(width: 16),
               const Expanded(
-                child: Text('Start PiP automaticly when going to background'),
+                child: Text(
+                    'Start picture in picture automatically when going to background'),
               ),
               Switch(
                 value: _enableStartPictureInPictureAutomaticallyFromInline,
@@ -268,8 +270,12 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                     _enableStartPictureInPictureAutomaticallyFromInline =
                         newValue;
                   });
+                  _controller.setAutomaticallyStartPictureInPicture(
+                      enableStartPictureInPictureAutomaticallyFromInline:
+                          _enableStartPictureInPictureAutomaticallyFromInline);
                 },
               ),
+              const SizedBox(width: 16),
             ],
           ),
           MaterialButton(
@@ -290,14 +296,15 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                 ),
               );
             },
-            child: const Text('Prepare'),
+            child: const Text('Set picture in picture overlay rect'),
           ),
           MaterialButton(
             color: Colors.blue,
-            onPressed: () =>
-                _controller.setPictureInPicture(!_controller.value.isPipActive),
-            child:
-                Text(_controller.value.isPipActive ? 'Stop PiP' : 'Start PiP'),
+            onPressed: () => _controller.setPictureInPicture(
+                !_controller.value.isPictureInPictureActive),
+            child: Text(_controller.value.isPictureInPictureActive
+                ? 'Stop picture in picture'
+                : 'Start picture in picture'),
           ),
           Container(
             padding: const EdgeInsets.all(20),
@@ -309,7 +316,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                 children: <Widget>[
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.caption.text),
-                  if (_controller.value.isPipActive) ...<Widget>[
+                  if (_controller.value.isPictureInPictureActive) ...<Widget>[
                     Container(color: Colors.white),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,

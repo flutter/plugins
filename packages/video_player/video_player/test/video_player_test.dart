@@ -935,7 +935,7 @@ void main() {
           'isPlaying: true, '
           'isLooping: true, '
           'isBuffering: true, '
-          'isPipActive: false, '
+          'isPictureInPictureActive: false, '
           'volume: 0.5, '
           'playbackSpeed: 1.5, '
           'errorDescription: null)');

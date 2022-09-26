@@ -146,10 +146,10 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
           return VideoEvent(eventType: VideoEventType.bufferingStart);
         case 'bufferingEnd':
           return VideoEvent(eventType: VideoEventType.bufferingEnd);
-        case 'stoppedPiP':
-          return VideoEvent(eventType: VideoEventType.stoppedPiP);
-        case 'startingPiP':
-          return VideoEvent(eventType: VideoEventType.startingPiP);
+        case 'stoppedPictureInPicture':
+          return VideoEvent(eventType: VideoEventType.stoppedPictureInPicture);
+        case 'startingPictureInPicture':
+          return VideoEvent(eventType: VideoEventType.startingPictureInPicture);
         default:
           return VideoEvent(eventType: VideoEventType.unknown);
       }
@@ -194,7 +194,7 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
     return _api.setPictureInPictureOverlayRect(
       SetPictureInPictureOverlayRectMessage(
         textureId: textureId,
-        rect: PiPRect(
+        rect: PictureInPictureOverlayRect(
           top: rect.top,
           left: rect.left,
           width: rect.width,

@@ -32,7 +32,7 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is MixWithOthersMessage) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PiPRect) {
+    } else if (value is PictureInPictureOverlayRect) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else if (value is PlaybackSpeedMessage) {
@@ -75,7 +75,7 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
         return MixWithOthersMessage.decode(readValue(buffer)!);
 
       case 132:
-        return PiPRect.decode(readValue(buffer)!);
+        return PictureInPictureOverlayRect.decode(readValue(buffer)!);
 
       case 133:
         return PlaybackSpeedMessage.decode(readValue(buffer)!);

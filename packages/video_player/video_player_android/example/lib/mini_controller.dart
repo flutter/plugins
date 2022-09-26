@@ -243,8 +243,8 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
         case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
           break;
-        case VideoEventType.startingPiP:
-        case VideoEventType.stoppedPiP:
+        case VideoEventType.startingPictureInPicture:
+        case VideoEventType.stoppedPictureInPicture:
         case VideoEventType.unknown:
           break;
       }

@@ -307,10 +307,10 @@ enum VideoEventType {
   bufferingEnd,
 
   /// The video starting to picture in picture.
-  startingPiP,
+  startingPictureInPicture,
 
   /// The video stopped to picture in picture.
-  stoppedPiP,
+  stoppedPictureInPicture,
 
   /// An unknown event has been received.
   unknown,

@@ -35,7 +35,7 @@ class VideoPlayerValue {
     this.isInitialized = false,
     this.isPlaying = false,
     this.isBuffering = false,
-    this.isPipActive = false,
+    this.isPictureInPictureActive = false,
     this.playbackSpeed = 1.0,
     this.errorDescription,
   });
@@ -72,7 +72,7 @@ class VideoPlayerValue {
   final double playbackSpeed;
 
   /// True if picture in picture is currently active.
-  final bool isPipActive;
+  final bool isPictureInPictureActive;
 
   /// A description of the error if present.
   ///
@@ -116,7 +116,7 @@ class VideoPlayerValue {
     bool? isInitialized,
     bool? isPlaying,
     bool? isBuffering,
-    bool? isPipActive,
+    bool? isPictureInPictureActive,
     double? playbackSpeed,
     String? errorDescription,
   }) {
@@ -128,7 +128,8 @@ class VideoPlayerValue {
       isInitialized: isInitialized ?? this.isInitialized,
       isPlaying: isPlaying ?? this.isPlaying,
       isBuffering: isBuffering ?? this.isBuffering,
-      isPipActive: isPipActive ?? this.isPipActive,
+      isPictureInPictureActive:
+          isPictureInPictureActive ?? this.isPictureInPictureActive,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       errorDescription: errorDescription ?? this.errorDescription,
     );
@@ -249,11 +250,11 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
         case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
           break;
-        case VideoEventType.startingPiP:
-          value = value.copyWith(isPipActive: true);
+        case VideoEventType.startingPictureInPicture:
+          value = value.copyWith(isPictureInPictureActive: true);
           break;
-        case VideoEventType.stoppedPiP:
-          value = value.copyWith(isPipActive: false);
+        case VideoEventType.stoppedPictureInPicture:
+          value = value.copyWith(isPictureInPictureActive: false);
           break;
         case VideoEventType.unknown:
           break;

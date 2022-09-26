@@ -81,11 +81,11 @@ class SetPictureInPictureOverlayRectMessage {
   );
 
   int textureId;
-  PiPRect? rect;
+  PictureInPictureOverlayRect? rect;
 }
 
-class PiPRect {
-  PiPRect({
+class PictureInPictureOverlayRect {
+  PictureInPictureOverlayRect({
     required this.top,
     required this.left,
     required this.width,
