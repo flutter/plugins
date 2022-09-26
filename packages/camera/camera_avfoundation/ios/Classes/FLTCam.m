@@ -885,7 +885,7 @@ NSString *const errorMethod = @"error";
     AVCaptureVideoDataOutput *newOutput = [AVCaptureVideoDataOutput new];
     newOutput.videoSettings = oldOutput.videoSettings;
     [newOutput setAlwaysDiscardsLateVideoFrames:YES];
-    [newOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    [newOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
     
     AVCaptureConnection *_newConnection =
     [AVCaptureConnection connectionWithInputPorts:newInput.ports
