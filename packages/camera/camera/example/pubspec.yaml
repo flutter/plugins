@@ -30,3 +30,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  camera_platform_interface:
+    path: ../../../camera/camera_platform_interface
