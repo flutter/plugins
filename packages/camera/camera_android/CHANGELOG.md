@@ -1,4 +1,4 @@
-## 0.10.0+3
+## 0.11.0
 
 * Allow camera to be switched while video recording.
 

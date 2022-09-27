@@ -1,6 +1,5 @@
-## 0.2.1+2
+## NEXT
 
-* Allow camera to be switched while video recording.
 * Updates minimum Flutter version to 2.10.
 
 ## 0.2.1+1
