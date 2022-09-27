@@ -611,7 +611,7 @@ public class CameraTest {
     TestUtils.setPrivateField(camera, "recordingVideo", true);
     TestUtils.setPrivateField(camera, "videoRenderer", mockVideoRenderer);
 
-    final CameraProperties newCameraProperties =  mock(CameraProperties.class);
+    final CameraProperties newCameraProperties = mock(CameraProperties.class);
     camera.setDescriptionWhileRecording(mockResult, newCameraProperties);
 
     verify(mockResult, times(1)).success(null);
@@ -622,10 +622,11 @@ public class CameraTest {
   public void setDescriptionWhileRecording_shouldErrorWhenNotRecording() {
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     TestUtils.setPrivateField(camera, "recordingVideo", false);
-    final CameraProperties newCameraProperties =  mock(CameraProperties.class);
+    final CameraProperties newCameraProperties = mock(CameraProperties.class);
     camera.setDescriptionWhileRecording(mockResult, newCameraProperties);
 
-    verify(mockResult, times(1)).error("setDescriptionWhileRecordingFailed", "Device was not recording", null);
+    verify(mockResult, times(1))
+        .error("setDescriptionWhileRecordingFailed", "Device was not recording", null);
     verify(mockResult, never()).success(any());
   }
 
