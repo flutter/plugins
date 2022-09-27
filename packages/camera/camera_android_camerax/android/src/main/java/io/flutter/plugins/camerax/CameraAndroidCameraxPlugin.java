@@ -15,6 +15,7 @@ import io.flutter.plugin.common.BinaryMessenger;
 public final class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware {
   private InstanceManager instanceManager;
   private FlutterPluginBinding pluginBinding;
+  private ProcessCameraProviderHostApiImpl processCameraProviderHostApi;
 
   /**
    * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
@@ -39,6 +40,10 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
         binaryMessenger, new JavaObjectHostApiImpl(instanceManager));
     GeneratedCameraXLibrary.CameraSelectorHostApi.setup(
         binaryMessenger, new CameraSelectorHostApiImpl(binaryMessenger, instanceManager));
+    processCameraProviderHostApi =
+        new ProcessCameraProviderHostApiImpl(binaryMessenger, instanceManager, context);
+    GeneratedCameraXLibrary.ProcessCameraProviderHostApi.setup(
+        binaryMessenger, processCameraProviderHostApi);
   }
 
   @Override
@@ -60,15 +65,33 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
   // Activity Lifecycle methods:
 
   @Override
-  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {}
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
+    updateContext(activityPluginBinding.getActivity());
+  }
 
   @Override
-  public void onDetachedFromActivityForConfigChanges() {}
+  public void onDetachedFromActivityForConfigChanges() {
+    updateContext(pluginBinding.getApplicationContext());
+  }
 
   @Override
   public void onReattachedToActivityForConfigChanges(
-      @NonNull ActivityPluginBinding activityPluginBinding) {}
+      @NonNull ActivityPluginBinding activityPluginBinding) {
+    updateContext(activityPluginBinding.getActivity());
+  }
 
   @Override
-  public void onDetachedFromActivity() {}
+  public void onDetachedFromActivity() {
+    updateContext(pluginBinding.getApplicationContext());
+  }
+
+  /**
+   * Updates context that is used to fetch the corresponding instance of a {@code
+   * ProcessCameraProvider}.
+   */
+  private void updateContext(Context context) {
+    if (processCameraProviderHostApi != null) {
+      processCameraProviderHostApi.setContext(context);
+    }
+  }
 }
