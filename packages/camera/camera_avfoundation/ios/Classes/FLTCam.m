@@ -175,7 +175,7 @@ NSString *const errorMethod = @"error";
     _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                                error:error];
     
-    if(error){
+    if(*error){
         return nil;
     }
 
