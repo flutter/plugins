@@ -1,6 +1,7 @@
-## NEXT
+## 6.1.1
 
 * Updates minimum Flutter version to 2.10.
+* Updates play-services-auth version to 20.3.0.
 
 ## 6.1.0
 
