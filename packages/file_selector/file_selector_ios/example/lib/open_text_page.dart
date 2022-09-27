@@ -16,7 +16,11 @@ class OpenTextPage extends StatelessWidget {
     // ignore: prefer_const_constructors
     final XTypeGroup typeGroup = XTypeGroup(
       label: 'text',
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_literals_to_create_immutables
       extensions: <String>['txt', 'json'],
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_literals_to_create_immutables
       macUTIs: <String>['public.text'],
     );
     final XFile? file = await FileSelectorPlatform.instance
