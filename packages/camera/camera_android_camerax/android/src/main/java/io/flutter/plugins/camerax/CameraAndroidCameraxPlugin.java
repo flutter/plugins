@@ -90,6 +90,8 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
    * ProcessCameraProvider}.
    */
   private void updateContext(Context context) {
-    processCameraProviderHostApi.setContext(context);
+    if (processCameraProviderHostApi != null) {
+      processCameraProviderHostApi.setContext(context);
+    }
   }
 }
