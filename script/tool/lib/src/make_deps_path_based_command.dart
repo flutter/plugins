@@ -150,7 +150,7 @@ class MakeDepsPathBasedCommand extends PackageCommand {
         return _RewriteOutcome.alreadyChanged;
       }
       printError(
-          'Plugins with dependency overrides are not currently supported.');
+          'Packages with dependency overrides are not currently supported.');
       throw ToolExit(_exitCannotUpdatePubspec);
     }
 

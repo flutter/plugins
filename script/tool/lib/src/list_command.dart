@@ -18,14 +18,14 @@ class ListCommand extends PackageCommand {
   }) : super(packagesDir, platform: platform) {
     argParser.addOption(
       _type,
-      defaultsTo: _plugin,
-      allowed: <String>[_plugin, _example, _package, _file],
+      defaultsTo: _package,
+      allowed: <String>[_package, _example, _allPackage, _file],
       help: 'What type of file system content to list.',
     );
   }
 
   static const String _type = 'type';
-  static const String _plugin = 'plugin';
+  static const String _allPackage = 'package-or-subpackage';
   static const String _example = 'example';
   static const String _package = 'package';
   static const String _file = 'file';
@@ -39,7 +39,7 @@ class ListCommand extends PackageCommand {
   @override
   Future<void> run() async {
     switch (getStringArg(_type)) {
-      case _plugin:
+      case _package:
         await for (final PackageEnumerationEntry entry in getTargetPackages()) {
           print(entry.package.path);
         }
@@ -52,7 +52,7 @@ class ListCommand extends PackageCommand {
           print(package.path);
         }
         break;
-      case _package:
+      case _allPackage:
         await for (final PackageEnumerationEntry entry
             in getTargetPackagesAndSubpackages()) {
           print(entry.package.path);

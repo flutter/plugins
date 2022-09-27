@@ -1,6 +1,10 @@
 ## 0.11
 
 * Renames `publish-plugin` to `publish`.
+* Renames arguments to `list`:
+    * `--package` now lists top-level packages (previously `--plugin`).
+    * `--package-or-subpackage` now lists top-level packages (previously
+      `--package`).
 
 ## 0.10.0+1
 

@@ -64,7 +64,7 @@ command is targetting. An package name can be any of:
 - The name of a package (e.g., `path_provider_android`).
 - The name of a federated plugin (e.g., `path_provider`), in which case all
   packages that make up that plugin will be targetted.
-- A combination federated_package_name/package_name (e.g.,
+- A combination federated_plugin_name/package_name (e.g.,
   `path_provider/path_provider` for the app-facing package).
 
 ### Format Code
