@@ -1,3 +1,7 @@
+## 0.11
+
+* Renames `publish-plugin` to `publish`.
+
 ## 0.10.0+1
 
 * Recognizes `run_test.sh` as a developer-only file in `version-check`.

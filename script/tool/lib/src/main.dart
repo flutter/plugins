@@ -25,7 +25,7 @@ import 'list_command.dart';
 import 'make_deps_path_based_command.dart';
 import 'native_test_command.dart';
 import 'publish_check_command.dart';
-import 'publish_plugin_command.dart';
+import 'publish_command.dart';
 import 'pubspec_check_command.dart';
 import 'readme_check_command.dart';
 import 'remove_dev_dependencies.dart';
@@ -69,7 +69,7 @@ void main(List<String> args) {
     ..addCommand(NativeTestCommand(packagesDir))
     ..addCommand(MakeDepsPathBasedCommand(packagesDir))
     ..addCommand(PublishCheckCommand(packagesDir))
-    ..addCommand(PublishPluginCommand(packagesDir))
+    ..addCommand(PublishCommand(packagesDir))
     ..addCommand(PubspecCheckCommand(packagesDir))
     ..addCommand(ReadmeCheckCommand(packagesDir))
     ..addCommand(RemoveDevDependenciesCommand(packagesDir))
