@@ -145,8 +145,8 @@ NSString *const errorMethod = @"error";
   _maxStreamingPendingFramesCount = 4;
 
     NSError *localError = nil;
-    AVCaptureConnection *connection = [self configureConnection:localError];
-    if (localError != nil) {
+    AVCaptureConnection *connection = [self configureConnection:&localError];
+    if (localError) {
       *error = localError;
       return nil;
     }
@@ -169,13 +169,14 @@ NSString *const errorMethod = @"error";
   return self;
 }
 
-- (AVCaptureConnection *) configureConnection:(NSError *)error {
+- (AVCaptureConnection *) configureConnection:(NSError **)error {
     
     // setup input
     _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
-                                                               error:&error];
-    if (error != nil) {
-      return nil;
+                                                               error:error];
+    
+    if(error){
+        return nil;
     }
 
     // setup output
@@ -886,8 +887,8 @@ NSString *const errorMethod = @"error";
     [_videoCaptureSession removeOutput:_captureVideoOutput];
 
     NSError *error = nil;
-    AVCaptureConnection *newConnection = [self configureConnection:error];
-    if (error != nil) {
+    AVCaptureConnection *newConnection = [self configureConnection:&error];
+    if (error) {
         [result sendError:error];
         return;
     }
