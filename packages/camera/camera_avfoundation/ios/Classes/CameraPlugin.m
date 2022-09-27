@@ -256,9 +256,9 @@
       [_camera pausePreviewWithResult:result];
     } else if ([@"resumePreview" isEqualToString:call.method]) {
       [_camera resumePreviewWithResult:result];
-    } else if([@"setDescriptionWhileRecording" isEqualToString:call.method]) {
-        [_camera setDescriptionWhileRecording:(call.arguments[@"cameraName"]) result:result];
-    }else {
+    } else if ([@"setDescriptionWhileRecording" isEqualToString:call.method]) {
+      [_camera setDescriptionWhileRecording:(call.arguments[@"cameraName"]) result:result];
+    } else {
       [result sendNotImplemented];
     }
   }
