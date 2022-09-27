@@ -284,13 +284,8 @@ class Camera
             .build();
   }
 
-  // default to opening as image stream
-  public void open(String imageFormatGroup) throws CameraAccessException {
-    open(imageFormatGroup, false);
-  }
-
   @SuppressLint("MissingPermission")
-  private void open(String imageFormatGroup, boolean openAsVideo) throws CameraAccessException{
+  public void open(String imageFormatGroup) throws CameraAccessException{
     this.imageFormatGroup = imageFormatGroup;
     final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
 
@@ -335,20 +330,19 @@ class Camera
               public void onOpened(@NonNull CameraDevice device) {
                 cameraDevice = new DefaultCameraDeviceWrapper(device);
                 try {
+                  // already recording, since we are flipping the camera we must send it through VideoRenderer to keep correct orientation
                   if(recordingVideo){
                     startPreviewWithVideoRendererStream();
                   }else{
                     startPreview();
+                    dartMessenger.sendCameraInitializedEvent(
+                            resolutionFeature.getPreviewSize().getWidth(),
+                            resolutionFeature.getPreviewSize().getHeight(),
+                            cameraFeatures.getExposureLock().getValue(),
+                            cameraFeatures.getAutoFocus().getValue(),
+                            cameraFeatures.getExposurePoint().checkIsSupported(),
+                            cameraFeatures.getFocusPoint().checkIsSupported());
                   }
-
-                  // TODO: do we send this ?
-                  dartMessenger.sendCameraInitializedEvent(
-                          resolutionFeature.getPreviewSize().getWidth(),
-                          resolutionFeature.getPreviewSize().getHeight(),
-                          cameraFeatures.getExposureLock().getValue(),
-                          cameraFeatures.getAutoFocus().getValue(),
-                          cameraFeatures.getExposurePoint().checkIsSupported(),
-                          cameraFeatures.getFocusPoint().checkIsSupported());
                 } catch (CameraAccessException | InterruptedException e) {
                   dartMessenger.sendCameraErrorEvent(e.getMessage());
                   close();
@@ -1276,7 +1270,7 @@ class Camera
     cameraFeatures.setAutoFocus(
             cameraFeatureFactory.createAutoFocusFeature(cameraProperties, true));
     try {
-      open(imageFormatGroup, true);
+      open(imageFormatGroup);
     } catch (CameraAccessException e) {
       result.error("setDescriptionWhileRecordingFailed", e.getMessage(), null);
     }
