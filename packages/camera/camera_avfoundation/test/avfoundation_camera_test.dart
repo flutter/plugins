@@ -685,9 +685,10 @@ void main() {
 
       // Assert
       expect(channel.log, <Matcher>[
-        isMethodCall('setDescriptionWhileRecording', arguments: <String, Object?>{
-          'cameraName': camera2Description.name,
-        }),
+        isMethodCall('setDescriptionWhileRecording',
+            arguments: <String, Object?>{
+              'cameraName': camera2Description.name,
+            }),
       ]);
     });
 

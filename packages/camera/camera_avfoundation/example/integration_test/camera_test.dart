@@ -202,7 +202,7 @@ void main() {
     expect(duration, lessThan(recordingTime - timePaused));
   });
 
-    testWidgets('Set description while recording', (WidgetTester tester) async {
+  testWidgets('Set description while recording', (WidgetTester tester) async {
     final List<CameraDescription> cameras =
         await CameraPlatform.instance.availableCameras();
     if (cameras.length < 2) {

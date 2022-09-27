@@ -144,7 +144,6 @@ class CameraValue {
   /// The orientation of the currently running video recording.
   final DeviceOrientation? recordingOrientation;
 
-
   /// The properties of the camera device controlled by this controller.
   final CameraDescription description;
 
@@ -197,7 +196,7 @@ class CameraValue {
       previewPauseOrientation: previewPauseOrientation == null
           ? this.previewPauseOrientation
           : previewPauseOrientation.orNull,
-          description: description ?? this.description,
+      description: description ?? this.description,
     );
   }
 
@@ -218,7 +217,7 @@ class CameraValue {
         'lockedCaptureOrientation: $lockedCaptureOrientation, '
         'recordingOrientation: $recordingOrientation, '
         'isPreviewPaused: $isPreviewPaused, '
-        'previewPausedOrientation: $previewPauseOrientation, ' 
+        'previewPausedOrientation: $previewPauseOrientation, '
         'description: $description)';
   }
 }
@@ -386,8 +385,8 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   /// Sets the description while the camera is recording
-  Future<void> setDescriptionWhileRecording(CameraDescription description) async {
-
+  Future<void> setDescriptionWhileRecording(
+      CameraDescription description) async {
     if (!value.isRecordingVideo) {
       throw CameraException(
         'Video was not being recording',

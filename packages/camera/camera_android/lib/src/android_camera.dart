@@ -483,7 +483,8 @@ class AndroidCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> setDescriptionWhileRecording(CameraDescription description) async {
+  Future<void> setDescriptionWhileRecording(
+      CameraDescription description) async {
     await _channel.invokeMethod<double>(
       'setDescriptionWhileRecording',
       <String, dynamic>{

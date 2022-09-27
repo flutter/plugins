@@ -669,7 +669,7 @@ void main() {
       ]);
     });
 
-      test('Should set the description while recording', () async {
+    test('Should set the description while recording', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
         channelName: _channelName,
@@ -685,9 +685,10 @@ void main() {
 
       // Assert
       expect(channel.log, <Matcher>[
-        isMethodCall('setDescriptionWhileRecording', arguments: <String, Object?>{
-          'cameraName': camera2Description.name,
-        }),
+        isMethodCall('setDescriptionWhileRecording',
+            arguments: <String, Object?>{
+              'cameraName': camera2Description.name,
+            }),
       ]);
     });
 

@@ -14,7 +14,7 @@ class FakeController extends ValueNotifier<CameraValue>
     implements CameraController {
   FakeController() : super(const CameraValue.uninitialized(fakeDescription));
 
-    static const CameraDescription fakeDescription = CameraDescription(
+  static const CameraDescription fakeDescription = CameraDescription(
       name: '', lensDirection: CameraLensDirection.back, sensorOrientation: 0);
 
   @override
@@ -116,10 +116,10 @@ class FakeController extends ValueNotifier<CameraValue>
 
   @override
   Future<void> resumePreview() async {}
-  
-  @override
-  Future<void> setDescriptionWhileRecording(CameraDescription description) async {}
 
+  @override
+  Future<void> setDescriptionWhileRecording(
+      CameraDescription description) async {}
 }
 
 void main() {

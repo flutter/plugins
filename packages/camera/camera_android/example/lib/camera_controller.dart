@@ -141,7 +141,7 @@ class CameraValue {
       previewPauseOrientation: previewPauseOrientation == null
           ? this.previewPauseOrientation
           : previewPauseOrientation.orNull,
-          description: description ?? this.description,
+      description: description ?? this.description,
     );
   }
 
@@ -278,8 +278,9 @@ class CameraController extends ValueNotifier<CameraValue> {
         previewPauseOrientation: const Optional<DeviceOrientation>.absent());
   }
 
-    /// Sets the description while the camera is recording
-  Future<void> setDescriptionWhileRecording(CameraDescription description) async {
+  /// Sets the description while the camera is recording
+  Future<void> setDescriptionWhileRecording(
+      CameraDescription description) async {
     await CameraPlatform.instance.setDescriptionWhileRecording(description);
     value = value.copyWith(description: description);
   }
