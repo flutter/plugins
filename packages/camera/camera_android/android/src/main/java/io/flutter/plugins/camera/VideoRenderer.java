@@ -320,11 +320,8 @@ public class VideoRenderer {
     GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_INT, 0);
 
     EGLExt.eglPresentationTimeANDROID(
-        display,
-        surface,
-        uptimeMillis()
-            * 1000000); // Not the perfect solution but works well, see
-                        // https://stackoverflow.com/questions/63467704/mediarecorder-surface-input-with-opengl-issue-if-audio-recording-is-enabled TODO: try on more devices
+        display, surface, uptimeMillis() * 1000000); // Not the perfect solution but works well, see
+    // https://stackoverflow.com/questions/63467704/mediarecorder-surface-input-with-opengl-issue-if-audio-recording-is-enabled TODO: try on more devices
     EGL14.eglSwapBuffers(display, surface);
   }
 }
