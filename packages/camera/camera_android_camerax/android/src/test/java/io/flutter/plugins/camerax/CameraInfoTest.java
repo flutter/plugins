@@ -7,11 +7,13 @@ package io.flutter.plugins.camerax;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.camera.core.CameraInfo;
+import androidx.camera.core.CameraSelector;
 import io.flutter.plugin.common.BinaryMessenger;
 import java.util.Objects;
 import org.junit.After;
@@ -42,7 +44,8 @@ public class CameraInfoTest {
 
   @Test
   public void getSensorRotationDegreesTest() {
-    final CameraInfoHostApiImpl cameraInfoHostApi = new CameraInfoHostApiImpl(testInstanceManager);
+    final CameraInfoHostApiImpl cameraInfoHostApi =
+        new CameraInfoHostApiImpl(mockBinaryMessenger, testInstanceManager);
 
     testInstanceManager.addDartCreatedInstance(mockCameraInfo, 1);
 
@@ -50,6 +53,21 @@ public class CameraInfoTest {
 
     assertEquals((long) cameraInfoHostApi.getSensorRotationDegrees(1L), 90L);
     verify(mockCameraInfo).getSensorRotationDegrees();
+  }
+
+  @Test
+  public void getCameraSelectorTest() {
+    final CameraInfoHostApiImpl cameraInfoHostApi =
+        new CameraInfoHostApiImpl(mockBinaryMessenger, testInstanceManager);
+    final CameraSelector mockCameraSelector = mock(CameraSelector.class);
+
+    testInstanceManager.addDartCreatedInstance(mockCameraInfo, 0);
+    testInstanceManager.addDartCreatedInstance(mockCameraSelector, 1);
+
+    when(mockCameraInfo.getCameraSelector()).thenReturn(mockCameraSelector);
+
+    assertEquals((long) cameraInfoHostApi.getCameraSelector(0L), 1L);
+    verify(mockCameraInfo).getCameraSelector();
   }
 
   @Test

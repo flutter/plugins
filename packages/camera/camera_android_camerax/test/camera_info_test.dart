@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:camera_android_camerax/src/camera_info.dart';
+import 'package:camera_android_camerax/src/camera_selector.dart';
 import 'package:camera_android_camerax/src/camerax_library.pigeon.dart';
 import 'package:camera_android_camerax/src/instance_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,6 +42,36 @@ void main() {
       expect(await cameraInfo.getSensorRotationDegrees(), equals(90));
 
       verify(mockApi.getSensorRotationDegrees(0));
+    });
+
+    test('getCameraSelectorTest', () async {
+      final MockTestCameraInfoHostApi mockApi = MockTestCameraInfoHostApi();
+      TestCameraInfoHostApi.setup(mockApi);
+
+      final InstanceManager instanceManager = InstanceManager(
+        onWeakReferenceRemoved: (_) {},
+      );
+      final CameraInfo cameraInfo = CameraInfo.detached(
+        instanceManager: instanceManager,
+      );
+      final CameraSelector cameraSelector = CameraSelector.detached(
+        instanceManager: instanceManager,
+      );
+      instanceManager.addHostCreatedInstance(
+        cameraInfo,
+        0,
+        onCopy: (_) => CameraInfo.detached(),
+      );
+      instanceManager.addHostCreatedInstance(
+        cameraSelector,
+        1,
+        onCopy: (_) => CameraSelector.detached(),
+      );
+
+      when(mockApi.getCameraSelector(instanceManager.getIdentifier(cameraInfo)))
+          .thenReturn(instanceManager.getIdentifier(cameraSelector)!);
+      expect(await cameraInfo.getCameraSelector(), equals(cameraSelector));
+      verify(mockApi.getCameraSelector(0));
     });
 
     test('flutterApiCreateTest', () {

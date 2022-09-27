@@ -114,6 +114,9 @@ public class GeneratedCameraXLibrary {
     @NonNull
     Long getSensorRotationDegrees(@NonNull Long identifier);
 
+    @NonNull
+    Long getCameraSelector(@NonNull Long identifier);
+
     /** The codec used by CameraInfoHostApi. */
     static MessageCodec<Object> getCodec() {
       return CameraInfoHostApiCodec.INSTANCE;
@@ -141,6 +144,35 @@ public class GeneratedCameraXLibrary {
                   }
                   Long output =
                       api.getSensorRotationDegrees(
+                          (identifierArg == null) ? null : identifierArg.longValue());
+                  wrapped.put("result", output);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.CameraInfoHostApi.getCameraSelector",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
+                  }
+                  Long output =
+                      api.getCameraSelector(
                           (identifierArg == null) ? null : identifierArg.longValue());
                   wrapped.put("result", output);
                 } catch (Error | RuntimeException exception) {
