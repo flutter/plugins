@@ -1,3 +1,7 @@
+## 2.3.1
+
+* Updates imports for `prefer_relative_imports`.
+
 ## 2.3.0
 
 * Switches the default for `useAndroidViewSurface` to true, and adds

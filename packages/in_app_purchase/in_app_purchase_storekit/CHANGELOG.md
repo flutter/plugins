@@ -1,3 +1,7 @@
+## 0.3.2+2
+
+* Updates imports for `prefer_relative_imports`.
+
 ## 0.3.2+1
 
 * Updates minimum Flutter version to 2.10.

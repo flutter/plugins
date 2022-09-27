@@ -1,3 +1,7 @@
+## 2.9.5
+
+* Updates imports for `prefer_relative_imports`.
+
 ## 2.9.4
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
