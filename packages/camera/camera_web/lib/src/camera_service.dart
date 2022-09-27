@@ -8,11 +8,12 @@ import 'dart:html' as html;
 import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_web/src/camera.dart';
-import 'package:camera_web/src/shims/dart_js_util.dart';
-import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
+import 'camera.dart';
+import 'shims/dart_js_util.dart';
+import 'types/types.dart';
 
 /// A service to fetch, map camera settings and
 /// obtain the camera stream.

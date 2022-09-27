@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import '../in_app_purchase_storekit.dart';
 
 import '../store_kit_wrappers.dart';
 
