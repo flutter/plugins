@@ -116,12 +116,19 @@ class Camera
    * one changes.
    */
   private CameraFeatures cameraFeatures;
+
   private String imageFormatGroup;
 
-  /** Takes an input/output surface and orients the recording correctly. This is needed because switching cameras while recording causes bad orientation */
+  /**
+   * Takes an input/output surface and orients the recording correctly. This is needed because
+   * switching cameras while recording causes bad orientation
+   */
   private VideoRenderer videoRenderer;
 
-  /** When we flip the camera we need to know if it aligns with the initial way the camera was facing or not */
+  /**
+   * When we flip the camera we need to know if it aligns with the initial way the camera was facing
+   * or not
+   */
   private int initialCameraFacing;
 
   private final SurfaceTextureEntry flutterTexture;
@@ -285,7 +292,7 @@ class Camera
   }
 
   @SuppressLint("MissingPermission")
-  public void open(String imageFormatGroup) throws CameraAccessException{
+  public void open(String imageFormatGroup) throws CameraAccessException {
     this.imageFormatGroup = imageFormatGroup;
     final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
 
@@ -324,78 +331,80 @@ class Camera
     // Open the camera.
     CameraManager cameraManager = CameraUtils.getCameraManager(activity);
     cameraManager.openCamera(
-            cameraProperties.getCameraName(),
-            new CameraDevice.StateCallback() {
-              @Override
-              public void onOpened(@NonNull CameraDevice device) {
-                cameraDevice = new DefaultCameraDeviceWrapper(device);
-                try {
-                  // already recording, since we are flipping the camera we must send it through VideoRenderer to keep correct orientation
-                  if(recordingVideo){
-                    startPreviewWithVideoRendererStream();
-                  }else{
-                    startPreview();
-                    dartMessenger.sendCameraInitializedEvent(
-                            resolutionFeature.getPreviewSize().getWidth(),
-                            resolutionFeature.getPreviewSize().getHeight(),
-                            cameraFeatures.getExposureLock().getValue(),
-                            cameraFeatures.getAutoFocus().getValue(),
-                            cameraFeatures.getExposurePoint().checkIsSupported(),
-                            cameraFeatures.getFocusPoint().checkIsSupported());
-                  }
-                } catch (CameraAccessException | InterruptedException e) {
-                  dartMessenger.sendCameraErrorEvent(e.getMessage());
-                  close();
-                }
+        cameraProperties.getCameraName(),
+        new CameraDevice.StateCallback() {
+          @Override
+          public void onOpened(@NonNull CameraDevice device) {
+            cameraDevice = new DefaultCameraDeviceWrapper(device);
+            try {
+              // already recording, since we are flipping the camera we must send it through
+              // VideoRenderer to keep correct orientation
+              if (recordingVideo) {
+                startPreviewWithVideoRendererStream();
+              } else {
+                startPreview();
+                dartMessenger.sendCameraInitializedEvent(
+                    resolutionFeature.getPreviewSize().getWidth(),
+                    resolutionFeature.getPreviewSize().getHeight(),
+                    cameraFeatures.getExposureLock().getValue(),
+                    cameraFeatures.getAutoFocus().getValue(),
+                    cameraFeatures.getExposurePoint().checkIsSupported(),
+                    cameraFeatures.getFocusPoint().checkIsSupported());
               }
+            } catch (CameraAccessException | InterruptedException e) {
+              dartMessenger.sendCameraErrorEvent(e.getMessage());
+              close();
+            }
+          }
 
-              @Override
-              public void onClosed(@NonNull CameraDevice camera) {
-                Log.i(TAG, "open | onClosed");
+          @Override
+          public void onClosed(@NonNull CameraDevice camera) {
+            Log.i(TAG, "open | onClosed");
 
-                // Prevents calls to methods that would otherwise result in IllegalStateException exceptions.
-                cameraDevice = null;
-                closeCaptureSession();
-                dartMessenger.sendCameraClosingEvent();
-              }
+            // Prevents calls to methods that would otherwise result in IllegalStateException
+            // exceptions.
+            cameraDevice = null;
+            closeCaptureSession();
+            dartMessenger.sendCameraClosingEvent();
+          }
 
-              @Override
-              public void onDisconnected(@NonNull CameraDevice cameraDevice) {
-                Log.i(TAG, "open | onDisconnected");
+          @Override
+          public void onDisconnected(@NonNull CameraDevice cameraDevice) {
+            Log.i(TAG, "open | onDisconnected");
 
-                close();
-                dartMessenger.sendCameraErrorEvent("The camera was disconnected.");
-              }
+            close();
+            dartMessenger.sendCameraErrorEvent("The camera was disconnected.");
+          }
 
-              @Override
-              public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
-                Log.i(TAG, "open | onError");
+          @Override
+          public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
+            Log.i(TAG, "open | onError");
 
-                close();
-                String errorDescription;
-                switch (errorCode) {
-                  case ERROR_CAMERA_IN_USE:
-                    errorDescription = "The camera device is in use already.";
-                    break;
-                  case ERROR_MAX_CAMERAS_IN_USE:
-                    errorDescription = "Max cameras in use";
-                    break;
-                  case ERROR_CAMERA_DISABLED:
-                    errorDescription = "The camera device could not be opened due to a device policy.";
-                    break;
-                  case ERROR_CAMERA_DEVICE:
-                    errorDescription = "The camera device has encountered a fatal error";
-                    break;
-                  case ERROR_CAMERA_SERVICE:
-                    errorDescription = "The camera service has encountered a fatal error.";
-                    break;
-                  default:
-                    errorDescription = "Unknown camera error";
-                }
-                dartMessenger.sendCameraErrorEvent(errorDescription);
-              }
-            },
-            backgroundHandler);
+            close();
+            String errorDescription;
+            switch (errorCode) {
+              case ERROR_CAMERA_IN_USE:
+                errorDescription = "The camera device is in use already.";
+                break;
+              case ERROR_MAX_CAMERAS_IN_USE:
+                errorDescription = "Max cameras in use";
+                break;
+              case ERROR_CAMERA_DISABLED:
+                errorDescription = "The camera device could not be opened due to a device policy.";
+                break;
+              case ERROR_CAMERA_DEVICE:
+                errorDescription = "The camera device has encountered a fatal error";
+                break;
+              case ERROR_CAMERA_SERVICE:
+                errorDescription = "The camera service has encountered a fatal error.";
+                break;
+              default:
+                errorDescription = "Unknown camera error";
+            }
+            dartMessenger.sendCameraErrorEvent(errorDescription);
+          }
+        },
+        backgroundHandler);
   }
 
   @VisibleForTesting
@@ -770,7 +779,7 @@ class Camera
     recordingVideo = true;
     try {
       createCaptureSession(
-          CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(),mediaRecorder.getSurface());
+          CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
       result.success(null);
     } catch (CameraAccessException e) {
       recordingVideo = false;
@@ -780,7 +789,7 @@ class Camera
   }
 
   private void closeRenderer() {
-    if(videoRenderer != null){
+    if (videoRenderer != null) {
       videoRenderer.close();
       videoRenderer = null;
     }
@@ -1092,28 +1101,36 @@ class Camera
   public void startPreview() throws CameraAccessException {
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
     Log.i(TAG, "startPreview");
-      createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
+    createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
 
-  private void startPreviewWithVideoRendererStream() throws CameraAccessException, InterruptedException {
+  private void startPreviewWithVideoRendererStream()
+      throws CameraAccessException, InterruptedException {
     if (videoRenderer == null) return;
 
     // get rotation for rendered video
     final PlatformChannel.DeviceOrientation lockedOrientation =
-            ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
-                    .getLockedCaptureOrientation();
-    int rotation = lockedOrientation== null
-            ? cameraFeatures.getSensorOrientation().getDeviceOrientationManager().getVideoOrientation()
-            : cameraFeatures.getSensorOrientation().getDeviceOrientationManager().getVideoOrientation(lockedOrientation);
+        ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
+            .getLockedCaptureOrientation();
+    int rotation =
+        lockedOrientation == null
+            ? cameraFeatures
+                .getSensorOrientation()
+                .getDeviceOrientationManager()
+                .getVideoOrientation()
+            : cameraFeatures
+                .getSensorOrientation()
+                .getDeviceOrientationManager()
+                .getVideoOrientation(lockedOrientation);
 
-
-    if(cameraProperties.getLensFacing() != initialCameraFacing){ // if we are facing the opposite way than the initial recording we need to flip 180 degrees
+    if (cameraProperties.getLensFacing()
+        != initialCameraFacing) { // if we are facing the opposite way than the initial recording we
+                                  // need to flip 180 degrees
       rotation = (rotation + 180) % 360;
     }
     videoRenderer.setRotation(rotation);
 
-    createCaptureSession(
-            CameraDevice.TEMPLATE_RECORD, videoRenderer.getInputSurface());
+    createCaptureSession(CameraDevice.TEMPLATE_RECORD, videoRenderer.getInputSurface());
   }
 
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
@@ -1248,15 +1265,19 @@ class Camera
   }
 
   private void prepareVideoRenderer() {
-    if(videoRenderer != null) return;
+    if (videoRenderer != null) return;
     final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
-    videoRenderer = new VideoRenderer(mediaRecorder.getSurface(),resolutionFeature.getCaptureSize().getWidth(),
+    videoRenderer =
+        new VideoRenderer(
+            mediaRecorder.getSurface(),
+            resolutionFeature.getCaptureSize().getWidth(),
             resolutionFeature.getCaptureSize().getHeight());
   }
 
-  public void setDescriptionWhileRecording(@NonNull final Result result, CameraProperties properties) {
+  public void setDescriptionWhileRecording(
+      @NonNull final Result result, CameraProperties properties) {
 
-    if(!recordingVideo){
+    if (!recordingVideo) {
       result.error("setDescriptionWhileRecordingFailed", "Device was not recording", null);
       return;
     }
@@ -1265,10 +1286,10 @@ class Camera
     prepareVideoRenderer();
     cameraProperties = properties;
     cameraFeatures =
-            CameraFeatures.init(
-                    cameraFeatureFactory, cameraProperties, activity, dartMessenger, resolutionPreset);
+        CameraFeatures.init(
+            cameraFeatureFactory, cameraProperties, activity, dartMessenger, resolutionPreset);
     cameraFeatures.setAutoFocus(
-            cameraFeatureFactory.createAutoFocusFeature(cameraProperties, true));
+        cameraFeatureFactory.createAutoFocusFeature(cameraProperties, true));
     try {
       open(imageFormatGroup);
     } catch (CameraAccessException e) {
