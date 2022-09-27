@@ -161,7 +161,7 @@ bool _isUnpublishedExampleChange(
   return exampleComponents.first.toLowerCase() != 'readme.md';
 }
 
-// True if the change is only relevant to people working on the plugin.
+// True if the change is only relevant to people working on the package.
 Future<bool> _isDevChange(List<String> pathComponents,
     {GitVersionFinder? git, String? repoPath}) async {
   return _isTestChange(pathComponents) ||

@@ -60,15 +60,15 @@ void main() {
   }
 
   /// Returns a list of [count] relative paths to pass to [createFakePlugin]
-  /// with name [pluginName] such that each path will be 99 characters long
-  /// relative to [packagesDir].
+  /// or [createFakePackage] with name [packageName] such that each path will
+  /// be 99 characters long relative to [packagesDir].
   ///
   /// This is for each of testing batching, since it means each file will
   /// consume 100 characters of the batch length.
-  List<String> _get99CharacterPathExtraFiles(String pluginName, int count) {
+  List<String> _get99CharacterPathExtraFiles(String packageName, int count) {
     final int padding = 99 -
-        pluginName.length -
-        1 - // the path separator after the plugin name
+        packageName.length -
+        1 - // the path separator after the package name
         1 - // the path separator after the padding
         10; // the file name
     const int filenameBase = 10000;

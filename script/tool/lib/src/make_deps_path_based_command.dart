@@ -9,7 +9,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import 'common/core.dart';
 import 'common/git_version_finder.dart';
-import 'common/plugin_command.dart';
+import 'common/package_command.dart';
 import 'common/repository_package.dart';
 
 const int _exitPackageNotFound = 3;
@@ -24,7 +24,7 @@ enum _RewriteOutcome { changed, noChangesNeeded, alreadyChanged }
 /// where a non-breaking change to a platform interface package of a federated
 /// plugin would cause post-publish analyzer failures in another package of that
 /// plugin.
-class MakeDepsPathBasedCommand extends PluginCommand {
+class MakeDepsPathBasedCommand extends PackageCommand {
   /// Creates an instance of the command to convert selected dependencies to
   /// path-based.
   MakeDepsPathBasedCommand(
@@ -150,7 +150,7 @@ class MakeDepsPathBasedCommand extends PluginCommand {
         return _RewriteOutcome.alreadyChanged;
       }
       printError(
-          'Plugins with dependency overrides are not currently supported.');
+          'Packages with dependency overrides are not currently supported.');
       throw ToolExit(_exitCannotUpdatePubspec);
     }
 
