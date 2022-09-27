@@ -1125,7 +1125,7 @@ class Camera
 
     if (cameraProperties.getLensFacing()
         != initialCameraFacing) { // if we are facing the opposite way than the initial recording we
-                                  // need to flip 180 degrees
+      // need to flip 180 degrees
       rotation = (rotation + 180) % 360;
     }
     videoRenderer.setRotation(rotation);
