@@ -17,7 +17,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.view.Surface;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
