@@ -37,3 +37,5 @@ flutter:
 dependency_overrides:
   camera_avfoundation:
     path: ../../../camera/camera_avfoundation
+  camera_platform_interface:
+    path: ../../../camera/camera_platform_interface
