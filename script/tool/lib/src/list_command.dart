@@ -5,11 +5,11 @@
 import 'package:file/file.dart';
 import 'package:platform/platform.dart';
 
-import 'common/plugin_command.dart';
+import 'common/package_command.dart';
 import 'common/repository_package.dart';
 
 /// A command to list different types of repository content.
-class ListCommand extends PluginCommand {
+class ListCommand extends PackageCommand {
   /// Creates an instance of the list command, whose behavior depends on the
   /// 'type' argument it provides.
   ListCommand(

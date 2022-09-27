@@ -34,9 +34,9 @@ class PackageEnumerationEntry {
 
 /// Interface definition for all commands in this tool.
 // TODO(stuartmorgan): Move most of this logic to PackageLoopingCommand.
-abstract class PluginCommand extends Command<void> {
+abstract class PackageCommand extends Command<void> {
   /// Creates a command to operate on [packagesDir] with the given environment.
-  PluginCommand(
+  PackageCommand(
     this.packagesDir, {
     this.processRunner = const ProcessRunner(),
     this.platform = const LocalPlatform(),

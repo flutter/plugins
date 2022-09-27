@@ -8,7 +8,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
-import 'package:flutter_plugin_tools/src/common/plugin_command.dart';
+import 'package:flutter_plugin_tools/src/common/package_command.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:git/git.dart';
 import 'package:mockito/annotations.dart';
@@ -18,12 +18,12 @@ import 'package:test/test.dart';
 
 import '../mocks.dart';
 import '../util.dart';
-import 'plugin_command_test.mocks.dart';
+import 'package_command_test.mocks.dart';
 
 @GenerateMocks(<Type>[GitDir])
 void main() {
   late RecordingProcessRunner processRunner;
-  late SamplePluginCommand command;
+  late SamplePackageCommand command;
   late CommandRunner<void> runner;
   late FileSystem fileSystem;
   late MockPlatform mockPlatform;
@@ -49,7 +49,7 @@ void main() {
       return processRunner.run('git-$gitCommand', arguments);
     });
     processRunner = RecordingProcessRunner();
-    command = SamplePluginCommand(
+    command = SamplePackageCommand(
       packagesDir,
       processRunner: processRunner,
       platform: mockPlatform,
@@ -282,7 +282,7 @@ packages/plugin1/plugin1/plugin1.dart
     });
 
     test('returns subpackages after the enclosing package', () async {
-      final SamplePluginCommand localCommand = SamplePluginCommand(
+      final SamplePackageCommand localCommand = SamplePackageCommand(
         packagesDir,
         processRunner: processRunner,
         platform: mockPlatform,
@@ -848,7 +848,7 @@ packages/b_package/lib/src/foo.dart
       ];
 
       for (int i = 0; i < expectedShards.length; ++i) {
-        final SamplePluginCommand localCommand = SamplePluginCommand(
+        final SamplePackageCommand localCommand = SamplePackageCommand(
           packagesDir,
           processRunner: processRunner,
           platform: mockPlatform,
@@ -892,7 +892,7 @@ packages/b_package/lib/src/foo.dart
       ];
 
       for (int i = 0; i < expectedShards.length; ++i) {
-        final SamplePluginCommand localCommand = SamplePluginCommand(
+        final SamplePackageCommand localCommand = SamplePackageCommand(
           packagesDir,
           processRunner: processRunner,
           platform: mockPlatform,
@@ -945,7 +945,7 @@ packages/b_package/lib/src/foo.dart
       createFakePackage('package9', packagesDir);
 
       for (int i = 0; i < expectedShards.length; ++i) {
-        final SamplePluginCommand localCommand = SamplePluginCommand(
+        final SamplePackageCommand localCommand = SamplePackageCommand(
           packagesDir,
           processRunner: processRunner,
           platform: mockPlatform,
@@ -971,8 +971,8 @@ packages/b_package/lib/src/foo.dart
   });
 }
 
-class SamplePluginCommand extends PluginCommand {
-  SamplePluginCommand(
+class SamplePackageCommand extends PackageCommand {
+  SamplePackageCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
