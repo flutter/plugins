@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera;
 
 import static android.os.SystemClock.uptimeMillis;
@@ -316,7 +320,7 @@ public class VideoRenderer {
 
     EGLExt.eglPresentationTimeANDROID(
         display, surface, uptimeMillis() * 1000000); // Not the perfect solution but works well, see
-    // https://stackoverflow.com/questions/63467704/mediarecorder-surface-input-with-opengl-issue-if-audio-recording-is-enabled TODO: try on more devices
+    // https://stackoverflow.com/questions/63467704/mediarecorder-surface-input-with-opengl-issue-if-audio-recording-is-enabled TODO: try on more devices and see if the timestamp can be incorporated
     EGL14.eglSwapBuffers(display, surface);
   }
 }
