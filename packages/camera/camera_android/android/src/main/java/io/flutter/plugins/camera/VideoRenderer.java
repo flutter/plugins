@@ -39,7 +39,6 @@ public class VideoRenderer {
           + "                varUvs = (texMatrix * vec4(uvs.x, uvs.y, 0, 1.0)).xy;\n"
           + "                gl_Position = mvp * vec4(vertexPosition, 1.0);\n"
           + "            }";
-  ;
 
   private static final String fragmentShaderCode =
       " #extension GL_OES_EGL_image_external : require\n"
@@ -58,11 +57,8 @@ public class VideoRenderer {
 
   private final float[] vertices =
       new float[] {
-        // x, y, z, u, v
-        -1.0f, -1.0f, 0.0f, 0f, 0f,
-        -1.0f, 1.0f, 0.0f, 0f, 1f,
-        1.0f, 1.0f, 0.0f, 1f, 1f,
-        1.0f, -1.0f, 0.0f, 1f, 0f
+        -1.0f, -1.0f, 0.0f, 0f, 0f, -1.0f, 1.0f, 0.0f, 0f, 1f, 1.0f, 1.0f, 0.0f, 1f, 1f, 1.0f,
+        -1.0f, 0.0f, 1f, 0f
       };
 
   private final int[] indices = new int[] {2, 1, 0, 0, 3, 2};
