@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
 ## 2.10.2
 
 * Adds a getter to expose the Java InstanceManager.

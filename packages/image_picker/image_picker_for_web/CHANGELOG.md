@@ -1,5 +1,6 @@
-## NEXT
+## 2.1.9
 
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
 * Updates minimum Flutter version to 2.10.
 * Fixes violations of new analysis option use_named_constants.
 
