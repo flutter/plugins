@@ -32,7 +32,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
   @RequiresApi(Build.VERSION_CODES.N)
   public static class WebViewClientImpl extends WebViewClient {
     private final WebViewClientFlutterApiImpl flutterApi;
-    private boolean shouldOverrideUrlLoadingReturnValue;
+    private boolean shouldOverrideUrlLoadingReturnValue = false;
 
     /**
      * Creates a {@link WebViewClient} that passes arguments of callbacks methods to Dart.
@@ -96,7 +96,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
    */
   public static class WebViewClientCompatImpl extends WebViewClientCompat {
     private final WebViewClientFlutterApiImpl flutterApi;
-    private boolean shouldOverrideUrlLoadingReturnValue;
+    private boolean shouldOverrideUrlLoadingReturnValue = false;
 
     public WebViewClientCompatImpl(@NonNull WebViewClientFlutterApiImpl flutterApi) {
       this.flutterApi = flutterApi;
@@ -216,7 +216,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
       ((WebViewClientImpl) webViewClient).setShouldOverrideUrlLoadingReturnValue(value);
     } else {
       throw new IllegalStateException(
-          "This WebViewClient doesn't support setting this return value.");
+          "This WebViewClient doesn't support setting the shouldOverrideUrlLoadingReturnValue.");
     }
   }
 }
