@@ -634,7 +634,6 @@ class JavaScriptChannel extends JavaObject {
 class WebViewClient extends JavaObject {
   /// Constructs a [WebViewClient].
   WebViewClient({
-    this.shouldOverrideUrlLoading = true,
     this.onPageStarted,
     this.onPageFinished,
     this.onReceivedRequestError,
@@ -651,7 +650,6 @@ class WebViewClient extends JavaObject {
   /// This should only be used by subclasses created by this library or to
   /// create copies.
   WebViewClient.detached({
-    this.shouldOverrideUrlLoading = true,
     this.onPageStarted,
     this.onPageFinished,
     this.onReceivedRequestError,
@@ -744,20 +742,6 @@ class WebViewClient extends JavaObject {
   @visibleForTesting
   static WebViewClientHostApiImpl api = WebViewClientHostApiImpl();
 
-  /// Whether loading a url should be overridden.
-  ///
-  /// In Java, `shouldOverrideUrlLoading()` and `shouldOverrideRequestLoading()`
-  /// callbacks must synchronously return a boolean. This sets the default
-  /// return value.
-  ///
-  /// Setting [shouldOverrideUrlLoading] to true causes the current [WebView] to
-  /// abort loading the URL, while returning false causes the [WebView] to
-  /// continue loading the URL as usual. [requestLoading] or [urlLoading] will
-  /// still be called either way.
-  ///
-  /// Defaults to true.
-  final bool shouldOverrideUrlLoading;
-
   /// Notify the host application that a page has started loading.
   ///
   /// This method is called once for each main frame load so a page with iframes
@@ -822,10 +806,24 @@ class WebViewClient extends JavaObject {
   /// false causes the [WebView] to continue loading the URL as usual.
   final void Function(WebView webView, String url)? urlLoading;
 
+  /// Whether loading a url should be overridden.
+  ///
+  /// In Java, `shouldOverrideUrlLoading()` must synchronously return a boolean.
+  /// This sets the default return value.
+  ///
+  /// Setting [shouldOverrideUrlLoading] to true causes the current [WebView] to
+  /// abort loading the URL, while returning false causes the [WebView] to
+  /// continue loading the URL as usual. [requestLoading] or [urlLoading] will
+  /// still be called either way.
+  ///
+  /// Defaults to false.
+  Future<void> setShouldOverrideUrlLoadingReturnValue(bool value) {
+    return api.setShouldOverrideUrlLoadingReturnValueFromInstance(this, value);
+  }
+
   @override
   WebViewClient copy() {
     return WebViewClient.detached(
-      shouldOverrideUrlLoading: shouldOverrideUrlLoading,
       onPageStarted: onPageStarted,
       onPageFinished: onPageFinished,
       onReceivedRequestError: onReceivedRequestError,

@@ -1396,14 +1396,38 @@ class WebViewClientHostApi {
 
   static const MessageCodec<Object?> codec = _WebViewClientHostApiCodec();
 
-  Future<void> create(
-      int arg_instanceId, bool arg_shouldOverrideUrlLoading) async {
+  Future<void> create(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WebViewClientHostApi.create', codec,
         binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setShouldOverrideUrlLoadingReturnValue(
+      int arg_instanceId, bool arg_value) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewClientHostApi.setShouldOverrideUrlLoadingReturnValue',
+        codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap = await channel
-            .send(<Object?>[arg_instanceId, arg_shouldOverrideUrlLoading])
-        as Map<Object?, Object?>?;
+        .send(<Object?>[arg_instanceId, arg_value]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

@@ -44,7 +44,7 @@ void main() {
     late MockWebViewProxy mockWebViewProxy;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
-    late android_webview.WebViewClient webViewClient;
+    late MockWebViewClient mockWebViewClient;
     late android_webview.DownloadListener downloadListener;
     late android_webview.WebChromeClient webChromeClient;
 
@@ -57,12 +57,21 @@ void main() {
       mockWebView = MockWebView();
       mockWebSettings = MockWebSettings();
       mockWebStorage = MockWebStorage();
+      mockWebViewClient = MockWebViewClient();
       when(mockWebView.settings).thenReturn(mockWebSettings);
 
       mockWebViewProxy = MockWebViewProxy();
       when(mockWebViewProxy.createWebView(
         useHybridComposition: anyNamed('useHybridComposition'),
       )).thenReturn(mockWebView);
+      when(mockWebViewProxy.createWebViewClient(
+        onPageStarted: anyNamed('onPageStarted'),
+        onPageFinished: anyNamed('onPageFinished'),
+        onReceivedError: anyNamed('onReceivedError'),
+        onReceivedRequestError: anyNamed('onReceivedRequestError'),
+        requestLoading: anyNamed('requestLoading'),
+        urlLoading: anyNamed('urlLoading'),
+      )).thenReturn(mockWebViewClient);
 
       mockCallbacksHandler = MockWebViewPlatformCallbacksHandler();
       mockJavascriptChannelRegistry = MockJavascriptChannelRegistry();
@@ -96,7 +105,7 @@ void main() {
         },
       ));
 
-      webViewClient = testController.webViewClient;
+      mockWebViewClient = testController.webViewClient as MockWebViewClient;
       downloadListener = testController.downloadListener;
       webChromeClient = testController.webChromeClient;
     }
@@ -113,9 +122,9 @@ void main() {
       verify(mockWebSettings.setBuiltInZoomControls(true));
 
       verifyInOrder(<Future<void>>[
-        mockWebView.setWebViewClient(webViewClient),
         mockWebView.setDownloadListener(downloadListener),
         mockWebView.setWebChromeClient(webChromeClient),
+        mockWebView.setWebViewClient(mockWebViewClient),
       ]);
     });
 
@@ -224,6 +233,16 @@ void main() {
         });
 
         testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
+          final MockWebViewClient mockWebViewClient = MockWebViewClient();
+          when(mockWebViewProxy.createWebViewClient(
+            onPageStarted: anyNamed('onPageStarted'),
+            onPageFinished: anyNamed('onPageFinished'),
+            onReceivedError: anyNamed('onReceivedError'),
+            onReceivedRequestError: anyNamed('onReceivedRequestError'),
+            requestLoading: anyNamed('requestLoading'),
+            urlLoading: anyNamed('urlLoading'),
+          )).thenReturn(mockWebViewClient);
+
           await buildWidget(
             tester,
             creationParams: CreationParams(
@@ -234,7 +253,9 @@ void main() {
             ),
           );
 
-          expect(testController.webViewClient.shouldOverrideUrlLoading, isTrue);
+          verify(
+            mockWebViewClient.setShouldOverrideUrlLoadingReturnValue(true),
+          );
         });
 
         testWidgets('debuggingEnabled true', (WidgetTester tester) async {
@@ -691,20 +712,53 @@ void main() {
     group('WebViewPlatformCallbacksHandler', () {
       testWidgets('onPageStarted', (WidgetTester tester) async {
         await buildWidget(tester);
-        webViewClient.onPageStarted!(mockWebView, 'https://google.com');
+        final void Function(android_webview.WebView, String) onPageStarted =
+            verify(mockWebViewProxy.createWebViewClient(
+          onPageStarted: captureAnyNamed('onPageStarted'),
+          onPageFinished: anyNamed('onPageFinished'),
+          onReceivedError: anyNamed('onReceivedError'),
+          onReceivedRequestError: anyNamed('onReceivedRequestError'),
+          requestLoading: anyNamed('requestLoading'),
+          urlLoading: anyNamed('urlLoading'),
+        )).captured.single as Function(android_webview.WebView, String);
+
+        onPageStarted(mockWebView, 'https://google.com');
         verify(mockCallbacksHandler.onPageStarted('https://google.com'));
       });
 
       testWidgets('onPageFinished', (WidgetTester tester) async {
         await buildWidget(tester);
-        webViewClient.onPageFinished!(mockWebView, 'https://google.com');
+
+        final void Function(android_webview.WebView, String) onPageFinished =
+            verify(mockWebViewProxy.createWebViewClient(
+          onPageStarted: anyNamed('onPageStarted'),
+          onPageFinished: captureAnyNamed('onPageFinished'),
+          onReceivedError: anyNamed('onReceivedError'),
+          onReceivedRequestError: anyNamed('onReceivedRequestError'),
+          requestLoading: anyNamed('requestLoading'),
+          urlLoading: anyNamed('urlLoading'),
+        )).captured.single as Function(android_webview.WebView, String);
+
+        onPageFinished(mockWebView, 'https://google.com');
         verify(mockCallbacksHandler.onPageFinished('https://google.com'));
       });
 
       testWidgets('onWebResourceError from onReceivedError',
           (WidgetTester tester) async {
         await buildWidget(tester);
-        webViewClient.onReceivedError!(
+
+        final void Function(android_webview.WebView, int, String, String)
+            onReceivedError = verify(mockWebViewProxy.createWebViewClient(
+          onPageStarted: anyNamed('onPageStarted'),
+          onPageFinished: anyNamed('onPageFinished'),
+          onReceivedError: captureAnyNamed('onReceivedError'),
+          onReceivedRequestError: anyNamed('onReceivedRequestError'),
+          requestLoading: anyNamed('requestLoading'),
+          urlLoading: anyNamed('urlLoading'),
+        )).captured.single as Function(
+                android_webview.WebView, int, String, String);
+
+        onReceivedError(
           mockWebView,
           android_webview.WebViewClient.errorAuthentication,
           'description',
@@ -725,7 +779,25 @@ void main() {
       testWidgets('onWebResourceError from onReceivedRequestError',
           (WidgetTester tester) async {
         await buildWidget(tester);
-        webViewClient.onReceivedRequestError!(
+
+        final void Function(
+          android_webview.WebView,
+          android_webview.WebResourceRequest,
+          android_webview.WebResourceError,
+        ) onReceivedRequestError = verify(mockWebViewProxy.createWebViewClient(
+          onPageStarted: anyNamed('onPageStarted'),
+          onPageFinished: anyNamed('onPageFinished'),
+          onReceivedError: anyNamed('onReceivedError'),
+          onReceivedRequestError: captureAnyNamed('onReceivedRequestError'),
+          requestLoading: anyNamed('requestLoading'),
+          urlLoading: anyNamed('urlLoading'),
+        )).captured.single as Function(
+          android_webview.WebView,
+          android_webview.WebResourceRequest,
+          android_webview.WebResourceError,
+        );
+
+        onReceivedRequestError(
           mockWebView,
           android_webview.WebResourceRequest(
             url: 'https://google.com',
@@ -760,7 +832,17 @@ void main() {
           url: 'https://google.com',
         )).thenReturn(true);
 
-        webViewClient.urlLoading!(mockWebView, 'https://google.com');
+        final void Function(android_webview.WebView, String) urlLoading =
+            verify(mockWebViewProxy.createWebViewClient(
+          onPageStarted: anyNamed('onPageStarted'),
+          onPageFinished: anyNamed('onPageFinished'),
+          onReceivedError: anyNamed('onReceivedError'),
+          onReceivedRequestError: anyNamed('onReceivedRequestError'),
+          requestLoading: anyNamed('requestLoading'),
+          urlLoading: captureAnyNamed('urlLoading'),
+        )).captured.single as Function(android_webview.WebView, String);
+
+        urlLoading(mockWebView, 'https://google.com');
         verify(mockCallbacksHandler.onNavigationRequest(
           url: 'https://google.com',
           isForMainFrame: true,
@@ -776,7 +858,22 @@ void main() {
           url: 'https://google.com',
         )).thenReturn(true);
 
-        webViewClient.requestLoading!(
+        final void Function(
+          android_webview.WebView,
+          android_webview.WebResourceRequest,
+        ) requestLoading = verify(mockWebViewProxy.createWebViewClient(
+          onPageStarted: anyNamed('onPageStarted'),
+          onPageFinished: anyNamed('onPageFinished'),
+          onReceivedError: anyNamed('onReceivedError'),
+          onReceivedRequestError: anyNamed('onReceivedRequestError'),
+          requestLoading: captureAnyNamed('requestLoading'),
+          urlLoading: anyNamed('urlLoading'),
+        )).captured.single as Function(
+          android_webview.WebView,
+          android_webview.WebResourceRequest,
+        );
+
+        requestLoading(
           mockWebView,
           android_webview.WebResourceRequest(
             url: 'https://google.com',
