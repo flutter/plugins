@@ -1,6 +1,10 @@
 ## 2.3.0
 
 * Allow camera to be switched while video recording.
+
+## 2.2.1
+
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).

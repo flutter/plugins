@@ -8,7 +8,7 @@ import 'package:flutter_plugin_tools/src/common/git_version_finder.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'plugin_command_test.mocks.dart';
+import 'package_command_test.mocks.dart';
 
 void main() {
   late List<List<String>?> gitDirCommands;

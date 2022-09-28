@@ -7,9 +7,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
-import 'package:in_app_purchase_storekit_example/example_payment_queue_delegate.dart';
 
 import 'consumable_store.dart';
+import 'example_payment_queue_delegate.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

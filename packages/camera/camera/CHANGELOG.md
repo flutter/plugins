@@ -1,6 +1,10 @@
 ## 0.11.0
 
 * Allow camera to be switched while video recording.
+
+## 0.10.0+2
+
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 
 ## 0.10.0+1

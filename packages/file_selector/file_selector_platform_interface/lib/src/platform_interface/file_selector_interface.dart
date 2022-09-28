@@ -4,9 +4,9 @@
 
 import 'dart:async';
 
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import '../../file_selector_platform_interface.dart';
 import '../method_channel/method_channel_file_selector.dart';
 
 /// The interface that implementations of file_selector must implement.

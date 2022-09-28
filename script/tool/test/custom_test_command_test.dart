@@ -40,7 +40,7 @@ void main() {
 
     test('runs both new and legacy when both are present', () async {
       final RepositoryPackage package =
-          createFakePlugin('a_package', packagesDir, extraFiles: <String>[
+          createFakePackage('a_package', packagesDir, extraFiles: <String>[
         'tool/run_tests.dart',
         'run_tests.sh',
       ]);
@@ -65,7 +65,7 @@ void main() {
     });
 
     test('runs when only new is present', () async {
-      final RepositoryPackage package = createFakePlugin(
+      final RepositoryPackage package = createFakePackage(
           'a_package', packagesDir,
           extraFiles: <String>['tool/run_tests.dart']);
 
@@ -87,7 +87,7 @@ void main() {
     });
 
     test('runs pub get before running Dart test script', () async {
-      final RepositoryPackage package = createFakePlugin(
+      final RepositoryPackage package = createFakePackage(
           'a_package', packagesDir,
           extraFiles: <String>['tool/run_tests.dart']);
 
@@ -103,7 +103,7 @@ void main() {
     });
 
     test('runs when only legacy is present', () async {
-      final RepositoryPackage package = createFakePlugin(
+      final RepositoryPackage package = createFakePackage(
           'a_package', packagesDir,
           extraFiles: <String>['run_tests.sh']);
 
@@ -125,7 +125,7 @@ void main() {
     });
 
     test('skips when neither is present', () async {
-      createFakePlugin('a_package', packagesDir);
+      createFakePackage('a_package', packagesDir);
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['custom-test']);
@@ -140,7 +140,7 @@ void main() {
     });
 
     test('fails if new fails', () async {
-      createFakePlugin('a_package', packagesDir, extraFiles: <String>[
+      createFakePackage('a_package', packagesDir, extraFiles: <String>[
         'tool/run_tests.dart',
         'run_tests.sh',
       ]);
@@ -166,7 +166,7 @@ void main() {
     });
 
     test('fails if pub get fails', () async {
-      createFakePlugin('a_package', packagesDir, extraFiles: <String>[
+      createFakePackage('a_package', packagesDir, extraFiles: <String>[
         'tool/run_tests.dart',
         'run_tests.sh',
       ]);
@@ -193,7 +193,7 @@ void main() {
 
     test('fails if legacy fails', () async {
       final RepositoryPackage package =
-          createFakePlugin('a_package', packagesDir, extraFiles: <String>[
+          createFakePackage('a_package', packagesDir, extraFiles: <String>[
         'tool/run_tests.dart',
         'run_tests.sh',
       ]);
@@ -238,7 +238,7 @@ void main() {
 
     test('runs new and skips old when both are present', () async {
       final RepositoryPackage package =
-          createFakePlugin('a_package', packagesDir, extraFiles: <String>[
+          createFakePackage('a_package', packagesDir, extraFiles: <String>[
         'tool/run_tests.dart',
         'run_tests.sh',
       ]);
@@ -261,7 +261,7 @@ void main() {
     });
 
     test('runs when only new is present', () async {
-      final RepositoryPackage package = createFakePlugin(
+      final RepositoryPackage package = createFakePackage(
           'a_package', packagesDir,
           extraFiles: <String>['tool/run_tests.dart']);
 
@@ -283,7 +283,7 @@ void main() {
     });
 
     test('skips package when only legacy is present', () async {
-      createFakePlugin('a_package', packagesDir,
+      createFakePackage('a_package', packagesDir,
           extraFiles: <String>['run_tests.sh']);
 
       final List<String> output =
@@ -300,7 +300,7 @@ void main() {
     });
 
     test('fails if new fails', () async {
-      createFakePlugin('a_package', packagesDir, extraFiles: <String>[
+      createFakePackage('a_package', packagesDir, extraFiles: <String>[
         'tool/run_tests.dart',
         'run_tests.sh',
       ]);

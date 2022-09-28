@@ -16,7 +16,7 @@ import 'package:mockito/mockito.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
-import 'common/plugin_command_test.mocks.dart';
+import 'common/package_command_test.mocks.dart';
 import 'mocks.dart';
 import 'util.dart';
 
@@ -1046,6 +1046,38 @@ packages/plugin/android/build.gradle
 -  testImplementation 'junit:junit:4.10.0'
 +  androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 +  testImplementation 'junit:junit:4.13.2'
+'''),
+        ];
+
+        final List<String> output =
+            await _runWithMissingChangeDetection(<String>[]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+          ]),
+        );
+      });
+
+      test('allows missing CHANGELOG and version change for dev-only changes',
+          () async {
+        final RepositoryPackage plugin =
+            createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+        const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+        plugin.changelogFile.writeAsStringSync(changelog);
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.0.0'),
+        ];
+        processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+          // File list.
+          MockProcess(stdout: '''
+packages/plugin/tool/run_tests.dart
+packages/plugin/run_tests.sh
 '''),
         ];
 

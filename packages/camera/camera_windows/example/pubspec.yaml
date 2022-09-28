@@ -19,6 +19,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
+  async: ^2.5.0
   flutter_test:
     sdk: flutter
   integration_test:

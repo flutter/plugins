@@ -1,3 +1,11 @@
+## 2.10.3
+
+* Updates imports for `prefer_relative_imports`.
+
+## 2.10.2
+
+* Adds a getter to expose the Java InstanceManager.
+
 ## 2.10.1
 
 * Adds a method to the `WebView` wrapper to retrieve the X and Y positions simultaneously.

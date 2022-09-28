@@ -10,8 +10,11 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
+  async: ^2.5.0
+  camera_platform_interface: ^2.1.0
   camera_web:
     path: ../
+  cross_file: ^0.3.1
   flutter_driver:
     sdk: flutter
   flutter_test:

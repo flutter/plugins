@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Updates imports for `prefer_relative_imports`.
+
 ## 2.2.0
 
 * Deprecates `AndroidGoogleMapsFlutter.useAndroidViewSurface` in favor of
