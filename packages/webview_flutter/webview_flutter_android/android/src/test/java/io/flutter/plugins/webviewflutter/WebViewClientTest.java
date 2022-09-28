@@ -48,11 +48,8 @@ public class WebViewClientTest {
     final WebViewClientCreator webViewClientCreator =
         new WebViewClientCreator() {
           @Override
-          public WebViewClient createWebViewClient(
-              WebViewClientFlutterApiImpl flutterApi) {
-            webViewClient =
-                (WebViewClientCompatImpl)
-                    super.createWebViewClient(flutterApi);
+          public WebViewClient createWebViewClient(WebViewClientFlutterApiImpl flutterApi) {
+            webViewClient = (WebViewClientCompatImpl) super.createWebViewClient(flutterApi);
             return webViewClient;
           }
         };
@@ -112,13 +109,16 @@ public class WebViewClientTest {
 
   @Test
   public void setShouldOverrideUrlLoadingReturnValue() {
-    final WebViewClientHostApiImpl webViewClientHostApi = new WebViewClientHostApiImpl(instanceManager, new WebViewClientCreator() {
-      @Override
-      public WebViewClient createWebViewClient(
-          WebViewClientFlutterApiImpl flutterApi) {
-        return mockWebViewClient;
-      }
-    }, mockFlutterApi);
+    final WebViewClientHostApiImpl webViewClientHostApi =
+        new WebViewClientHostApiImpl(
+            instanceManager,
+            new WebViewClientCreator() {
+              @Override
+              public WebViewClient createWebViewClient(WebViewClientFlutterApiImpl flutterApi) {
+                return mockWebViewClient;
+              }
+            },
+            mockFlutterApi);
 
     instanceManager.addDartCreatedInstance(mockWebViewClient, 0);
     webViewClientHostApi.setShouldOverrideUrlLoadingReturnValue(0L, false);

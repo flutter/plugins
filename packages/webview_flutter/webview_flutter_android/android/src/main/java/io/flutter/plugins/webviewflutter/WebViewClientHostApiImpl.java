@@ -39,8 +39,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
      *
      * @param flutterApi handles sending messages to Dart
      */
-    public WebViewClientImpl(
-        @NonNull WebViewClientFlutterApiImpl flutterApi) {
+    public WebViewClientImpl(@NonNull WebViewClientFlutterApiImpl flutterApi) {
       this.flutterApi = flutterApi;
     }
 
@@ -99,8 +98,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     private final WebViewClientFlutterApiImpl flutterApi;
     private boolean shouldOverrideUrlLoadingReturnValue;
 
-    public WebViewClientCompatImpl(
-        @NonNull WebViewClientFlutterApiImpl flutterApi) {
+    public WebViewClientCompatImpl(@NonNull WebViewClientFlutterApiImpl flutterApi) {
       this.flutterApi = flutterApi;
     }
 
@@ -168,8 +166,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
      * @param flutterApi handles sending messages to Dart
      * @return the created {@link WebViewClient}
      */
-    public WebViewClient createWebViewClient(
-        WebViewClientFlutterApiImpl flutterApi) {
+    public WebViewClient createWebViewClient(WebViewClientFlutterApiImpl flutterApi) {
       // WebViewClientCompat is used to get
       // shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
       // invoked by the webview on older Android devices, without it pages that use iframes will
@@ -209,14 +206,17 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
   }
 
   @Override
-  public void setShouldOverrideUrlLoadingReturnValue(@NonNull Long instanceId, @NonNull Boolean value) {
+  public void setShouldOverrideUrlLoadingReturnValue(
+      @NonNull Long instanceId, @NonNull Boolean value) {
     final WebViewClient webViewClient = instanceManager.getInstance(instanceId);
     if (webViewClient instanceof WebViewClientCompatImpl) {
       ((WebViewClientCompatImpl) webViewClient).setShouldOverrideUrlLoadingReturnValue(value);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && webViewClient instanceof WebViewClientImpl) {
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+        && webViewClient instanceof WebViewClientImpl) {
       ((WebViewClientImpl) webViewClient).setShouldOverrideUrlLoadingReturnValue(value);
     } else {
-      throw new IllegalStateException("This WebViewClient doesn't support setting this return value.");
+      throw new IllegalStateException(
+          "This WebViewClient doesn't support setting this return value.");
     }
   }
 }
