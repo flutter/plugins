@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 /// then writes text to a file at that location.
 class SaveTextPage extends StatelessWidget {
   /// Default Constructor
-  SaveTextPage({Key? key}) : super(key: key);
+  SaveTextPage({super.key});
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
@@ -25,10 +25,12 @@ class SaveTextPage extends StatelessWidget {
       return;
     }
     final String text = _contentController.text;
-    final Uint8List fileData = Uint8List.fromList(text.codeUnits);
+
+    // This behavior saves an Utf-16 LE encoded file.
+    final Uint16List fileData = Uint16List.fromList(text.codeUnits);
     const String fileMimeType = 'text/plain';
-    final XFile textFile =
-        XFile.fromData(fileData, mimeType: fileMimeType, name: fileName);
+    final XFile textFile = XFile.fromData(fileData.buffer.asUint8List(),
+        mimeType: fileMimeType, name: fileName);
     await textFile.saveTo(path);
   }
 

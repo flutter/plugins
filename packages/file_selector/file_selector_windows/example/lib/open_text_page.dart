@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +11,7 @@ import 'package:flutter/material.dart';
 /// displays its contents in a dialog.
 class OpenTextPage extends StatelessWidget {
   /// Default Constructor
-  const OpenTextPage({Key? key}) : super(key: key);
+  const OpenTextPage({super.key});
 
   Future<void> _openTextFile(BuildContext context) async {
     const XTypeGroup typeGroup = XTypeGroup(
@@ -23,7 +25,14 @@ class OpenTextPage extends StatelessWidget {
       return;
     }
     final String fileName = file.name;
-    final String fileContent = await file.readAsString();
+
+    // This behavior defaults works when reading files encoded using UTF-16 LE.
+    // If you have files encoded with UTF-8 you can simply use file.readAsString()
+    // For other encodings, consider using Encoding.getByName() method, to get your encoder
+    // before calling file.readAsString()
+    final Uint8List bytes = await file.readAsBytes();
+    final Uint16List utf16CodeUnits = bytes.buffer.asUint16List();
+    final String fileContent = String.fromCharCodes(utf16CodeUnits);
 
     await showDialog<void>(
       context: context,
@@ -62,8 +71,7 @@ class OpenTextPage extends StatelessWidget {
 /// Widget that displays a text file in a dialog.
 class TextDisplay extends StatelessWidget {
   /// Default Constructor.
-  const TextDisplay(this.fileName, this.fileContent, {Key? key})
-      : super(key: key);
+  const TextDisplay(this.fileName, this.fileContent, {super.key});
 
   /// The name of the selected file.
   final String fileName;

@@ -4,31 +4,29 @@
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_windows/file_selector_windows.dart';
-import 'package:file_selector_windows/src/messages.g.dart';
+import 'package:file_selector_windows/src/file_selector_api.dart';
+import 'package:file_selector_windows/src/file_selector_dart/selection_options.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import './file_selector_windows_test.mocks.dart';
 
-import 'file_selector_windows_test.mocks.dart';
-import 'test_api.dart';
-
-@GenerateMocks(<Type>[TestFileSelectorApi])
+@GenerateMocks(<Type>[FileSelectorApi])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final FileSelectorWindows plugin = FileSelectorWindows();
-  late MockTestFileSelectorApi mockApi;
+  final MockFileSelectorApi mockApi = MockFileSelectorApi();
+  final FileSelectorWindows plugin = FileSelectorWindows.useFakeApi(mockApi);
 
-  setUp(() {
-    mockApi = MockTestFileSelectorApi();
-    TestFileSelectorApi.setup(mockApi);
+  tearDown(() {
+    reset(mockApi);
   });
 
   test('registered instance', () {
     FileSelectorWindows.registerWith();
     expect(FileSelectorPlatform.instance, isA<FileSelectorWindows>());
-  });
+  }, testOn: 'windows');
 
   group('#openFile', () {
     setUp(() {
@@ -46,7 +44,7 @@ void main() {
       expect(options.selectFolders, false);
     });
 
-    test('passes the accepted type groups correctly', () async {
+    test('passes the accepted xtype groups correctly', () async {
       const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
@@ -66,9 +64,9 @@ void main() {
           verify(mockApi.showOpenDialog(captureAny, null, null));
       final SelectionOptions options = result.captured[0] as SelectionOptions;
       expect(
-          _typeGroupListsMatch(options.allowedTypes, <TypeGroup>[
-            TypeGroup(label: 'text', extensions: <String>['txt']),
-            TypeGroup(label: 'image', extensions: <String>['jpg']),
+          _xTypeGroupListsMatch(options.allowedTypes, const <XTypeGroup>[
+            XTypeGroup(label: 'text', extensions: <String>['txt']),
+            XTypeGroup(label: 'image', extensions: <String>['jpg']),
           ]),
           true);
     });
@@ -85,7 +83,7 @@ void main() {
       verify(mockApi.showOpenDialog(any, null, 'Open File'));
     });
 
-    test('throws for a type group that does not support Windows', () async {
+    test('throws for a xtype group that does not support Windows', () async {
       const XTypeGroup group = XTypeGroup(
         label: 'text',
         mimeTypes: <String>['text/plain'],
@@ -124,7 +122,7 @@ void main() {
       expect(options.selectFolders, false);
     });
 
-    test('passes the accepted type groups correctly', () async {
+    test('passes the accepted xtype groups correctly', () async {
       const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
@@ -144,9 +142,9 @@ void main() {
           verify(mockApi.showOpenDialog(captureAny, null, null));
       final SelectionOptions options = result.captured[0] as SelectionOptions;
       expect(
-          _typeGroupListsMatch(options.allowedTypes, <TypeGroup>[
-            TypeGroup(label: 'text', extensions: <String>['txt']),
-            TypeGroup(label: 'image', extensions: <String>['jpg']),
+          _xTypeGroupListsMatch(options.allowedTypes, const <XTypeGroup>[
+            XTypeGroup(label: 'text', extensions: <String>['txt']),
+            XTypeGroup(label: 'image', extensions: <String>['jpg']),
           ]),
           true);
     });
@@ -163,7 +161,7 @@ void main() {
       verify(mockApi.showOpenDialog(any, null, 'Open Files'));
     });
 
-    test('throws for a type group that does not support Windows', () async {
+    test('throws for a xtype group that does not support Windows', () async {
       const XTypeGroup group = XTypeGroup(
         label: 'text',
         mimeTypes: <String>['text/plain'],
@@ -230,7 +228,7 @@ void main() {
       expect(options.selectFolders, false);
     });
 
-    test('passes the accepted type groups correctly', () async {
+    test('passes the accepted xtype groups correctly', () async {
       const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
@@ -251,9 +249,9 @@ void main() {
           verify(mockApi.showSaveDialog(captureAny, null, null, null));
       final SelectionOptions options = result.captured[0] as SelectionOptions;
       expect(
-          _typeGroupListsMatch(options.allowedTypes, <TypeGroup>[
-            TypeGroup(label: 'text', extensions: <String>['txt']),
-            TypeGroup(label: 'image', extensions: <String>['jpg']),
+          _xTypeGroupListsMatch(options.allowedTypes, const <XTypeGroup>[
+            XTypeGroup(label: 'text', extensions: <String>['txt']),
+            XTypeGroup(label: 'image', extensions: <String>['jpg']),
           ]),
           true);
     });
@@ -276,7 +274,7 @@ void main() {
       verify(mockApi.showSaveDialog(any, null, null, 'Save File'));
     });
 
-    test('throws for a type group that does not support Windows', () async {
+    test('throws for a xtype group that does not support Windows', () async {
       const XTypeGroup group = XTypeGroup(
         label: 'text',
         mimeTypes: <String>['text/plain'],
@@ -300,25 +298,19 @@ void main() {
 }
 
 // True if the given options match.
-//
-// This is needed because Pigeon data classes don't have custom equality checks,
-// so only match for identical instances.
-bool _typeGroupListsMatch(List<TypeGroup?> a, List<TypeGroup?> b) {
+bool _xTypeGroupListsMatch(List<XTypeGroup?> a, List<XTypeGroup?> b) {
   if (a.length != b.length) {
     return false;
   }
-  for (int i = 0; i < a.length; i++) {
-    if (!_typeGroupsMatch(a[i], b[i])) {
+  for (int i = 0; i < a.length; i += 1) {
+    if (!_xTypeGroupsMatch(a[i], b[i])) {
       return false;
     }
   }
   return true;
 }
 
-// True if the given type groups match.
-//
-// This is needed because Pigeon data classes don't have custom equality checks,
-// so only match for identical instances.
-bool _typeGroupsMatch(TypeGroup? a, TypeGroup? b) {
+// True if the given xtype groups match.
+bool _xTypeGroupsMatch(XTypeGroup? a, XTypeGroup? b) {
   return a!.label == b!.label && listEquals(a.extensions, b.extensions);
 }

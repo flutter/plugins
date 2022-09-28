@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Migrates implementation from Cpp to Dart.
+
 ## 0.9.1+4
 
 * Changes XTypeGroup initialization from final to const.
