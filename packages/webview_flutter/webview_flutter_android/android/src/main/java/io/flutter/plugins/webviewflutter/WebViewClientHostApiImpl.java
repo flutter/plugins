@@ -32,17 +32,15 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
   @RequiresApi(Build.VERSION_CODES.N)
   public static class WebViewClientImpl extends WebViewClient {
     private final WebViewClientFlutterApiImpl flutterApi;
-    private final boolean shouldOverrideUrlLoading;
+    private boolean shouldOverrideUrlLoadingReturnValue;
 
     /**
      * Creates a {@link WebViewClient} that passes arguments of callbacks methods to Dart.
      *
      * @param flutterApi handles sending messages to Dart
-     * @param shouldOverrideUrlLoading whether loading a url should be overridden
      */
     public WebViewClientImpl(
-        @NonNull WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
-      this.shouldOverrideUrlLoading = shouldOverrideUrlLoading;
+        @NonNull WebViewClientFlutterApiImpl flutterApi) {
       this.flutterApi = flutterApi;
     }
 
@@ -71,13 +69,13 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
       flutterApi.requestLoading(this, view, request, reply -> {});
-      return shouldOverrideUrlLoading;
+      return shouldOverrideUrlLoadingReturnValue;
     }
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
       flutterApi.urlLoading(this, view, url, reply -> {});
-      return shouldOverrideUrlLoading;
+      return shouldOverrideUrlLoadingReturnValue;
     }
 
     @Override
@@ -85,6 +83,11 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
       // Deliberately empty. Occasionally the webview will mark events as having failed to be
       // handled even though they were handled. We don't want to propagate those as they're not
       // truly lost.
+    }
+
+    /** Sets whether loading a url should be overridden. */
+    public void setShouldOverrideUrlLoadingReturnValue(boolean value) {
+      shouldOverrideUrlLoadingReturnValue = value;
     }
   }
 
@@ -94,11 +97,10 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
    */
   public static class WebViewClientCompatImpl extends WebViewClientCompat {
     private final WebViewClientFlutterApiImpl flutterApi;
-    private final boolean shouldOverrideUrlLoading;
+    private boolean shouldOverrideUrlLoadingReturnValue;
 
     public WebViewClientCompatImpl(
-        @NonNull WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
-      this.shouldOverrideUrlLoading = shouldOverrideUrlLoading;
+        @NonNull WebViewClientFlutterApiImpl flutterApi) {
       this.flutterApi = flutterApi;
     }
 
@@ -136,13 +138,13 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     public boolean shouldOverrideUrlLoading(
         @NonNull WebView view, @NonNull WebResourceRequest request) {
       flutterApi.requestLoading(this, view, request, reply -> {});
-      return shouldOverrideUrlLoading;
+      return shouldOverrideUrlLoadingReturnValue;
     }
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
       flutterApi.urlLoading(this, view, url, reply -> {});
-      return shouldOverrideUrlLoading;
+      return shouldOverrideUrlLoadingReturnValue;
     }
 
     @Override
@@ -150,6 +152,11 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
       // Deliberately empty. Occasionally the webview will mark events as having failed to be
       // handled even though they were handled. We don't want to propagate those as they're not
       // truly lost.
+    }
+
+    /** Sets whether loading a url should be overridden. */
+    public void setShouldOverrideUrlLoadingReturnValue(boolean value) {
+      shouldOverrideUrlLoadingReturnValue = value;
     }
   }
 
@@ -162,7 +169,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
      * @return the created {@link WebViewClient}
      */
     public WebViewClient createWebViewClient(
-        WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
+        WebViewClientFlutterApiImpl flutterApi) {
       // WebViewClientCompat is used to get
       // shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
       // invoked by the webview on older Android devices, without it pages that use iframes will
@@ -172,9 +179,9 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
       // to bug https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
       // https://github.com/flutter/flutter/issues/29446.
       if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        return new WebViewClientImpl(flutterApi, shouldOverrideUrlLoading);
+        return new WebViewClientImpl(flutterApi);
       } else {
-        return new WebViewClientCompatImpl(flutterApi, shouldOverrideUrlLoading);
+        return new WebViewClientCompatImpl(flutterApi);
       }
     }
   }
@@ -196,9 +203,20 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
   }
 
   @Override
-  public void create(Long instanceId, Boolean shouldOverrideUrlLoading) {
-    final WebViewClient webViewClient =
-        webViewClientCreator.createWebViewClient(flutterApi, shouldOverrideUrlLoading);
+  public void create(@NonNull Long instanceId) {
+    final WebViewClient webViewClient = webViewClientCreator.createWebViewClient(flutterApi);
     instanceManager.addDartCreatedInstance(webViewClient, instanceId);
+  }
+
+  @Override
+  public void setShouldOverrideUrlLoadingReturnValue(@NonNull Long instanceId, @NonNull Boolean value) {
+    final WebViewClient webViewClient = instanceManager.getInstance(instanceId);
+    if (webViewClient instanceof WebViewClientCompatImpl) {
+      ((WebViewClientCompatImpl) webViewClient).setShouldOverrideUrlLoadingReturnValue(value);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && webViewClient instanceof WebViewClientImpl) {
+      ((WebViewClientImpl) webViewClient).setShouldOverrideUrlLoadingReturnValue(value);
+    } else {
+      throw new IllegalStateException("This WebViewClient doesn't support setting this return value.");
+    }
   }
 }

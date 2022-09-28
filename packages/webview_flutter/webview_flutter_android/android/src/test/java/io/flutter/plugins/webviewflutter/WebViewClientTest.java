@@ -47,17 +47,17 @@ public class WebViewClientTest {
         new WebViewClientCreator() {
           @Override
           public WebViewClient createWebViewClient(
-              WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
+              WebViewClientFlutterApiImpl flutterApi) {
             webViewClient =
                 (WebViewClientCompatImpl)
-                    super.createWebViewClient(flutterApi, shouldOverrideUrlLoading);
+                    super.createWebViewClient(flutterApi);
             return webViewClient;
           }
         };
 
     hostApiImpl =
         new WebViewClientHostApiImpl(instanceManager, webViewClientCreator, mockFlutterApi);
-    hostApiImpl.create(1L, true);
+    hostApiImpl.create(1L);
   }
 
   @After
