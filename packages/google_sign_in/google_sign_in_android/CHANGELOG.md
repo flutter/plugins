@@ -2,6 +2,7 @@
 
 * Corrects typos in plugin error logs and removes not actionable warnings.
 * Updates minimum Flutter version to 2.10.
+* Updates play-services-auth version to 20.3.0.
 
 ## 6.1.0
 

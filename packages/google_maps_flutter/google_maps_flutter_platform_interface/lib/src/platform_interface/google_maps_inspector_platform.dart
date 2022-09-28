@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+import '../../google_maps_flutter_platform_interface.dart';
 
 /// The interface that platform-specific implementations of
 /// `google_maps_flutter` can extend to support state inpsection in tests.

@@ -1,3 +1,7 @@
+## 2.10.3
+
+* Updates imports for `prefer_relative_imports`.
+
 ## 2.10.2
 
 * Adds a getter to expose the Java InstanceManager.

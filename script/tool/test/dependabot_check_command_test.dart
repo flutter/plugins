@@ -10,7 +10,7 @@ import 'package:flutter_plugin_tools/src/dependabot_check_command.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'common/plugin_command_test.mocks.dart';
+import 'common/package_command_test.mocks.dart';
 import 'util.dart';
 
 void main() {

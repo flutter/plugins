@@ -34,9 +34,9 @@ class PackageEnumerationEntry {
 
 /// Interface definition for all commands in this tool.
 // TODO(stuartmorgan): Move most of this logic to PackageLoopingCommand.
-abstract class PluginCommand extends Command<void> {
+abstract class PackageCommand extends Command<void> {
   /// Creates a command to operate on [packagesDir] with the given environment.
-  PluginCommand(
+  PackageCommand(
     this.packagesDir, {
     this.processRunner = const ProcessRunner(),
     this.platform = const LocalPlatform(),
@@ -47,7 +47,7 @@ abstract class PluginCommand extends Command<void> {
       help:
           'Specifies which packages the command should run on (before sharding).\n',
       valueHelp: 'package1,package2,...',
-      aliases: <String>[_pluginsArg],
+      aliases: <String>[_pluginsLegacyAliasArg],
     );
     argParser.addOption(
       _shardIndexArg,
@@ -58,7 +58,7 @@ abstract class PluginCommand extends Command<void> {
     );
     argParser.addOption(
       _shardCountArg,
-      help: 'Specifies the number of shards into which plugins are divided.',
+      help: 'Specifies the number of shards into which packages are divided.',
       valueHelp: 'n',
       defaultsTo: '1',
     );
@@ -71,7 +71,7 @@ abstract class PluginCommand extends Command<void> {
       defaultsTo: <String>[],
     );
     argParser.addFlag(_runOnChangedPackagesArg,
-        help: 'Run the command on changed packages/plugins.\n'
+        help: 'Run the command on changed packages.\n'
             'If no packages have changed, or if there have been changes that may\n'
             'affect all packages, the command runs on all packages.\n'
             'Packages excluded with $_excludeArg are excluded even if changed.\n'
@@ -106,13 +106,13 @@ abstract class PluginCommand extends Command<void> {
   static const String _logTimingArg = 'log-timing';
   static const String _packagesArg = 'packages';
   static const String _packagesForBranchArg = 'packages-for-branch';
-  static const String _pluginsArg = 'plugins';
+  static const String _pluginsLegacyAliasArg = 'plugins';
   static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
   static const String _runOnDirtyPackagesArg = 'run-on-dirty-packages';
   static const String _shardCountArg = 'shardCount';
   static const String _shardIndexArg = 'shardIndex';
 
-  /// The directory containing the plugin packages.
+  /// The directory containing the packages.
   final Directory packagesDir;
 
   /// The process runner.
@@ -221,7 +221,7 @@ abstract class PluginCommand extends Command<void> {
     _shardCount = shardCount;
   }
 
-  /// Returns the set of plugins to exclude based on the `--exclude` argument.
+  /// Returns the set of packages to exclude based on the `--exclude` argument.
   Set<String> getExcludedPackageNames() {
     final Set<String> excludedPackages = _excludedPackages ??
         getStringListArg(_excludeArg).expand<String>((String item) {
@@ -250,22 +250,22 @@ abstract class PluginCommand extends Command<void> {
   Stream<PackageEnumerationEntry> getTargetPackages(
       {bool filterExcluded = true}) async* {
     // To avoid assuming consistency of `Directory.list` across command
-    // invocations, we collect and sort the plugin folders before sharding.
+    // invocations, we collect and sort the package folders before sharding.
     // This is considered an implementation detail which is why the API still
     // uses streams.
-    final List<PackageEnumerationEntry> allPlugins =
+    final List<PackageEnumerationEntry> allPackages =
         await _getAllPackages().toList();
-    allPlugins.sort((PackageEnumerationEntry p1, PackageEnumerationEntry p2) =>
+    allPackages.sort((PackageEnumerationEntry p1, PackageEnumerationEntry p2) =>
         p1.package.path.compareTo(p2.package.path));
-    final int shardSize = allPlugins.length ~/ shardCount +
-        (allPlugins.length % shardCount == 0 ? 0 : 1);
-    final int start = min(shardIndex * shardSize, allPlugins.length);
-    final int end = min(start + shardSize, allPlugins.length);
+    final int shardSize = allPackages.length ~/ shardCount +
+        (allPackages.length % shardCount == 0 ? 0 : 1);
+    final int start = min(shardIndex * shardSize, allPackages.length);
+    final int end = min(start + shardSize, allPackages.length);
 
-    for (final PackageEnumerationEntry plugin
-        in allPlugins.sublist(start, end)) {
-      if (!(filterExcluded && plugin.excluded)) {
-        yield plugin;
+    for (final PackageEnumerationEntry package
+        in allPackages.sublist(start, end)) {
+      if (!(filterExcluded && package.excluded)) {
+        yield package;
       }
     }
   }
@@ -330,7 +330,7 @@ abstract class PluginCommand extends Command<void> {
       runOnChangedPackages = false;
     }
 
-    final Set<String> excludedPluginNames = getExcludedPackageNames();
+    final Set<String> excludedPackageNames = getExcludedPackageNames();
 
     if (runOnChangedPackages) {
       final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
@@ -368,15 +368,16 @@ abstract class PluginCommand extends Command<void> {
     ]) {
       await for (final FileSystemEntity entity
           in dir.list(followLinks: false)) {
-        // A top-level Dart package is a plugin package.
+        // A top-level Dart package is a standard package.
         if (isPackage(entity)) {
           if (packages.isEmpty || packages.contains(p.basename(entity.path))) {
             yield PackageEnumerationEntry(
                 RepositoryPackage(entity as Directory),
-                excluded: excludedPluginNames.contains(entity.basename));
+                excluded: excludedPackageNames.contains(entity.basename));
           }
         } else if (entity is Directory) {
-          // Look for Dart packages under this top-level directory.
+          // Look for Dart packages under this top-level directory; this is the
+          // standard structure for federated plugins.
           await for (final FileSystemEntity subdir
               in entity.list(followLinks: false)) {
             if (isPackage(subdir)) {
@@ -394,7 +395,7 @@ abstract class PluginCommand extends Command<void> {
                   packages.intersection(possibleMatches).isNotEmpty) {
                 yield PackageEnumerationEntry(
                     RepositoryPackage(subdir as Directory),
-                    excluded: excludedPluginNames
+                    excluded: excludedPackageNames
                         .intersection(possibleMatches)
                         .isNotEmpty);
               }
@@ -415,11 +416,12 @@ abstract class PluginCommand extends Command<void> {
   /// stream.
   Stream<PackageEnumerationEntry> getTargetPackagesAndSubpackages(
       {bool filterExcluded = true}) async* {
-    await for (final PackageEnumerationEntry plugin
+    await for (final PackageEnumerationEntry package
         in getTargetPackages(filterExcluded: filterExcluded)) {
-      yield plugin;
-      yield* getSubpackages(plugin.package).map((RepositoryPackage package) =>
-          PackageEnumerationEntry(package, excluded: plugin.excluded));
+      yield package;
+      yield* getSubpackages(package.package).map(
+          (RepositoryPackage subPackage) =>
+              PackageEnumerationEntry(subPackage, excluded: package.excluded));
     }
   }
 
@@ -524,7 +526,7 @@ abstract class PluginCommand extends Command<void> {
   }
 
   // Returns true if one or more files changed that have the potential to affect
-  // any plugin (e.g., CI script changes).
+  // any packages (e.g., CI script changes).
   bool _changesRequireFullTest(List<String> changedFiles) {
     const List<String> specialFiles = <String>[
       '.ci.yaml', // LUCI config.

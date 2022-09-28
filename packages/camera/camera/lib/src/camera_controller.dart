@@ -5,12 +5,13 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quiver/core.dart';
+
+import '../camera.dart';
 
 /// Signature for a callback receiving the a camera image.
 ///

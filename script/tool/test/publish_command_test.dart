@@ -10,14 +10,14 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
-import 'package:flutter_plugin_tools/src/publish_plugin_command.dart';
+import 'package:flutter_plugin_tools/src/publish_command.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
-import 'common/plugin_command_test.mocks.dart';
+import 'common/package_command_test.mocks.dart';
 import 'mocks.dart';
 import 'util.dart';
 
@@ -34,7 +34,7 @@ void main() {
   late Map<String, Map<String, dynamic>> mockHttpResponses;
 
   void _createMockCredentialFile() {
-    final String credentialPath = PublishPluginCommand.getCredentialPath();
+    final String credentialPath = PublishCommand.getCredentialPath();
     fileSystem.file(credentialPath)
       ..createSync(recursive: true)
       ..writeAsStringSync('some credential');
@@ -72,7 +72,7 @@ void main() {
 
     mockStdin = MockStdin();
     commandRunner = CommandRunner<void>('tester', '')
-      ..addCommand(PublishPluginCommand(
+      ..addCommand(PublishCommand(
         packagesDir,
         processRunner: processRunner,
         stdinput: mockStdin,
@@ -93,7 +93,7 @@ void main() {
       Error? commandError;
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=foo',
       ], errorHandler: (Error e) {
         commandError = e;
@@ -122,7 +122,7 @@ void main() {
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
-          commandRunner, <String>['publish-plugin', '--packages=foo'],
+          commandRunner, <String>['publish', '--packages=foo'],
           errorHandler: (Error e) {
         commandError = e;
       });
@@ -154,8 +154,8 @@ void main() {
             stderrEncoding: utf8), // pub publish for plugin1
       ];
 
-      final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--packages=plugin1,plugin2']);
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>['publish', '--packages=plugin1,plugin2']);
 
       expect(
           output,
@@ -176,7 +176,7 @@ void main() {
       mockStdin.mockUserInputs.add(utf8.encode('user input'));
 
       await runCapturingPrint(
-          commandRunner, <String>['publish-plugin', '--packages=foo']);
+          commandRunner, <String>['publish', '--packages=foo']);
 
       expect(processRunner.mockPublishProcess.stdinMock.lines,
           contains('user input'));
@@ -187,7 +187,7 @@ void main() {
           createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=foo',
         '--pub-publish-flags',
         '--dry-run,--server=bar'
@@ -209,7 +209,7 @@ void main() {
           createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=foo',
         '--skip-confirmation',
         '--pub-publish-flags',
@@ -232,7 +232,7 @@ void main() {
           createFakePlugin('plugin_b', packagesDir, examples: <String>[]);
 
       await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=plugin_a,plugin_b',
         '--skip-confirmation',
         '--pub-publish-flags',
@@ -263,7 +263,7 @@ void main() {
       Error? commandError;
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=foo',
       ], errorHandler: (Error e) {
         commandError = e;
@@ -283,7 +283,7 @@ void main() {
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=foo',
         '--dry-run',
       ]);
@@ -310,7 +310,7 @@ void main() {
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=$packageName',
       ]);
 
@@ -330,7 +330,7 @@ void main() {
     test('with the version and name from the pubspec.yaml', () async {
       createFakePlugin('foo', packagesDir, examples: <String>[]);
       await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=foo',
       ]);
 
@@ -348,7 +348,7 @@ void main() {
       Error? commandError;
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=foo',
       ], errorHandler: (Error e) {
         commandError = e;
@@ -375,7 +375,7 @@ void main() {
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=foo',
       ]);
 
@@ -398,7 +398,7 @@ void main() {
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--skip-confirmation',
         '--packages=foo',
       ]);
@@ -420,8 +420,8 @@ void main() {
 
       mockStdin.readLineOutput = 'y';
 
-      final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--packages=foo', '--dry-run']);
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>['publish', '--packages=foo', '--dry-run']);
 
       expect(
           processRunner.recordedCalls
@@ -445,7 +445,7 @@ void main() {
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--packages=foo',
         '--remote',
         'origin',
@@ -491,7 +491,7 @@ void main() {
       mockStdin.readLineOutput = 'y';
 
       final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+          <String>['publish', '--all-changed', '--base-sha=HEAD~']);
 
       expect(
           output,
@@ -553,7 +553,7 @@ void main() {
       mockStdin.readLineOutput = 'y';
 
       final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+          <String>['publish', '--all-changed', '--base-sha=HEAD~']);
 
       expect(
           output,
@@ -598,7 +598,7 @@ void main() {
 
       final List<String> output = await runCapturingPrint(
           commandRunner, <String>[
-        'publish-plugin',
+        'publish',
         '--all-changed',
         '--base-sha=HEAD~',
         '--dry-run'
@@ -651,7 +651,7 @@ void main() {
       mockStdin.readLineOutput = 'y';
 
       final List<String> output2 = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+          <String>['publish', '--all-changed', '--base-sha=HEAD~']);
       expect(
           output2,
           containsAllInOrder(<Matcher>[
@@ -700,7 +700,7 @@ void main() {
       mockStdin.readLineOutput = 'y';
 
       final List<String> output2 = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+          <String>['publish', '--all-changed', '--base-sha=HEAD~']);
       expect(
           output2,
           containsAllInOrder(<Matcher>[
@@ -749,7 +749,7 @@ void main() {
       ];
 
       final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+          <String>['publish', '--all-changed', '--base-sha=HEAD~']);
 
       expect(
           output,
@@ -795,7 +795,7 @@ void main() {
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~'],
+          <String>['publish', '--all-changed', '--base-sha=HEAD~'],
           errorHandler: (Error e) {
         commandError = e;
       });
@@ -830,7 +830,7 @@ void main() {
       ];
 
       final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+          <String>['publish', '--all-changed', '--base-sha=HEAD~']);
 
       expect(output, containsAllInOrder(<String>['Ran for 0 package(s)']));
       expect(
@@ -852,7 +852,7 @@ void main() {
       ];
 
       final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+          <String>['publish', '--all-changed', '--base-sha=HEAD~']);
 
       expect(
           output,
