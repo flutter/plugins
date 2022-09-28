@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:flutter/services.dart';
-import 'package:local_auth_android/types/auth_messages_android.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+
+import 'types/auth_messages_android.dart';
 
 export 'package:local_auth_android/types/auth_messages_android.dart';
 export 'package:local_auth_platform_interface/types/auth_messages.dart';

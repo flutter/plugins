@@ -184,6 +184,42 @@ ${devDependencies.map((String dep) => '  $dep: ^1.0.0').join('\n')}
         ]));
   });
 
+  test(
+      'alphabetizes overrides from different sectinos to avoid lint warnings in analysis',
+      () async {
+    createFakePackage('a', packagesDir);
+    createFakePackage('b', packagesDir);
+    createFakePackage('c', packagesDir);
+    final RepositoryPackage targetPackage =
+        createFakePackage('target', packagesDir);
+
+    _addDependencies(targetPackage, <String>['a', 'c']);
+    _addDevDependenciesSection(targetPackage, <String>['b']);
+
+    final List<String> output = await runCapturingPrint(runner,
+        <String>['make-deps-path-based', '--target-dependencies=c,a,b']);
+
+    expect(
+        output,
+        containsAllInOrder(<String>[
+          'Rewriting references to: c, a, b...',
+          '  Modified packages/target/pubspec.yaml',
+        ]));
+
+    expect(
+        targetPackage.pubspecFile.readAsLinesSync(),
+        containsAllInOrder(<String>[
+          '# FOR TESTING ONLY. DO NOT MERGE.',
+          'dependency_overrides:',
+          '  a:',
+          '    path: ../a',
+          '  b:',
+          '    path: ../b',
+          '  c:',
+          '    path: ../c',
+        ]));
+  });
+
   // This test case ensures that running CI using this command on an interim
   // PR that itself used this command won't fail on the rewrite step.
   test('running a second time no-ops without failing', () async {

@@ -158,10 +158,12 @@ class MakeDepsPathBasedCommand extends PackageCommand {
       ...pubspec.dependencies.keys,
       ...pubspec.devDependencies.keys,
     ];
-    final Iterable<String> packagesToOverride = combinedDependencies
+    final List<String> packagesToOverride = combinedDependencies
         .where(
             (String packageName) => localDependencies.containsKey(packageName))
         .toList();
+    // Sort the combined list to avoid sort_pub_dependencies lint violations.
+    packagesToOverride.sort();
     if (packagesToOverride.isNotEmpty) {
       final String commonBasePath = packagesDir.path;
       // Find the relative path to the common base.

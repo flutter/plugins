@@ -193,7 +193,7 @@ linter:
     # - prefer_mixin # Has false positives, see https://github.com/dart-lang/linter/issues/3018
     # - prefer_null_aware_method_calls # "call()" is confusing to people new to the language since it's not documented anywhere
     - prefer_null_aware_operators
-    # - prefer_relative_imports # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - prefer_relative_imports
     - prefer_single_quotes
     - prefer_spread_collections
     - prefer_typing_uninitialized_variables
