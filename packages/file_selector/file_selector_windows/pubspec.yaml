@@ -18,9 +18,11 @@ flutter:
 
 dependencies:
   cross_file: ^0.3.1
+  ffi: ^2.0.1
   file_selector_platform_interface: ^2.2.0
   flutter:
     sdk: flutter
+  win32: ^3.0.0
 
 dev_dependencies:
   build_runner: 2.1.11
