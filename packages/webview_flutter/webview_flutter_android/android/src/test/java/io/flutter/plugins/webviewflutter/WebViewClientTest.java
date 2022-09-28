@@ -33,6 +33,8 @@ public class WebViewClientTest {
 
   @Mock public WebView mockWebView;
 
+  @Mock public WebViewClientCompatImpl mockWebViewClient;
+
   InstanceManager instanceManager;
   WebViewClientHostApiImpl hostApiImpl;
   WebViewClientCompatImpl webViewClient;
@@ -106,5 +108,21 @@ public class WebViewClientTest {
     final GeneratedAndroidWebView.WebResourceRequestData data =
         WebViewClientFlutterApiImpl.createWebResourceRequestData(mockRequest);
     assertEquals(data.getRequestHeaders(), new HashMap<String, String>());
+  }
+
+  @Test
+  public void setShouldOverrideUrlLoadingReturnValue() {
+    final WebViewClientHostApiImpl webViewClientHostApi = new WebViewClientHostApiImpl(instanceManager, new WebViewClientCreator() {
+      @Override
+      public WebViewClient createWebViewClient(
+          WebViewClientFlutterApiImpl flutterApi) {
+        return mockWebViewClient;
+      }
+    }, mockFlutterApi);
+
+    instanceManager.addDartCreatedInstance(mockWebViewClient, 0);
+    webViewClientHostApi.setShouldOverrideUrlLoadingReturnValue(0L, false);
+
+    verify(mockWebViewClient).setShouldOverrideUrlLoadingReturnValue(false);
   }
 }
