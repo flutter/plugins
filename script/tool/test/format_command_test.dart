@@ -49,7 +49,7 @@ void main() {
 
   /// Returns a modified version of a list of [relativePaths] that are relative
   /// to [package] to instead be relative to [packagesDir].
-  List<String> _getPackagesDirRelativePaths(
+  List<String> getPackagesDirRelativePaths(
       RepositoryPackage package, List<String> relativePaths) {
     final p.Context path = analyzeCommand.path;
     final String relativeBase =
@@ -65,7 +65,7 @@ void main() {
   ///
   /// This is for each of testing batching, since it means each file will
   /// consume 100 characters of the batch length.
-  List<String> _get99CharacterPathExtraFiles(String packageName, int count) {
+  List<String> get99CharacterPathExtraFiles(String packageName, int count) {
     final int padding = 99 -
         packageName.length -
         1 - // the path separator after the package name
@@ -99,10 +99,7 @@ void main() {
         orderedEquals(<ProcessCall>[
           ProcessCall(
               getFlutterCommand(mockPlatform),
-              <String>[
-                'format',
-                ..._getPackagesDirRelativePaths(plugin, files)
-              ],
+              <String>['format', ...getPackagesDirRelativePaths(plugin, files)],
               packagesDir.path),
         ]));
   });
@@ -138,7 +135,7 @@ void main() {
               getFlutterCommand(mockPlatform),
               <String>[
                 'format',
-                ..._getPackagesDirRelativePaths(plugin, formattedFiles)
+                ...getPackagesDirRelativePaths(plugin, formattedFiles)
               ],
               packagesDir.path),
         ]));
@@ -191,7 +188,7 @@ void main() {
                 '-jar',
                 javaFormatPath,
                 '--replace',
-                ..._getPackagesDirRelativePaths(plugin, files)
+                ...getPackagesDirRelativePaths(plugin, files)
               ],
               packagesDir.path),
         ]));
@@ -271,7 +268,7 @@ void main() {
                 '-jar',
                 javaFormatPath,
                 '--replace',
-                ..._getPackagesDirRelativePaths(plugin, files)
+                ...getPackagesDirRelativePaths(plugin, files)
               ],
               packagesDir.path),
         ]));
@@ -303,7 +300,7 @@ void main() {
               <String>[
                 '-i',
                 '--style=file',
-                ..._getPackagesDirRelativePaths(plugin, files)
+                ...getPackagesDirRelativePaths(plugin, files)
               ],
               packagesDir.path),
         ]));
@@ -358,7 +355,7 @@ void main() {
               <String>[
                 '-i',
                 '--style=file',
-                ..._getPackagesDirRelativePaths(plugin, files)
+                ...getPackagesDirRelativePaths(plugin, files)
               ],
               packagesDir.path),
         ]));
@@ -426,14 +423,14 @@ void main() {
               <String>[
                 '-i',
                 '--style=file',
-                ..._getPackagesDirRelativePaths(plugin, clangFiles)
+                ...getPackagesDirRelativePaths(plugin, clangFiles)
               ],
               packagesDir.path),
           ProcessCall(
               getFlutterCommand(mockPlatform),
               <String>[
                 'format',
-                ..._getPackagesDirRelativePaths(plugin, dartFiles)
+                ...getPackagesDirRelativePaths(plugin, dartFiles)
               ],
               packagesDir.path),
           ProcessCall(
@@ -442,7 +439,7 @@ void main() {
                 '-jar',
                 javaFormatPath,
                 '--replace',
-                ..._getPackagesDirRelativePaths(plugin, javaFiles)
+                ...getPackagesDirRelativePaths(plugin, javaFiles)
               ],
               packagesDir.path),
         ]));
@@ -541,7 +538,7 @@ void main() {
 
     // Make the file list one file longer than would fit in the batch.
     final List<String> batch1 =
-        _get99CharacterPathExtraFiles(pluginName, batchSize + 1);
+        get99CharacterPathExtraFiles(pluginName, batchSize + 1);
     final String extraFile = batch1.removeLast();
 
     createFakePlugin(
@@ -578,7 +575,7 @@ void main() {
 
     // Make the file list one file longer than would fit in a Windows batch.
     final List<String> batch =
-        _get99CharacterPathExtraFiles(pluginName, batchSize + 1);
+        get99CharacterPathExtraFiles(pluginName, batchSize + 1);
 
     createFakePlugin(
       pluginName,
@@ -598,7 +595,7 @@ void main() {
 
     // Make the file list one file longer than would fit in the batch.
     final List<String> batch1 =
-        _get99CharacterPathExtraFiles(pluginName, batchSize + 1);
+        get99CharacterPathExtraFiles(pluginName, batchSize + 1);
     final String extraFile = batch1.removeLast();
 
     createFakePlugin(

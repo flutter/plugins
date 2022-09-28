@@ -33,7 +33,7 @@ void main() {
   // Map of package name to mock response.
   late Map<String, Map<String, dynamic>> mockHttpResponses;
 
-  void _createMockCredentialFile() {
+  void createMockCredentialFile() {
     final String credentialPath = PublishCommand.getCredentialPath();
     fileSystem.file(credentialPath)
       ..createSync(recursive: true)
@@ -204,7 +204,7 @@ void main() {
     test(
         '--skip-confirmation flag automatically adds --force to --pub-publish-flags',
         () async {
-      _createMockCredentialFile();
+      createMockCredentialFile();
       final RepositoryPackage plugin =
           createFakePlugin('foo', packagesDir, examples: <String>[]);
 
@@ -225,7 +225,7 @@ void main() {
     });
 
     test('--force is only added once, regardless of plugin count', () async {
-      _createMockCredentialFile();
+      createMockCredentialFile();
       final RepositoryPackage plugin1 =
           createFakePlugin('plugin_a', packagesDir, examples: <String>[]);
       final RepositoryPackage plugin2 =
@@ -393,7 +393,7 @@ void main() {
 
     test('does not ask for user input if the --skip-confirmation flag is on',
         () async {
-      _createMockCredentialFile();
+      createMockCredentialFile();
       createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       final List<String> output =
