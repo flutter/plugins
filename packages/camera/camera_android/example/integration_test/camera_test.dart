@@ -55,8 +55,6 @@ void main() {
   Future<bool> testCaptureImageResolution(
       CameraController controller, ResolutionPreset preset) async {
     final Size expectedSize = presetExpectedSizes[preset]!;
-    print(
-        'Capturing photo at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
 
     // Take Picture
     final XFile file = await controller.takePicture();
@@ -105,8 +103,6 @@ void main() {
   Future<bool> testCaptureVideoResolution(
       CameraController controller, ResolutionPreset preset) async {
     final Size expectedSize = presetExpectedSizes[preset]!;
-    print(
-        'Capturing video at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
 
     // Take Video
     await controller.startVideoRecording();
