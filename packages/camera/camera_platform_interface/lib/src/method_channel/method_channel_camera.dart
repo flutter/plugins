@@ -137,6 +137,7 @@ class MethodChannelCamera extends CameraPlatform {
       // ignore: body_might_complete_normally_catch_error
       (Object error, StackTrace stackTrace) {
         if (error is! PlatformException) {
+          // ignore: only_throw_errors
           throw error;
         }
         completer.completeError(

@@ -234,7 +234,7 @@ class FakeStoreKitPlatform {
       // receipt manager
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
         if (getReceiptFailTest) {
-          throw 'some arbitrary error';
+          throw Exception('some arbitrary error');
         }
         return Future<String>.value('receipt data');
       // payment queue
