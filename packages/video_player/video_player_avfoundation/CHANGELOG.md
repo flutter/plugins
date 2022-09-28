@@ -1,7 +1,3 @@
-## NEXT
-
-* Updates code for `no_leading_underscores_for_local_identifiers` lint.
-
 ## 2.3.6
 
 * Fixes a bug in iOS 16 where videos from protected live streams are not shown. 
