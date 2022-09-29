@@ -11,7 +11,7 @@ import '../../store_kit_wrappers.dart';
 /// needed to complete transactions.
 ///
 /// The [SKPaymentQueueDelegateWrapper] is only available on iOS 13 and higher.
-/// Using the delegate on older iOS version will be ignored.
+/// Using the delegate on older iOS version or on MacOS will be ignored.
 abstract class SKPaymentQueueDelegateWrapper {
   /// Called by the system to check whether the transaction should continue if
   /// the device's App Store storefront has changed during a transaction.
