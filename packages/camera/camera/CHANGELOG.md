@@ -1,6 +1,6 @@
 ## 0.11.0
 
-* Allow camera to be switched while video recording.
+* Allows camera to be switched while video recording.
 
 ## 0.10.0+2
 
