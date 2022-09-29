@@ -23,7 +23,7 @@ class AndroidCameraXCameraFlutterApis {
         cameraInfoFlutterApi ?? CameraInfoFlutterApiImpl();
     this.cameraSelectorFlutterApi =
         cameraSelectorFlutterApi ?? CameraSelectorFlutterApiImpl();
-    this.processCameraProviderFlutterApi ??
+    this.processCameraProviderFlutterApi = processCameraProviderFlutterApi ??
         ProcessCameraProviderFlutterApiImpl();
   }
 
