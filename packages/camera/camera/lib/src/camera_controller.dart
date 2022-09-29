@@ -415,7 +415,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Throws a [CameraException] if image streaming or video recording has
   /// already started.
   ///
-  /// The `startImageStream` method is only available on Android and iOS (other
+  /// The `startImageStream` method is only available on Android, iOS and Web (other
   /// platforms won't be supported in current setup).
   ///
   // TODO(bmparr): Add settings for resolution and fps.
