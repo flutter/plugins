@@ -1,3 +1,7 @@
+## 2.3.2
+
+* Update `com.google.android.gms:play-services-maps` to 18.1.0.
+
 ## 2.3.1
 
 * Updates imports for `prefer_relative_imports`.

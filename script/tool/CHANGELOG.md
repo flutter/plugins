@@ -1,3 +1,7 @@
+## 0.11.1
+
+* Adds a `fix` command to run `dart fix --apply` in target packages.
+
 ## 0.11
 
 * Renames `publish-plugin` to `publish`.

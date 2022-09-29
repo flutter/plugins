@@ -126,10 +126,10 @@ class AndroidCamera extends CameraPlatform {
       return channel;
     });
 
-    final Completer<void> _completer = Completer<void>();
+    final Completer<void> completer = Completer<void>();
 
     onCameraInitialized(cameraId).first.then((CameraInitializedEvent value) {
-      _completer.complete();
+      completer.complete();
     });
 
     _channel.invokeMapMethod<String, dynamic>(
@@ -147,14 +147,14 @@ class AndroidCamera extends CameraPlatform {
         if (error is! PlatformException) {
           throw error;
         }
-        _completer.completeError(
+        completer.completeError(
           CameraException(error.code, error.message),
           stackTrace,
         );
       },
     );
 
-    return _completer.future;
+    return completer.future;
   }
 
   @override

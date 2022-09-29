@@ -2,6 +2,10 @@
 
 * Allows camera to be switched while video recording.
 
+## 0.10.0+3
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
 ## 0.10.0+2
 
 * Updates imports for `prefer_relative_imports`.

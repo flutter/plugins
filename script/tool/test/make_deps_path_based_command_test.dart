@@ -49,7 +49,7 @@ void main() {
 
   /// Adds dummy 'dependencies:' entries for each package in [dependencies]
   /// to [package].
-  void _addDependencies(
+  void addDependencies(
       RepositoryPackage package, Iterable<String> dependencies) {
     final List<String> lines = package.pubspecFile.readAsLinesSync();
     final int dependenciesStartIndex = lines.indexOf('dependencies:');
@@ -62,7 +62,7 @@ void main() {
 
   /// Adds a 'dev_dependencies:' section with entries for each package in
   /// [dependencies] to [package].
-  void _addDevDependenciesSection(
+  void addDevDependenciesSection(
       RepositoryPackage package, Iterable<String> devDependencies) {
     final String originalContent = package.pubspecFile.readAsStringSync();
     package.pubspecFile.writeAsStringSync('''
@@ -77,7 +77,7 @@ ${devDependencies.map((String dep) => '  $dep: ^1.0.0').join('\n')}
     createFakePackage('foo', packagesDir, isFlutter: true);
     final RepositoryPackage packageBar =
         createFakePackage('bar', packagesDir, isFlutter: true);
-    _addDependencies(packageBar, <String>['foo']);
+    addDependencies(packageBar, <String>['foo']);
     final String originalPubspecContents =
         packageBar.pubspecFile.readAsStringSync();
 
@@ -105,16 +105,16 @@ ${devDependencies.map((String dep) => '  $dep: ^1.0.0').join('\n')}
     final RepositoryPackage pluginAppFacing =
         createFakePlugin('bar', pluginGroup);
 
-    _addDependencies(simplePackage, <String>[
+    addDependencies(simplePackage, <String>[
       'bar',
       'bar_android',
       'bar_platform_interface',
     ]);
-    _addDependencies(pluginAppFacing, <String>[
+    addDependencies(pluginAppFacing, <String>[
       'bar_platform_interface',
       'bar_android',
     ]);
-    _addDependencies(pluginImplementation, <String>[
+    addDependencies(pluginImplementation, <String>[
       'bar_platform_interface',
     ]);
 
@@ -160,7 +160,7 @@ ${devDependencies.map((String dep) => '  $dep: ^1.0.0').join('\n')}
     final RepositoryPackage builderPackage =
         createFakePackage('foo_builder', packagesDir);
 
-    _addDevDependenciesSection(builderPackage, <String>[
+    addDevDependenciesSection(builderPackage, <String>[
       'foo',
     ]);
 
@@ -193,8 +193,8 @@ ${devDependencies.map((String dep) => '  $dep: ^1.0.0').join('\n')}
     final RepositoryPackage targetPackage =
         createFakePackage('target', packagesDir);
 
-    _addDependencies(targetPackage, <String>['a', 'c']);
-    _addDevDependenciesSection(targetPackage, <String>['b']);
+    addDependencies(targetPackage, <String>['a', 'c']);
+    addDevDependenciesSection(targetPackage, <String>['b']);
 
     final List<String> output = await runCapturingPrint(runner,
         <String>['make-deps-path-based', '--target-dependencies=c,a,b']);
@@ -233,16 +233,16 @@ ${devDependencies.map((String dep) => '  $dep: ^1.0.0').join('\n')}
     final RepositoryPackage pluginAppFacing =
         createFakePlugin('bar', pluginGroup);
 
-    _addDependencies(simplePackage, <String>[
+    addDependencies(simplePackage, <String>[
       'bar',
       'bar_android',
       'bar_platform_interface',
     ]);
-    _addDependencies(pluginAppFacing, <String>[
+    addDependencies(pluginAppFacing, <String>[
       'bar_platform_interface',
       'bar_android',
     ]);
-    _addDependencies(pluginImplementation, <String>[
+    addDependencies(pluginImplementation, <String>[
       'bar_platform_interface',
     ]);
 

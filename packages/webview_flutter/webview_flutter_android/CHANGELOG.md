@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
 ## 2.10.3
 
 * Updates imports for `prefer_relative_imports`.

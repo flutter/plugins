@@ -681,8 +681,7 @@ void main() {
     });
 
     group('missing change detection', () {
-      Future<List<String>> _runWithMissingChangeDetection(
-          List<String> extraArgs,
+      Future<List<String>> runWithMissingChangeDetection(List<String> extraArgs,
           {void Function(Error error)? errorHandler}) async {
         return runCapturingPrint(
             runner,
@@ -712,7 +711,7 @@ void main() {
         ];
 
         final List<String> output =
-            await _runWithMissingChangeDetection(<String>[]);
+            await runWithMissingChangeDetection(<String>[]);
 
         expect(
           output,
@@ -743,7 +742,7 @@ packages/plugin/lib/plugin.dart
         ];
 
         Error? commandError;
-        final List<String> output = await _runWithMissingChangeDetection(
+        final List<String> output = await runWithMissingChangeDetection(
             <String>[], errorHandler: (Error e) {
           commandError = e;
         });
@@ -780,7 +779,7 @@ packages/plugin/pubspec.yaml
         ];
 
         final List<String> output =
-            await _runWithMissingChangeDetection(<String>[]);
+            await runWithMissingChangeDetection(<String>[]);
 
         expect(
           output,
@@ -810,7 +809,7 @@ tool/plugin/lib/plugin.dart
         ];
 
         final List<String> output =
-            await _runWithMissingChangeDetection(<String>[]);
+            await runWithMissingChangeDetection(<String>[]);
 
         expect(
           output,
@@ -843,7 +842,7 @@ packages/plugin/CHANGELOG.md
         ];
 
         final List<String> output =
-            await _runWithMissingChangeDetection(<String>[]);
+            await runWithMissingChangeDetection(<String>[]);
 
         expect(
           output,
@@ -874,7 +873,7 @@ packages/plugin/pubspec.yaml
         ];
 
         final List<String> output =
-            await _runWithMissingChangeDetection(<String>[
+            await runWithMissingChangeDetection(<String>[
           '--pr-labels=some label,override: no versioning needed,another-label'
         ]);
 
@@ -906,7 +905,7 @@ packages/plugin/example/lib/foo.dart
         ];
 
         Error? commandError;
-        final List<String> output = await _runWithMissingChangeDetection(
+        final List<String> output = await runWithMissingChangeDetection(
             <String>[], errorHandler: (Error e) {
           commandError = e;
         });
@@ -942,7 +941,7 @@ packages/plugin/CHANGELOG.md
         ];
 
         final List<String> output =
-            await _runWithMissingChangeDetection(<String>[]);
+            await runWithMissingChangeDetection(<String>[]);
 
         expect(
           output,
@@ -973,7 +972,7 @@ packages/another_plugin/CHANGELOG.md
         ];
 
         Error? commandError;
-        final List<String> output = await _runWithMissingChangeDetection(
+        final List<String> output = await runWithMissingChangeDetection(
             <String>[], errorHandler: (Error e) {
           commandError = e;
         });
@@ -1006,7 +1005,7 @@ packages/plugin/example/lib/foo.dart
         ];
 
         final List<String> output =
-            await _runWithMissingChangeDetection(<String>[
+            await runWithMissingChangeDetection(<String>[
           '--pr-labels=some label,override: no changelog needed,another-label'
         ]);
 
@@ -1050,7 +1049,7 @@ packages/plugin/android/build.gradle
         ];
 
         final List<String> output =
-            await _runWithMissingChangeDetection(<String>[]);
+            await runWithMissingChangeDetection(<String>[]);
 
         expect(
           output,
@@ -1082,7 +1081,7 @@ packages/plugin/run_tests.sh
         ];
 
         final List<String> output =
-            await _runWithMissingChangeDetection(<String>[]);
+            await runWithMissingChangeDetection(<String>[]);
 
         expect(
           output,
