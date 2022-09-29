@@ -337,17 +337,22 @@ class CameraService {
     }
   }
 
-  CameraImageData getCameraImageDataFromBlob(
-    html.Blob blob, {
+  Future<CameraImageData> getCameraImageDataFromPicture(
+    XFile xfile, {
     required int height,
     required int width,
-  }) {
+  }) async {
     return CameraImageData(
       format: const CameraImageFormat(
         ImageFormatGroup.jpeg,
         raw: '',
       ),
-      planes: [],
+      planes: <CameraImagePlane>[
+        CameraImagePlane(
+          bytes: await xfile.readAsBytes(),
+          bytesPerRow: 64,
+        ),
+      ],
       height: height,
       width: width,
     );
