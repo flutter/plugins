@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html' as html;
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
 // ignore: unnecessary_import
@@ -348,10 +349,12 @@ class CameraService {
     required int width,
   }) async {
     final Completer<Uint8List> fileReaderCompleter = Completer<Uint8List>();
-    _fileReader.readAsArrayBuffer(picture);
+    _fileReader.readAsDataUrl(picture);
     _fileReader.addEventListener('loadend', (_) {
       if (!fileReaderCompleter.isCompleted) {
-        fileReaderCompleter.complete(_fileReader.result! as Uint8List);
+        final Uint8List decoded =
+            base64.decode((_fileReader.result! as String).split(',')[1]);
+        fileReaderCompleter.complete(decoded);
       }
     });
 
@@ -364,7 +367,7 @@ class CameraService {
       planes: <CameraImagePlane>[
         CameraImagePlane(
           bytes: bytes,
-          bytesPerRow: 64,
+          bytesPerRow: 0,
         ),
       ],
       height: height,
