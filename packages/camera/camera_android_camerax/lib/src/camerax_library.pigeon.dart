@@ -263,3 +263,112 @@ abstract class CameraSelectorFlutterApi {
     }
   }
 }
+
+class _ProcessCameraProviderHostApiCodec extends StandardMessageCodec {
+  const _ProcessCameraProviderHostApiCodec();
+}
+
+class ProcessCameraProviderHostApi {
+  /// Constructor for [ProcessCameraProviderHostApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  ProcessCameraProviderHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
+
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec =
+      _ProcessCameraProviderHostApiCodec();
+
+  Future<int> getInstance() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.ProcessCameraProviderHostApi.getInstance', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(null) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as int?)!;
+    }
+  }
+
+  Future<List<int?>> getAvailableCameraInfos(int arg_identifier) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.ProcessCameraProviderHostApi.getAvailableCameraInfos',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_identifier]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as List<Object?>?)!.cast<int?>();
+    }
+  }
+}
+
+class _ProcessCameraProviderFlutterApiCodec extends StandardMessageCodec {
+  const _ProcessCameraProviderFlutterApiCodec();
+}
+
+abstract class ProcessCameraProviderFlutterApi {
+  static const MessageCodec<Object?> codec =
+      _ProcessCameraProviderFlutterApiCodec();
+
+  void create(int identifier);
+  static void setup(ProcessCameraProviderFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.ProcessCameraProviderFlutterApi.create', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.ProcessCameraProviderFlutterApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.ProcessCameraProviderFlutterApi.create was null, expected non-null int.');
+          api.create(arg_identifier!);
+          return;
+        });
+      }
+    }
+  }
+}
