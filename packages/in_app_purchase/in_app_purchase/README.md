@@ -5,7 +5,7 @@ A storefront-independent API for purchases in Flutter apps.
 This plugin supports in-app purchases (_IAP_) through an _underlying store_,
 which can be the App Store (on iOS and MacOS) or Google Play (on Android).
 
-|             | Android | iOS  | MacOS  |
+|             | Android | iOS  | macOS  |
 |-------------|---------|------|--------|
 | **Support** | SDK 16+ | 9.0+ | 10.15+ |
 
