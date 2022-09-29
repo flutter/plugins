@@ -29,7 +29,8 @@
 
 @property(strong, nonatomic, readonly) FIAPReceiptManager *receiptManager;
 @property(strong, nonatomic, readonly)
-    FIAPPaymentQueueDelegate *paymentQueueDelegate API_AVAILABLE(ios(13));
+    FIAPPaymentQueueDelegate *paymentQueueDelegate API_AVAILABLE(ios(13))
+        API_UNAVAILABLE(tvos, macos, watchos);
 
 @end
 
@@ -340,6 +341,7 @@
 }
 
 - (void)registerPaymentQueueDelegate:(FlutterResult)result {
+#if TARGET_OS_IOS
   if (@available(iOS 13.0, *)) {
     _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel
         methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
@@ -350,6 +352,9 @@
     _paymentQueueHandler.delegate = _paymentQueueDelegate;
   }
   result(nil);
+#else
+  result(nil);
+#endif
 }
 
 - (void)removePaymentQueueDelegate:(FlutterResult)result {
@@ -362,10 +367,14 @@
 }
 
 - (void)showPriceConsentIfNeeded:(FlutterResult)result {
+#if TARGET_OS_IOS
   if (@available(iOS 13.4, *)) {
     [_paymentQueueHandler showPriceConsentIfNeeded];
   }
   result(nil);
+#else
+  result(nil);
+#endif
 }
 
 - (id)getNonNullValueFromDictionary:(NSDictionary *)dictionary forKey:(NSString *)key {

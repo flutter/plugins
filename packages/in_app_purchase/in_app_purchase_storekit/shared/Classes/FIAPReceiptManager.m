@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #import "FIAPReceiptManager.h"
+#if TARGET_OS_OSX
+#import <FlutterMacOS/FlutterMacOS.h>
+#else
 #import <Flutter/Flutter.h>
+#endif
 #import "FIAObjectTranslator.h"
 
 @interface FIAPReceiptManager ()

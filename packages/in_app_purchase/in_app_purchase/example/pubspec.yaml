@@ -30,3 +30,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  in_app_purchase:
+    path: ../../../in_app_purchase/in_app_purchase
+  in_app_purchase_storekit:
+    path: ../../../in_app_purchase/in_app_purchase_storekit

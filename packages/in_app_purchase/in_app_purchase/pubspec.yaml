@@ -32,3 +32,9 @@ dev_dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.0.0
   test: ^1.16.0
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  in_app_purchase_storekit:
+    path: ../../in_app_purchase/in_app_purchase_storekit

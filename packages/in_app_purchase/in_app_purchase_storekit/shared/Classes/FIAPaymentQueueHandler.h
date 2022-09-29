@@ -125,7 +125,7 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 // - You have increased the price of the subscription in App Store Connect.
 // - The subscriber has not yet responded to a price consent query.
 // Otherwise the method has no effect.
-- (void)showPriceConsentIfNeeded API_AVAILABLE(ios(13.4));
+- (void)showPriceConsentIfNeeded API_AVAILABLE(ios(13.4))API_UNAVAILABLE(tvos, macos, watchos);
 
 @end
 

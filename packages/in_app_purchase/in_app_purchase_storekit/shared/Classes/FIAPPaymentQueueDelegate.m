@@ -50,6 +50,7 @@
   return shouldContinue;
 }
 
+#if TARGET_OS_IOS
 - (BOOL)paymentQueueShouldShowPriceConsent:(SKPaymentQueue *)paymentQueue {
   // Default return value for this method is true (see
   // https://developer.apple.com/documentation/storekit/skpaymentqueuedelegate/3521328-paymentqueueshouldshowpriceconse?language=objc)
@@ -74,5 +75,6 @@
 
   return shouldShowPriceConsent;
 }
+#endif
 
 @end
