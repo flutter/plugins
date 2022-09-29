@@ -347,14 +347,15 @@ class CameraService {
     required int height,
     required int width,
   }) async {
-    final Completer<Object?> fileReaderCompleter = Completer<Object?>();
+    final Completer<Uint8List> fileReaderCompleter = Completer<Uint8List>();
     _fileReader.readAsArrayBuffer(picture);
     _fileReader.addEventListener('loadend', (_) {
-      print(_fileReader.result.runtimeType);
-      fileReaderCompleter.complete(_fileReader.result);
+      if (!fileReaderCompleter.isCompleted) {
+        fileReaderCompleter.complete(_fileReader.result! as Uint8List);
+      }
     });
 
-    await fileReaderCompleter.future;
+    final Uint8List bytes = await fileReaderCompleter.future;
     return CameraImageData(
       format: const CameraImageFormat(
         ImageFormatGroup.jpeg,
@@ -362,7 +363,7 @@ class CameraService {
       ),
       planes: <CameraImagePlane>[
         CameraImagePlane(
-          bytes: Uint8List.fromList([]),
+          bytes: bytes,
           bytesPerRow: 64,
         ),
       ],
