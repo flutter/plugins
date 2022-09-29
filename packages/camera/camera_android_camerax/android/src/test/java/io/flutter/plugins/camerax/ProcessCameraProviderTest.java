@@ -16,7 +16,8 @@ import android.content.Context;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.test.core.app.ApplicationProvider;
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import io.flutter.plugin.common.BinaryMessenger;
 import java.util.Arrays;
 import java.util.Objects;
@@ -25,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -58,8 +60,8 @@ public class ProcessCameraProviderTest {
   public void getInstanceTest() {
     final ProcessCameraProviderHostApiImpl processCameraProviderHostApi =
         new ProcessCameraProviderHostApiImpl(mockBinaryMessenger, testInstanceManager, context);
-    SettableFuture processCameraProviderFuture = SettableFuture.create();
-    processCameraProviderFuture.set(processCameraProvider);
+    final ListenableFuture<ProcessCameraProvider> processCameraProviderFuture =
+        spy(Futures.immediateFuture(processCameraProvider));
     final GeneratedCameraXLibrary.Result<Long> mockResult =
         mock(GeneratedCameraXLibrary.Result.class);
 
@@ -69,9 +71,15 @@ public class ProcessCameraProviderTest {
         Mockito.mockStatic(ProcessCameraProvider.class)) {
       mockedProcessCameraProvider
           .when(() -> ProcessCameraProvider.getInstance(context))
-          .thenAnswer((Answer<SettableFuture>) invocation -> processCameraProviderFuture);
+          .thenAnswer(
+              (Answer<ListenableFuture<ProcessCameraProvider>>)
+                  invocation -> processCameraProviderFuture);
+
+      final ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
 
       processCameraProviderHostApi.getInstance(mockResult);
+      verify(processCameraProviderFuture).addListener(runnableCaptor.capture(), any());
+      runnableCaptor.getValue().run();
       verify(mockResult).success(0L);
     }
   }
