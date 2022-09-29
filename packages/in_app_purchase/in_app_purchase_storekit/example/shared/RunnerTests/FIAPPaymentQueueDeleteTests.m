@@ -11,6 +11,7 @@
 @import in_app_purchase_storekit;
 
 API_AVAILABLE(ios(13.0))
+API_UNAVAILABLE(tvos, macos, watchos)
 @interface FIAPPaymentQueueDelegateTests : XCTestCase
 
 @property(strong, nonatomic) FlutterMethodChannel *channel;
