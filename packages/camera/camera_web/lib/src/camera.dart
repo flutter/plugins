@@ -607,7 +607,7 @@ class Camera {
   Future<void> _onAnimationFrame([num? _]) async {
     final html.Blob picture = await _takePicture();
     final CameraImageData cameraImageData =
-        await _cameraService.getCameraImageDataFromPicture(
+        await _cameraService.getCameraImageDataFromBlob(
       picture,
       width: videoElement.videoWidth,
       height: videoElement.videoHeight,

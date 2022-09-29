@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:html' as html;
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
 // ignore: unnecessary_import
@@ -340,13 +341,20 @@ class CameraService {
     }
   }
 
-  Future<CameraImageData> getCameraImageDataFromPicture(
+  /// Maps a [html.Blob] to a [CameraImageData].
+  Future<CameraImageData> getCameraImageDataFromBlob(
     html.Blob picture, {
     required int height,
     required int width,
   }) async {
+    final Completer<Object?> fileReaderCompleter = Completer<Object?>();
     _fileReader.readAsArrayBuffer(picture);
-    print(_fileReader.result.runtimeType);
+    _fileReader.addEventListener('loadend', (_) {
+      print(_fileReader.result.runtimeType);
+      fileReaderCompleter.complete(_fileReader.result);
+    });
+
+    await fileReaderCompleter.future;
     return CameraImageData(
       format: const CameraImageFormat(
         ImageFormatGroup.jpeg,
