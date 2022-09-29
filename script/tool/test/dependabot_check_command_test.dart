@@ -36,7 +36,7 @@ void main() {
     runner.addCommand(command);
   });
 
-  void _setDependabotCoverage({
+  void setDependabotCoverage({
     Iterable<String> gradleDirs = const <String>[],
   }) {
     final Iterable<String> gradleEntries =
@@ -57,7 +57,7 @@ ${gradleEntries.join('\n')}
   }
 
   test('skips with no supported ecosystems', () async {
-    _setDependabotCoverage();
+    setDependabotCoverage();
     createFakePackage('a_package', packagesDir);
 
     final List<String> output =
@@ -71,7 +71,7 @@ ${gradleEntries.join('\n')}
   });
 
   test('fails for app missing Gradle coverage', () async {
-    _setDependabotCoverage();
+    setDependabotCoverage();
     final RepositoryPackage package =
         createFakePackage('a_package', packagesDir);
     package.directory
@@ -97,7 +97,7 @@ ${gradleEntries.join('\n')}
   });
 
   test('fails for plugin missing Gradle coverage', () async {
-    _setDependabotCoverage();
+    setDependabotCoverage();
     final RepositoryPackage plugin = createFakePlugin('a_plugin', packagesDir);
     plugin.directory.childDirectory('android').createSync(recursive: true);
 
@@ -118,7 +118,7 @@ ${gradleEntries.join('\n')}
   });
 
   test('passes for correct Gradle coverage', () async {
-    _setDependabotCoverage(gradleDirs: <String>[
+    setDependabotCoverage(gradleDirs: <String>[
       'packages/a_plugin/android',
       'packages/a_plugin/example/android/app',
     ]);

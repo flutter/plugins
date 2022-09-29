@@ -4,7 +4,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
-import 'package:local_auth_windows/types/auth_messages_windows.dart';
+import 'types/auth_messages_windows.dart';
 
 export 'package:local_auth_platform_interface/types/auth_messages.dart';
 export 'package:local_auth_platform_interface/types/auth_options.dart';

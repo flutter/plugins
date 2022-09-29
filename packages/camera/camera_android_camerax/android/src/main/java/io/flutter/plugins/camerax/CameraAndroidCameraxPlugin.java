@@ -15,7 +15,6 @@ import io.flutter.plugin.common.BinaryMessenger;
 public final class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware {
   private InstanceManager instanceManager;
   private FlutterPluginBinding pluginBinding;
-  private ProcessCameraProviderHostApiImpl processCameraProviderHostApi;
 
   /**
    * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
@@ -40,10 +39,6 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
         binaryMessenger, new JavaObjectHostApiImpl(instanceManager));
     GeneratedCameraXLibrary.CameraSelectorHostApi.setup(
         binaryMessenger, new CameraSelectorHostApiImpl(binaryMessenger, instanceManager));
-    processCameraProviderHostApi =
-        new ProcessCameraProviderHostApiImpl(binaryMessenger, instanceManager, context);
-    GeneratedCameraXLibrary.ProcessCameraProviderHostApi.setup(
-        binaryMessenger, processCameraProviderHostApi);
   }
 
   @Override
@@ -65,33 +60,15 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
   // Activity Lifecycle methods:
 
   @Override
-  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-    updateContext(activityPluginBinding.getActivity());
-  }
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {}
 
   @Override
-  public void onDetachedFromActivityForConfigChanges() {
-    updateContext(pluginBinding.getApplicationContext());
-  }
+  public void onDetachedFromActivityForConfigChanges() {}
 
   @Override
   public void onReattachedToActivityForConfigChanges(
-      @NonNull ActivityPluginBinding activityPluginBinding) {
-    updateContext(activityPluginBinding.getActivity());
-  }
+      @NonNull ActivityPluginBinding activityPluginBinding) {}
 
   @Override
-  public void onDetachedFromActivity() {
-    updateContext(pluginBinding.getApplicationContext());
-  }
-
-  /**
-   * Updates context that is used to fetch the corresponding instance of a {@code
-   * ProcessCameraProvider}.
-   */
-  private void updateContext(Context context) {
-    if (processCameraProviderHostApi != null) {
-      processCameraProviderHostApi.setContext(context);
-    }
-  }
+  public void onDetachedFromActivity() {}
 }

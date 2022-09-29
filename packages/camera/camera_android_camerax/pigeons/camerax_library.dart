@@ -57,16 +57,3 @@ abstract class CameraSelectorHostApi {
 abstract class CameraSelectorFlutterApi {
   void create(int identifier, int? lensFacing);
 }
-
-@HostApi(dartHostTestHandler: 'TestProcessCameraProviderHostApi')
-abstract class ProcessCameraProviderHostApi {
-  @async
-  int getInstance();
-
-  List<int> getAvailableCameraInfos(int identifier);
-}
-
-@FlutterApi()
-abstract class ProcessCameraProviderFlutterApi {
-  void create(int identifier);
-}

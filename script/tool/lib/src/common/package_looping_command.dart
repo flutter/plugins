@@ -428,9 +428,9 @@ abstract class PackageLoopingCommand extends PackageCommand {
             .length;
     // Split the warnings into those from packages that ran, and those that
     // were skipped.
-    final Set<PackageEnumerationEntry> _skippedPackagesWithWarnings =
+    final Set<PackageEnumerationEntry> skippedPackagesWithWarnings =
         _packagesWithWarnings.intersection(skippedPackages);
-    final int skippedWarningCount = _skippedPackagesWithWarnings.length;
+    final int skippedWarningCount = skippedPackagesWithWarnings.length;
     final int runWarningCount =
         _packagesWithWarnings.length - skippedWarningCount;
 
