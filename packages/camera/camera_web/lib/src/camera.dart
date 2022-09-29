@@ -7,11 +7,11 @@ import 'dart:html' as html;
 import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_web/src/camera_service.dart';
-import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 
+import 'camera_service.dart';
 import 'shims/dart_ui.dart' as ui;
+import 'types/types.dart';
 
 String _getViewType(int cameraId) => 'plugins.flutter.io/camera_$cameraId';
 

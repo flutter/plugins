@@ -203,7 +203,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Initializes the camera on the device.
   Future<void> initialize() async {
-    final Completer<CameraInitializedEvent> _initializeCompleter =
+    final Completer<CameraInitializedEvent> initializeCompleter =
         Completer<CameraInitializedEvent>();
 
     _deviceOrientationSubscription = CameraPlatform.instance
@@ -224,7 +224,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         .onCameraInitialized(_cameraId)
         .first
         .then((CameraInitializedEvent event) {
-      _initializeCompleter.complete(event);
+      initializeCompleter.complete(event);
     });
 
     await CameraPlatform.instance.initializeCamera(
@@ -234,18 +234,18 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     value = value.copyWith(
       isInitialized: true,
-      previewSize: await _initializeCompleter.future
+      previewSize: await initializeCompleter.future
           .then((CameraInitializedEvent event) => Size(
                 event.previewWidth,
                 event.previewHeight,
               )),
-      exposureMode: await _initializeCompleter.future
+      exposureMode: await initializeCompleter.future
           .then((CameraInitializedEvent event) => event.exposureMode),
-      focusMode: await _initializeCompleter.future
+      focusMode: await initializeCompleter.future
           .then((CameraInitializedEvent event) => event.focusMode),
-      exposurePointSupported: await _initializeCompleter.future
+      exposurePointSupported: await initializeCompleter.future
           .then((CameraInitializedEvent event) => event.exposurePointSupported),
-      focusPointSupported: await _initializeCompleter.future
+      focusPointSupported: await initializeCompleter.future
           .then((CameraInitializedEvent event) => event.focusPointSupported),
     );
 
