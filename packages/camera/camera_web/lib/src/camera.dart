@@ -230,20 +230,17 @@ class Camera {
 
   /// Captures a picture and returns the saved file in a JPEG format.
   ///
-  /// Enables the camera flash (torch mode) for a period of taking a picture
-  /// if the flash mode is either [FlashMode.auto] or [FlashMode.always].
-  Future<XFile> takePicture() async {
-    final bool shouldEnableTorchMode =
-        flashMode == FlashMode.auto || flashMode == FlashMode.always;
-
-    if (shouldEnableTorchMode) {
-      _setTorchMode(enabled: true);
-    }
-
+  /// The picture might be mirrored horizontally depending on the chosen camera.
+  ///
+  /// **NOTE**: It doesn't enable the camera flash (torch mode) when taking the picture.
+  /// If you want so, consider using [takePicture].
+  Future<html.Blob> _takePicture() async {
     final int videoWidth = videoElement.videoWidth;
     final int videoHeight = videoElement.videoHeight;
-    final html.CanvasElement canvas =
-        html.CanvasElement(width: videoWidth, height: videoHeight);
+    final html.CanvasElement canvas = html.CanvasElement(
+      width: videoWidth,
+      height: videoHeight,
+    );
     final bool isBackCamera = getLensDirection() == CameraLensDirection.back;
 
     // Flip the picture horizontally if it is not taken from a back camera.
@@ -255,8 +252,22 @@ class Camera {
 
     canvas.context2D
         .drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
+    return await canvas.toBlob('image/jpeg');
+  }
 
-    final html.Blob blob = await canvas.toBlob('image/jpeg');
+  /// Captures a picture and returns the saved file in a JPEG format.
+  ///
+  /// Enables the camera flash (torch mode) for a period of taking a picture
+  /// if the flash mode is either [FlashMode.auto] or [FlashMode.always].
+  Future<XFile> takePicture() async {
+    final bool shouldEnableTorchMode =
+        flashMode == FlashMode.auto || flashMode == FlashMode.always;
+
+    if (shouldEnableTorchMode) {
+      _setTorchMode(enabled: true);
+    }
+
+    final html.Blob blob = await _takePicture();
 
     if (shouldEnableTorchMode) {
       _setTorchMode(enabled: false);
@@ -576,6 +587,36 @@ class Camera {
     mediaRecorder!.stop();
 
     return _videoAvailableCompleter!.future;
+  }
+
+  late final StreamController<CameraImageData> _cameraFrameStreamController =
+      StreamController<CameraImageData>.broadcast();
+
+  /// Returns a stream of camera frames.
+  ///
+  /// To stop listening to new animation frames close all listening streams.
+  Stream<CameraImageData> cameraFrameStream({
+    CameraImageStreamOptions? options,
+  }) {
+    final Stream<CameraImageData> stream = _cameraFrameStreamController.stream;
+    window!.requestAnimationFrame(_onAnimationFrame);
+    return stream;
+  }
+
+  /// Called when a new animation frame is available.
+  Future<void> _onAnimationFrame([num? _]) async {
+    final html.Blob picture = await _takePicture();
+    print('picture taken at ${DateTime.now()}');
+    final CameraImageData cameraImageData =
+        _cameraService.getCameraImageDataFromBlob(
+      picture,
+      width: videoElement.videoWidth,
+      height: videoElement.videoHeight,
+    );
+    _cameraFrameStreamController.add(cameraImageData);
+
+    if (_cameraFrameStreamController.hasListener)
+      window!.requestAnimationFrame(_onAnimationFrame);
   }
 
   /// Disposes the camera by stopping the camera stream,

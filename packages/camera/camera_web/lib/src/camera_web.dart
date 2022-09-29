@@ -689,4 +689,11 @@ class CameraPlugin extends CameraPlatform {
       ),
     );
   }
+
+  @override
+  Stream<CameraImageData> onStreamedFrameAvailable(
+    int cameraId, {
+    CameraImageStreamOptions? options,
+  }) =>
+      getCamera(cameraId).cameraFrameStream(options: options);
 }

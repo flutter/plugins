@@ -336,4 +336,20 @@ class CameraService {
         return DeviceOrientation.portraitUp;
     }
   }
+
+  CameraImageData getCameraImageDataFromBlob(
+    html.Blob blob, {
+    required int height,
+    required int width,
+  }) {
+    return CameraImageData(
+      format: const CameraImageFormat(
+        ImageFormatGroup.jpeg,
+        raw: '',
+      ),
+      planes: [],
+      height: height,
+      width: width,
+    );
+  }
 }
