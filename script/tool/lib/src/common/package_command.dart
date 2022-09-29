@@ -84,9 +84,8 @@ abstract class PackageCommand extends Command<void> {
             'Cannot be combined with $_packagesArg.\n',
         hide: true);
     argParser.addFlag(_packagesForBranchArg,
-        help:
-            'This runs on all packages (equivalent to no package selection flag)\n'
-            'on main (or master), and behaves like --run-on-changed-packages on '
+        help: 'This runs on all packages changed in the last commit on main '
+            '(or master), and behaves like --run-on-changed-packages on '
             'any other branch.\n\n'
             'Cannot be combined with $_packagesArg.\n\n'
             'This is intended for use in CI.\n',
@@ -311,9 +310,9 @@ abstract class PackageCommand extends Command<void> {
 
     Set<String> packages = Set<String>.from(getStringListArg(_packagesArg));
 
-    final bool runOnChangedPackages;
+    final GitVersionFinder? changedFileFinder;
     if (getBoolArg(_runOnChangedPackagesArg)) {
-      runOnChangedPackages = true;
+      changedFileFinder = await retrieveVersionFinder();
     } else if (getBoolArg(_packagesForBranchArg)) {
       final String? branch = await _getBranch();
       if (branch == null) {
@@ -321,24 +320,28 @@ abstract class PackageCommand extends Command<void> {
             'only be used in a git repository.');
         throw ToolExit(exitInvalidArguments);
       } else {
-        runOnChangedPackages = branch != 'master' && branch != 'main';
-        // Log the mode for auditing what was intended to run.
-        print('--$_packagesForBranchArg: running on '
-            '${runOnChangedPackages ? 'changed' : 'all'} packages');
+        // Configure the change finder the correct mode for the branch.
+        final bool lastCommitOnly = branch == 'main' || branch == 'master';
+        if (lastCommitOnly) {
+          // Log the mode to make it easier to audit logs to see that the
+          // intended diff was used.
+          print('--$_packagesForBranchArg: running on default branch; '
+              'using parent commit as the diff base.');
+          changedFileFinder = GitVersionFinder(await gitDir, 'HEAD~');
+        } else {
+          changedFileFinder = await retrieveVersionFinder();
+        }
       }
     } else {
-      runOnChangedPackages = false;
+      changedFileFinder = null;
     }
 
-    final Set<String> excludedPackageNames = getExcludedPackageNames();
-
-    if (runOnChangedPackages) {
-      final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
-      final String baseSha = await gitVersionFinder.getBaseSha();
+    if (changedFileFinder != null) {
+      final String baseSha = await changedFileFinder.getBaseSha();
       print(
-          'Running for all packages that have changed relative to "$baseSha"\n');
+          'Running for all packages that have diffs relative to "$baseSha"\n');
       final List<String> changedFiles =
-          await gitVersionFinder.getChangedFiles();
+          await changedFileFinder.getChangedFiles();
       if (!_changesRequireFullTest(changedFiles)) {
         packages = _getChangedPackageNames(changedFiles);
       }
@@ -362,6 +365,7 @@ abstract class PackageCommand extends Command<void> {
         .childDirectory('third_party')
         .childDirectory('packages');
 
+    final Set<String> excludedPackageNames = getExcludedPackageNames();
     for (final Directory dir in <Directory>[
       packagesDir,
       if (thirdPartyPackagesDirectory.existsSync()) thirdPartyPackagesDirectory,
