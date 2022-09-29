@@ -342,23 +342,12 @@ class CameraService {
     }
   }
 
-  /// Maps a [html.Blob] to a [CameraImageData].
-  Future<CameraImageData> getCameraImageDataFromBlob(
-    html.Blob picture, {
+  /// Maps a [Uint] to a [CameraImageData].
+  Future<CameraImageData> getCameraImageDataFromBytes(
+    Uint8List bytes, {
     required int height,
     required int width,
   }) async {
-    final Completer<Uint8List> fileReaderCompleter = Completer<Uint8List>();
-    _fileReader.readAsDataUrl(picture);
-    _fileReader.addEventListener('loadend', (_) {
-      if (!fileReaderCompleter.isCompleted) {
-        final Uint8List decoded =
-            base64.decode((_fileReader.result! as String).split(',')[1]);
-        fileReaderCompleter.complete(decoded);
-      }
-    });
-
-    final Uint8List bytes = await fileReaderCompleter.future;
     return CameraImageData(
       format: const CameraImageFormat(
         ImageFormatGroup.jpeg,

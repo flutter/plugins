@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html' as html;
 import 'dart:ui';
 
@@ -250,9 +251,7 @@ class Camera {
         ..scale(-1, 1);
     }
 
-    canvas.context2D
-        .drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
-    return await canvas.toBlob('image/png');
+    return await canvas.toBlob('image/jpeg');
   }
 
   /// Captures a picture and returns the saved file in a JPEG format.
@@ -605,12 +604,32 @@ class Camera {
 
   /// Called when a new animation frame is available.
   Future<void> _onAnimationFrame([num? _]) async {
-    final html.Blob picture = await _takePicture();
+    final int videoWidth = videoElement.videoWidth;
+    final int videoHeight = videoElement.videoHeight;
+    final html.CanvasElement canvas = html.CanvasElement(
+      width: videoWidth,
+      height: videoHeight,
+    );
+    final bool isBackCamera = getLensDirection() == CameraLensDirection.back;
+
+    // Flip the picture horizontally if it is not taken from a back camera.
+    if (!isBackCamera) {
+      canvas.context2D
+        ..translate(videoWidth, 0)
+        ..scale(-1, 1);
+    }
+
+    canvas.context2D
+        .drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
+    final html.ImageData imageData =
+        canvas.context2D.getImageData(0, 0, videoWidth, videoHeight);
+    final Uint8List bytes = base64.decode(canvas.toDataUrl().split(',')[1]);
+
     final CameraImageData cameraImageData =
-        await _cameraService.getCameraImageDataFromBlob(
-      picture,
-      width: videoElement.videoWidth,
-      height: videoElement.videoHeight,
+        await _cameraService.getCameraImageDataFromBytes(
+      bytes,
+      width: imageData.width,
+      height: imageData.height,
     );
     _cameraFrameStreamController.add(cameraImageData);
 
