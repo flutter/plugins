@@ -28,6 +28,8 @@ class CameraService {
   @visibleForTesting
   JsUtil jsUtil = JsUtil();
 
+  final html.FileReader _fileReader = html.FileReader();
+
   /// Returns a media stream associated with the camera device
   /// with [cameraId] and constrained by [options].
   Future<html.MediaStream> getMediaStreamForOptions(
@@ -338,10 +340,12 @@ class CameraService {
   }
 
   Future<CameraImageData> getCameraImageDataFromPicture(
-    XFile xfile, {
+    html.Blob picture, {
     required int height,
     required int width,
   }) async {
+    _fileReader.readAsArrayBuffer(picture);
+    print(_fileReader.result.runtimeType);
     return CameraImageData(
       format: const CameraImageFormat(
         ImageFormatGroup.jpeg,
@@ -349,7 +353,7 @@ class CameraService {
       ),
       planes: <CameraImagePlane>[
         CameraImagePlane(
-          bytes: await xfile.readAsBytes(),
+          bytes: Uint8List.fromList([]),
           bytesPerRow: 64,
         ),
       ],

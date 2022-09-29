@@ -234,7 +234,7 @@ class Camera {
   ///
   /// **NOTE**: It doesn't enable the camera flash (torch mode) when taking the picture.
   /// If you want so, consider using [takePicture].
-  Future<XFile> _takePicture() async {
+  Future<html.Blob> _takePicture() async {
     final int videoWidth = videoElement.videoWidth;
     final int videoHeight = videoElement.videoHeight;
     final html.CanvasElement canvas = html.CanvasElement(
@@ -252,8 +252,7 @@ class Camera {
 
     canvas.context2D
         .drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
-    final html.Blob blob = await canvas.toBlob('image/jpeg');
-    return XFile(html.Url.createObjectUrl(blob));
+    return await canvas.toBlob('image/jpeg');
   }
 
   /// Captures a picture and returns the saved file in a JPEG format.
@@ -268,13 +267,13 @@ class Camera {
       _setTorchMode(enabled: true);
     }
 
-    final XFile picture = await _takePicture();
+    final html.Blob blob = await _takePicture();
 
     if (shouldEnableTorchMode) {
       _setTorchMode(enabled: false);
     }
 
-    return picture;
+    return XFile(html.Url.createObjectUrl(blob));
   }
 
   /// Returns a size of the camera video based on its first video track size.
@@ -606,7 +605,7 @@ class Camera {
 
   /// Called when a new animation frame is available.
   Future<void> _onAnimationFrame([num? _]) async {
-    final XFile picture = await _takePicture();
+    final html.Blob picture = await _takePicture();
     final CameraImageData cameraImageData =
         await _cameraService.getCameraImageDataFromPicture(
       picture,
