@@ -252,7 +252,7 @@ class Camera {
 
     canvas.context2D
         .drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
-    return await canvas.toBlob('image/jpeg');
+    return await canvas.toBlob('image/png');
   }
 
   /// Captures a picture and returns the saved file in a JPEG format.
