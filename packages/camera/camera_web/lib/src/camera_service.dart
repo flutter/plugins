@@ -343,11 +343,11 @@ class CameraService {
   }
 
   /// Maps a [Uint] to a [CameraImageData].
-  Future<CameraImageData> getCameraImageDataFromBytes(
+  CameraImageData getCameraImageDataFromBytes(
     Uint8List bytes, {
     required int height,
     required int width,
-  }) async {
+  }) {
     return CameraImageData(
       format: const CameraImageFormat(
         ImageFormatGroup.jpeg,

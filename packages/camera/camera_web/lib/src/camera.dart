@@ -231,31 +231,6 @@ class Camera {
 
   /// Captures a picture and returns the saved file in a JPEG format.
   ///
-  /// The picture might be mirrored horizontally depending on the chosen camera.
-  ///
-  /// **NOTE**: It doesn't enable the camera flash (torch mode) when taking the picture.
-  /// If you want so, consider using [takePicture].
-  Future<html.Blob> _takePicture() async {
-    final int videoWidth = videoElement.videoWidth;
-    final int videoHeight = videoElement.videoHeight;
-    final html.CanvasElement canvas = html.CanvasElement(
-      width: videoWidth,
-      height: videoHeight,
-    );
-    final bool isBackCamera = getLensDirection() == CameraLensDirection.back;
-
-    // Flip the picture horizontally if it is not taken from a back camera.
-    if (!isBackCamera) {
-      canvas.context2D
-        ..translate(videoWidth, 0)
-        ..scale(-1, 1);
-    }
-
-    return await canvas.toBlob('image/jpeg');
-  }
-
-  /// Captures a picture and returns the saved file in a JPEG format.
-  ///
   /// Enables the camera flash (torch mode) for a period of taking a picture
   /// if the flash mode is either [FlashMode.auto] or [FlashMode.always].
   Future<XFile> takePicture() async {
@@ -266,7 +241,23 @@ class Camera {
       _setTorchMode(enabled: true);
     }
 
-    final html.Blob blob = await _takePicture();
+    final int videoWidth = videoElement.videoWidth;
+    final int videoHeight = videoElement.videoHeight;
+    final html.CanvasElement canvas =
+        html.CanvasElement(width: videoWidth, height: videoHeight);
+    final bool isBackCamera = getLensDirection() == CameraLensDirection.back;
+
+    // Flip the picture horizontally if it is not taken from a back camera.
+    if (!isBackCamera) {
+      canvas.context2D
+        ..translate(videoWidth, 0)
+        ..scale(-1, 1);
+    }
+
+    canvas.context2D
+        .drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
+
+    final html.Blob blob = await canvas.toBlob('image/jpeg');
 
     if (shouldEnableTorchMode) {
       _setTorchMode(enabled: false);
@@ -606,35 +597,48 @@ class Camera {
   Future<void> _onAnimationFrame([num? _]) async {
     final int videoWidth = videoElement.videoWidth;
     final int videoHeight = videoElement.videoHeight;
-    final html.CanvasElement canvas = html.CanvasElement(
+
+    final Uint8List frame = await _takeFrame();
+    final CameraImageData cameraImageData =
+        _cameraService.getCameraImageDataFromBytes(
+      frame,
       width: videoWidth,
       height: videoHeight,
-    );
-    final bool isBackCamera = getLensDirection() == CameraLensDirection.back;
-
-    // Flip the picture horizontally if it is not taken from a back camera.
-    if (!isBackCamera) {
-      canvas.context2D
-        ..translate(videoWidth, 0)
-        ..scale(-1, 1);
-    }
-
-    canvas.context2D
-        .drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
-    final html.ImageData imageData =
-        canvas.context2D.getImageData(0, 0, videoWidth, videoHeight);
-    final Uint8List bytes = base64.decode(canvas.toDataUrl().split(',')[1]);
-
-    final CameraImageData cameraImageData =
-        await _cameraService.getCameraImageDataFromBytes(
-      bytes,
-      width: imageData.width,
-      height: imageData.height,
     );
     _cameraFrameStreamController.add(cameraImageData);
 
     if (_cameraFrameStreamController.hasListener)
       window!.requestAnimationFrame(_onAnimationFrame);
+  }
+
+  Future<Uint8List> _takeFrame() async {
+    final int videoWidth = videoElement.videoWidth;
+    final int videoHeight = videoElement.videoHeight;
+    // final widthPx = videoElement.style.width.split('px');
+    // final heightPx = videoElement.style.height.split('px');
+    // final widthString = widthPx.isNotEmpty ? widthPx.first : '$videoWidth';
+    // final heightString = heightPx.isNotEmpty ? heightPx.first : '$videoHeight';
+    // final width = int.tryParse(widthString) ?? videoWidth;
+    // final height = int.tryParse(heightString) ?? videoHeight;
+    final int width = videoWidth;
+    final int height = videoHeight;
+    final html.CanvasElement canvas = html.CanvasElement(
+      width: width,
+      height: height,
+    );
+    final html.CanvasElement previewCanvas = html.CanvasElement(
+      width: videoElement.videoWidth,
+      height: videoElement.videoHeight,
+    );
+    canvas.context2D.drawImageScaled(videoElement, 0, 0, width, height);
+    previewCanvas.context2D.drawImageScaled(
+      videoElement,
+      0,
+      0,
+      videoElement.videoWidth,
+      videoElement.videoHeight,
+    );
+    return base64.decode(previewCanvas.toDataUrl().split(',')[1]);
   }
 
   /// Disposes the camera by stopping the camera stream,
