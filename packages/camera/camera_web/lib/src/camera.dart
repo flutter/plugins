@@ -612,19 +612,9 @@ class Camera {
     final width = int.tryParse(widthString) ?? videoWidth;
     final height = int.tryParse(heightString) ?? videoHeight;
     final canvas = html.CanvasElement(width: width, height: height);
-    final previewCanvas = html.CanvasElement(
-      width: videoWidth,
-      height: videoHeight,
-    );
-    canvas.context2D
-      ..translate(width, 0)
-      ..scale(-1, 1)
-      ..drawImageScaled(videoElement, 0, 0, width, height);
+
+    canvas.context2D.drawImageScaled(videoElement, 0, 0, width, height);
     final imageData = canvas.context2D.getImageData(0, 0, width, height);
-    previewCanvas.context2D
-      ..translate(videoWidth, 0)
-      ..scale(-1, 1)
-      ..drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
 
     return CameraImageData(
       format: const CameraImageFormat(
