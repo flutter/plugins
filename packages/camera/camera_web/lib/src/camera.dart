@@ -595,33 +595,22 @@ class Camera {
 
   /// Called when a new animation frame is available.
   Future<void> _onAnimationFrame([num? _]) async {
-    final int videoWidth = videoElement.videoWidth;
-    final int videoHeight = videoElement.videoHeight;
-
-    final Uint8List frame = await _takeFrame();
-    final CameraImageData cameraImageData =
-        _cameraService.getCameraImageDataFromBytes(
-      frame,
-      width: videoWidth,
-      height: videoHeight,
-    );
-    _cameraFrameStreamController.add(cameraImageData);
+    final CameraImageData image = await _takeFrame();
+    _cameraFrameStreamController.add(image);
 
     if (_cameraFrameStreamController.hasListener)
       window!.requestAnimationFrame(_onAnimationFrame);
   }
 
-  Future<Uint8List> _takeFrame() async {
+  Future<CameraImageData> _takeFrame() async {
     final int videoWidth = videoElement.videoWidth;
     final int videoHeight = videoElement.videoHeight;
-    // final widthPx = videoElement.style.width.split('px');
-    // final heightPx = videoElement.style.height.split('px');
-    // final widthString = widthPx.isNotEmpty ? widthPx.first : '$videoWidth';
-    // final heightString = heightPx.isNotEmpty ? heightPx.first : '$videoHeight';
-    // final width = int.tryParse(widthString) ?? videoWidth;
-    // final height = int.tryParse(heightString) ?? videoHeight;
-    final int width = videoWidth;
-    final int height = videoHeight;
+    final widthPx = videoElement.style.width.split('px');
+    final heightPx = videoElement.style.height.split('px');
+    final widthString = widthPx.isNotEmpty ? widthPx.first : '$videoWidth';
+    final heightString = heightPx.isNotEmpty ? heightPx.first : '$videoHeight';
+    final width = int.tryParse(widthString) ?? videoWidth;
+    final height = int.tryParse(heightString) ?? videoHeight;
     final html.CanvasElement canvas = html.CanvasElement(
       width: width,
       height: height,
@@ -638,7 +627,14 @@ class Camera {
       videoElement.videoWidth,
       videoElement.videoHeight,
     );
-    return base64.decode(previewCanvas.toDataUrl().split(',')[1]);
+    final Uint8List bytes =
+        base64.decode(previewCanvas.toDataUrl().split(',')[1]);
+
+    return _cameraService.getCameraImageDataFromBytes(
+      bytes,
+      width: width,
+      height: height,
+    );
   }
 
   /// Disposes the camera by stopping the camera stream,
