@@ -102,7 +102,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
         newGradle.writeln('minSdkVersion 20');
       } else if (line.contains('compileSdkVersion')) {
         // compileSdkVersion 32 is required by webview_flutter.
-        newGradle.writeln('compileSdkVersion 32');
+        newGradle.writeln('compileSdkVersion 33');
       } else {
         newGradle.writeln(line);
       }
