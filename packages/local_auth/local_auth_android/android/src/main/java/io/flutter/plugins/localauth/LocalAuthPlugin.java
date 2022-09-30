@@ -274,6 +274,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     if (Build.VERSION.SDK_INT < 30) {
       // Checking/setting device credential only authentication is not allowed before API 11,
       // so check for presence of PIN, pattern, or password instead.
+      if (keyguardManager == null) return false;
       return keyguardManager.isDeviceSecure();
     }
 
