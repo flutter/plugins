@@ -629,6 +629,7 @@ class Camera {
     );
     final Uint8List bytes =
         base64.decode(previewCanvas.toDataUrl().split(',')[1]);
+    print("frame's byte length: ${bytes.length}");
 
     return _cameraService.getCameraImageDataFromBytes(
       bytes,
