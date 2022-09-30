@@ -408,11 +408,18 @@ packages/plugin1/CHANGELOG
             createFakePlugin('plugin1', packagesDir);
         final RepositoryPackage plugin2 =
             createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner,
+
+        final List<String> output = await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Running for all packages, since a file has changed '
+                  'that could affect the entire repository.')
+            ]));
       });
 
       test('all plugins should be tested if .ci.yaml changes', () async {
@@ -426,11 +433,17 @@ packages/plugin1/CHANGELOG
             createFakePlugin('plugin1', packagesDir);
         final RepositoryPackage plugin2 =
             createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner,
+        final List<String> output = await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Running for all packages, since a file has changed '
+                  'that could affect the entire repository.')
+            ]));
       });
 
       test('all plugins should be tested if anything in .ci/ changes',
@@ -445,14 +458,20 @@ packages/plugin1/CHANGELOG
             createFakePlugin('plugin1', packagesDir);
         final RepositoryPackage plugin2 =
             createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner,
+        final List<String> output = await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Running for all packages, since a file has changed '
+                  'that could affect the entire repository.')
+            ]));
       });
 
-      test('all plugins should be tested if anything in script changes.',
+      test('all plugins should be tested if anything in script/ changes.',
           () async {
         processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
           MockProcess(stdout: '''
@@ -464,11 +483,17 @@ packages/plugin1/CHANGELOG
             createFakePlugin('plugin1', packagesDir);
         final RepositoryPackage plugin2 =
             createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner,
+        final List<String> output = await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Running for all packages, since a file has changed '
+                  'that could affect the entire repository.')
+            ]));
       });
 
       test('all plugins should be tested if the root analysis options change.',
@@ -483,11 +508,17 @@ packages/plugin1/CHANGELOG
             createFakePlugin('plugin1', packagesDir);
         final RepositoryPackage plugin2 =
             createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner,
+        final List<String> output = await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Running for all packages, since a file has changed '
+                  'that could affect the entire repository.')
+            ]));
       });
 
       test('all plugins should be tested if formatting options change.',
@@ -502,11 +533,17 @@ packages/plugin1/CHANGELOG
             createFakePlugin('plugin1', packagesDir);
         final RepositoryPackage plugin2 =
             createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner,
+        final List<String> output = await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Running for all packages, since a file has changed '
+                  'that could affect the entire repository.')
+            ]));
       });
 
       test('Only changed plugin should be tested.', () async {

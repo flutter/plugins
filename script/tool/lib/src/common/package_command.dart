@@ -338,11 +338,14 @@ abstract class PackageCommand extends Command<void> {
 
     if (changedFileFinder != null) {
       final String baseSha = await changedFileFinder.getBaseSha();
-      print(
-          'Running for all packages that have diffs relative to "$baseSha"\n');
       final List<String> changedFiles =
           await changedFileFinder.getChangedFiles();
-      if (!_changesRequireFullTest(changedFiles)) {
+      if (_changesRequireFullTest(changedFiles)) {
+        print('Running for all packages, since a file has changed that could '
+            'affect the entire repository.');
+      } else {
+        print(
+            'Running for all packages that have diffs relative to "$baseSha"\n');
         packages = _getChangedPackageNames(changedFiles);
       }
     } else if (getBoolArg(_runOnDirtyPackagesArg)) {
