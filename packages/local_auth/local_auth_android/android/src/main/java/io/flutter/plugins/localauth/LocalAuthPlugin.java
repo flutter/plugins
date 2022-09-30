@@ -272,7 +272,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   private boolean canAuthenticateWithDeviceCredential() {
     if (biometricManager == null) return false;
-    return biometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+    // Only device credential authentication is not allowed before API 11, so check ability
+    // to authenticate both with device credential and biometric authentication.
+    return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK | BiometricManager.Authenticators.DEVICE_CREDENTIAL )
         == BiometricManager.BIOMETRIC_SUCCESS;
   }
 
