@@ -603,38 +603,42 @@ class Camera {
   }
 
   Future<CameraImageData> _takeFrame() async {
-    final int videoWidth = videoElement.videoWidth;
-    final int videoHeight = videoElement.videoHeight;
+    final videoWidth = videoElement.videoWidth;
+    final videoHeight = videoElement.videoHeight;
     final widthPx = videoElement.style.width.split('px');
     final heightPx = videoElement.style.height.split('px');
     final widthString = widthPx.isNotEmpty ? widthPx.first : '$videoWidth';
     final heightString = heightPx.isNotEmpty ? heightPx.first : '$videoHeight';
     final width = int.tryParse(widthString) ?? videoWidth;
     final height = int.tryParse(heightString) ?? videoHeight;
-    final html.CanvasElement canvas = html.CanvasElement(
-      width: width,
-      height: height,
+    final canvas = html.CanvasElement(width: width, height: height);
+    final previewCanvas = html.CanvasElement(
+      width: videoWidth,
+      height: videoHeight,
     );
-    final html.CanvasElement previewCanvas = html.CanvasElement(
-      width: videoElement.videoWidth,
-      height: videoElement.videoHeight,
-    );
-    canvas.context2D.drawImageScaled(videoElement, 0, 0, width, height);
-    previewCanvas.context2D.drawImageScaled(
-      videoElement,
-      0,
-      0,
-      videoElement.videoWidth,
-      videoElement.videoHeight,
-    );
-    final Uint8List bytes =
-        base64.decode(previewCanvas.toDataUrl().split(',')[1]);
-    print("frame's byte length: ${bytes.length}");
+    canvas.context2D
+      ..translate(width, 0)
+      ..scale(-1, 1)
+      ..drawImageScaled(videoElement, 0, 0, width, height);
+    final imageData = canvas.context2D.getImageData(0, 0, width, height);
+    previewCanvas.context2D
+      ..translate(videoWidth, 0)
+      ..scale(-1, 1)
+      ..drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
 
-    return _cameraService.getCameraImageDataFromBytes(
-      bytes,
-      width: width,
-      height: height,
+    return CameraImageData(
+      format: const CameraImageFormat(
+        ImageFormatGroup.jpeg,
+        raw: '',
+      ),
+      planes: <CameraImagePlane>[
+        CameraImagePlane(
+          bytes: Uint8List.fromList(imageData.data),
+          bytesPerRow: 0,
+        ),
+      ],
+      height: imageData.height,
+      width: imageData.width,
     );
   }
 
