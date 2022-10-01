@@ -31,7 +31,7 @@ void main() {
     });
 
     test('A wildcard group can be created', () {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'Any',
       );
 
@@ -44,7 +44,7 @@ void main() {
     });
 
     test('allowsAny treats empty arrays the same as null', () {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'Any',
         extensions: <String>[],
         mimeTypes: <String>[],
@@ -56,13 +56,13 @@ void main() {
     });
 
     test('allowsAny returns false if anything is set', () {
-      final XTypeGroup extensionOnly =
+      const XTypeGroup extensionOnly =
           XTypeGroup(label: 'extensions', extensions: <String>['txt']);
-      final XTypeGroup mimeOnly =
+      const XTypeGroup mimeOnly =
           XTypeGroup(label: 'mime', mimeTypes: <String>['text/plain']);
-      final XTypeGroup utiOnly =
+      const XTypeGroup utiOnly =
           XTypeGroup(label: 'utis', macUTIs: <String>['public.text']);
-      final XTypeGroup webOnly =
+      const XTypeGroup webOnly =
           XTypeGroup(label: 'web', webWildCards: <String>['.txt']);
 
       expect(extensionOnly.allowsAny, false);

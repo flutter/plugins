@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Makes `XTypeGroup`'s constructor constant.
+
 ## 2.1.1
 
 * Updates imports for `prefer_relative_imports`.
