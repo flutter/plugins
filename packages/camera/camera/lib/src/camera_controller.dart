@@ -456,7 +456,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Throws a [CameraException] if image streaming was not started or video
   /// recording was started.
   ///
-  /// The `stopImageStream` method is only available on Android and iOS (other
+  /// The `stopImageStream` method is only available on Android, iOS and Web (other
   /// platforms won't be supported in current setup).
   Future<void> stopImageStream() async {
     assert(defaultTargetPlatform == TargetPlatform.android ||
