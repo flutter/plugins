@@ -460,7 +460,8 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// platforms won't be supported in current setup).
   Future<void> stopImageStream() async {
     assert(defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS);
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        kIsWeb);
     _throwIfNotInitialized('stopImageStream');
     if (value.isRecordingVideo) {
       throw CameraException(
