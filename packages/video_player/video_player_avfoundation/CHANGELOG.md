@@ -1,5 +1,6 @@
-## NEXT
+## 2.3.7
 
+* Fixes a bug where the aspect ratio of some HLS videos are incorrectly inverted.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 2.3.6
