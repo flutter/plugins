@@ -260,7 +260,7 @@ abstract class CameraPlatform extends PlatformInterface {
 
   /// Set the active camera while recording
   Future<void> setDescriptionWhileRecording(CameraDescription description) {
-    throw UnimplementedError('setDescription() is not implemented.');
+    throw UnimplementedError('setDescriptionWhileRecording() is not implemented.');
   }
 
   /// Returns a widget showing a live camera preview.
