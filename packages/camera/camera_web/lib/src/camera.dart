@@ -595,14 +595,20 @@ class Camera {
 
   /// Called when a new animation frame is available.
   Future<void> _onAnimationFrame([num? _]) async {
-    final CameraImageData image = await _takeFrame();
-    _cameraFrameStreamController.add(image);
+    final CameraImageData? image = await _takeFrame();
+    if (image != null) {
+      _cameraFrameStreamController.add(image);
+    }
 
     if (_cameraFrameStreamController.hasListener)
       window!.requestAnimationFrame(_onAnimationFrame);
   }
 
-  Future<CameraImageData> _takeFrame() async {
+  Future<CameraImageData?> _takeFrame() async {
+    if (!(videoElement.isConnected ?? false)) {
+      return null;
+    }
+
     final videoWidth = videoElement.videoWidth;
     final videoHeight = videoElement.videoHeight;
     final widthPx = videoElement.style.width.split('px');
