@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:html' as html;
 import 'dart:ui';
 
@@ -605,10 +604,6 @@ class Camera {
   }
 
   Future<CameraImageData?> _takeFrame() async {
-    if (!(videoElement.isConnected ?? false)) {
-      return null;
-    }
-
     final videoWidth = videoElement.videoWidth;
     final videoHeight = videoElement.videoHeight;
     final widthPx = videoElement.style.width.split('px');
@@ -617,8 +612,11 @@ class Camera {
     final heightString = heightPx.isNotEmpty ? heightPx.first : '$videoHeight';
     final width = int.tryParse(widthString) ?? videoWidth;
     final height = int.tryParse(heightString) ?? videoHeight;
-    final canvas = html.CanvasElement(width: width, height: height);
+    if (width == 0 || height == 0) {
+      return null;
+    }
 
+    final canvas = html.CanvasElement(width: width, height: height);
     canvas.context2D.drawImageScaled(videoElement, 0, 0, width, height);
     final imageData = canvas.context2D.getImageData(0, 0, width, height);
 
