@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
+import java.util.Objects;
 
 /**
  * Host api implementation for {@link WebViewClient}.
@@ -208,7 +209,8 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
   @Override
   public void setShouldOverrideUrlLoadingReturnValue(
       @NonNull Long instanceId, @NonNull Boolean value) {
-    final WebViewClient webViewClient = instanceManager.getInstance(instanceId);
+    final WebViewClient webViewClient =
+        Objects.requireNonNull(instanceManager.getInstance(instanceId));
     if (webViewClient instanceof WebViewClientCompatImpl) {
       ((WebViewClientCompatImpl) webViewClient).setShouldOverrideUrlLoadingReturnValue(value);
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
