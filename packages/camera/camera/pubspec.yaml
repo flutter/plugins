@@ -49,5 +49,3 @@ dependency_overrides:
     path: ../../camera/camera_avfoundation
   camera_platform_interface:
     path: ../../camera/camera_platform_interface
-  camera_web:
-    path: ../../camera/camera_web
