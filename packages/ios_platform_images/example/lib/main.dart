@@ -22,14 +22,14 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     IosPlatformImages.resolveURL('textfile')
-        // ignore: avoid_print
         .then((String? value) => print(value));
   }
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    Color iconColor = theme.iconTheme.color ?? theme.colorScheme.secondary;
+    final ThemeData theme = Theme.of(context);
+    final Color iconColor =
+        theme.iconTheme.color ?? theme.colorScheme.secondary;
 
     return MaterialApp(
       home: Scaffold(
@@ -39,16 +39,16 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           // 'flutter' is a resource in Assets.xcassets, 'face.smiling' is an SFSymbol provided with iOS.
           child: Column(
-            children: [
-              Text('This is an icon from the iOS bundle'),
+            children: <Widget>[
+              const Text('This is an icon from the iOS bundle'),
               Image(
                 image: IosPlatformImages.load('flutter'),
                 semanticLabel: 'Flutter logo',
               ),
-              Text('This is an icon from the iOS system'),
+              const Text('This is an icon from the iOS system'),
               Image(
                 image: IosPlatformImages.loadSystemImage(
-                    'face.smiling', [iconColor], 100, 1, 1),
+                    'face.smiling', <Color>[iconColor], 100, 1, 1),
                 semanticLabel: 'Smiling face',
               ),
             ],
