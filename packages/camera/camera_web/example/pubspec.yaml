@@ -22,9 +22,3 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   mocktail: ^0.3.0
-
-
-# FOR TESTING ONLY. DO NOT MERGE.
-dependency_overrides:
-  camera_web:
-    path: ../../../camera/camera_web
