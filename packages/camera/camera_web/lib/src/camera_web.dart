@@ -83,6 +83,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<List<CameraDescription>> availableCameras() async {
+    throw Exception();
     try {
       final html.MediaDevices? mediaDevices = window?.navigator.mediaDevices;
       final List<CameraDescription> cameras = <CameraDescription>[];
