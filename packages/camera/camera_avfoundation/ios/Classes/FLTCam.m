@@ -864,7 +864,7 @@ NSString *const errorMethod = @"error";
 - (void)setDescriptionWhileRecording:(NSString *)cameraName
                               result:(FLTThreadSafeFlutterResult *)result {
   if (!_isRecording) {
-    [result sendErrorWithCode:@"setDescriptionWhileRecording"
+    [result sendErrorWithCode:@"setDescriptionWhileRecordingFailed"
                       message:@"Device was not recording"
                       details:nil];
     return;
