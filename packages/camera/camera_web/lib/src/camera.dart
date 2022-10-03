@@ -617,9 +617,6 @@ class Camera {
     final width = int.tryParse(widthString) ?? videoWidth;
     final height = int.tryParse(heightString) ?? videoHeight;
 
-    print('width: $width, height: $height');
-    print('videoElementWidth: $videoWidth, videoElementHeight: $videoHeight');
-
     final canvas = html.CanvasElement(width: width, height: height);
     canvas.context2D.drawImageScaled(videoElement, 0, 0, width, height);
     final imageData = canvas.context2D.getImageData(0, 0, width, height);
