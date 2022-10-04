@@ -175,7 +175,8 @@ class _BumbleBeeEncryptedLiveStreamState
   void initState() {
     super.initState();
     _controller = MiniController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/hls/encrypted_bee.m3u8',
+      'https://raw.githubusercontent.com/hellohuanlin/temp/main/hls/mp4_to_m3u8/bee.m3u8',
+      // 'https://flutter.github.io/assets-for-api-docs/assets/videos/hls/encrypted_bee.m3u8',
     );
 
     _controller.addListener(() {
