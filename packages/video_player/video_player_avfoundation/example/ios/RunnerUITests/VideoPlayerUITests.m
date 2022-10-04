@@ -79,8 +79,26 @@
   XCTAssertTrue([selectedTab waitForExistenceWithTimeout:30.0]);
   XCTAssertTrue(selectedTab.isSelected);
 
-  // Wait until the video is loaded.
-  [NSThread sleepForTimeInterval:60];
+  for (int i = 0; i < 60; i++) {
+      UIImage *image = self.app.screenshot.image;
+
+      // Plugin CI does not support attaching screenshot.
+      // Convert the image to base64 encoded string, and print it out for debugging purpose.
+      // NSLog truncates long strings, so need to scale downn image.
+      CGSize smallerSize = CGSizeMake(100, 200);
+      UIGraphicsBeginImageContextWithOptions(smallerSize, NO, 0.0);
+      [image drawInRect:CGRectMake(0, 0, smallerSize.width, smallerSize.height)];
+      UIImage *smallerImage = UIGraphicsGetImageFromCurrentImageContext();
+      UIGraphicsEndImageContext();
+
+      // 0.5 compression is good enough for debugging purpose.
+      NSData *imageData = UIImageJPEGRepresentation(smallerImage, 0.5);
+      NSString *imageString = [imageData base64EncodedStringWithOptions:0];
+      NSLog(@"pre-frame %d image data:\n%@", i, imageString);
+      // Wait until the video is loaded.
+      [NSThread sleepForTimeInterval:0.5];
+  }
+
 
   NSMutableSet *frames = [NSMutableSet set];
   int numberOfFrames = 60;
