@@ -85,7 +85,7 @@
       // Plugin CI does not support attaching screenshot.
       // Convert the image to base64 encoded string, and print it out for debugging purpose.
       // NSLog truncates long strings, so need to scale downn image.
-      CGSize smallerSize = CGSizeMake(100, 200);
+      CGSize smallerSize = CGSizeMake(50, 100);
       UIGraphicsBeginImageContextWithOptions(smallerSize, NO, 0.0);
       [image drawInRect:CGRectMake(0, 0, smallerSize.width, smallerSize.height)];
       UIImage *smallerImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -101,14 +101,14 @@
 
 
   NSMutableSet *frames = [NSMutableSet set];
-  int numberOfFrames = 60;
+  int numberOfFrames = 10;
   for (int i = 0; i < numberOfFrames; i++) {
     UIImage *image = self.app.screenshot.image;
 
     // Plugin CI does not support attaching screenshot.
     // Convert the image to base64 encoded string, and print it out for debugging purpose.
     // NSLog truncates long strings, so need to scale downn image.
-    CGSize smallerSize = CGSizeMake(100, 200);
+    CGSize smallerSize = CGSizeMake(50, 100);
     UIGraphicsBeginImageContextWithOptions(smallerSize, NO, 0.0);
     [image drawInRect:CGRectMake(0, 0, smallerSize.width, smallerSize.height)];
     UIImage *smallerImage = UIGraphicsGetImageFromCurrentImageContext();
