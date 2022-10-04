@@ -56,7 +56,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 @implementation FLTImagePickerPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FLTImagePickerPlugin *instance = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *instance = [[FLTImagePickerPlugin alloc] init];
   FLTImagePickerApiSetup(registrar.messenger, instance);
 }
 
@@ -119,7 +119,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _pickerViewController.presentationController.delegate = self;
   self.callContext = context;
 
-  [self checkPhotoAuthorizationForAccessLevel];
+  if (context.requestFullMetadata) {
+    [self checkPhotoAuthorizationForAccessLevel];
+  } else {
+    [self showPhotoLibraryWithPHPicker:_pickerViewController];
+  }
 }
 
 - (void)launchUIImagePickerWithSource:(nonnull FLTSourceSpecification *)source
@@ -136,7 +140,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                              camera:[self cameraDeviceForSource:source]];
       break;
     case FLTSourceTypeGallery:
-      [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
+      if (@available(iOS 11, *)) {
+        if (context.requestFullMetadata) {
+          [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
+        } else {
+          [self showPhotoLibraryWithImagePicker:imagePickerController];
+        }
+      } else {
+        // Prior to iOS 11, accessing gallery requires authorization
+        [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
+      }
       break;
     default:
       [self sendCallResultWithError:[FlutterError errorWithCode:@"invalid_source"
@@ -151,6 +164,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)pickImageWithSource:(nonnull FLTSourceSpecification *)source
                     maxSize:(nonnull FLTMaxSize *)maxSize
                     quality:(nullable NSNumber *)imageQuality
+               fullMetadata:(NSNumber *)fullMetadata
                  completion:
                      (nonnull void (^)(NSString *_Nullable, FlutterError *_Nullable))completion {
   [self cancelInProgressCall];
@@ -166,6 +180,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   context.maxSize = maxSize;
   context.imageQuality = imageQuality;
   context.maxImageCount = 1;
+  context.requestFullMetadata = [fullMetadata boolValue];
 
   if (source.type == FLTSourceTypeGallery) {  // Capture is not possible with PHPicker
     if (@available(iOS 14, *)) {
@@ -180,12 +195,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
 - (void)pickMultiImageWithMaxSize:(nonnull FLTMaxSize *)maxSize
                           quality:(nullable NSNumber *)imageQuality
+                     fullMetadata:(NSNumber *)fullMetadata
                        completion:(nonnull void (^)(NSArray<NSString *> *_Nullable,
                                                     FlutterError *_Nullable))completion {
   FLTImagePickerMethodCallContext *context =
       [[FLTImagePickerMethodCallContext alloc] initWithResult:completion];
   context.maxSize = maxSize;
   context.imageQuality = imageQuality;
+  context.requestFullMetadata = [fullMetadata boolValue];
 
   if (@available(iOS 14, *)) {
     [self launchPHPickerWithContext:context];
@@ -473,14 +490,15 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
     for (int i = 0; i < results.count; i++) {
       PHPickerResult *result = results[i];
-      FLTPHPickerSaveImageToPathOperation *operation =
-          [[FLTPHPickerSaveImageToPathOperation alloc] initWithResult:result
-                                                            maxHeight:maxHeight
-                                                             maxWidth:maxWidth
-                                                  desiredImageQuality:desiredImageQuality
-                                                       savedPathBlock:^(NSString *savedPath) {
-                                                         pathList[i] = savedPath;
-                                                       }];
+      FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
+               initWithResult:result
+                    maxHeight:maxHeight
+                     maxWidth:maxWidth
+          desiredImageQuality:desiredImageQuality
+                 fullMetadata:self.callContext.requestFullMetadata
+               savedPathBlock:^(NSString *savedPath) {
+                 pathList[i] = savedPath;
+               }];
       [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];
@@ -554,7 +572,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *imageQuality = self.callContext.imageQuality;
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
 
-    PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+    PHAsset *originalAsset;
+    if (_callContext.requestFullMetadata) {
+      // Full metadata are available only in PHAsset, which requires gallery permission.
+      originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+    }
 
     if (maxWidth != nil || maxHeight != nil) {
       image = [FLTImagePickerImageUtil scaledImage:image

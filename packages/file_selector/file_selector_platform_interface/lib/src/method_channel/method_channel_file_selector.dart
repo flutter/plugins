@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
+
+import '../../file_selector_platform_interface.dart';
 
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/file_selector');

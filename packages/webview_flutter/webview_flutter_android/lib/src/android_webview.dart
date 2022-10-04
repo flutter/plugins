@@ -321,6 +321,11 @@ class WebView extends JavaObject {
     return api.getScrollYFromInstance(this);
   }
 
+  /// Returns the X and Y scroll position of this view.
+  Future<Offset> getScrollPosition() {
+    return api.getScrollPositionFromInstance(this);
+  }
+
   /// Sets the [WebViewClient] that will receive various notifications and requests.
   ///
   /// This will replace the current handler.

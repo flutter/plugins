@@ -10,13 +10,13 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
-import 'common/plugin_command.dart';
+import 'common/package_command.dart';
 import 'common/repository_package.dart';
 
 const String _outputDirectoryFlag = 'output-dir';
 
 /// A command to create an application that builds all in a single application.
-class CreateAllPluginsAppCommand extends PluginCommand {
+class CreateAllPluginsAppCommand extends PackageCommand {
   /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
     Directory packagesDir, {
@@ -101,8 +101,8 @@ class CreateAllPluginsAppCommand extends PluginCommand {
         // minSdkVersion 19 is required by WebView.
         newGradle.writeln('minSdkVersion 20');
       } else if (line.contains('compileSdkVersion')) {
-        // compileSdkVersion 31 is required by Camera.
-        newGradle.writeln('compileSdkVersion 31');
+        // compileSdkVersion 32 is required by webview_flutter.
+        newGradle.writeln('compileSdkVersion 32');
       } else {
         newGradle.writeln(line);
       }

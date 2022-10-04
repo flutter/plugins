@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+late List<CameraDescription> _cameras;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  _cameras = await CameraPlatform.instance.availableCameras();
+
   runApp(const MyApp());
 }
 
 /// Example app
 class MyApp extends StatefulWidget {
   /// App instantiation
-  const MyApp({Key? key}) : super(key: key);
-
+  const MyApp({super.key});
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -20,13 +25,18 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    String availableCameraNames = 'Available cameras:';
+    for (final CameraDescription cameraDescription in _cameras) {
+      availableCameraNames = '$availableCameraNames ${cameraDescription.name},';
+    }
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Camera Example'),
         ),
-        body: const Center(
-          child: Text('Hello, world!'),
+        body: Center(
+          child: Text(availableCameraNames.substring(
+              0, availableCameraNames.length - 1)),
         ),
       ),
     );

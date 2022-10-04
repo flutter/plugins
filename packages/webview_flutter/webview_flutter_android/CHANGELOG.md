@@ -1,3 +1,25 @@
+## NEXT
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 2.10.3
+
+* Updates imports for `prefer_relative_imports`.
+
+## 2.10.2
+
+* Adds a getter to expose the Java InstanceManager.
+
+## 2.10.1
+
+* Adds a method to the `WebView` wrapper to retrieve the X and Y positions simultaneously.
+* Removes reference to https://github.com/flutter/flutter/issues/97744 from `README`.
+
+## 2.10.0
+
+* Bumps webkit from 1.0.0 to 1.5.0.
+* Raises minimum `compileSdkVersion` to 32.
+
 ## 2.9.5
 
 * Adds dispose methods for HostApi and FlutterApi of JavaObject.

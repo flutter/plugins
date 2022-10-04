@@ -1,7 +1,11 @@
-## NEXT
+## 2.1.3
 
 * Minor fixes for new analysis options.
 * Adds additional tests for `PlatformInterface` and `MockPlatformInterfaceMixin`.
+* Modifies `PlatformInterface` to use an expando for detecting if a customer
+  tries to implement PlatformInterface using `implements` rather than `extends`.
+  This ensures that `verify` will continue to work as advertized after
+  https://github.com/dart-lang/language/issues/2020 is implemented.
 
 ## 2.1.2
 

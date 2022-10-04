@@ -4,11 +4,11 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:git/git.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
+import 'common/core.dart';
 import 'common/git_version_finder.dart';
 import 'common/package_looping_command.dart';
 import 'common/package_state_utils.dart';
@@ -133,7 +133,7 @@ class UpdateReleaseInfoCommand extends PackageLoopingCommand {
           packagesDir.fileSystem.directory((await gitDir).path);
       final String relativePackagePath =
           getRelativePosixPath(package.directory, from: gitRoot);
-      final PackageChangeState state = checkPackageChangeState(package,
+      final PackageChangeState state = await checkPackageChangeState(package,
           changedPaths: _changedFiles,
           relativePackagePath: relativePackagePath);
 

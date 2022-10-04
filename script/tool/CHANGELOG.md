@@ -1,3 +1,40 @@
+## 12.0
+
+* Changes the behavior of `--packages-for-branch` on main/master to run for
+  packages changed in the last commit, rather than running for all packages.
+  This allows CI to test the same filtered set of packages in post-submit as are
+  tested in presubmit.
+* Adds a `fix` command to run `dart fix --apply` in target packages.
+
+## 0.11
+
+* Renames `publish-plugin` to `publish`.
+* Renames arguments to `list`:
+    * `--package` now lists top-level packages (previously `--plugin`).
+    * `--package-or-subpackage` now lists top-level packages (previously
+      `--package`).
+
+## 0.10.0+1
+
+* Recognizes `run_test.sh` as a developer-only file in `version-check`.
+* Adds `readme-check` validation that the example/README.md for a federated
+  plugin's implementation packages has a warning about the intended use of the
+  example instead of the template boilerplate.
+
+## 0.10.0
+
+* Improves the logic in `version-check` to determine what changes don't require
+  version changes, as well as making any dev-only changes also not require
+  changelog changes since in practice we almost always override the check in
+  that case.
+* Removes special-case handling of Dependabot PRs, and the (fragile)
+  `--change-description-file` flag was only still used for that case, as
+  the improved diff analysis now handles that case more robustly.
+
+## 0.9.3
+
+* Raises minimum `compileSdkVersion` to 32 for the `all-plugins-app` command.
+
 ## 0.9.2
 
 * Adds checking of `code-excerpt` configuration to `readme-check`, to validate

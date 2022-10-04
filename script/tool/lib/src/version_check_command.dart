@@ -18,8 +18,6 @@ import 'common/process_runner.dart';
 import 'common/pub_version_finder.dart';
 import 'common/repository_package.dart';
 
-const int _exitMissingChangeDescriptionFile = 3;
-
 /// Categories of version change types.
 enum NextVersionType {
   /// A breaking change.
@@ -116,11 +114,6 @@ class VersionCheckCommand extends PackageLoopingCommand {
           'Defaults to false, which means the version check only run against '
           'the previous version in code.',
     );
-    argParser.addOption(_changeDescriptionFile,
-        help: 'The path to a file containing the description of the change '
-            '(e.g., PR description or commit message).\n\n'
-            'If supplied, this is used to allow overrides to some version '
-            'checks.');
     argParser.addOption(_prLabelsArg,
         help: 'A comma-separated list of labels associated with this PR, '
             'if applicable.\n\n'
@@ -144,7 +137,6 @@ class VersionCheckCommand extends PackageLoopingCommand {
   }
 
   static const String _againstPubFlag = 'against-pub';
-  static const String _changeDescriptionFile = 'change-description-file';
   static const String _prLabelsArg = 'pr-labels';
   static const String _checkForMissingChanges = 'check-for-missing-changes';
   static const String _ignorePlatformInterfaceBreaks =
@@ -171,7 +163,6 @@ class VersionCheckCommand extends PackageLoopingCommand {
   late final String _mergeBase;
   late final List<String> _changedFiles;
 
-  late final String _changeDescription = _loadChangeDescription();
   late final Set<String> _prLabels = _getPRLabels();
 
   @override
@@ -179,7 +170,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
   @override
   final String description =
-      'Checks if the versions of the plugins have been incremented per pub specification.\n'
+      'Checks if the versions of packages have been incremented per pub specification.\n'
       'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
 
@@ -327,7 +318,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       print('${indentation}Unable to find previous version '
           '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
       logWarning(
-          '${indentation}If this plugin is not new, something has gone wrong.');
+          '${indentation}If this package is not new, something has gone wrong.');
       return _CurrentVersionState.validIncrease; // Assume new, thus valid.
     }
 
@@ -519,21 +510,6 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     return labels.split(',').map((String label) => label.trim()).toSet();
   }
 
-  /// Returns the contents of the file pointed to by [_changeDescriptionFile],
-  /// or an empty string if that flag is not provided.
-  String _loadChangeDescription() {
-    final String path = getStringArg(_changeDescriptionFile);
-    if (path.isEmpty) {
-      return '';
-    }
-    final File file = packagesDir.fileSystem.file(path);
-    if (!file.existsSync()) {
-      printError('${indentation}No such file: $path');
-      throw ToolExit(_exitMissingChangeDescriptionFile);
-    }
-    return file.readAsStringSync();
-  }
-
   /// Returns true if the given version transition should be allowed.
   bool _shouldAllowVersionChange(
       {required Version oldVersion, required Version newVersion}) {
@@ -569,8 +545,10 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     final String relativePackagePath =
         getRelativePosixPath(package.directory, from: gitRoot);
 
-    final PackageChangeState state = checkPackageChangeState(package,
-        changedPaths: _changedFiles, relativePackagePath: relativePackagePath);
+    final PackageChangeState state = await checkPackageChangeState(package,
+        changedPaths: _changedFiles,
+        relativePackagePath: relativePackagePath,
+        git: await retrieveVersionFinder());
 
     if (!state.hasChanges) {
       return null;
@@ -580,9 +558,6 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       if (_prLabels.contains(_missingVersionChangeOverrideLabel)) {
         logWarning('Ignoring lack of version change due to the '
             '"$_missingVersionChangeOverrideLabel" label.');
-      } else if (_isAllowedDependabotChange(package, _changeDescription)) {
-        logWarning('Ignoring lack of version change for Dependabot change to '
-            'a known internal dependency.');
       } else {
         printError(
             'No version change found, but the change to this package could '
@@ -595,76 +570,23 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       }
     }
 
-    if (!state.hasChangelogChange) {
+    if (!state.hasChangelogChange && state.needsChangelogChange) {
       if (_prLabels.contains(_missingChangelogChangeOverrideLabel)) {
         logWarning('Ignoring lack of CHANGELOG update due to the '
             '"$_missingChangelogChangeOverrideLabel" label.');
-      } else if (_isAllowedDependabotChange(package, _changeDescription)) {
-        logWarning('Ignoring lack of CHANGELOG update for Dependabot change to '
-            'a known internal dependency.');
       } else {
         printError(
             'No CHANGELOG change found. If this PR needs an exemption from '
             'the standard policy of listing all changes in the CHANGELOG, '
             'comment in the PR to explain why the PR is exempt, and add (or '
             'ask your reviewer to add) the '
-            '"$_missingChangelogChangeOverrideLabel" label.');
+            '"$_missingChangelogChangeOverrideLabel" label. Otherwise, '
+            'please add a NEXT entry in the CHANGELOG as described in '
+            'the contributing guide.');
         return 'Missing CHANGELOG change';
       }
     }
 
     return null;
-  }
-
-  /// Returns true if [changeDescription] matches a Dependabot change for a
-  /// dependency roll that should bypass the normal version and CHANGELOG change
-  /// checks (for dependencies that are known not to have client impact).
-  ///
-  /// Depending on CI, [changeDescription] may either be the PR description, or
-  /// the description of the last commit (see for example discussion in
-  /// https://github.com/cirruslabs/cirrus-ci-docs/issues/1029), so this needs
-  /// to handle both.
-  bool _isAllowedDependabotChange(
-      RepositoryPackage package, String changeDescription) {
-    // Espresso exports some dependencies that are normally just internal test
-    // utils, so always require reviewers to check that.
-    if (package.directory.basename == 'espresso') {
-      return false;
-    }
-
-    // A string that is in all Dependabot PRs, but extremely unlikely to be in
-    // any other PR, to identify Dependabot PRs.
-    const String dependabotPRDescriptionMarker =
-        'Dependabot commands and options';
-    // The same thing, but for the Dependabot commit message.
-    const String dependabotCommitMessageMarker =
-        'Signed-off-by: dependabot[bot]';
-    // Expression to extract the name of the dependency being updated.
-    final RegExp dependencyRegex =
-        RegExp(r'Bumps? \[(.*?)\]\(.*?\) from [\d.]+ to [\d.]+');
-
-    // Allowed exact dependency names.
-    const Set<String> allowedDependencies = <String>{
-      'junit',
-      'robolectric',
-    };
-    const Set<String> allowedDependencyPrefixes = <String>{
-      'mockito-' // mockito-core, mockito-inline, etc.
-    };
-
-    if (changeDescription.contains(dependabotPRDescriptionMarker) ||
-        changeDescription.contains(dependabotCommitMessageMarker)) {
-      final Match? match = dependencyRegex.firstMatch(changeDescription);
-      if (match != null) {
-        final String dependency = match.group(1)!;
-        if (allowedDependencies.contains(dependency) ||
-            allowedDependencyPrefixes
-                .any((String prefix) => dependency.startsWith(prefix))) {
-          return true;
-        }
-      }
-    }
-
-    return false;
   }
 }
