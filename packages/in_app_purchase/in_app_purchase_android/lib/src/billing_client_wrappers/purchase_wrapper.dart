@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import 'billing_client_manager.dart';
 import 'billing_client_wrapper.dart';
 import 'sku_details_wrapper.dart';
 

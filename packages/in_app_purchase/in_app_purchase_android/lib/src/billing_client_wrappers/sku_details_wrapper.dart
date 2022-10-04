@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
-import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'billing_client_wrapper.dart';
+import '../../billing_client_wrappers.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -19,13 +18,6 @@ part 'sku_details_wrapper.g.dart';
 @visibleForTesting
 const String kInvalidBillingResultErrorMessage =
     'Invalid billing result map from method channel.';
-
-/// Abstraction of result of [BillingClient] operation that includes
-/// a [BillingResponse].
-abstract class HasBillingResponse {
-  /// The status of the operation.
-  abstract final BillingResponse responseCode;
-}
 
 /// Dart wrapper around [`com.android.billingclient.api.SkuDetails`](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails).
 ///

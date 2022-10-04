@@ -51,6 +51,12 @@ typedef PurchasesUpdatedListener = void Function(
 /// `com.android.billingclient.api.BillingClient` API as much as possible, with
 /// some minor changes to account for language differences. Callbacks have been
 /// converted to futures where appropriate.
+///
+/// Connection to [BillingClient] may be lost at any time (see
+/// `onBillingServiceDisconnected` param of [startConnection] and
+/// [BillingResponse.serviceDisconnected]).
+/// Consider using [BillingClientManager] that handles these disconnections
+/// transparently.
 class BillingClient {
   /// Creates a billing client.
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {

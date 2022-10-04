@@ -8,7 +8,13 @@ import 'package:flutter/widgets.dart';
 
 import 'billing_client_wrapper.dart';
 import 'purchase_wrapper.dart';
-import 'sku_details_wrapper.dart';
+
+/// Abstraction of result of [BillingClient] operation that includes
+/// a [BillingResponse].
+abstract class HasBillingResponse {
+  /// The status of the operation.
+  abstract final BillingResponse responseCode;
+}
 
 /// Utility class that manages a [BillingClient] connection.
 ///
@@ -38,7 +44,6 @@ class BillingClientManager {
 
   /// [BillingClient] instance managed by this [BillingClientManager].
   ///
-  /// This field should not be accessed outside of test code.
   /// In order to access the [BillingClient], consider using [run] and [runRaw]
   /// methods.
   @visibleForTesting
@@ -59,6 +64,7 @@ class BillingClientManager {
   /// If given [block] returns [BillingResponse.serviceDisconnected], it will
   /// be transparently retried after the connection is restored. Because
   /// of this, [block] may be called multiple times.
+  ///
   /// A response with [BillingResponse.serviceDisconnected] may be returned
   /// in case of [dispose] being called during the operation.
   ///
@@ -95,6 +101,9 @@ class BillingClientManager {
   }
 
   /// Ends connection to the [BillingClient].
+  ///
+  /// Consider calling [dispose] after you no longer need the [BillingClient]
+  /// API to free up the resources.
   ///
   /// After calling [dispose] :
   /// - Further connection attempts will not be made;

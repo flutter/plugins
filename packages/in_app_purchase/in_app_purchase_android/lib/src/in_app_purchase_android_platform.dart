@@ -233,11 +233,10 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
       return purchaseDetails;
     }
 
-    final InAppPurchaseAndroidPlatformAddition addition =
-        InAppPurchasePlatformAddition.instance!
-            as InAppPurchaseAndroidPlatformAddition;
     final BillingResultWrapper billingResult =
-        await addition.consumePurchase(purchaseDetails);
+        await (InAppPurchasePlatformAddition.instance!
+                as InAppPurchaseAndroidPlatformAddition)
+            .consumePurchase(purchaseDetails);
     final BillingResponse consumedResponse = billingResult.responseCode;
     if (consumedResponse != BillingResponse.ok) {
       purchaseDetails.status = PurchaseStatus.error;
