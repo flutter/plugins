@@ -61,10 +61,15 @@ class MethodChannelCamera extends CameraPlatform {
           .where((CameraEvent event) => event.cameraId == cameraId);
 
   @override
-  Future<List<CameraDescription>> availableCameras() async {
+  Future<List<CameraDescription>> availableCameras({
+    bool enableAudio = false,
+  }) async {
     try {
       final List<Map<dynamic, dynamic>>? cameras = await _channel
-          .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
+          .invokeListMethod<Map<dynamic, dynamic>>(
+              'availableCameras', <String, dynamic>{
+        'enableAudio': enableAudio,
+      });
 
       if (cameras == null) {
         return <CameraDescription>[];
