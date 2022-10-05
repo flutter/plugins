@@ -4,6 +4,8 @@
 
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:isolate' as isolate;
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
@@ -621,6 +623,13 @@ class Camera {
     canvas.context2D.drawImageScaled(videoElement, 0, 0, width, height);
     final imageData = canvas.context2D.getImageData(0, 0, width, height);
 
+    final isolate.TransferableTypedData transferableTypedData =
+        isolate.TransferableTypedData.fromList(
+      <TypedData>[imageData.data],
+    );
+    final UnmodifiableByteBufferView byteBuffer =
+        UnmodifiableByteBufferView(transferableTypedData.materialize());
+
     return CameraImageData(
       format: const CameraImageFormat(
         ImageFormatGroup.jpeg,
@@ -628,7 +637,7 @@ class Camera {
       ),
       planes: <CameraImagePlane>[
         CameraImagePlane(
-          bytes: Uint8List.fromList(imageData.data),
+          bytes: Uint8List.view(byteBuffer),
           bytesPerRow: 0,
         ),
       ],
