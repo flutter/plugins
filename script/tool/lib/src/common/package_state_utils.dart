@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/git_version_finder.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
+import 'git_version_finder.dart';
 import 'repository_package.dart';
 
 /// The state of a package on disk relative to git state.
@@ -161,7 +161,7 @@ bool _isUnpublishedExampleChange(
   return exampleComponents.first.toLowerCase() != 'readme.md';
 }
 
-// True if the change is only relevant to people working on the plugin.
+// True if the change is only relevant to people working on the package.
 Future<bool> _isDevChange(List<String> pathComponents,
     {GitVersionFinder? git, String? repoPath}) async {
   return _isTestChange(pathComponents) ||

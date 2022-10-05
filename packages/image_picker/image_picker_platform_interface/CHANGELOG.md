@@ -1,5 +1,6 @@
-## NEXT
+## 2.6.2
 
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 

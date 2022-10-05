@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+// ignore_for_file: prefer_const_literals_to_create_immutables
+
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_windows/file_selector_windows.dart';
 import 'package:file_selector_windows/src/messages.g.dart';
@@ -47,6 +50,8 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
@@ -54,6 +59,8 @@ void main() {
         macUTIs: <String>['public.text'],
       );
 
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
@@ -86,6 +93,8 @@ void main() {
     });
 
     test('throws for a type group that does not support Windows', () async {
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup group = XTypeGroup(
         label: 'text',
         mimeTypes: <String>['text/plain'],
@@ -97,6 +106,8 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup group = XTypeGroup(
         label: 'text',
       );
@@ -125,6 +136,8 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
@@ -132,6 +145,8 @@ void main() {
         macUTIs: <String>['public.text'],
       );
 
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
@@ -164,6 +179,8 @@ void main() {
     });
 
     test('throws for a type group that does not support Windows', () async {
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup group = XTypeGroup(
         label: 'text',
         mimeTypes: <String>['text/plain'],
@@ -175,6 +192,8 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup group = XTypeGroup(
         label: 'text',
       );
@@ -231,6 +250,8 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
@@ -238,6 +259,8 @@ void main() {
         macUTIs: <String>['public.text'],
       );
 
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
@@ -277,6 +300,8 @@ void main() {
     });
 
     test('throws for a type group that does not support Windows', () async {
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup group = XTypeGroup(
         label: 'text',
         mimeTypes: <String>['text/plain'],
@@ -288,6 +313,8 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
+      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
+      // ignore: prefer_const_constructors
       final XTypeGroup group = XTypeGroup(
         label: 'text',
       );

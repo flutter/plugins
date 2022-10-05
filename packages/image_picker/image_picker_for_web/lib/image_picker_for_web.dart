@@ -7,8 +7,9 @@ import 'dart:html' as html;
 
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:image_picker_for_web/src/image_resizer.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+
+import 'src/image_resizer.dart';
 
 const String _kImagePickerInputsDomId = '__image_picker_web-file-input';
 const String _kAcceptImageMimeType = 'image/*';
@@ -243,35 +244,35 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 
   /// Monitors an <input type="file"> and returns the selected file.
   Future<PickedFile> _getSelectedFile(html.FileUploadInputElement input) {
-    final Completer<PickedFile> _completer = Completer<PickedFile>();
+    final Completer<PickedFile> completer = Completer<PickedFile>();
     // Observe the input until we can return something
     input.onChange.first.then((html.Event event) {
       final List<html.File>? files = _handleOnChangeEvent(event);
-      if (!_completer.isCompleted && files != null) {
-        _completer.complete(PickedFile(
+      if (!completer.isCompleted && files != null) {
+        completer.complete(PickedFile(
           html.Url.createObjectUrl(files.first),
         ));
       }
     });
     input.onError.first.then((html.Event event) {
-      if (!_completer.isCompleted) {
-        _completer.completeError(event);
+      if (!completer.isCompleted) {
+        completer.completeError(event);
       }
     });
     // Note that we don't bother detaching from these streams, since the
     // "input" gets re-created in the DOM every time the user needs to
     // pick a file.
-    return _completer.future;
+    return completer.future;
   }
 
   /// Monitors an <input type="file"> and returns the selected file(s).
   Future<List<XFile>> _getSelectedXFiles(html.FileUploadInputElement input) {
-    final Completer<List<XFile>> _completer = Completer<List<XFile>>();
+    final Completer<List<XFile>> completer = Completer<List<XFile>>();
     // Observe the input until we can return something
     input.onChange.first.then((html.Event event) {
       final List<html.File>? files = _handleOnChangeEvent(event);
-      if (!_completer.isCompleted && files != null) {
-        _completer.complete(files.map((html.File file) {
+      if (!completer.isCompleted && files != null) {
+        completer.complete(files.map((html.File file) {
           return XFile(
             html.Url.createObjectUrl(file),
             name: file.name,
@@ -285,14 +286,14 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       }
     });
     input.onError.first.then((html.Event event) {
-      if (!_completer.isCompleted) {
-        _completer.completeError(event);
+      if (!completer.isCompleted) {
+        completer.completeError(event);
       }
     });
     // Note that we don't bother detaching from these streams, since the
     // "input" gets re-created in the DOM every time the user needs to
     // pick a file.
-    return _completer.future;
+    return completer.future;
   }
 
   /// Initializes a DOM container where we can host input elements.
