@@ -53,7 +53,8 @@
 
     XCTAssertTrue([pipStartButton waitForExistenceWithTimeout:30.0]);
 
-    XCTAssertFalse([pipUIView waitForExistenceWithTimeout:30.0]);
+    XCTAssertFalse([pipStopButton exists]);
+    XCTAssertFalse([pipUIView exists]);
   } else {
     XCTAssertTrue(
         [app.staticTexts[@"Picture in picture is not supported"] waitForExistenceWithTimeout:30.0]);
