@@ -278,12 +278,6 @@
   XCTAssertNil(error);
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 
-  // Set Picture In Picture Stop
-  FLTStopPictureInPictureMessage *stopPictureInPicture =
-      [FLTStopPictureInPictureMessage makeWithTextureId:textureId];
-  XCTAssertNil(error);
-  [videoPlayerPlugin stopPictureInPicture:stopPictureInPicture error:&error];
-
   [player onCancelWithArguments:nil];
 
   return initializationEvent;
