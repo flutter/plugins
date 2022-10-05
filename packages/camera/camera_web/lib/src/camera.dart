@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:html' as html;
-import 'dart:isolate' as isolate;
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -623,12 +622,8 @@ class Camera {
     canvas.context2D.drawImageScaled(videoElement, 0, 0, width, height);
     final imageData = canvas.context2D.getImageData(0, 0, width, height);
 
-    final isolate.TransferableTypedData transferableTypedData =
-        isolate.TransferableTypedData.fromList(
-      <TypedData>[imageData.data],
-    );
     final UnmodifiableByteBufferView byteBuffer =
-        UnmodifiableByteBufferView(transferableTypedData.materialize());
+        UnmodifiableByteBufferView(imageData.data.buffer);
 
     return CameraImageData(
       format: const CameraImageFormat(
