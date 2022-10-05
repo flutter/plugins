@@ -60,8 +60,7 @@ public class FileSelectorDelegateTest {
   }
 
   @Test
-  public void
-      onActivityResult_GetDirectoryPathReturnsSuccessfully() {
+  public void onActivityResult_GetDirectoryPathReturnsSuccessfully() {
     MethodCall call = buildMethodCall(METHOD_GET_DIRECTORY_PATH);
     FileSelectorDelegate delegate = createDelegateWithPendingResultAndMethodCall(call);
     delegate.onActivityResult(
