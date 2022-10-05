@@ -16,7 +16,7 @@ flutter:
         dartPluginClass: ImagePickerWindows
 
 dependencies:
-  file_selector_platform_interface: ^2.0.4
+  file_selector_platform_interface: ^2.2.0
   file_selector_windows: ^0.8.2
   flutter:
     sdk: flutter
