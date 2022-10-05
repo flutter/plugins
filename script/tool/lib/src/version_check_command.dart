@@ -170,7 +170,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
   @override
   final String description =
-      'Checks if the versions of the plugins have been incremented per pub specification.\n'
+      'Checks if the versions of packages have been incremented per pub specification.\n'
       'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
 
@@ -318,7 +318,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       print('${indentation}Unable to find previous version '
           '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
       logWarning(
-          '${indentation}If this plugin is not new, something has gone wrong.');
+          '${indentation}If this package is not new, something has gone wrong.');
       return _CurrentVersionState.validIncrease; // Assume new, thus valid.
     }
 

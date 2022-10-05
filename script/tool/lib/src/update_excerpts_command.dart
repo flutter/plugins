@@ -5,12 +5,12 @@
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:git/git.dart';
 import 'package:platform/platform.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
+import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 import 'common/repository_package.dart';
