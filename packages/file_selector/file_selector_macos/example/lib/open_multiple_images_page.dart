@@ -15,20 +15,12 @@ class OpenMultipleImagesPage extends StatelessWidget {
   const OpenMultipleImagesPage({Key? key}) : super(key: key);
 
   Future<void> _openImageFile(BuildContext context) async {
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
-    final XTypeGroup jpgsTypeGroup = XTypeGroup(
+    const XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'JPEGs',
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_literals_to_create_immutables
       extensions: <String>['jpg', 'jpeg'],
     );
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
-    final XTypeGroup pngTypeGroup = XTypeGroup(
+    const XTypeGroup pngTypeGroup = XTypeGroup(
       label: 'PNGs',
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_literals_to_create_immutables
       extensions: <String>['png'],
     );
     final List<XFile> files = await FileSelectorPlatform.instance
