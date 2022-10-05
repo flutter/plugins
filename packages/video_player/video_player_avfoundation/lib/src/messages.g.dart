@@ -279,27 +279,44 @@ class PictureInPictureOverlayRect {
   }
 }
 
-class SetPictureInPictureMessage {
-  SetPictureInPictureMessage({
+class StartPictureInPictureMessage {
+  StartPictureInPictureMessage({
     required this.textureId,
-    required this.enabled,
   });
 
   int textureId;
-  bool enabled;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
     pigeonMap['textureId'] = textureId;
-    pigeonMap['enabled'] = enabled;
     return pigeonMap;
   }
 
-  static SetPictureInPictureMessage decode(Object message) {
+  static StartPictureInPictureMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
-    return SetPictureInPictureMessage(
+    return StartPictureInPictureMessage(
       textureId: pigeonMap['textureId']! as int,
-      enabled: pigeonMap['enabled']! as bool,
+    );
+  }
+}
+
+class StopPictureInPictureMessage {
+  StopPictureInPictureMessage({
+    required this.textureId,
+  });
+
+  int textureId;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['textureId'] = textureId;
+    return pigeonMap;
+  }
+
+  static StopPictureInPictureMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return StopPictureInPictureMessage(
+      textureId: pigeonMap['textureId']! as int,
     );
   }
 }
@@ -329,17 +346,20 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is PositionMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is SetPictureInPictureMessage) {
+    } else if (value is SetPictureInPictureOverlayRectMessage) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    } else if (value is SetPictureInPictureOverlayRectMessage) {
+    } else if (value is StartPictureInPictureMessage) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    } else if (value is TextureMessage) {
+    } else if (value is StopPictureInPictureMessage) {
       buffer.putUint8(137);
       writeValue(buffer, value.encode());
-    } else if (value is VolumeMessage) {
+    } else if (value is TextureMessage) {
       buffer.putUint8(138);
+      writeValue(buffer, value.encode());
+    } else if (value is VolumeMessage) {
+      buffer.putUint8(139);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -372,15 +392,18 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
         return PositionMessage.decode(readValue(buffer)!);
 
       case 135:
-        return SetPictureInPictureMessage.decode(readValue(buffer)!);
-
-      case 136:
         return SetPictureInPictureOverlayRectMessage.decode(readValue(buffer)!);
 
+      case 136:
+        return StartPictureInPictureMessage.decode(readValue(buffer)!);
+
       case 137:
-        return TextureMessage.decode(readValue(buffer)!);
+        return StopPictureInPictureMessage.decode(readValue(buffer)!);
 
       case 138:
+        return TextureMessage.decode(readValue(buffer)!);
+
+      case 139:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:
@@ -756,9 +779,35 @@ class AVFoundationVideoPlayerApi {
     }
   }
 
-  Future<void> setPictureInPicture(SetPictureInPictureMessage arg_msg) async {
+  Future<void> startPictureInPicture(
+      StartPictureInPictureMessage arg_msg) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPicture',
+        'dev.flutter.pigeon.AVFoundationVideoPlayerApi.startPictureInPicture',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_msg]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> stopPictureInPicture(StopPictureInPictureMessage arg_msg) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.AVFoundationVideoPlayerApi.stopPictureInPicture',
         codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =

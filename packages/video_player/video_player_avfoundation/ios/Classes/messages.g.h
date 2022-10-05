@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTAutomaticallyStartPictureInPictureMessage;
 @class FLTSetPictureInPictureOverlayRectMessage;
 @class FLTPictureInPictureOverlayRect;
-@class FLTSetPictureInPictureMessage;
+@class FLTStartPictureInPictureMessage;
+@class FLTStopPictureInPictureMessage;
 
 @interface FLTTextureMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
@@ -116,12 +117,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSNumber *height;
 @end
 
-@interface FLTSetPictureInPictureMessage : NSObject
+@interface FLTStartPictureInPictureMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithTextureId:(NSNumber *)textureId enabled:(NSNumber *)enabled;
++ (instancetype)makeWithTextureId:(NSNumber *)textureId;
 @property(nonatomic, strong) NSNumber *textureId;
-@property(nonatomic, strong) NSNumber *enabled;
+@end
+
+@interface FLTStopPictureInPictureMessage : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithTextureId:(NSNumber *)textureId;
+@property(nonatomic, strong) NSNumber *textureId;
 @end
 
 /// The codec used by FLTAVFoundationVideoPlayerApi.
@@ -151,8 +158,10 @@ NSObject<FlutterMessageCodec> *FLTAVFoundationVideoPlayerApiGetCodec(void);
                                  error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setAutomaticallyStartPictureInPicture:(FLTAutomaticallyStartPictureInPictureMessage *)msg
                                         error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setPictureInPicture:(FLTSetPictureInPictureMessage *)msg
-                      error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)startPictureInPicture:(FLTStartPictureInPictureMessage *)msg
+                        error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)stopPictureInPicture:(FLTStopPictureInPictureMessage *)msg
+                       error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FLTAVFoundationVideoPlayerApiSetup(

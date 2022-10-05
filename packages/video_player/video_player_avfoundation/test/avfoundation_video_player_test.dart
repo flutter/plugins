@@ -26,7 +26,8 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   SetPictureInPictureOverlayRectMessage? setPictureInPictureOverlayRectMessage;
   AutomaticallyStartPictureInPictureMessage?
       automaticallyStartPictureInPictureMessage;
-  SetPictureInPictureMessage? setPictureInPictureMessage;
+  StartPictureInPictureMessage? startPictureInPictureMessage;
+  StopPictureInPictureMessage? stopPictureInPictureMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
@@ -116,9 +117,15 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   }
 
   @override
-  void setPictureInPicture(SetPictureInPictureMessage msg) {
-    log.add('setPictureInPicture');
-    setPictureInPictureMessage = msg;
+  void startPictureInPicture(StartPictureInPictureMessage msg) {
+    log.add('startPictureInPicture');
+    startPictureInPictureMessage = msg;
+  }
+
+  @override
+  void stopPictureInPicture(StopPictureInPictureMessage msg) {
+    log.add('stopPictureInPicture');
+    stopPictureInPictureMessage = msg;
   }
 }
 
@@ -304,18 +311,16 @@ void main() {
       expect(log.setPictureInPictureOverlayRectMessage?.rect?.height, 3);
     });
 
-    test('setPictureInPicture true', () async {
-      await player.setPictureInPicture(1, true);
-      expect(log.log.last, 'setPictureInPicture');
-      expect(log.setPictureInPictureMessage?.textureId, 1);
-      expect(log.setPictureInPictureMessage?.enabled, true);
+    test('startPictureInPicture', () async {
+      await player.startPictureInPicture(1);
+      expect(log.log.last, 'startPictureInPicture');
+      expect(log.startPictureInPictureMessage?.textureId, 1);
     });
 
-    test('setPictureInPicture false', () async {
-      await player.setPictureInPicture(1, false);
-      expect(log.log.last, 'setPictureInPicture');
-      expect(log.setPictureInPictureMessage?.textureId, 1);
-      expect(log.setPictureInPictureMessage?.enabled, false);
+    test('stopPictureInPicture', () async {
+      await player.stopPictureInPicture(1);
+      expect(log.log.last, 'stopPictureInPicture');
+      expect(log.stopPictureInPictureMessage?.textureId, 1);
     });
 
     test('videoEventsFor', () async {

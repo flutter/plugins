@@ -300,8 +300,13 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
           ),
           MaterialButton(
             color: Colors.blue,
-            onPressed: () => _controller.setPictureInPicture(
-                !_controller.value.isPictureInPictureActive),
+            onPressed: () {
+              if (_controller.value.isPictureInPictureActive) {
+                _controller.stopPictureInPicture();
+              } else {
+                _controller.startPictureInPicture();
+              }
+            },
             child: Text(_controller.value.isPictureInPictureActive
                 ? 'Stop picture in picture'
                 : 'Start picture in picture'),

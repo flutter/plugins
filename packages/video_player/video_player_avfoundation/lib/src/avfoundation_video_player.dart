@@ -205,10 +205,16 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> setPictureInPicture(int textureId, bool enabled) {
-    return _api.setPictureInPicture(SetPictureInPictureMessage(
+  Future<void> startPictureInPicture(int textureId) {
+    return _api.startPictureInPicture(StartPictureInPictureMessage(
       textureId: textureId,
-      enabled: enabled,
+    ));
+  }
+
+  @override
+  Future<void> stopPictureInPicture(int textureId) {
+    return _api.stopPictureInPicture(StopPictureInPictureMessage(
+      textureId: textureId,
     ));
   }
 

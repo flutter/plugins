@@ -73,8 +73,12 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 + (FLTPictureInPictureOverlayRect *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-@interface FLTSetPictureInPictureMessage ()
-+ (FLTSetPictureInPictureMessage *)fromMap:(NSDictionary *)dict;
+@interface FLTStartPictureInPictureMessage ()
++ (FLTStartPictureInPictureMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
+@interface FLTStopPictureInPictureMessage ()
++ (FLTStopPictureInPictureMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
 
@@ -331,25 +335,41 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 }
 @end
 
-@implementation FLTSetPictureInPictureMessage
-+ (instancetype)makeWithTextureId:(NSNumber *)textureId enabled:(NSNumber *)enabled {
-  FLTSetPictureInPictureMessage *pigeonResult = [[FLTSetPictureInPictureMessage alloc] init];
+@implementation FLTStartPictureInPictureMessage
++ (instancetype)makeWithTextureId:(NSNumber *)textureId {
+  FLTStartPictureInPictureMessage *pigeonResult = [[FLTStartPictureInPictureMessage alloc] init];
   pigeonResult.textureId = textureId;
-  pigeonResult.enabled = enabled;
   return pigeonResult;
 }
-+ (FLTSetPictureInPictureMessage *)fromMap:(NSDictionary *)dict {
-  FLTSetPictureInPictureMessage *pigeonResult = [[FLTSetPictureInPictureMessage alloc] init];
++ (FLTStartPictureInPictureMessage *)fromMap:(NSDictionary *)dict {
+  FLTStartPictureInPictureMessage *pigeonResult = [[FLTStartPictureInPictureMessage alloc] init];
   pigeonResult.textureId = GetNullableObject(dict, @"textureId");
   NSAssert(pigeonResult.textureId != nil, @"");
-  pigeonResult.enabled = GetNullableObject(dict, @"enabled");
-  NSAssert(pigeonResult.enabled != nil, @"");
   return pigeonResult;
 }
 - (NSDictionary *)toMap {
-  return [NSDictionary
-      dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId",
-                                   (self.enabled ? self.enabled : [NSNull null]), @"enabled", nil];
+  return
+      [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]),
+                                                 @"textureId", nil];
+}
+@end
+
+@implementation FLTStopPictureInPictureMessage
++ (instancetype)makeWithTextureId:(NSNumber *)textureId {
+  FLTStopPictureInPictureMessage *pigeonResult = [[FLTStopPictureInPictureMessage alloc] init];
+  pigeonResult.textureId = textureId;
+  return pigeonResult;
+}
++ (FLTStopPictureInPictureMessage *)fromMap:(NSDictionary *)dict {
+  FLTStopPictureInPictureMessage *pigeonResult = [[FLTStopPictureInPictureMessage alloc] init];
+  pigeonResult.textureId = GetNullableObject(dict, @"textureId");
+  NSAssert(pigeonResult.textureId != nil, @"");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return
+      [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]),
+                                                 @"textureId", nil];
 }
 @end
 
@@ -380,15 +400,18 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
       return [FLTPositionMessage fromMap:[self readValue]];
 
     case 135:
-      return [FLTSetPictureInPictureMessage fromMap:[self readValue]];
-
-    case 136:
       return [FLTSetPictureInPictureOverlayRectMessage fromMap:[self readValue]];
 
+    case 136:
+      return [FLTStartPictureInPictureMessage fromMap:[self readValue]];
+
     case 137:
-      return [FLTTextureMessage fromMap:[self readValue]];
+      return [FLTStopPictureInPictureMessage fromMap:[self readValue]];
 
     case 138:
+      return [FLTTextureMessage fromMap:[self readValue]];
+
+    case 139:
       return [FLTVolumeMessage fromMap:[self readValue]];
 
     default:
@@ -422,17 +445,20 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   } else if ([value isKindOfClass:[FLTPositionMessage class]]) {
     [self writeByte:134];
     [self writeValue:[value toMap]];
-  } else if ([value isKindOfClass:[FLTSetPictureInPictureMessage class]]) {
+  } else if ([value isKindOfClass:[FLTSetPictureInPictureOverlayRectMessage class]]) {
     [self writeByte:135];
     [self writeValue:[value toMap]];
-  } else if ([value isKindOfClass:[FLTSetPictureInPictureOverlayRectMessage class]]) {
+  } else if ([value isKindOfClass:[FLTStartPictureInPictureMessage class]]) {
     [self writeByte:136];
     [self writeValue:[value toMap]];
-  } else if ([value isKindOfClass:[FLTTextureMessage class]]) {
+  } else if ([value isKindOfClass:[FLTStopPictureInPictureMessage class]]) {
     [self writeByte:137];
     [self writeValue:[value toMap]];
-  } else if ([value isKindOfClass:[FLTVolumeMessage class]]) {
+  } else if ([value isKindOfClass:[FLTTextureMessage class]]) {
     [self writeByte:138];
+    [self writeValue:[value toMap]];
+  } else if ([value isKindOfClass:[FLTVolumeMessage class]]) {
+    [self writeByte:139];
     [self writeValue:[value toMap]];
   } else {
     [super writeValue:value];
@@ -756,19 +782,40 @@ void FLTAVFoundationVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMesseng
   }
   {
     FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
-           initWithName:@"dev.flutter.pigeon.AVFoundationVideoPlayerApi.setPictureInPicture"
+           initWithName:@"dev.flutter.pigeon.AVFoundationVideoPlayerApi.startPictureInPicture"
         binaryMessenger:binaryMessenger
                   codec:FLTAVFoundationVideoPlayerApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setPictureInPicture:error:)],
+      NSCAssert([api respondsToSelector:@selector(startPictureInPicture:error:)],
                 @"FLTAVFoundationVideoPlayerApi api (%@) doesn't respond to "
-                @"@selector(setPictureInPicture:error:)",
+                @"@selector(startPictureInPicture:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
-        FLTSetPictureInPictureMessage *arg_msg = GetNullableObjectAtIndex(args, 0);
+        FLTStartPictureInPictureMessage *arg_msg = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api setPictureInPicture:arg_msg error:&error];
+        [api startPictureInPicture:arg_msg error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
+           initWithName:@"dev.flutter.pigeon.AVFoundationVideoPlayerApi.stopPictureInPicture"
+        binaryMessenger:binaryMessenger
+                  codec:FLTAVFoundationVideoPlayerApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(stopPictureInPicture:error:)],
+                @"FLTAVFoundationVideoPlayerApi api (%@) doesn't respond to "
+                @"@selector(stopPictureInPicture:error:)",
+                api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        FLTStopPictureInPictureMessage *arg_msg = GetNullableObjectAtIndex(args, 0);
+        FlutterError *error;
+        [api stopPictureInPicture:arg_msg error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {

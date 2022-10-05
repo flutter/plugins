@@ -264,8 +264,8 @@
   XCTAssertNil(error);
 
   // Set Picture In Picture Start
-  FLTSetPictureInPictureMessage *setPictureInPictureStart =
-      [FLTSetPictureInPictureMessage makeWithTextureId:textureId enabled:@YES];
+  FLTStartPictureInPictureMessage *startPictureInPicture =
+      [FLTStartPictureInPictureMessage makeWithTextureId:textureId];
   XCTestExpectation *startingPiPExpectation =
       [self expectationWithDescription:@"startingPictureInPicture"];
   [player onListenWithArguments:nil
@@ -274,15 +274,15 @@
                           [startingPiPExpectation fulfill];
                         }
                       }];
-  [videoPlayerPlugin setPictureInPicture:setPictureInPictureStart error:&error];
+  [videoPlayerPlugin startPictureInPicture:startPictureInPicture error:&error];
   XCTAssertNil(error);
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 
   // Set Picture In Picture Stop
-  FLTSetPictureInPictureMessage *setPictureInPictureStop =
-      [FLTSetPictureInPictureMessage makeWithTextureId:textureId enabled:@NO];
+  FLTStopPictureInPictureMessage *stopPictureInPicture =
+      [FLTStopPictureInPictureMessage makeWithTextureId:textureId];
   XCTAssertNil(error);
-  [videoPlayerPlugin setPictureInPicture:setPictureInPictureStop error:&error];
+  [videoPlayerPlugin stopPictureInPicture:stopPictureInPicture error:&error];
 
   [player onCancelWithArguments:nil];
 

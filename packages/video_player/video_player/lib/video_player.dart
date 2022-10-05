@@ -564,14 +564,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
-  /// Start/stop picture in picture mode
-  Future<void> setPictureInPicture(
-    bool enabled,
-  ) async {
+  /// Start picture in picture mode
+  Future<void> startPictureInPicture() async {
     if (!value.isInitialized || _isDisposed) {
       return;
     }
-    await _videoPlayerPlatform.setPictureInPicture(_textureId, enabled);
+    await _videoPlayerPlatform.startPictureInPicture(_textureId);
+  }
+
+  /// Stop picture in picture mode
+  Future<void> stopPictureInPicture() async {
+    if (!value.isInitialized || _isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.stopPictureInPicture(_textureId);
   }
 
   Future<void> _applyPlaybackSpeed() async {

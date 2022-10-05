@@ -293,7 +293,7 @@ NS_INLINE UIViewController *rootViewController() {
   }
 }
 
-- (void)setPictureInPicture:(BOOL)shouldPictureInPictureStart {
+- (void)startOrStopPictureInPicture:(BOOL)shouldPictureInPictureStart {
   if (self.isPictureInPictureStarted == shouldPictureInPictureStart) {
     return;
   }
@@ -753,9 +753,15 @@ NS_INLINE UIViewController *rootViewController() {
                                                     input.rect.height.floatValue)];
 }
 
-- (void)setPictureInPicture:(FLTSetPictureInPictureMessage *)input error:(FlutterError **)error {
+- (void)startPictureInPicture:(FLTStartPictureInPictureMessage *)input
+                        error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player setPictureInPicture:input.enabled.boolValue];
+  [player startOrStopPictureInPicture:YES];
+}
+
+- (void)stopPictureInPicture:(FLTStopPictureInPictureMessage *)input error:(FlutterError **)error {
+  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+  [player startOrStopPictureInPicture:NO];
 }
 
 @end

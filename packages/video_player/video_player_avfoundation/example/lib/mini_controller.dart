@@ -377,12 +377,14 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
-  /// Start/stop picture in picture mode
-  Future<void> setPictureInPicture(bool enabled) {
-    return _platform.setPictureInPicture(
-      textureId,
-      enabled,
-    );
+  /// Start picture in picture mode
+  Future<void> startPictureInPicture() {
+    return _platform.startPictureInPicture(textureId);
+  }
+
+  /// Stop picture in picture mode
+  Future<void> stopPictureInPicture() {
+    return _platform.stopPictureInPicture(textureId);
   }
 
   void _updatePosition(Duration position) {

@@ -98,11 +98,16 @@ class PictureInPictureOverlayRect {
   double height;
 }
 
-class SetPictureInPictureMessage {
-  SetPictureInPictureMessage(this.textureId, this.enabled);
+class StartPictureInPictureMessage {
+  StartPictureInPictureMessage(this.textureId);
 
   int textureId;
-  bool enabled;
+}
+
+class StopPictureInPictureMessage {
+  StopPictureInPictureMessage(this.textureId);
+
+  int textureId;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
@@ -151,6 +156,9 @@ abstract class AVFoundationVideoPlayerApi {
   void setAutomaticallyStartPictureInPicture(
       AutomaticallyStartPictureInPictureMessage msg);
 
-  @ObjCSelector('setPictureInPicture:')
-  void setPictureInPicture(SetPictureInPictureMessage msg);
+  @ObjCSelector('startPictureInPicture:')
+  void startPictureInPicture(StartPictureInPictureMessage msg);
+
+  @ObjCSelector('stopPictureInPicture:')
+  void stopPictureInPicture(StopPictureInPictureMessage msg);
 }

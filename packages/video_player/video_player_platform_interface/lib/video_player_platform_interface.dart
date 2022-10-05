@@ -124,10 +124,16 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
         'setPictureInPictureOverlayRect() has not been implemented.');
   }
 
-  /// Start/stop picture in picture mode
-  Future<void> setPictureInPicture(int textureId, bool enabled) {
+  /// Start picture in picture mode
+  Future<void> startPictureInPicture(int textureId) {
     throw UnimplementedError(
-        'setPictureInPictureVideo() has not been implemented.');
+        'startPictureInPicture() has not been implemented.');
+  }
+
+  /// Stop picture in picture mode
+  Future<void> stopPictureInPicture(int textureId) {
+    throw UnimplementedError(
+        'stopPictureInPicture() has not been implemented.');
   }
 }
 
