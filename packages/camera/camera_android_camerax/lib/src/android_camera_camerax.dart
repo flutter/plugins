@@ -15,9 +15,7 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   /// Returns list of all available cameras and their descriptions.
   @override
-  Future<List<CameraDescription>> availableCameras({
-    bool enableAudio = false,
-  }) async {
+  Future<List<CameraDescription>> availableCameras() async {
     throw UnimplementedError('availableCameras() is not implemented.');
   }
 }

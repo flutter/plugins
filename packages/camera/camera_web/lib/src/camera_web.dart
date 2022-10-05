@@ -82,9 +82,7 @@ class CameraPlugin extends CameraPlatform {
   html.Window? window = html.window;
 
   @override
-  Future<List<CameraDescription>> availableCameras({
-    bool enableAudio = false,
-  }) async {
+  Future<List<CameraDescription>> availableCameras() async {
     try {
       final html.MediaDevices? mediaDevices = window?.navigator.mediaDevices;
       final List<CameraDescription> cameras = <CameraDescription>[];
@@ -100,11 +98,7 @@ class CameraPlugin extends CameraPlatform {
 
       // Request video and audio permissions.
       final html.MediaStream cameraStream =
-          await _cameraService.getMediaStreamForOptions(
-        CameraOptions(
-          audio: AudioConstraints(enabled: enableAudio),
-        ),
-      );
+          await _cameraService.getMediaStreamForOptions(const CameraOptions());
 
       // Release the camera stream used to request video and audio permissions.
       cameraStream
