@@ -1,6 +1,9 @@
 ## NEXT
 
+## 3.0.8
+
 * Updates minimum Flutter version to 2.10.
+* Adds screenshots to pubspec.yaml
 
 ## 3.0.7
 
