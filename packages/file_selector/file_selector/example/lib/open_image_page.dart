@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'dart:io';
 
 import 'package:file_selector/file_selector.dart';
@@ -18,7 +15,7 @@ class OpenImagePage extends StatelessWidget {
 
   Future<void> _openImageFile(BuildContext context) async {
     // #docregion SingleOpen
-    final XTypeGroup typeGroup = XTypeGroup(
+    const XTypeGroup typeGroup = XTypeGroup(
       label: 'images',
       extensions: <String>['jpg', 'png'],
     );
