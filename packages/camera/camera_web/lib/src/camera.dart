@@ -618,10 +618,20 @@ class Camera {
     final width = int.tryParse(widthString) ?? videoWidth;
     final height = int.tryParse(heightString) ?? videoHeight;
 
-    final canvas = html.CanvasElement(width: width, height: height);
-    canvas.context2D.drawImageScaled(videoElement, 0, 0, width, height);
-    final imageData = canvas.context2D.getImageData(0, 0, width, height);
-
+    const bool canUseOffscreenCanvas = true;
+    late html.ImageData imageData;
+    if (canUseOffscreenCanvas) {
+      final html.OffscreenCanvas canvas = html.OffscreenCanvas(width, height);
+      final html.OffscreenCanvasRenderingContext2D context =
+          canvas.getContext('2d')! as html.OffscreenCanvasRenderingContext2D;
+      context.drawImage(videoElement, 0, 0, width, height);
+      imageData = context.getImageData(0, 0, width, height);
+    } else {
+      final html.CanvasElement canvas =
+          html.CanvasElement(width: width, height: height);
+      canvas.context2D.drawImageScaled(videoElement, 0, 0, width, height);
+      imageData = canvas.context2D.getImageData(0, 0, width, height);
+    }
     final UnmodifiableByteBufferView byteBuffer =
         UnmodifiableByteBufferView(imageData.data.buffer);
 
