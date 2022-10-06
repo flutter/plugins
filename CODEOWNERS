@@ -29,6 +29,7 @@ packages/**/*_web/**                                     @ditman
 # - Android
 packages/camera/camera_android/**                        @camsim99
 packages/espresso/**                                     @GaryQian
+packages/file_selector/file_selector_android             @GaryQian
 packages/flutter_plugin_android_lifecycle/**             @GaryQian
 packages/google_maps_flutter/google_maps_flutter_android/**  @GaryQian
 packages/google_sign_in/google_sign_in_android/**        @camsim99

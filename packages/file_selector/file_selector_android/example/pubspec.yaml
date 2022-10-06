@@ -1,0 +1,30 @@
+name: file_selector_android_example
+description: Demonstrates how to use the file_selector_android plugin.
+
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+  flutter: ">=2.10.0"
+
+dependencies:
+  dev: ^1.0.0
+  espresso: ^0.2.0+4
+  file_selector_android:
+    path: ../
+  file_selector_platform_interface: ^2.2.0
+  flutter:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  flutter_plugin_android_lifecycle: ^2.0.1
+  permission_handler: ^10.0.1
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
