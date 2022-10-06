@@ -9,7 +9,7 @@ environment:
 dependencies:
   file_selector_linux:
     path: ../
-  file_selector_platform_interface: ^2.0.0
+  file_selector_platform_interface: ^2.2.0
   flutter:
     sdk: flutter
 

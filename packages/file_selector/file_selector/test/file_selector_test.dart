@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-// ignore_for_file: prefer_const_literals_to_create_immutables
-
 import 'package:file_selector/file_selector.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,15 +12,11 @@ void main() {
   const String initialDirectory = '/home/flutteruser';
   const String confirmButtonText = 'Use this profile picture';
   const String suggestedName = 'suggested_name';
-  final List<XTypeGroup> acceptedTypeGroups = <XTypeGroup>[
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
+  const List<XTypeGroup> acceptedTypeGroups = <XTypeGroup>[
     XTypeGroup(label: 'documents', mimeTypes: <String>[
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessing',
     ]),
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
     XTypeGroup(label: 'images', extensions: <String>[
       'jpg',
       'png',

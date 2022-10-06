@@ -9,12 +9,12 @@ void main() {
   group('XTypeGroup', () {
     test('toJSON() creates correct map', () {
       const String label = 'test group';
-      final List<String> extensions = <String>['txt', 'jpg'];
-      final List<String> mimeTypes = <String>['text/plain'];
-      final List<String> macUTIs = <String>['public.plain-text'];
-      final List<String> webWildCards = <String>['image/*'];
+      const List<String> extensions = <String>['txt', 'jpg'];
+      const List<String> mimeTypes = <String>['text/plain'];
+      const List<String> macUTIs = <String>['public.plain-text'];
+      const List<String> webWildCards = <String>['image/*'];
 
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: label,
         extensions: extensions,
         mimeTypes: mimeTypes,
@@ -72,8 +72,8 @@ void main() {
     });
 
     test('Leading dots are removed from extensions', () {
-      final List<String> extensions = <String>['.txt', '.jpg'];
-      final XTypeGroup group = XTypeGroup(extensions: extensions);
+      const List<String> extensions = <String>['.txt', '.jpg'];
+      const XTypeGroup group = XTypeGroup(extensions: extensions);
 
       expect(group.extensions, <String>['txt', 'jpg']);
     });
