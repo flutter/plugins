@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:js_util' as js_util;
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -618,7 +619,8 @@ class Camera {
     final width = int.tryParse(widthString) ?? videoWidth;
     final height = int.tryParse(heightString) ?? videoHeight;
 
-    const bool canUseOffscreenCanvas = true;
+    final bool canUseOffscreenCanvas =
+        js_util.hasProperty(html.window, 'OffscreenCanvas');
     late html.ImageData imageData;
     if (canUseOffscreenCanvas) {
       final html.OffscreenCanvas canvas = html.OffscreenCanvas(width, height);
