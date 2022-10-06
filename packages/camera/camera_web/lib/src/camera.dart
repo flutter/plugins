@@ -624,7 +624,7 @@ class Camera {
       final html.OffscreenCanvas canvas = html.OffscreenCanvas(width, height);
       final html.OffscreenCanvasRenderingContext2D context =
           canvas.getContext('2d')! as html.OffscreenCanvasRenderingContext2D;
-      context.drawImage(videoElement, 0, 0, width, height);
+      context.drawImage(videoElement, 0, 0);
       imageData = context.getImageData(0, 0, width, height);
     } else {
       final html.CanvasElement canvas =
