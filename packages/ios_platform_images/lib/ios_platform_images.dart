@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart'
     show SynchronousFuture, describeIdentity, immutable, objectRuntimeType;
 import 'package:flutter/rendering.dart';
 
-import 'package:ios_platform_images/platform_images_api.g.dart';
+import './platform_images_api.g.dart';
 
 class _FutureImageStreamCompleter extends ImageStreamCompleter {
   _FutureImageStreamCompleter({
