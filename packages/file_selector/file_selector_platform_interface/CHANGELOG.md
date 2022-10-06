@@ -1,3 +1,7 @@
+## NEXT
+
+* Changes XTypeGroup initialization from final to const.
+
 ## 2.2.0
 
 * Makes `XTypeGroup`'s constructor constant.
