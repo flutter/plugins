@@ -39,21 +39,21 @@ void main() {
   testWidgets(
     'ios system image error case',
     (WidgetTester tester) async {
-      final Completer<ImageInfo> _completer = Completer<ImageInfo>();
+      final Completer<ImageInfo> completer = Completer<ImageInfo>();
 
       final ImageProvider imageProvider =
           IosPlatformImages.loadSystemImage('invalid_symbol', 10);
 
       imageProvider.resolve(ImageConfiguration.empty).completer?.addListener(
             ImageStreamListener(
-              (ImageInfo info, bool _) => _completer.complete(info),
+              (ImageInfo info, bool _) => completer.complete(info),
               onError: (Object exception, StackTrace? stack) => () {
-                _completer.completeError(exception);
+                completer.completeError(exception);
               },
             ),
           );
 
-      await expectLater(_completer.future, throwsArgumentError);
+      await expectLater(completer.future, throwsArgumentError);
     },
   );
 }

@@ -2,27 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ios_platform_images/ios_platform_images.dart';
+import 'package:ios_platform_images/platform_images_api.g.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+@GenerateNiceMocks(<MockSpec<dynamic>>[MockSpec<PlatformImagesApi>()])
+import 'ios_platform_images_test.mocks.dart';
 
 void main() {
-  const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/ios_platform_images');
+  final MockPlatformImagesApi api = MockPlatformImagesApi();
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
-    });
-  });
+  final PlatformImage fakePlatformImage = PlatformImage(bytes: Uint8List(1));
+  final PlatformImage fakeSystemImage = PlatformImage(bytes: Uint8List(2));
 
-  tearDown(() {
-    channel.setMockMethodCallHandler(null);
+  setUp(() {
+    when(api.resolveURL('foobar', null)).thenAnswer((_) async => '42');
+    when(api.getPlatformImage('platformImage'))
+        .thenAnswer((_) async => fakePlatformImage);
+    when(api.getSystemImage(
+            'systemImage', 2, FontWeight.bold, <double>[1, 1, 1], true))
+        .thenAnswer((_) async => fakeSystemImage);
   });
 
   test('resolveURL', () async {
-    expect(await IosPlatformImages.resolveURL('foobar'), '42');
+    expect(await api.resolveURL('foobar', null), '42');
+  });
+
+  test('getPlatformImage', () async {
+    expect(await api.getPlatformImage('platformImage'), fakePlatformImage);
+  });
+
+  test('getSystemImage', () async {
+    expect(
+        await api.getSystemImage(
+            'systemImage', 2, FontWeight.bold, <double>[1, 1, 1], true),
+        fakeSystemImage);
   });
 }
