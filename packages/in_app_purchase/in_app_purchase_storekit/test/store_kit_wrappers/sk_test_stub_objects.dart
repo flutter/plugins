@@ -10,6 +10,15 @@ const SKPaymentWrapper dummyPayment = SKPaymentWrapper(
     requestData: 'fake-data-utf8',
     quantity: 2,
     simulatesAskToBuyInSandbox: true);
+
+final SKPaymentWrapper dummyPaymentWithDiscount = SKPaymentWrapper(
+    productIdentifier: 'prod-id',
+    applicationUsername: 'app-user-name',
+    requestData: 'fake-data-utf8',
+    quantity: 2,
+    simulatesAskToBuyInSandbox: true,
+    paymentDiscount: dummyPaymentDiscountWrapper);
+
 const SKError dummyError = SKError(
     code: 111,
     domain: 'dummy-domain',
