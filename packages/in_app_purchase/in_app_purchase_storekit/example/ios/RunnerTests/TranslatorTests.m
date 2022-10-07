@@ -397,10 +397,11 @@
       @"keyIdentifier" : @"payment_discount_key_identifier",
       @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
       @"signature" : @"this is a encrypted signature",
-      @"timestamp" : @1665044583595, // timestamp 2022 Oct
+      @"timestamp" : @1665044583595,  // timestamp 2022 Oct
     };
     NSString *error = nil;
-    SKPaymentDiscount *paymentDiscount = [FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap withError:&error];
+    SKPaymentDiscount *paymentDiscount =
+        [FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap withError:&error];
     XCTAssertNil(error);
     XCTAssertNotNil(paymentDiscount);
   }
