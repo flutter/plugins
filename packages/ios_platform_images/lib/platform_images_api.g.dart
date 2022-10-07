@@ -54,20 +54,19 @@ class _PlatformImagesApiCodec extends StandardMessageCodec {
     if (value is PlatformImage) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return PlatformImage.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -76,24 +75,37 @@ class PlatformImagesApi {
   /// Constructor for [PlatformImagesApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  PlatformImagesApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  PlatformImagesApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _PlatformImagesApiCodec();
 
-  Future<PlatformImage> getSystemImage(String arg_name, double arg_size, FontWeight arg_weight, List<double?> arg_colorsRGBA, bool arg_preferMulticolor) async {
+  Future<PlatformImage> getSystemImage(
+      String arg_name,
+      double arg_size,
+      FontWeight arg_weight,
+      List<double?> arg_colorsRGBA,
+      bool arg_preferMulticolor) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.PlatformImagesApi.getSystemImage', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_name, arg_size, arg_weight.index, arg_colorsRGBA, arg_preferMulticolor]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.PlatformImagesApi.getSystemImage', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(<Object?>[
+      arg_name,
+      arg_size,
+      arg_weight.index,
+      arg_colorsRGBA,
+      arg_preferMulticolor
+    ]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -111,7 +123,8 @@ class PlatformImagesApi {
 
   Future<PlatformImage> getPlatformImage(String arg_name) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.PlatformImagesApi.getPlatformImage', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.PlatformImagesApi.getPlatformImage', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_name]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -120,7 +133,8 @@ class PlatformImagesApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -138,16 +152,18 @@ class PlatformImagesApi {
 
   Future<String?> resolveURL(String arg_name, String? arg_extension) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.PlatformImagesApi.resolveURL', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_name, arg_extension]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.PlatformImagesApi.resolveURL', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_name, arg_extension]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,

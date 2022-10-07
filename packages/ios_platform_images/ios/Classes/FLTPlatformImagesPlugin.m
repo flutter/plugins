@@ -5,6 +5,9 @@
 #import "FLTPlatformImagesPlugin.h"
 #import "PlatformImagesApi.g.h"
 
+@interface FLTPlatformImagesPlugin () <FLTPlatformImagesApi>
+@end
+
 @implementation FLTPlatformImagesPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -62,7 +65,8 @@
           [image imageWithTintColor:colorArray.count > 0 ? colorArray[0] : [UIColor blackColor]];
     }
 
-    NSData *data = UIImagePNGRepresentation(finalImage);
+    FlutterStandardTypedData *data =
+        [FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(finalImage)];
     return [FLTPlatformImage makeWithScale:@(finalImage.scale) bytes:data];
   }
   return nil;
