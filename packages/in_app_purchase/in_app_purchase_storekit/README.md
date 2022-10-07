@@ -1,6 +1,6 @@
 # in\_app\_purchase\_storekit
 
-The iOS and MacOS implementation of [`in_app_purchase`][1].
+The iOS and macOS implementation of [`in_app_purchase`][1].
 
 ## Usage
 
