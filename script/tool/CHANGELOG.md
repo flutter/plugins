@@ -1,4 +1,4 @@
-## 12.0
+## 0.12.0
 
 * Changes the behavior of `--packages-for-branch` on main/master to run for
   packages changed in the last commit, rather than running for all packages.
@@ -6,7 +6,7 @@
   tested in presubmit.
 * Adds a `fix` command to run `dart fix --apply` in target packages.
 
-## 0.11
+## 0.11.0
 
 * Renames `publish-plugin` to `publish`.
 * Renames arguments to `list`:
