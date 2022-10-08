@@ -510,7 +510,7 @@ void main() {
       final AppStorePurchaseParam purchaseParam = AppStorePurchaseParam(
         productDetails:
             AppStoreProductDetails.fromSKProduct(dummyProductWrapper),
-        applicationUserName: 'appName',
+        applicationUserName: 'userWithDiscount',
         discount: dummyPaymentDiscountWrapper,
       );
       await iapStoreKitPlatform.buyNonConsumable(purchaseParam: purchaseParam);
@@ -518,6 +518,8 @@ void main() {
       final List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
       expect(result.first.productID, dummyProductWrapper.productIdentifier);
+      expect(fakeStoreKitPlatform.discountReceived,
+          dummyPaymentDiscountWrapper.toMap());
     });
   });
 
