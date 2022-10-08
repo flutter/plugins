@@ -177,7 +177,7 @@ class FakeStoreKitPlatform {
           if (call.arguments['paymentDiscount'] != null) {
             final Map<dynamic, dynamic> discountArgument =
                 call.arguments['paymentDiscount'];
-            discountReceived = {};
+            discountReceived = <String, dynamic>{};
             // can't cast directly the argument to Map<String,dynamic>, will receive:
             // PlatformException(error, type '_InternalLinkedHashMap<Object?, Object?>' is not a subtype of type 'Map<String?, dynamic>' in type cast, null, null)
             for (final dynamic key in discountArgument.keys) {
