@@ -404,6 +404,12 @@
         [FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap withError:&error];
     XCTAssertNil(error);
     XCTAssertNotNil(paymentDiscount);
+    XCTAssertEqual(paymentDiscount.identifier, discountMap[@"identifier"]);
+    XCTAssertEqual(paymentDiscount.keyIdentifier, discountMap[@"keyIdentifier"]);
+    XCTAssertEqualObjects(paymentDiscount.nonce,
+                          [[NSUUID alloc] initWithUUIDString:discountMap[@"nonce"]]);
+    XCTAssertEqual(paymentDiscount.signature, discountMap[@"signature"]);
+    XCTAssertEqual(paymentDiscount.timestamp, discountMap[@"timestamp"]);
   }
 }
 
