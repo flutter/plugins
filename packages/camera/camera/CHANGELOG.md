@@ -1,7 +1,7 @@
 ## 0.10.0+4
 
 * Removes usage of `_ambiguate` method in example.
-* Updates minium Flutter version to 3.0.
+* Updates minimum Flutter version to 3.0.
 
 ## 0.10.0+3
 
