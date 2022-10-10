@@ -30,6 +30,7 @@ android {
         consumerProguardFiles 'proguard.txt'
     }
     lintOptions {
+        disable 'AndroidGradlePluginVersion'
         disable 'InvalidPackage'
         disable 'GradleDependency'
     }

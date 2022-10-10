@@ -47,6 +47,11 @@ android {
             }
         }
     }
+
+    lintOptions {
+        disable 'AndroidGradlePluginVersion'
+        disable 'GradleDependency'
+    }
 }
 
 dependencies {
