@@ -99,7 +99,9 @@ void main() {
       expect(group.macUTIs, macUTIs);
     });
 
-    test('macUTIs getter returns uniformTypeIdentifiers value passed in constructor', () {
+    test(
+        'macUTIs getter returns uniformTypeIdentifiers value passed in constructor',
+        () {
       const List<String> uniformTypeIdentifiers = <String>['public.plain-text'];
       const XTypeGroup group = XTypeGroup(
         uniformTypeIdentifiers: uniformTypeIdentifiers,
@@ -120,7 +122,7 @@ void main() {
           throwsA(predicate((Object? e) =>
               e is AssertionError &&
               e.message ==
-                  'It is only allowed to specify either macUTIs or uniformTypeIdentifiers')));
+                  'Only one of uniformTypeIdentifiers or macUTIs can be non-null')));
     });
 
     test(

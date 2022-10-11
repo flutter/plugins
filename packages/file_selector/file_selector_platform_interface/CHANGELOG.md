@@ -1,6 +1,6 @@
 ## 2.3.0
 
-* Adds the `uniformTypeIdentifiers` property to the `XTypeGroup` that relies on `macUTIs`. The last will be deprecated for future releases.
+* Replaces `macUTIs` with `uniformTypeIdentifiers`. `macUTIs` is available as an alias, but will be deprecated in a future release.
 
 ## 2.2.0
 

@@ -19,7 +19,7 @@ class XTypeGroup {
     this.webWildCards,
   })  : _extensions = extensions,
         assert(uniformTypeIdentifiers == null || macUTIs == null,
-            'It is only allowed to specify either macUTIs or uniformTypeIdentifiers'),
+            'Only one of uniformTypeIdentifiers or macUTIs can be non-null'),
         uniformTypeIdentifiers = uniformTypeIdentifiers ?? macUTIs;
 
   /// The 'name' or reference to this group of types.
