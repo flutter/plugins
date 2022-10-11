@@ -79,15 +79,6 @@ void main() {
       expect(group.uniformTypeIdentifiers, macUTIs);
     });
 
-    test('passing only macUTIs should fill macUTIs', () {
-      const List<String> macUTIs = <String>['public.plain-text'];
-      const XTypeGroup group = XTypeGroup(
-        macUTIs: macUTIs,
-      );
-
-      expect(group.macUTIs, macUTIs);
-    });
-
     test(
         'passing only uniformTypeIdentifiers should fill uniformTypeIdentifiers',
         () {
@@ -99,7 +90,16 @@ void main() {
       expect(group.uniformTypeIdentifiers, uniformTypeIdentifiers);
     });
 
-    test('passing only uniformTypeIdentifiers should fill macUTIs', () {
+    test('macUTIs getter return macUTIs value passed in constructor', () {
+      const List<String> macUTIs = <String>['public.plain-text'];
+      const XTypeGroup group = XTypeGroup(
+        macUTIs: macUTIs,
+      );
+
+      expect(group.macUTIs, macUTIs);
+    });
+
+    test('macUTIs getter returns uniformTypeIdentifiers value passed in constructor', () {
       const List<String> uniformTypeIdentifiers = <String>['public.plain-text'];
       const XTypeGroup group = XTypeGroup(
         uniformTypeIdentifiers: uniformTypeIdentifiers,
@@ -108,7 +108,7 @@ void main() {
       expect(group.macUTIs, uniformTypeIdentifiers);
     });
 
-    test('passing uniformTypeIdentifiers and macUTIs should throw', () {
+    test('passing both uniformTypeIdentifiers and macUTIs should throw', () {
       const List<String> macUTIs = <String>['public.plain-text'];
       const List<String> uniformTypeIndentifiers = <String>[
         'public.plain-images'
