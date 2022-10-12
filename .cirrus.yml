@@ -10,6 +10,21 @@ tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
     - .ci/scripts/prepare_tool.sh
 
+macos_template: &MACOS_TEMPLATE
+  # Only one macOS task can run in parallel without credits, so use them for
+  # PRs on macOS.
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
+
+macos_intel_template: &MACOS_INTEL_TEMPLATE
+  << : *MACOS_TEMPLATE
+  osx_instance:
+    image: big-sur-xcode-13
+
+macos_arm_template: &MACOS_ARM_TEMPLATE
+  << : *MACOS_TEMPLATE
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-ventura-xcode:14
+
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
     # Channels that are part of our normal test matrix use a pinned,
@@ -48,21 +63,6 @@ build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
   build_all_plugins_release_script:
     - cd all_plugins
     - flutter build $BUILD_ALL_ARGS --release
-
-macos_template: &MACOS_TEMPLATE
-  # Only one macOS task can run in parallel without credits, so use them for
-  # PRs on macOS.
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
-
-macos_intel_template: &MACOS_INTEL_TEMPLATE
-  << : *MACOS_TEMPLATE
-  osx_instance:
-    image: big-sur-xcode-13
-
-macos_arm_template: &MACOS_ARM_TEMPLATE
-  << : *MACOS_TEMPLATE
-  macos_instance:
-    image: ghcr.io/cirruslabs/macos-ventura-xcode:14
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
