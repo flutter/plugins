@@ -123,7 +123,7 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      test_script:
+      unit_test_script:
         - ./script/tool_runner.sh test
     - name: analyze
       env:
@@ -149,8 +149,8 @@ task:
         # Restore the tree to a clean state, to avoid accidental issues if
         # other script steps are added to this task.
         - git checkout .
-    # Does a sanity check that plugins at least pass analysis on the N-1 and N-2
-    # versions of Flutter stable if the plugin claims to support that version.
+    # Does a sanity check that packages at least pass analysis on the N-1 and N-2
+    # versions of Flutter stable if the package claims to support that version.
     # This is to minimize accidentally making changes that break old versions
     # (which we don't commit to supporting, but don't want to actively break)
     # without updating the constraints.
@@ -158,26 +158,29 @@ task:
     # version comes out.
     - name: legacy_version_analyze
       depends_on: analyze
-      env:
-        matrix:
+      matrix:
+        env:
           CHANNEL: "3.0.5"
+          DART_VERSION: "2.17.6"
+        env:
           CHANNEL: "2.10.5"
+          DART_VERSION: "2.16.2"
       package_prep_script:
-        # Allow analyzing plugins that use a Pigeon version with a higher
-        # minimum Flutter/Dart version than the plugin itself.
+        # Allow analyzing packages that use a dev dependency with a higher
+        # minimum Flutter/Dart version than the package itself.
         - ./script/tool_runner.sh remove-dev-dependencies
       analyze_script:
         # Only analyze lib/; non-client code doesn't need to work on
         # all supported legacy version.
-        - ./script/tool_runner.sh analyze --lib-only --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
-    # Does a sanity check that plugins pass analysis with the lowest possible
+        - ./script/tool_runner.sh analyze --lib-only --skip-if-not-supporting-flutter-version="$CHANNEL" --skip-if-not-supporting-dart-version="$DART_VERSION" --custom-analysis=script/configs/custom_analysis.yaml
+    # Does a sanity check that packages pass analysis with the lowest possible
     # versions of all dependencies. This is to catch cases where we add use of
-    # new APIs but forget to update minimum versions of dependencies to when
+    # new APIs but forget to update minimum versions of dependencies to where
     # those APIs are introduced.
     - name: downgraded_analyze
       depends_on: analyze
       analyze_script:
-        - ./script/tool_runner.sh analyze --downgrade
+        - ./script/tool_runner.sh analyze --downgrade --custom-analysis=script/configs/custom_analysis.yaml
     - name: readme_excerpts
       env:
         CIRRUS_CLONE_SUBMODULES: true
