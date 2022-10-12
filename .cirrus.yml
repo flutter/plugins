@@ -110,11 +110,14 @@ task:
           -   ./script/tool_runner.sh version-check --check-for-missing-changes --pr-labels="$CIRRUS_PR_LABELS"
           - fi
         publish_check_script: ./script/tool_runner.sh publish-check
-    - name: federated_safety
-      # This check is only meaningful for PRs, as it validates changes
-      # rather than state.
-      only_if: $CIRRUS_PR != ""
-      script: ./script/tool_runner.sh federation-safety-check
+        federated_safety_script:
+          # This check is only meaningful for PRs, as it validates changes
+          # rather than state.
+          - if [[ $CIRRUS_PR == "" ]]; then
+          -   ./script/tool_runner.sh federation-safety-check
+          - else
+          -   echo "Only run in presubmit"
+          - fi
     - name: dart_unit_tests
       env:
         matrix:
