@@ -4,7 +4,7 @@ gcp_credentials: ENCRYPTED[!f1177d1ddb5330ffaa9ea11c9c9e8e0c542185e895c36071f18c
 only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
-  PLUGIN_TOOL: "./script/tool/bin/flutter_plugin_tools.dart"
+  PLUGIN_TOOL_COMMAND: "dart ./script/tool/bin/flutter_plugin_tools.dart"
 
 tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
@@ -52,7 +52,7 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
 
 build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
   create_all_plugins_app_script:
-    - dart $PLUGIN_TOOL all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
+    - $PLUGIN_TOOL_COMMAND all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
   build_all_plugins_debug_script:
     - cd all_plugins
     - if [[ "$BUILD_ALL_ARGS" == "web" ]]; then
@@ -106,8 +106,8 @@ task:
           # has been fixed, this can be removed and there can just be a single
           # run with --require-excerpts and no exclusions.
           - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
-        license_script: dart $PLUGIN_TOOL license-check
-        dependabot_script: dart $PLUGIN_TOOL dependabot-check
+        license_script: $PLUGIN_TOOL_COMMAND license-check
+        dependabot_script: $PLUGIN_TOOL_COMMAND dependabot-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes
       # rather than state.
@@ -140,7 +140,7 @@ task:
         # This uses --run-on-dirty-packages rather than --packages-for-branch
         # since only the packages changed by 'make-deps-path-based' need to be
         # checked.
-        - dart $PLUGIN_TOOL analyze --run-on-dirty-packages --log-timing --custom-analysis=script/configs/custom_analysis.yaml
+        - $PLUGIN_TOOL_COMMAND analyze --run-on-dirty-packages --log-timing --custom-analysis=script/configs/custom_analysis.yaml
         # Restore the tree to a clean state, to avoid accidental issues if
         # other script steps are added to this task.
         - git checkout .
