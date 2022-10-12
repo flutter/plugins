@@ -82,20 +82,10 @@ task:
       script:
         - cd script/tool
         - dart pub run test
-    - name: publishable
-      version_check_script:
-        # For pre-submit, pass the PR labels to the script to allow for version
-        # check overrides.
-        # For post-submit, ignore platform version breaking version changes and
-        # missing version/CHANGELOG detection since the labels aren't
-        # available outside of the context of the PR.
-        - if [[ $CIRRUS_PR == "" ]]; then
-        -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
-        - else
-        -   ./script/tool_runner.sh version-check --check-for-missing-changes --pr-labels="$CIRRUS_PR_LABELS"
-        - fi
-      publish_check_script: ./script/tool_runner.sh publish-check
-    - name: format
+    # Repository rules and best-practice enforcement.
+    # Only channel-agnostic tests should go here since it is only run once
+    # (on Flutter master).
+    - name: repo_checks
       always:
         format_script: ./script/tool_runner.sh format --fail-on-change
         pubspec_script: ./script/tool_runner.sh pubspec-check
@@ -108,6 +98,18 @@ task:
           - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
         license_script: $PLUGIN_TOOL_COMMAND license-check
         dependabot_script: $PLUGIN_TOOL_COMMAND dependabot-check
+        version_check_script:
+          # For pre-submit, pass the PR labels to the script to allow for version
+          # check overrides.
+          # For post-submit, ignore platform version breaking version changes and
+          # missing version/CHANGELOG detection since the labels aren't
+          # available outside of the context of the PR.
+          - if [[ $CIRRUS_PR == "" ]]; then
+          -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
+          - else
+          -   ./script/tool_runner.sh version-check --check-for-missing-changes --pr-labels="$CIRRUS_PR_LABELS"
+          - fi
+        publish_check_script: ./script/tool_runner.sh publish-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes
       # rather than state.
