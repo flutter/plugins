@@ -88,6 +88,7 @@ task:
     - name: repo_checks
       always:
         format_script: ./script/tool_runner.sh format --fail-on-change
+        license_script: $PLUGIN_TOOL_COMMAND license-check
         pubspec_script: ./script/tool_runner.sh pubspec-check
         readme_script:
           - ./script/tool_runner.sh readme-check
@@ -96,7 +97,6 @@ task:
           # has been fixed, this can be removed and there can just be a single
           # run with --require-excerpts and no exclusions.
           - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
-        license_script: $PLUGIN_TOOL_COMMAND license-check
         dependabot_script: $PLUGIN_TOOL_COMMAND dependabot-check
         version_check_script:
           # For pre-submit, pass the PR labels to the script to allow for version
