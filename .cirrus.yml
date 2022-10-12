@@ -109,7 +109,7 @@ task:
           - else
           -   ./script/tool_runner.sh version-check --check-for-missing-changes --pr-labels="$CIRRUS_PR_LABELS"
           - fi
-        publishable_script: ./script/tool_runner.sh publish-check
+        publishable_script: ./script/tool_runner.sh publish-check --allow-pre-release
         federated_safety_script:
           # This check is only meaningful for PRs, as it validates changes
           # rather than state.
