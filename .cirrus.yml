@@ -156,7 +156,7 @@ task:
     # without updating the constraints.
     # Note: The versions below should be manually updated after a new stable
     # version comes out.
-    - name: legacy-version-analyze
+    - name: legacy_version_analyze
       depends_on: analyze
       env:
         matrix:
