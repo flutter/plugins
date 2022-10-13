@@ -3,6 +3,8 @@ description: Web platform implementation of file_selector
 repository: https://github.com/flutter/plugins/tree/main/packages/file_selector/file_selector_web
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+file_selector%22
 version: 0.9.0+2
+# TODO(eugerossetto): remove this once file_selector_platform_interface version is updated to 2.4.0
+publish_to: 'none'
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -17,7 +19,9 @@ flutter:
         fileName: file_selector_web.dart
 
 dependencies:
-  file_selector_platform_interface: ^2.2.0
+  # TODO(eugerossetto): This should be 2.4.0 once it is published.
+  file_selector_platform_interface:
+    path: ../file_selector_platform_interface
   flutter:
     sdk: flutter
   flutter_web_plugins:

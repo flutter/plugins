@@ -258,6 +258,55 @@ void main() {
       expect(directoryPath, expectedDirectoryPath);
     });
   });
+
+  group('getDirectoryPaths', () {
+    const List<String> expectedDirectoryPaths = <String>[
+      '/example/path',
+      '/example/2/path'
+    ];
+
+    test('works', () async {
+      fakePlatformImplementation
+        ..setExpectations(
+            initialDirectory: initialDirectory,
+            confirmButtonText: confirmButtonText)
+        ..setPathsResponse(expectedDirectoryPaths);
+
+      final List<String?>? directoryPaths = await getDirectoryPaths(
+        initialDirectory: initialDirectory,
+        confirmButtonText: confirmButtonText,
+      );
+
+      expect(directoryPaths, expectedDirectoryPaths);
+    });
+
+    test('works with no arguments', () async {
+      fakePlatformImplementation.setPathsResponse(expectedDirectoryPaths);
+
+      final List<String?>? directoryPaths = await getDirectoryPaths();
+      expect(directoryPaths, expectedDirectoryPaths);
+    });
+
+    test('sets the initial directory', () async {
+      fakePlatformImplementation
+        ..setExpectations(initialDirectory: initialDirectory)
+        ..setPathsResponse(expectedDirectoryPaths);
+
+      final List<String?>? directoryPaths =
+          await getDirectoryPaths(initialDirectory: initialDirectory);
+      expect(directoryPaths, expectedDirectoryPaths);
+    });
+
+    test('sets the button confirmation label', () async {
+      fakePlatformImplementation
+        ..setExpectations(confirmButtonText: confirmButtonText)
+        ..setPathsResponse(expectedDirectoryPaths);
+
+      final List<String?>? directoryPaths =
+          await getDirectoryPaths(confirmButtonText: confirmButtonText);
+      expect(directoryPaths, expectedDirectoryPaths);
+    });
+  });
 }
 
 class FakeFileSelector extends Fake
@@ -271,6 +320,7 @@ class FakeFileSelector extends Fake
   // Return values.
   List<XFile>? files;
   String? path;
+  List<String>? paths;
 
   void setExpectations({
     List<XTypeGroup> acceptedTypeGroups = const <XTypeGroup>[],
@@ -292,6 +342,11 @@ class FakeFileSelector extends Fake
   // ignore: use_setters_to_change_properties
   void setPathResponse(String path) {
     this.path = path;
+  }
+
+  // ignore: use_setters_to_change_properties
+  void setPathsResponse(List<String> paths) {
+    this.paths = paths;
   }
 
   @override
@@ -340,5 +395,15 @@ class FakeFileSelector extends Fake
     expect(initialDirectory, this.initialDirectory);
     expect(confirmButtonText, this.confirmButtonText);
     return path;
+  }
+
+  @override
+  Future<List<String>?> getDirectoryPaths({
+    String? initialDirectory,
+    String? confirmButtonText,
+  }) async {
+    expect(initialDirectory, this.initialDirectory);
+    expect(confirmButtonText, this.confirmButtonText);
+    return paths;
   }
 }

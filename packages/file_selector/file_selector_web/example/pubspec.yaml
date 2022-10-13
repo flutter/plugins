@@ -6,7 +6,9 @@ environment:
   flutter: ">=2.10.0"
 
 dependencies:
-  file_selector_platform_interface: ^2.2.0
+  # TODO(eugerossetto): This should be 2.4.0 once it is published.
+  file_selector_platform_interface:
+    path: ../../file_selector_platform_interface
   file_selector_web:
     path: ../
   flutter:

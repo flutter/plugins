@@ -123,3 +123,22 @@ Future<String?> getDirectoryPath({
   return FileSelectorPlatform.instance.getDirectoryPath(
       initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
 }
+
+/// Opens a directory selection dialog and returns a list of the paths chosen by the user.
+/// This always returns `null` on the web.
+///
+/// [initialDirectory] is the full path to the directory that will be displayed
+/// when the dialog is opened. When not provided, the platform will pick an
+/// initial location.
+///
+/// [confirmButtonText] is the text in the confirmation button of the dialog.
+/// When not provided, the default OS label is used (for example, "Open").
+///
+/// Returns `null` if the user cancels the operation.
+Future<List<String?>?> getDirectoryPaths({
+  String? initialDirectory,
+  String? confirmButtonText,
+}) async {
+  return FileSelectorPlatform.instance.getDirectoryPaths(
+      initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
+}

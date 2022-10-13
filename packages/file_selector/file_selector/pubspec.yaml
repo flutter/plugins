@@ -4,6 +4,8 @@ description: Flutter plugin for opening and saving files, or selecting
 repository: https://github.com/flutter/plugins/tree/main/packages/file_selector/file_selector
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+file_selector%22
 version: 0.9.2+2
+# TODO(eugerossetto): This should be reverted once file_selector_platform_interface 2.3.0 is published.
+publish_to: 'none'
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -23,13 +25,20 @@ flutter:
       windows:
         default_package: file_selector_windows
 
+# TODO(eugerossetto): This should be reverted once file_selector_platform_interface 2.3.0 is published.
 dependencies:
-  file_selector_ios: ^0.5.0
-  file_selector_linux: ^0.9.0
-  file_selector_macos: ^0.9.0
-  file_selector_platform_interface: ^2.2.0
-  file_selector_web: ^0.9.0
-  file_selector_windows: ^0.9.0
+  file_selector_ios:
+    path: ../file_selector_ios
+  file_selector_linux: 
+    path: ../file_selector_linux
+  file_selector_macos: 
+    path: ../file_selector_macos
+  file_selector_platform_interface: 
+    path: ../file_selector_platform_interface
+  file_selector_web: 
+    path: ../file_selector_web
+  file_selector_windows:
+    path: ../file_selector_windows
   flutter:
     sdk: flutter
 
