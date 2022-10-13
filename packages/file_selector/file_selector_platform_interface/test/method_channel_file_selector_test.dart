@@ -264,6 +264,33 @@ void main() {
         );
       });
     });
+    group('#getDirectoryPaths', () {
+      test('passes initialDirectory correctly', () async {
+        await plugin.getDirectoryPaths(initialDirectory: '/example/directory');
+
+        expectMethodCall(
+          log,
+          'getDirectoryPaths',
+          arguments: <String, dynamic>{
+            'initialDirectory': '/example/directory',
+            'confirmButtonText': null,
+          },
+        );
+      });
+      test('passes confirmButtonText correctly', () async {
+        await plugin.getDirectoryPaths(
+            confirmButtonText: 'Select one or more Folders');
+
+        expectMethodCall(
+          log,
+          'getDirectoryPaths',
+          arguments: <String, dynamic>{
+            'initialDirectory': null,
+            'confirmButtonText': 'Select one or more Folders',
+          },
+        );
+      });
+    });
   });
 }
 
