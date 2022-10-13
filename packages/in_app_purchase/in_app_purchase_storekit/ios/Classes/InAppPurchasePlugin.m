@@ -201,21 +201,22 @@
 
   if (@available(iOS 12.2, *)) {
     NSDictionary *paymentDiscountMap = [paymentMap objectForKey:@"paymentDiscount"];
-    if(![paymentDiscountMap isKindOfClass:[NSNull class]]) {
+    if (![paymentDiscountMap isKindOfClass:[NSNull class]]) {
       NSString *error = nil;
-      SKPaymentDiscount *paymentDiscount = [FIAObjectTranslator
-          getSKPaymentDiscountFromMap:paymentDiscountMap withError:&error];
-      
+      SKPaymentDiscount *paymentDiscount =
+          [FIAObjectTranslator getSKPaymentDiscountFromMap:paymentDiscountMap withError:&error];
+
       if (error) {
         result([FlutterError
             errorWithCode:@"storekit_invalid_payment_discount_object"
-                  message:[NSString stringWithFormat:@"You have requested a payment and specified a "
-                                                     @"payment discount with invalid properties. %@",
-                                                     error]
+                  message:[NSString
+                              stringWithFormat:@"You have requested a payment and specified a "
+                                               @"payment discount with invalid properties. %@",
+                                               error]
                   details:call.arguments]);
         return;
       }
-      
+
       payment.paymentDiscount = paymentDiscount;
     }
   }
