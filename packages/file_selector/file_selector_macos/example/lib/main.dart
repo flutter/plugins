@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 
 import 'get_directory_page.dart';
+import 'get_multiple_directories_page.dart';
 import 'home_page.dart';
 import 'open_image_page.dart';
 import 'open_multiple_images_page.dart';
@@ -36,6 +37,8 @@ class MyApp extends StatelessWidget {
         '/open/text': (BuildContext context) => const OpenTextPage(),
         '/save/text': (BuildContext context) => SaveTextPage(),
         '/directory': (BuildContext context) => const GetDirectoryPage(),
+        '/multi-directories': (BuildContext context) =>
+            const GetMultipleDirectoriesPage(),
       },
     );
   }

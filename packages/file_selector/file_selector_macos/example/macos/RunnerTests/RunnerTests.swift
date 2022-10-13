@@ -257,8 +257,7 @@ class exampleTests: XCTestCase {
       XCTAssertTrue(panel.canChooseDirectories)
       // For consistency across platforms, file selection is disabled.
       XCTAssertFalse(panel.canChooseFiles)
-      // The Dart API only allows a single directory to be returned, so users shouldn't be allowed
-      // to select multiple.
+
       XCTAssertFalse(panel.allowsMultipleSelection)
     }
   }
@@ -279,5 +278,46 @@ class exampleTests: XCTestCase {
     wait(for: [called], timeout: 0.5)
     XCTAssertNotNil(panelController.openPanel)
   }
+  
+    func testGetDirectoryMultiple() throws {
+      let panelController = TestPanelController()
+      let plugin = FileSelectorPlugin(
+        viewProvider: TestViewProvider(),
+        panelController: panelController)
 
+    let returnPaths = ["/foo/bar", "/foo/test"]
+      panelController.openURLs = returnPaths.map({ path in URL(fileURLWithPath: path) })
+
+      let called = XCTestExpectation()
+      let call = FlutterMethodCall(methodName: "getDirectoryPath", arguments: ["multiple": true])
+      plugin.handle(call) { result in
+        XCTAssertEqual(result as! [String]?, returnPaths)
+        called.fulfill()
+      }
+
+      wait(for: [called], timeout: 0.5)
+      XCTAssertNotNil(panelController.openPanel)
+      if let panel = panelController.openPanel {
+        XCTAssertTrue(panel.canChooseDirectories)
+        XCTAssertFalse(panel.canChooseFiles)
+        XCTAssertTrue(panel.allowsMultipleSelection)
+      }
+    }
+    
+    func testGetDirectoryMultipleCancel() throws {
+      let panelController = TestPanelController()
+      let plugin = FileSelectorPlugin(
+        viewProvider: TestViewProvider(),
+        panelController: panelController)
+
+      let called = XCTestExpectation()
+      let call = FlutterMethodCall(methodName: "getDirectoryPath", arguments: ["multiple": true])
+      plugin.handle(call) { result in
+        XCTAssertNil(result)
+        called.fulfill()
+      }
+
+      wait(for: [called], timeout: 0.5)
+      XCTAssertNotNil(panelController.openPanel)
+    }
 }

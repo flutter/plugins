@@ -1,3 +1,7 @@
+## 0.9.0+4
+
+* Adds `getDirectoryPaths` implementation.
+
 ## 0.9.0+3
 
 * Changes XTypeGroup initialization from final to const.
