@@ -34,6 +34,6 @@ class AppStorePurchaseParam extends PurchaseParam {
   /// Quantity of the product user requested to buy.
   final int quantity;
 
-  /// Discount applied to the product (optional).
+  /// Discount applied to the product. The value is `null` when the product does not have a discount.
   final SKPaymentDiscountWrapper? discount;
 }

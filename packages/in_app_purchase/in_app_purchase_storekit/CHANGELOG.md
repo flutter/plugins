@@ -1,6 +1,7 @@
 ## 0.3.3
 
-* Fixes `SKProductDiscountWrapper` with being sent trough the method channel as the expected parameter.
+* Supports adding discount information to AppStorePurchaseParam. 
+* Fixes iOS Promotional Offers bug which prevents them from working.
 
 ## 0.3.2+2
 

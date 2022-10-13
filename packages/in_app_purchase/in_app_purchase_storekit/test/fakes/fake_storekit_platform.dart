@@ -30,7 +30,7 @@ class FakeStoreKitPlatform {
   PlatformException? restoreException;
   SKError? testRestoredError;
   bool queueIsActive = false;
-  Map<String, dynamic>? discountReceived;
+  Map<String, dynamic> discountReceived = <String, dynamic>{};
 
   void reset() {
     transactions = <SKPaymentTransactionWrapper>[];
@@ -55,7 +55,7 @@ class FakeStoreKitPlatform {
     restoreException = null;
     testRestoredError = null;
     queueIsActive = false;
-    discountReceived = null;
+    discountReceived = <String, dynamic>{};
   }
 
   SKPaymentTransactionWrapper createPendingTransaction(String id,
@@ -172,21 +172,14 @@ class FakeStoreKitPlatform {
         final String id = call.arguments['productIdentifier'] as String;
         final int quantity = call.arguments['quantity'] as int;
 
-        // in case of testing paymentDiscount
+        // Keep the received paymentDiscount parameter when testing payment with discount.
         if (call.arguments['applicationUsername'] == 'userWithDiscount') {
           if (call.arguments['paymentDiscount'] != null) {
             final Map<dynamic, dynamic> discountArgument =
                 call.arguments['paymentDiscount'];
-            discountReceived = <String, dynamic>{};
-            // can't cast directly the argument to Map<String,dynamic>, will receive:
-            // PlatformException(error, type '_InternalLinkedHashMap<Object?, Object?>' is not a subtype of type 'Map<String?, dynamic>' in type cast, null, null)
-            for (final dynamic key in discountArgument.keys) {
-              if (key is String) {
-                discountReceived![key] = discountArgument[key];
-              }
-            }
+            discountReceived = discountArgument.cast<String, dynamic>();
           } else {
-            discountReceived = null;
+            discountReceived = <String, dynamic>{};
           }
         }
 
