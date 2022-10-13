@@ -74,4 +74,13 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   }) {
     throw UnimplementedError('getDirectoryPath() has not been implemented.');
   }
+
+  /// Open file dialog for loading directories and return multiple directories paths
+  /// Returns `null` if user cancels the operation.
+  Future<List<String?>> getDirectoriesPaths({
+    String? initialDirectory,
+    String? confirmButtonText,
+  }) {
+    throw UnimplementedError('getDirectoriesPaths() has not been implemented.');
+  }
 }
