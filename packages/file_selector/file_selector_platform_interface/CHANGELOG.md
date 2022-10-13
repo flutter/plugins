@@ -1,6 +1,6 @@
 ## 2.3.0+1
 
-* Adds `getDirectoriesPaths` method to interface.
+* Adds `getDirectoriesPaths` method to the interface.
 * Replaces `macUTIs` with `uniformTypeIdentifiers`. `macUTIs` is available as an alias, but will be deprecated in a future release.
 
 ## 2.2.0
