@@ -77,7 +77,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
 
   /// Open file dialog for loading directories and return multiple directories paths
   /// Returns `null` if user cancels the operation.
-  Future<List<String?>> getDirectoriesPaths({
+  Future<List<String>?> getDirectoriesPaths({
     String? initialDirectory,
     String? confirmButtonText,
   }) {

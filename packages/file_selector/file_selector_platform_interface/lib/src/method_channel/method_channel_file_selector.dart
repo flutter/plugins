@@ -93,4 +93,18 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
       },
     );
   }
+
+  /// Gets a list of directories paths from a dialog
+  @override
+  Future<List<String>?> getDirectoriesPaths(
+      {String? initialDirectory, String? confirmButtonText}) async {
+    return _channel.invokeListMethod<String>(
+      'getDirectoriesPaths',
+      <String, dynamic>{
+        'initialDirectory': initialDirectory,
+        'confirmButtonText': confirmButtonText,
+        'multiple': true,
+      },
+    );
+  }
 }
