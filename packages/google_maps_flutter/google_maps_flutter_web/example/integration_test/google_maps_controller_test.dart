@@ -432,7 +432,7 @@ void main() {
           controller = createController(
               mapConfiguration: const MapConfiguration(
             zoomGesturesEnabled: false,
-             webGestureHandling: WebGestureHandling.greedy,
+            webGestureHandling: WebGestureHandling.greedy,
           ));
           controller.debugSetOverrides(
               createMap: (_, gmaps.MapOptions options) {
