@@ -468,6 +468,9 @@ class _MyAppState extends State<_MyApp> {
           await androidAddition.launchPriceChangeConfirmationFlow(
         sku: 'purchaseId',
       );
+      if (!context.mounted) {
+        return;
+      }
       if (priceChangeConfirmationResult.responseCode == BillingResponse.ok) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Price change accepted'),

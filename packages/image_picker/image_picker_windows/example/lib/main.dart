@@ -70,8 +70,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _handleMultiImagePicked(BuildContext? context) async {
-    await _displayPickImageDialog(context!,
+  Future<void> _handleMultiImagePicked(BuildContext context) async {
+    await _displayPickImageDialog(context,
         (double? maxWidth, double? maxHeight, int? quality) async {
       try {
         final List<PickedFile>? pickedFileList = await _picker.pickMultiImage(
@@ -91,8 +91,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _handleSingleImagePicked(
-      BuildContext? context, ImageSource source) async {
-    await _displayPickImageDialog(context!,
+      BuildContext context, ImageSource source) async {
+    await _displayPickImageDialog(context,
         (double? maxWidth, double? maxHeight, int? quality) async {
       try {
         final PickedFile? pickedFile = await _picker.pickImage(
@@ -113,9 +113,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _onImageButtonPressed(ImageSource source,
-      {BuildContext? context, bool isMultiImage = false}) async {
+      {required BuildContext context, bool isMultiImage = false}) async {
     if (_controller != null) {
       await _controller!.setVolume(0.0);
+    }
+    if (!context.mounted) {
+      return;
     }
     if (_isVideo) {
       final PickedFile? file = await _picker.pickVideo(
@@ -269,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 _isVideo = true;
-                _onImageButtonPressed(ImageSource.gallery);
+                _onImageButtonPressed(ImageSource.gallery, context: context);
               },
               heroTag: 'video0',
               tooltip: 'Pick Video from gallery',
@@ -282,7 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 _isVideo = true;
-                _onImageButtonPressed(ImageSource.camera);
+                _onImageButtonPressed(ImageSource.camera, context: context);
               },
               heroTag: 'video1',
               tooltip: 'Take a Video',

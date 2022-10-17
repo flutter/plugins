@@ -157,6 +157,9 @@ class _WebViewExampleState extends State<WebViewExample> {
               if (controller.hasData) {
                 url = await controller.data!.currentUrl();
               }
+              if (!context.mounted) {
+                return;
+              }
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
@@ -321,6 +324,9 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     final String cookies =
         await controller.runJavascriptReturningResult('document.cookie');
+    if (!context.mounted) {
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -337,6 +343,9 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     await controller.runJavascript(
         'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
+    if (!context.mounted) {
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Added a test entry to cache.'),
     ));
@@ -353,6 +362,9 @@ class SampleMenu extends StatelessWidget {
   Future<void> _onClearCache(
       WebViewController controller, BuildContext context) async {
     await controller.clearCache();
+    if (!context.mounted) {
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Cache cleared.'),
     ));
@@ -363,6 +375,9 @@ class SampleMenu extends StatelessWidget {
     String message = 'There were cookies. Now, they are gone!';
     if (!hadCookies) {
       message = 'There are no cookies.';
+    }
+    if (!context.mounted) {
+      return;
     }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
@@ -470,6 +485,9 @@ class NavigationControls extends StatelessWidget {
                       if (await controller!.canGoBack()) {
                         await controller.goBack();
                       } else {
+                        if (!context.mounted) {
+                          return;
+                        }
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('No back history item')),
                         );
@@ -485,11 +503,13 @@ class NavigationControls extends StatelessWidget {
                       if (await controller!.canGoForward()) {
                         await controller.goForward();
                       } else {
+                        if (!context.mounted) {
+                          return;
+                        }
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               content: Text('No forward history item')),
                         );
-                        return;
                       }
                     },
             ),
