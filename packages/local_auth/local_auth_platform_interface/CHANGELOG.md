@@ -1,3 +1,8 @@
+## 1.0.5
+
+* Updates imports for `prefer_relative_imports`.
+* Updates minimum Flutter version to 2.10.
+
 ## 1.0.4
 
 * Updates references to the obsolete master branch.

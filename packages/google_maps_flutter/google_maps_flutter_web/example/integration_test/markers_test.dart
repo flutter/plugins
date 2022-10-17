@@ -5,8 +5,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
-import 'dart:js_util' show getProperty;
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
@@ -155,20 +155,44 @@ void main() {
       controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
-      expect(controller.markers[const MarkerId('1')]?.marker?.icon, isNotNull);
+      final gmaps.Icon? icon =
+          controller.markers[const MarkerId('1')]?.marker?.icon as gmaps.Icon?;
+      expect(icon, isNotNull);
 
-      final String blobUrl = getProperty<String>(
-        controller.markers[const MarkerId('1')]!.marker!.icon!,
-        'url',
-      );
-
+      final String blobUrl = icon!.url!;
       expect(blobUrl, startsWith('blob:'));
 
       final http.Response response = await http.get(Uri.parse(blobUrl));
-
       expect(response.bodyBytes, bytes,
           reason:
               'Bytes from the Icon blob must match bytes used to create Marker');
+    });
+
+    // https://github.com/flutter/flutter/issues/73789
+    testWidgets('markers with custom bitmap icon pass size to sdk',
+        (WidgetTester tester) async {
+      final Uint8List bytes = const Base64Decoder().convert(iconImageBase64);
+      final Set<Marker> markers = <Marker>{
+        Marker(
+          markerId: const MarkerId('1'),
+          icon: BitmapDescriptor.fromBytes(bytes, size: const Size(20, 30)),
+        ),
+      };
+
+      controller.addMarkers(markers);
+
+      expect(controller.markers.length, 1);
+      final gmaps.Icon? icon =
+          controller.markers[const MarkerId('1')]?.marker?.icon as gmaps.Icon?;
+      expect(icon, isNotNull);
+
+      final gmaps.Size size = icon!.size!;
+      final gmaps.Size scaledSize = icon.scaledSize!;
+
+      expect(size.width, 20);
+      expect(size.height, 30);
+      expect(scaledSize.width, 20);
+      expect(scaledSize.height, 30);
     });
 
     // https://github.com/flutter/flutter/issues/67854

@@ -1,3 +1,12 @@
+## 6.0.19
+
+* Revert gradle back to 3.4.2.
+
+## 6.0.18
+
+* Updates gradle to 7.2.2.
+* Updates minimum Flutter version to 2.10.
+
 ## 6.0.17
 
 * Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors

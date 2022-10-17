@@ -58,7 +58,7 @@ void main() {
     }
   });
 
-  final List<StorageDirectory?> _allDirs = <StorageDirectory?>[
+  final List<StorageDirectory?> allDirs = <StorageDirectory?>[
     null,
     StorageDirectory.music,
     StorageDirectory.podcasts,
@@ -69,12 +69,11 @@ void main() {
     StorageDirectory.movies,
   ];
 
-  for (final StorageDirectory? type in _allDirs) {
+  for (final StorageDirectory? type in allDirs) {
     testWidgets('getExternalStorageDirectories (type: $type)',
         (WidgetTester tester) async {
       if (Platform.isIOS) {
-        final Future<List<Directory>?> result =
-            getExternalStorageDirectories(type: null);
+        final Future<List<Directory>?> result = getExternalStorageDirectories();
         expect(result, throwsA(isInstanceOf<UnsupportedError>()));
       } else if (Platform.isAndroid) {
         final List<Directory>? directories =

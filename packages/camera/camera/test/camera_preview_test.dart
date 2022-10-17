@@ -201,7 +201,6 @@ void main() {
       controller.value = controller.value.copyWith(
         isInitialized: true,
         deviceOrientation: DeviceOrientation.portraitUp,
-        lockedCaptureOrientation: null,
         recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
             DeviceOrientation.landscapeLeft),
         previewSize: const Size(480, 640),

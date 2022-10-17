@@ -91,6 +91,6 @@ public class DownloadListenerHostApiImpl implements DownloadListenerHostApi {
   public void create(Long instanceId) {
     final DownloadListener downloadListener =
         downloadListenerCreator.createDownloadListener(flutterApi);
-    instanceManager.addInstance(downloadListener, instanceId);
+    instanceManager.addDartCreatedInstance(downloadListener, instanceId);
   }
 }

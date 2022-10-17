@@ -26,7 +26,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('CameraPlugin', () {
-    const int cameraId = 0;
+    const int cameraId = 1;
 
     late Window window;
     late Navigator navigator;
@@ -593,7 +593,7 @@ void main() {
               (Camera camera) => camera.options,
               'options',
               CameraOptions(
-                audio: const AudioConstraints(enabled: false),
+                audio: const AudioConstraints(),
                 video: VideoConstraints(
                   facingMode: FacingModeConstraint(CameraType.user),
                   width: VideoSizeConstraint(

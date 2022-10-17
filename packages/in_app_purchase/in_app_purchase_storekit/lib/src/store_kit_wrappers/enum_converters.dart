@@ -117,3 +117,27 @@ class _SerializedEnums {
   late SKSubscriptionPeriodUnit unit;
   late SKProductDiscountPaymentMode discountPaymentMode;
 }
+
+/// Serializer for [SKProductDiscountType].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@SKProductDiscountTypeConverter()`.
+class SKProductDiscountTypeConverter
+    implements JsonConverter<SKProductDiscountType, int?> {
+  /// Default const constructor.
+  const SKProductDiscountTypeConverter();
+
+  @override
+  SKProductDiscountType fromJson(int? json) {
+    if (json == null) {
+      return SKProductDiscountType.introductory;
+    }
+    return $enumDecode<SKProductDiscountType, dynamic>(
+        _$SKProductDiscountTypeEnumMap.cast<SKProductDiscountType, dynamic>(),
+        json);
+  }
+
+  @override
+  int toJson(SKProductDiscountType object) =>
+      _$SKProductDiscountTypeEnumMap[object]!;
+}

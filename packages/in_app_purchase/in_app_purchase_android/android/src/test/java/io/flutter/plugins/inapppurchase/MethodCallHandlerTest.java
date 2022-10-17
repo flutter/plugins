@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -56,7 +57,9 @@ import com.android.billingclient.api.PriceChangeFlowParams;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
+import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.QueryPurchaseHistoryParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
@@ -64,9 +67,12 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +80,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class MethodCallHandlerTest {
   private MethodCallHandlerImpl methodChannelHandler;
@@ -590,6 +598,58 @@ public class MethodCallHandlerTest {
     // Assert that we sent an error back.
     verify(result).error(contains("UNAVAILABLE"), contains("BillingClient"), any());
     verify(result, never()).success(any());
+  }
+
+  @Test
+  public void queryPurchases_returns_success() throws Exception {
+    establishConnectedBillingClient(null, null);
+
+    CountDownLatch lock = new CountDownLatch(1);
+    doAnswer(
+            new Answer() {
+              public Object answer(InvocationOnMock invocation) {
+                lock.countDown();
+                return null;
+              }
+            })
+        .when(result)
+        .success(any(HashMap.class));
+
+    ArgumentCaptor<PurchasesResponseListener> purchasesResponseListenerArgumentCaptor =
+        ArgumentCaptor.forClass(PurchasesResponseListener.class);
+    doAnswer(
+            new Answer() {
+              public Object answer(InvocationOnMock invocation) {
+                BillingResult.Builder resultBuilder =
+                    BillingResult.newBuilder()
+                        .setResponseCode(BillingClient.BillingResponseCode.OK)
+                        .setDebugMessage("hello message");
+                purchasesResponseListenerArgumentCaptor
+                    .getValue()
+                    .onQueryPurchasesResponse(resultBuilder.build(), new ArrayList<Purchase>());
+                return null;
+              }
+            })
+        .when(mockBillingClient)
+        .queryPurchasesAsync(
+            any(QueryPurchasesParams.class), purchasesResponseListenerArgumentCaptor.capture());
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", SkuType.INAPP);
+    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
+
+    lock.await(5000, TimeUnit.MILLISECONDS);
+
+    verify(result, never()).error(any(), any(), any());
+
+    ArgumentCaptor<HashMap> hashMapCaptor = ArgumentCaptor.forClass(HashMap.class);
+    verify(result, times(1)).success(hashMapCaptor.capture());
+
+    HashMap<String, Object> map = hashMapCaptor.getValue();
+    assert (map.containsKey("responseCode"));
+    assert (map.containsKey("billingResult"));
+    assert (map.containsKey("purchasesList"));
+    assert ((int) map.get("responseCode") == 0);
   }
 
   @Test

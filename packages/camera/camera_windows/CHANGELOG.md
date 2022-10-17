@@ -1,3 +1,34 @@
+## 0.2.1+2
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+* Updates minimum Flutter version to 2.10.
+
+## 0.2.1+1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 0.2.1
+
+* Adds a check for string size before Win32 MultiByte <-> WideChar conversions
+
+## 0.2.0
+
+**BREAKING CHANGES**:
+  * `CameraException.code` now has value `"CameraAccessDenied"` if camera access permission was denied.
+  * `CameraException.code` now has value `"camera_error"` if error occurs during capture.
+
+## 0.1.0+5
+
+* Fixes bugs in in error handling.
+
+## 0.1.0+4
+
+* Allows retrying camera initialization after error.
+
+## 0.1.0+3
+
+* Updates the README to better explain how to use the unendorsed package.
+
 ## 0.1.0+2
 
 * Updates references to the obsolete master branch.

@@ -1,5 +1,8 @@
 ## NEXT
 
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+* Updates minimum Flutter version to 2.10.
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
 * Updates references to the obsolete master branch.
 

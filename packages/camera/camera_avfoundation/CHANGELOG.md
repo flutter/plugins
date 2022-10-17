@@ -1,5 +1,19 @@
-## NEXT
+## 0.9.8+6
 
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+* Updates minimum Flutter version to 2.10.
+
+## 0.9.8+5
+
+* Fixes a regression introduced in 0.9.8+4 where the stream handler is not set. 
+
+## 0.9.8+4
+
+* Fixes a crash due to sending orientation change events when the engine is torn down. 
+
+## 0.9.8+3
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores missing return warnings in preparation for [upcoming analysis changes](https://github.com/flutter/flutter/issues/105750).
 
 ## 0.9.8+2

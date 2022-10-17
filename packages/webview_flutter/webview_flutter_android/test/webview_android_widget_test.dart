@@ -165,8 +165,6 @@ void main() {
         await buildWidget(
           tester,
           creationParams: CreationParams(
-            autoMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
             webSettings: WebSettings(
               userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
@@ -828,7 +826,7 @@ void main() {
       // of WebView itstelf.
       mockPlatformHostApi = MockTestWebViewHostApi();
       TestWebViewHostApi.setup(mockPlatformHostApi);
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
       android_webview.WebView.api =
           WebViewHostApiImpl(instanceManager: instanceManager);
     });

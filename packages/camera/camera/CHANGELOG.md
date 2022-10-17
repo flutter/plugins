@@ -1,3 +1,16 @@
+## 0.10.0+3
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 0.10.0+2
+
+* Updates imports for `prefer_relative_imports`.
+* Updates minimum Flutter version to 2.10.
+
+## 0.10.0+1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 0.10.0
 
 * **Breaking Change** Bumps default camera_web package version, which updates permission exception code from `cameraPermission` to `CameraAccessDenied`.

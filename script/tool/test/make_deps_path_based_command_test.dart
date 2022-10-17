@@ -11,7 +11,7 @@ import 'package:flutter_plugin_tools/src/make_deps_path_based_command.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'common/plugin_command_test.mocks.dart';
+import 'common/package_command_test.mocks.dart';
 import 'mocks.dart';
 import 'util.dart';
 
@@ -49,7 +49,7 @@ void main() {
 
   /// Adds dummy 'dependencies:' entries for each package in [dependencies]
   /// to [package].
-  void _addDependencies(
+  void addDependencies(
       RepositoryPackage package, Iterable<String> dependencies) {
     final List<String> lines = package.pubspecFile.readAsLinesSync();
     final int dependenciesStartIndex = lines.indexOf('dependencies:');
@@ -60,11 +60,24 @@ void main() {
     package.pubspecFile.writeAsStringSync(lines.join('\n'));
   }
 
+  /// Adds a 'dev_dependencies:' section with entries for each package in
+  /// [dependencies] to [package].
+  void addDevDependenciesSection(
+      RepositoryPackage package, Iterable<String> devDependencies) {
+    final String originalContent = package.pubspecFile.readAsStringSync();
+    package.pubspecFile.writeAsStringSync('''
+$originalContent
+
+dev_dependencies:
+${devDependencies.map((String dep) => '  $dep: ^1.0.0').join('\n')}
+''');
+  }
+
   test('no-ops for no plugins', () async {
     createFakePackage('foo', packagesDir, isFlutter: true);
     final RepositoryPackage packageBar =
         createFakePackage('bar', packagesDir, isFlutter: true);
-    _addDependencies(packageBar, <String>['foo']);
+    addDependencies(packageBar, <String>['foo']);
     final String originalPubspecContents =
         packageBar.pubspecFile.readAsStringSync();
 
@@ -81,7 +94,7 @@ void main() {
     expect(packageBar.pubspecFile.readAsStringSync(), originalPubspecContents);
   });
 
-  test('rewrites references', () async {
+  test('rewrites "dependencies" references', () async {
     final RepositoryPackage simplePackage =
         createFakePackage('foo', packagesDir, isFlutter: true);
     final Directory pluginGroup = packagesDir.childDirectory('bar');
@@ -92,16 +105,16 @@ void main() {
     final RepositoryPackage pluginAppFacing =
         createFakePlugin('bar', pluginGroup);
 
-    _addDependencies(simplePackage, <String>[
+    addDependencies(simplePackage, <String>[
       'bar',
       'bar_android',
       'bar_platform_interface',
     ]);
-    _addDependencies(pluginAppFacing, <String>[
+    addDependencies(pluginAppFacing, <String>[
       'bar_platform_interface',
       'bar_android',
     ]);
-    _addDependencies(pluginImplementation, <String>[
+    addDependencies(pluginImplementation, <String>[
       'bar_platform_interface',
     ]);
 
@@ -142,6 +155,71 @@ void main() {
         ]));
   });
 
+  test('rewrites "dev_dependencies" references', () async {
+    createFakePackage('foo', packagesDir);
+    final RepositoryPackage builderPackage =
+        createFakePackage('foo_builder', packagesDir);
+
+    addDevDependenciesSection(builderPackage, <String>[
+      'foo',
+    ]);
+
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['make-deps-path-based', '--target-dependencies=foo']);
+
+    expect(
+        output,
+        containsAll(<String>[
+          'Rewriting references to: foo...',
+          '  Modified packages/foo_builder/pubspec.yaml',
+        ]));
+
+    expect(
+        builderPackage.pubspecFile.readAsLinesSync(),
+        containsAllInOrder(<String>[
+          '# FOR TESTING ONLY. DO NOT MERGE.',
+          'dependency_overrides:',
+          '  foo:',
+          '    path: ../foo',
+        ]));
+  });
+
+  test(
+      'alphabetizes overrides from different sectinos to avoid lint warnings in analysis',
+      () async {
+    createFakePackage('a', packagesDir);
+    createFakePackage('b', packagesDir);
+    createFakePackage('c', packagesDir);
+    final RepositoryPackage targetPackage =
+        createFakePackage('target', packagesDir);
+
+    addDependencies(targetPackage, <String>['a', 'c']);
+    addDevDependenciesSection(targetPackage, <String>['b']);
+
+    final List<String> output = await runCapturingPrint(runner,
+        <String>['make-deps-path-based', '--target-dependencies=c,a,b']);
+
+    expect(
+        output,
+        containsAllInOrder(<String>[
+          'Rewriting references to: c, a, b...',
+          '  Modified packages/target/pubspec.yaml',
+        ]));
+
+    expect(
+        targetPackage.pubspecFile.readAsLinesSync(),
+        containsAllInOrder(<String>[
+          '# FOR TESTING ONLY. DO NOT MERGE.',
+          'dependency_overrides:',
+          '  a:',
+          '    path: ../a',
+          '  b:',
+          '    path: ../b',
+          '  c:',
+          '    path: ../c',
+        ]));
+  });
+
   // This test case ensures that running CI using this command on an interim
   // PR that itself used this command won't fail on the rewrite step.
   test('running a second time no-ops without failing', () async {
@@ -155,16 +233,16 @@ void main() {
     final RepositoryPackage pluginAppFacing =
         createFakePlugin('bar', pluginGroup);
 
-    _addDependencies(simplePackage, <String>[
+    addDependencies(simplePackage, <String>[
       'bar',
       'bar_android',
       'bar_platform_interface',
     ]);
-    _addDependencies(pluginAppFacing, <String>[
+    addDependencies(pluginAppFacing, <String>[
       'bar_platform_interface',
       'bar_android',
     ]);
-    _addDependencies(pluginImplementation, <String>[
+    addDependencies(pluginImplementation, <String>[
       'bar_platform_interface',
     ]);
 

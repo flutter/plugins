@@ -29,6 +29,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
+        // TODO(stuartmorgan): Enable when gradle is updated.
+        // disable 'AndroidGradlePluginVersion'
         disable 'InvalidPackage'
         disable 'GradleDependency'
         baseline file("lint-baseline.xml")
@@ -51,7 +53,7 @@ android {
 dependencies {
     implementation 'com.google.guava:guava:31.1-android'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.9.1'
     androidTestImplementation 'org.hamcrest:hamcrest:2.2'
 
     testImplementation 'junit:junit:4.13.2'

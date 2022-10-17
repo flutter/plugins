@@ -1,3 +1,19 @@
+## 0.9.0+2
+
+* Changes XTypeGroup initialization from final to const.
+
+## 0.9.0+1
+
+* Updates imports for `prefer_relative_imports`.
+* Updates minimum Flutter version to 2.10.
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 0.9.0
+
+* **BREAKING CHANGE**: Methods that take `XTypeGroup`s now throw an
+  `ArgumentError` if any group is not a wildcard (all filter types null or
+  empty), but doesn't include any of the filter types supported by web.
+
 ## 0.8.1+5
 
 * Minor fixes for new analysis options.

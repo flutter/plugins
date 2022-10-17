@@ -1,3 +1,12 @@
+## 0.8.6+1
+
+* Fixes issue with crashing the app when picking images with PHPicker without providing `Photo Library Usage` permission.
+
+## 0.8.6
+
+* Adds `requestFullMetadata` option to `pickImage`, so images on iOS can be picked without `Photo Library Usage` permission.
+* Updates minimum Flutter version to 2.10.
+
 ## 0.8.5+6
 
 * Updates description.
