@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -350,14 +351,14 @@ public class LocalAuthTest {
   }
 
   @Test
-  @Config(maxSdk = 22)
+  @Config(sdk = 22)
   public void isDeviceSecure_returnsFalseOnBelowApi23() {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     assertFalse(plugin.isDeviceSecure());
   }
 
   @Test
-  @Config(minSdk = 23)
+  @Config(sdk = 23)
   public void isDeviceSecure_returnsTrueIfDeviceIsSecure() {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     KeyguardManager mockKeyguardManager = mock(KeyguardManager.class);
@@ -371,9 +372,9 @@ public class LocalAuthTest {
   }
 
   @Test
-  @Config(maxSdk = 29)
+  @Config(sdk = 29)
   public void canAuthenticateWithDeviceCredential_returnsTrueIfDeviceIsSecureOnBelowApi30() {
-    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
 
     when(plugin.isDeviceSecure()).thenReturn(true);
     assertTrue(plugin.canAuthenticateWithDeviceCredential());
@@ -383,8 +384,9 @@ public class LocalAuthTest {
   }
 
   @Test
-  @Config(minSdk = 30)
-  public void canAuthenticateWithDeviceCredential_returnsTrueIfHasBiometricManagerSupportAboveApi30() {
+  @Config(sdk = 30)
+  public void
+      canAuthenticateWithDeviceCredential_returnsTrueIfHasBiometricManagerSupportAboveApi30() {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
     plugin.setBiometricManager(mockBiometricManager);

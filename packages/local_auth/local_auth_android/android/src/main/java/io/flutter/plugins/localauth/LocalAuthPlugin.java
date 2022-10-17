@@ -252,7 +252,8 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     return biometrics;
   }
 
-  private boolean isDeviceSecure() {
+  @VisibleForTesting
+  public boolean isDeviceSecure() {
     if (keyguardManager == null) return false;
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && keyguardManager.isDeviceSecure());
   }
