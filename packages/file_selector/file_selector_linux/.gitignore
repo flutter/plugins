@@ -3,3 +3,7 @@
 .flutter-plugins
 .flutter-plugins-dependencies
 pubspec.lock
+
+# Linux specific
+linux/CMakeFiles
+linux/CMakeCache.txt
