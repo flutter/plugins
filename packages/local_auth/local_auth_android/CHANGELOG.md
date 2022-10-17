@@ -1,3 +1,7 @@
+## 1.0.13
+
+* Fixes device credential authentication for API versions less than R.
+
 ## 1.0.12
 
 * Updates androidx.fragment version to 1.5.2.

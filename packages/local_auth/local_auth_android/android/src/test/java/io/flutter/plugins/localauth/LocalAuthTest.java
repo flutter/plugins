@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.app.NativeActivity;
 import android.content.Context;
 import androidx.biometric.BiometricManager;
@@ -35,7 +36,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
+@RunWith(RobolectricTestRunner.class)
 public class LocalAuthTest {
   @Test
   public void authenticate_returnsErrorWhenAuthInProgress() {
@@ -111,6 +115,7 @@ public class LocalAuthTest {
     final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
     setPluginActivity(plugin, buildMockActivityWithContext(mock(FragmentActivity.class)));
     when(plugin.isDeviceSupported()).thenReturn(true);
+    when(plugin.canAuthenticateWithDeviceCredential()).thenReturn(true);
 
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
@@ -139,6 +144,7 @@ public class LocalAuthTest {
     final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
     setPluginActivity(plugin, buildMockActivityWithContext(mock(FragmentActivity.class)));
     when(plugin.isDeviceSupported()).thenReturn(true);
+    when(plugin.canAuthenticateWithDeviceCredential()).thenReturn(true);
 
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
@@ -341,6 +347,55 @@ public class LocalAuthTest {
                 add("strong");
               }
             });
+  }
+
+  @Test
+  @Config(maxSdk = 22)
+  public void isDeviceSecure_returnsFalseOnBelowApi23() {
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    assertFalse(plugin.isDeviceSecure());
+  }
+
+  @Test
+  @Config(minSdk = 23)
+  public void isDeviceSecure_returnsTrueIfDeviceIsSecure() {
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    KeyguardManager mockKeyguardManager = mock(KeyguardManager.class);
+    plugin.setKeyguardManager(mockKeyguardManager);
+
+    when(mockKeyguardManager.isDeviceSecure()).thenReturn(true);
+    assertTrue(plugin.isDeviceSecure());
+
+    when(mockKeyguardManager.isDeviceSecure()).thenReturn(false);
+    assertFalse(plugin.isDeviceSecure());
+  }
+
+  @Test
+  @Config(maxSdk = 29)
+  public void canAuthenticateWithDeviceCredential_returnsTrueIfDeviceIsSecureOnBelowApi30() {
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+
+    when(plugin.isDeviceSecure()).thenReturn(true);
+    assertTrue(plugin.canAuthenticateWithDeviceCredential());
+
+    when(plugin.isDeviceSecure()).thenReturn(false);
+    assertFalse(plugin.canAuthenticateWithDeviceCredential());
+  }
+
+  @Test
+  @Config(minSdk = 30)
+  public void canAuthenticateWithDeviceCredential_returnsTrueIfHasBiometricManagerSupportAboveApi30() {
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    final BiometricManager mockBiometricManager = mock(BiometricManager.class);
+    plugin.setBiometricManager(mockBiometricManager);
+
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
+        .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
+    assertTrue(plugin.canAuthenticateWithDeviceCredential());
+
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
+        .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
+    assertFalse(plugin.canAuthenticateWithDeviceCredential());
   }
 
   private Activity buildMockActivityWithContext(Activity mockActivity) {
