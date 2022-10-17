@@ -38,4 +38,4 @@ false_secrets:
 # FOR TESTING ONLY. DO NOT MERGE.
 dependency_overrides:
   google_maps_flutter_platform_interface:
-    path: ../../google_maps_flutter/google_maps_flutter_platform_interface
+    path: ../google_maps_flutter_platform_interface
