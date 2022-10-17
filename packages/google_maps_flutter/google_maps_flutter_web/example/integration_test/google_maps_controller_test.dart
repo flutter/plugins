@@ -412,7 +412,7 @@ void main() {
           controller = createController(
               mapConfiguration: const MapConfiguration(
             scrollGesturesEnabled: false,
-            fortyFiveDegreeImageryEnabled: false,
+            fortyFiveDegreeImageryEnabled: true,
           ));
           controller.debugSetOverrides(
               createMap: (_, gmaps.MapOptions options) {
