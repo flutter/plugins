@@ -49,7 +49,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
   final String name = 'drive-examples';
 
   @override
-  final String description = 'Runs driver tests for plugin example apps.\n\n'
+  final String description = 'Runs driver tests for package example apps.\n\n'
       'For each *_test.dart in test_driver/ it drives an application with '
       'either the corresponding test in test_driver (for example, '
       'test_driver/app_test.dart would match test_driver/app.dart), or the '

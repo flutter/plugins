@@ -36,6 +36,12 @@
 @interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer *player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput *videoOutput;
+// This is to fix 2 bugs: 1. blank video for encrypted video streams on iOS 16
+// (https://github.com/flutter/flutter/issues/111457) and 2. swapped width and height for some video
+// streams (not just iOS 16).  (https://github.com/flutter/flutter/issues/109116).
+// An invisible AVPlayerLayer is used to overwrite the protection of pixel buffers in those streams
+// for issue #1, and restore the correct width and height for issue #2.
+@property(readonly, nonatomic) AVPlayerLayer *playerLayer;
 @property(readonly, nonatomic) CADisplayLink *displayLink;
 @property(nonatomic) FlutterEventChannel *eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
@@ -132,6 +138,15 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   return degrees;
 };
 
+NS_INLINE UIViewController *rootViewController() {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  // TODO: (hellohuanlin) Provide a non-deprecated codepath. See
+  // https://github.com/flutter/flutter/issues/104117
+  return UIApplication.sharedApplication.keyWindow.rootViewController;
+#pragma clang diagnostic pop
+}
+
 - (AVMutableVideoComposition *)getVideoCompositionWithTransform:(CGAffineTransform)transform
                                                       withAsset:(AVAsset *)asset
                                                  withVideoTrack:(AVAssetTrack *)videoTrack {
@@ -226,6 +241,14 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+
+  // This is to fix 2 bugs: 1. blank video for encrypted video streams on iOS 16
+  // (https://github.com/flutter/flutter/issues/111457) and 2. swapped width and height for some
+  // video streams (not just iOS 16).  (https://github.com/flutter/flutter/issues/109116). An
+  // invisible AVPlayerLayer is used to overwrite the protection of pixel buffers in those streams
+  // for issue #1, and restore the correct width and height for issue #2.
+  _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
+  [rootViewController().view.layer addSublayer:_playerLayer];
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
@@ -458,6 +481,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 /// so the channel is going to die or is already dead.
 - (void)disposeSansEventChannel {
   _disposed = YES;
+  [_playerLayer removeFromSuperlayer];
   [_displayLink invalidate];
   AVPlayerItem *currentItem = self.player.currentItem;
   [currentItem removeObserver:self forKeyPath:@"status"];

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/git_version_finder.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
+import 'git_version_finder.dart';
 import 'repository_package.dart';
 
 /// The state of a package on disk relative to git state.
@@ -161,13 +161,16 @@ bool _isUnpublishedExampleChange(
   return exampleComponents.first.toLowerCase() != 'readme.md';
 }
 
-// True if the change is only relevant to people working on the plugin.
+// True if the change is only relevant to people working on the package.
 Future<bool> _isDevChange(List<String> pathComponents,
     {GitVersionFinder? git, String? repoPath}) async {
   return _isTestChange(pathComponents) ||
       // The top-level "tool" directory is for non-client-facing utility
       // code, such as test scripts.
       pathComponents.first == 'tool' ||
+      // Entry point for the 'custom-test' command, which is only for CI and
+      // local testing.
+      pathComponents.first == 'run_tests.sh' ||
       // Ignoring lints doesn't affect clients.
       pathComponents.contains('lint-baseline.xml') ||
       await _isGradleTestDependencyChange(pathComponents,

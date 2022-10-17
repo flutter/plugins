@@ -221,16 +221,16 @@ void main() {
       );
 
       await controller.initialize();
-      bool _isDetecting = false;
+      bool isDetecting = false;
 
       await controller.startImageStream((CameraImage image) {
-        if (_isDetecting) {
+        if (isDetecting) {
           return;
         }
 
-        _isDetecting = true;
+        isDetecting = true;
 
-        expectLater(image, isNotNull).whenComplete(() => _isDetecting = false);
+        expectLater(image, isNotNull).whenComplete(() => isDetecting = false);
       });
 
       expect(controller.value.isStreamingImages, true);
@@ -254,19 +254,19 @@ void main() {
     );
 
     await controller.initialize();
-    final Completer<CameraImage> _completer = Completer<CameraImage>();
+    final Completer<CameraImage> completer = Completer<CameraImage>();
 
     await controller.startImageStream((CameraImage image) {
-      if (!_completer.isCompleted) {
+      if (!completer.isCompleted) {
         Future<void>(() async {
           await controller.stopImageStream();
           await controller.dispose();
         }).then((Object? value) {
-          _completer.complete(image);
+          completer.complete(image);
         });
       }
     });
-    return _completer.future;
+    return completer.future;
   }
 
   testWidgets(
@@ -277,20 +277,20 @@ void main() {
         return;
       }
 
-      CameraImage _image = await startStreaming(cameras, null);
-      expect(_image, isNotNull);
-      expect(_image.format.group, ImageFormatGroup.bgra8888);
-      expect(_image.planes.length, 1);
+      CameraImage image = await startStreaming(cameras, null);
+      expect(image, isNotNull);
+      expect(image.format.group, ImageFormatGroup.bgra8888);
+      expect(image.planes.length, 1);
 
-      _image = await startStreaming(cameras, ImageFormatGroup.yuv420);
-      expect(_image, isNotNull);
-      expect(_image.format.group, ImageFormatGroup.yuv420);
-      expect(_image.planes.length, 2);
+      image = await startStreaming(cameras, ImageFormatGroup.yuv420);
+      expect(image, isNotNull);
+      expect(image.format.group, ImageFormatGroup.yuv420);
+      expect(image.planes.length, 2);
 
-      _image = await startStreaming(cameras, ImageFormatGroup.bgra8888);
-      expect(_image, isNotNull);
-      expect(_image.format.group, ImageFormatGroup.bgra8888);
-      expect(_image.planes.length, 1);
+      image = await startStreaming(cameras, ImageFormatGroup.bgra8888);
+      expect(image, isNotNull);
+      expect(image.format.group, ImageFormatGroup.bgra8888);
+      expect(image.planes.length, 1);
     },
     skip: !Platform.isIOS,
   );

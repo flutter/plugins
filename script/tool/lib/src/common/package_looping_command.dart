@@ -12,7 +12,7 @@ import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import 'core.dart';
-import 'plugin_command.dart';
+import 'package_command.dart';
 import 'process_runner.dart';
 import 'repository_package.dart';
 
@@ -82,7 +82,7 @@ class PackageResult {
 /// An abstract base class for a command that iterates over a set of packages
 /// controlled by a standard set of flags, running some actions on each package,
 /// and collecting and reporting the success/failure of those actions.
-abstract class PackageLoopingCommand extends PluginCommand {
+abstract class PackageLoopingCommand extends PackageCommand {
   /// Creates a command to operate on [packagesDir] with the given environment.
   PackageLoopingCommand(
     Directory packagesDir, {
@@ -428,9 +428,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
             .length;
     // Split the warnings into those from packages that ran, and those that
     // were skipped.
-    final Set<PackageEnumerationEntry> _skippedPackagesWithWarnings =
+    final Set<PackageEnumerationEntry> skippedPackagesWithWarnings =
         _packagesWithWarnings.intersection(skippedPackages);
-    final int skippedWarningCount = _skippedPackagesWithWarnings.length;
+    final int skippedWarningCount = skippedPackagesWithWarnings.length;
     final int runWarningCount =
         _packagesWithWarnings.length - skippedWarningCount;
 

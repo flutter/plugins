@@ -64,7 +64,7 @@ macos_intel_template: &MACOS_INTEL_TEMPLATE
 macos_arm_template: &MACOS_ARM_TEMPLATE
   << : *MACOS_TEMPLATE
   macos_instance:
-    image: ghcr.io/cirruslabs/macos-monterey-xcode:13.4
+    image: ghcr.io/cirruslabs/macos-ventura-xcode:14
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the

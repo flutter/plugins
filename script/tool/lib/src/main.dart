@@ -7,16 +7,17 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:flutter_plugin_tools/src/dependabot_check_command.dart';
 
 import 'analyze_command.dart';
 import 'build_examples_command.dart';
 import 'common/core.dart';
 import 'create_all_plugins_app_command.dart';
 import 'custom_test_command.dart';
+import 'dependabot_check_command.dart';
 import 'drive_examples_command.dart';
 import 'federation_safety_check_command.dart';
 import 'firebase_test_lab_command.dart';
+import 'fix_command.dart';
 import 'format_command.dart';
 import 'license_check_command.dart';
 import 'lint_android_command.dart';
@@ -25,7 +26,7 @@ import 'list_command.dart';
 import 'make_deps_path_based_command.dart';
 import 'native_test_command.dart';
 import 'publish_check_command.dart';
-import 'publish_plugin_command.dart';
+import 'publish_command.dart';
 import 'pubspec_check_command.dart';
 import 'readme_check_command.dart';
 import 'remove_dev_dependencies.dart';
@@ -61,6 +62,7 @@ void main(List<String> args) {
     ..addCommand(DriveExamplesCommand(packagesDir))
     ..addCommand(FederationSafetyCheckCommand(packagesDir))
     ..addCommand(FirebaseTestLabCommand(packagesDir))
+    ..addCommand(FixCommand(packagesDir))
     ..addCommand(FormatCommand(packagesDir))
     ..addCommand(LicenseCheckCommand(packagesDir))
     ..addCommand(LintAndroidCommand(packagesDir))
@@ -69,7 +71,7 @@ void main(List<String> args) {
     ..addCommand(NativeTestCommand(packagesDir))
     ..addCommand(MakeDepsPathBasedCommand(packagesDir))
     ..addCommand(PublishCheckCommand(packagesDir))
-    ..addCommand(PublishPluginCommand(packagesDir))
+    ..addCommand(PublishCommand(packagesDir))
     ..addCommand(PubspecCheckCommand(packagesDir))
     ..addCommand(ReadmeCheckCommand(packagesDir))
     ..addCommand(RemoveDevDependenciesCommand(packagesDir))

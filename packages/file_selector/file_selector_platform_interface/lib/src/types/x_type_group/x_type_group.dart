@@ -1,37 +1,43 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'package:flutter/foundation.dart' show immutable;
 
-/// A set of allowed XTypes
+/// A set of allowed XTypes.
+@immutable
 class XTypeGroup {
   /// Creates a new group with the given label and file extensions.
   ///
   /// A group with none of the type options provided indicates that any type is
   /// allowed.
-  XTypeGroup({
+  const XTypeGroup({
     this.label,
     List<String>? extensions,
     this.mimeTypes,
     this.macUTIs,
     this.webWildCards,
-  }) : extensions = _removeLeadingDots(extensions);
+  }) : _extensions = extensions;
 
-  /// The 'name' or reference to this group of types
+  /// The 'name' or reference to this group of types.
   final String? label;
 
-  /// The extensions for this group
-  final List<String>? extensions;
-
-  /// The MIME types for this group
+  /// The MIME types for this group.
   final List<String>? mimeTypes;
 
-  /// The UTIs for this group
+  /// The UTIs for this group.
   final List<String>? macUTIs;
 
-  /// The web wild cards for this group (ex: image/*, video/*)
+  /// The web wild cards for this group (ex: image/*, video/*).
   final List<String>? webWildCards;
 
-  /// Converts this object into a JSON formatted object
+  final List<String>? _extensions;
+
+  /// The extensions for this group.
+  List<String>? get extensions {
+    return _removeLeadingDots(_extensions);
+  }
+
+  /// Converts this object into a JSON formatted object.
   Map<String, dynamic> toJSON() {
     return <String, dynamic>{
       'label': label,
