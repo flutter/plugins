@@ -1,5 +1,6 @@
-## NEXT
+## 2.9.6
 
+* Updates example code for `use_build_context_synchronously` lint.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 2.9.5

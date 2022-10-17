@@ -1,5 +1,6 @@
-## NEXT
+## 3.0.5
 
+* Updates example code for `use_build_context_synchronously` lint.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 * Updates minimum Flutter version to 2.10.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.

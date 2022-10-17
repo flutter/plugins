@@ -1,5 +1,6 @@
-## NEXT
+## 3.0.8
 
+* Updates example code for `use_build_context_synchronously` lint.
 * Updates minimum Flutter version to 2.10.
 
 ## 3.0.7

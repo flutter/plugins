@@ -1,3 +1,7 @@
+## 0.1.0+4
+
+* Updates example code for `use_build_context_synchronously` lint.
+
 ## 0.1.0+3
 
 * Changes XTypeGroup initialization from final to const.
