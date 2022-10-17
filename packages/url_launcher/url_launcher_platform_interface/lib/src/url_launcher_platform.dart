@@ -5,10 +5,10 @@
 import 'dart:async';
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:url_launcher_platform_interface/link.dart';
-import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
+import '../link.dart';
 import '../method_channel_url_launcher.dart';
+import '../url_launcher_platform_interface.dart';
 
 /// The interface that implementations of url_launcher must implement.
 ///

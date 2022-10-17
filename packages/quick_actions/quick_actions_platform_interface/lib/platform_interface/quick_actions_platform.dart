@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:quick_actions_platform_interface/types/types.dart';
 
 import '../method_channel/method_channel_quick_actions.dart';
+import '../types/types.dart';
 
 /// The interface that implementations of quick_actions must implement.
 ///

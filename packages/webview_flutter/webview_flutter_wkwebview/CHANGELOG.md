@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 2.9.5
+
+* Updates imports for `prefer_relative_imports`.
+
 ## 2.9.4
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.

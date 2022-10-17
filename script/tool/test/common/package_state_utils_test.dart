@@ -66,6 +66,7 @@ void main() {
         'packages/a_plugin/example/ios/RunnerTests/Foo.m',
         'packages/a_plugin/example/ios/RunnerUITests/info.plist',
         'packages/a_plugin/tool/a_development_tool.dart',
+        'packages/a_plugin/run_tests.sh',
         'packages/a_plugin/CHANGELOG.md',
       ];
 

@@ -9,9 +9,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
 
 import 'foundation/foundation.dart';
+import 'web_kit_webview_widget.dart';
 
 /// Builds an iOS webview.
 ///

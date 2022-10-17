@@ -1,6 +1,10 @@
-## 1.0.13
+## 1.0.14
 
 * Fixes device credential authentication for API versions less than R.
+
+## 1.0.13
+
+* Updates imports for `prefer_relative_imports`.
 
 ## 1.0.12
 
