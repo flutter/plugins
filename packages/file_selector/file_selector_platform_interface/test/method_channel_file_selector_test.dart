@@ -219,64 +219,62 @@ void main() {
           ],
         );
       });
-      group('#getDirectoryPath', () {
-        test('passes initialDirectory correctly', () async {
-          await plugin.getDirectoryPath(initialDirectory: '/example/directory');
+    });
+    group('#getDirectoryPath', () {
+      test('passes initialDirectory correctly', () async {
+        await plugin.getDirectoryPath(initialDirectory: '/example/directory');
 
-          expect(
-            log,
-            <Matcher>[
-              isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
-                'initialDirectory': '/example/directory',
-                'confirmButtonText': null,
-              }),
-            ],
-          );
-        });
-        test('passes confirmButtonText correctly', () async {
-          await plugin.getDirectoryPath(confirmButtonText: 'Open File');
-
-          expect(
-            log,
-            <Matcher>[
-              isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
-                'initialDirectory': null,
-                'confirmButtonText': 'Open File',
-              }),
-            ],
-          );
-        });
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
+              'initialDirectory': '/example/directory',
+              'confirmButtonText': null,
+            }),
+          ],
+        );
       });
-      group('#getDirectoriesPaths', () {
-        test('passes initialDirectory correctly', () async {
-          await plugin.getDirectoriesPaths(
-              initialDirectory: '/example/directory');
+      test('passes confirmButtonText correctly', () async {
+        await plugin.getDirectoryPath(confirmButtonText: 'Select Folder');
 
-          expect(
-            log,
-            <Matcher>[
-              isMethodCall('getDirectoriesPaths', arguments: <String, dynamic>{
-                'initialDirectory': '/example/directory',
-                'confirmButtonText': null,
-                'multiple': true
-              }),
-            ],
-          );
-        });
-        test('passes confirmButtonText correctly', () async {
-          await plugin.getDirectoriesPaths(confirmButtonText: 'Open File');
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
+              'initialDirectory': null,
+              'confirmButtonText': 'Select Folder',
+            }),
+          ],
+        );
+      });
+    });
+    group('#getDirectoryPaths', () {
+      test('passes initialDirectory correctly', () async {
+        await plugin.getDirectoryPaths(initialDirectory: '/example/directory');
 
-          expect(
-            log,
-            <Matcher>[
-              isMethodCall('getDirectoriesPaths', arguments: <String, dynamic>{
-                'initialDirectory': null,
-                'confirmButtonText': 'Open File',
-                'multiple': true
-              }),
-            ],
-          );
-        });
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('getDirectoryPaths', arguments: <String, dynamic>{
+              'initialDirectory': '/example/directory',
+              'confirmButtonText': null,
+            }),
+          ],
+        );
+      });
+      test('passes confirmButtonText correctly', () async {
+        await plugin.getDirectoryPaths(
+            confirmButtonText: 'Select one or more Folders');
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('getDirectoryPaths', arguments: <String, dynamic>{
+              'initialDirectory': null,
+              'confirmButtonText': 'Select one or more Folders',
+            }),
+          ],
+        );
       });
     });
   });
