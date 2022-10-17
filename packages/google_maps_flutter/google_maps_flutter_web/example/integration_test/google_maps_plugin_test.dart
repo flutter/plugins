@@ -391,7 +391,7 @@ void main() {
       });
 
       // Dispatches a few events in the global streamController, and expects *only* the passed event to be there.
-      Future<void> _testStreamFiltering(
+      Future<void> testStreamFiltering(
           Stream<MapEvent<Object?>> stream, MapEvent<Object?> event) async {
         Timer.run(() {
           streamController.add(_OtherMapEvent(mapId));
@@ -413,7 +413,7 @@ void main() {
         final Stream<CameraMoveStartedEvent> stream =
             plugin.onCameraMoveStarted(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       testWidgets('onCameraMoveStarted', (WidgetTester tester) async {
         final CameraMoveEvent event = CameraMoveEvent(
@@ -426,7 +426,7 @@ void main() {
         final Stream<CameraMoveEvent> stream =
             plugin.onCameraMove(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       testWidgets('onCameraIdle', (WidgetTester tester) async {
         final CameraIdleEvent event = CameraIdleEvent(mapId);
@@ -434,7 +434,7 @@ void main() {
         final Stream<CameraIdleEvent> stream =
             plugin.onCameraIdle(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       // Marker events
       testWidgets('onMarkerTap', (WidgetTester tester) async {
@@ -445,7 +445,7 @@ void main() {
 
         final Stream<MarkerTapEvent> stream = plugin.onMarkerTap(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       testWidgets('onInfoWindowTap', (WidgetTester tester) async {
         final InfoWindowTapEvent event = InfoWindowTapEvent(
@@ -456,7 +456,7 @@ void main() {
         final Stream<InfoWindowTapEvent> stream =
             plugin.onInfoWindowTap(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       testWidgets('onMarkerDragStart', (WidgetTester tester) async {
         final MarkerDragStartEvent event = MarkerDragStartEvent(
@@ -468,7 +468,7 @@ void main() {
         final Stream<MarkerDragStartEvent> stream =
             plugin.onMarkerDragStart(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       testWidgets('onMarkerDrag', (WidgetTester tester) async {
         final MarkerDragEvent event = MarkerDragEvent(
@@ -480,7 +480,7 @@ void main() {
         final Stream<MarkerDragEvent> stream =
             plugin.onMarkerDrag(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       testWidgets('onMarkerDragEnd', (WidgetTester tester) async {
         final MarkerDragEndEvent event = MarkerDragEndEvent(
@@ -492,7 +492,7 @@ void main() {
         final Stream<MarkerDragEndEvent> stream =
             plugin.onMarkerDragEnd(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       // Geometry
       testWidgets('onPolygonTap', (WidgetTester tester) async {
@@ -504,7 +504,7 @@ void main() {
         final Stream<PolygonTapEvent> stream =
             plugin.onPolygonTap(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       testWidgets('onPolylineTap', (WidgetTester tester) async {
         final PolylineTapEvent event = PolylineTapEvent(
@@ -515,7 +515,7 @@ void main() {
         final Stream<PolylineTapEvent> stream =
             plugin.onPolylineTap(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       testWidgets('onCircleTap', (WidgetTester tester) async {
         final CircleTapEvent event = CircleTapEvent(
@@ -525,7 +525,7 @@ void main() {
 
         final Stream<CircleTapEvent> stream = plugin.onCircleTap(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       // Map taps
       testWidgets('onTap', (WidgetTester tester) async {
@@ -536,7 +536,7 @@ void main() {
 
         final Stream<MapTapEvent> stream = plugin.onTap(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
       testWidgets('onLongPress', (WidgetTester tester) async {
         final MapLongPressEvent event = MapLongPressEvent(
@@ -547,7 +547,7 @@ void main() {
         final Stream<MapLongPressEvent> stream =
             plugin.onLongPress(mapId: mapId);
 
-        await _testStreamFiltering(stream, event);
+        await testStreamFiltering(stream, event);
       });
     });
   });

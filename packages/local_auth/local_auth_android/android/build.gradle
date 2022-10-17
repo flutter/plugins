@@ -29,6 +29,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
+        // TODO(stuartmorgan): Enable when gradle is updated.
+        // disable 'AndroidGradlePluginVersion'
         disable 'InvalidPackage'
         disable 'GradleDependency'
         baseline file("lint-baseline.xml")
@@ -51,7 +53,7 @@ android {
 dependencies {
     api "androidx.core:core:1.8.0"
     api "androidx.biometric:biometric:1.1.0"
-    api "androidx.fragment:fragment:1.5.1"
+    api "androidx.fragment:fragment:1.5.2"
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-inline:4.7.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'

@@ -4,4 +4,10 @@
 
 package io.flutter.plugins.camerax;
 
-public class CameraxPluginTest {}
+import androidx.camera.core.CameraSelector;
+
+public class CameraXProxy {
+  public CameraSelector.Builder createCameraSelectorBuilder() {
+    return new CameraSelector.Builder();
+  }
+}

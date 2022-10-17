@@ -9,3 +9,4 @@ export 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_i
 
 export 'src/webview_controller.dart';
 export 'src/webview_cookie_manager.dart';
+export 'src/webview_widget.dart';

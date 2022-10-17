@@ -29,6 +29,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
+        // TODO(stuartmorgan): Enable when gradle is updated.
+        // disable 'AndroidGradlePluginVersion'
         disable 'InvalidPackage'
         disable 'GradleDependency'
     }
@@ -48,8 +50,8 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-auth:20.0.1'
+    implementation 'com.google.android.gms:play-services-auth:20.3.0'
     implementation 'com.google.guava:guava:28.1-android'
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-inline:4.6.1'
+    testImplementation 'org.mockito:mockito-inline:4.7.0'
 }

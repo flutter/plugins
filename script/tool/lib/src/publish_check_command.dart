@@ -55,7 +55,7 @@ class PublishCheckCommand extends PackageLoopingCommand {
 
   @override
   final String description =
-      'Checks to make sure that a plugin *could* be published.';
+      'Checks to make sure that a package *could* be published.';
 
   final PubVersionFinder _pubVersionFinder;
 

@@ -18,8 +18,8 @@ import 'package:yaml/yaml.dart';
 import 'common/core.dart';
 import 'common/file_utils.dart';
 import 'common/git_version_finder.dart';
+import 'common/package_command.dart';
 import 'common/package_looping_command.dart';
-import 'common/plugin_command.dart';
 import 'common/process_runner.dart';
 import 'common/pub_version_finder.dart';
 import 'common/repository_package.dart';
@@ -42,13 +42,13 @@ class _RemoteInfo {
 /// 2. Tags the release with the format <package-name>-v<package-version>.
 /// 3. Pushes the release to a remote.
 ///
-/// Both 2 and 3 are optional, see `plugin_tools help publish-plugin` for full
+/// Both 2 and 3 are optional, see `plugin_tools help publish` for full
 /// usage information.
 ///
 /// [processRunner], [print], and [stdin] can be overriden for easier testing.
-class PublishPluginCommand extends PackageLoopingCommand {
+class PublishCommand extends PackageLoopingCommand {
   /// Creates an instance of the publish command.
-  PublishPluginCommand(
+  PublishCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
@@ -100,7 +100,7 @@ class PublishPluginCommand extends PackageLoopingCommand {
   static const String _tagFormat = '%PACKAGE%-v%VERSION%';
 
   @override
-  final String name = 'publish-plugin';
+  final String name = 'publish';
 
   @override
   final String description =

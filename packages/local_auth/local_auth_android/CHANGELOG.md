@@ -1,5 +1,10 @@
-## NEXT
+## 1.0.13
 
+* Updates imports for `prefer_relative_imports`.
+
+## 1.0.12
+
+* Updates androidx.fragment version to 1.5.2.
 * Updates minimum Flutter version to 2.10.
 
 ## 1.0.11

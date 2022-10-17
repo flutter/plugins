@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  google_maps_flutter_platform_interface: ^2.2.1
   google_maps_flutter_web:
     path: ../
 

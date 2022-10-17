@@ -1,6 +1,11 @@
-## NEXT
+## 0.2.3+5
+
+* Updates imports for `prefer_relative_imports`.
+
+## 0.2.3+4
 
 * Updates minimum Flutter version to 2.10.
+* Adds IMMEDIATE_AND_CHARGE_FULL_PRICE to the `ProrationMode`.
 
 ## 0.2.3+3
 
