@@ -7,7 +7,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_flutter_example/page.dart';
+import 'page.dart';
 
 class HeatmapPage extends GoogleMapExampleAppPage {
   const HeatmapPage({Key? key})

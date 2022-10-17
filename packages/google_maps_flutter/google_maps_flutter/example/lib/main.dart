@@ -7,8 +7,8 @@ import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
 import 'animate_camera.dart';
-import 'lite_mode.dart';
 import 'heatmap.dart';
+import 'lite_mode.dart';
 import 'map_click.dart';
 import 'map_coordinates.dart';
 import 'map_ui.dart';

@@ -18,6 +18,10 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  google_maps_flutter_android:
+    path: ../../google_maps_flutter_android
+  google_maps_flutter_platform_interface:
+    path: ../../google_maps_flutter_platform_interface
   google_maps_flutter_web:
     path: ../../google_maps_flutter_web
 
