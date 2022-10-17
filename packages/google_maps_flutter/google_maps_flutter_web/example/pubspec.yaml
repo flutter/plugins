@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_maps_flutter_platform_interface: ^2.2.1
+  google_maps_flutter_platform_interface: ^2.0.0
   google_maps_flutter_web:
     path: ../
 
@@ -26,3 +26,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   mockito: ^5.3.0
+
+dependency_overrides:
+  google_maps_flutter_platform_interface:
+    path: ../../google_maps_flutter_platform_interface

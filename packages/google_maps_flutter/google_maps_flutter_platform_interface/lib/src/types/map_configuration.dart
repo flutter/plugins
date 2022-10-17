@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/widgets.dart';
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import '../../google_maps_flutter_platform_interface.dart';
 
 /// Configuration options for the GoogleMaps user interface.
 @immutable
