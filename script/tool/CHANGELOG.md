@@ -1,3 +1,19 @@
+## 0.12.0
+
+* Changes the behavior of `--packages-for-branch` on main/master to run for
+  packages changed in the last commit, rather than running for all packages.
+  This allows CI to test the same filtered set of packages in post-submit as are
+  tested in presubmit.
+* Adds a `fix` command to run `dart fix --apply` in target packages.
+
+## 0.11.0
+
+* Renames `publish-plugin` to `publish`.
+* Renames arguments to `list`:
+    * `--package` now lists top-level packages (previously `--plugin`).
+    * `--package-or-subpackage` now lists top-level packages (previously
+      `--package`).
+
 ## 0.10.0+1
 
 * Recognizes `run_test.sh` as a developer-only file in `version-check`.

@@ -37,7 +37,7 @@ void main() {
   });
 
   test('analyzes all packages', () async {
-    final RepositoryPackage plugin1 = createFakePlugin('a', packagesDir);
+    final RepositoryPackage package1 = createFakePackage('a', packagesDir);
     final RepositoryPackage plugin2 = createFakePlugin('b', packagesDir);
 
     await runCapturingPrint(runner, <String>['analyze']);
@@ -45,9 +45,9 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('flutter', const <String>['pub', 'get'], plugin1.path),
-          ProcessCall(
-              'dart', const <String>['analyze', '--fatal-infos'], plugin1.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], package1.path),
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
+              package1.path),
           ProcessCall('flutter', const <String>['pub', 'get'], plugin2.path),
           ProcessCall(
               'dart', const <String>['analyze', '--fatal-infos'], plugin2.path),

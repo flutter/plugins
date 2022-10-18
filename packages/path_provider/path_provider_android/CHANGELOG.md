@@ -1,5 +1,6 @@
 ## NEXT
 
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
 * Updates minimum Flutter version to 2.10.
 
 ## 2.0.20

@@ -35,6 +35,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
+        // TODO(stuartmorgan): Enable when gradle is updated.
+        // disable 'AndroidGradlePluginVersion'
         disable 'InvalidPackage'
         disable 'GradleDependency'
         baseline file("lint-baseline.xml")

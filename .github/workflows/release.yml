@@ -27,7 +27,7 @@ jobs:
         cd $GITHUB_WORKSPACE
     # Checks out a copy of the repo.
     - name: Check out code
-      uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
+      uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
       with:
         fetch-depth: 0 # Fetch all history so the tool can get all the tags to determine version.
     - name: Set up tools
@@ -50,5 +50,5 @@ jobs:
       run: |
         git config --global user.name ${{ secrets.USER_NAME }}
         git config --global user.email ${{ secrets.USER_EMAIL }}
-        dart ./script/tool/lib/src/main.dart publish-plugin --all-changed --base-sha=HEAD~ --skip-confirmation --remote=origin
+        dart ./script/tool/lib/src/main.dart publish --all-changed --base-sha=HEAD~ --skip-confirmation --remote=origin
       env: {PUB_CREDENTIALS: "${{ secrets.PUB_CREDENTIALS }}"}

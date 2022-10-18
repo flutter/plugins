@@ -29,13 +29,15 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
+        // TODO(stuartmorgan): Enable when gradle is updated.
+        // disable 'AndroidGradlePluginVersion'
         disable 'InvalidPackage'
         disable 'GradleDependency'
     }
 
     dependencies {
         implementation "androidx.annotation:annotation:1.1.0"
-        implementation 'com.google.android.gms:play-services-maps:18.0.2'
+        implementation 'com.google.android.gms:play-services-maps:18.1.0'
         androidTestImplementation 'androidx.test:runner:1.2.0'
         androidTestImplementation 'androidx.test:rules:1.4.0'
         androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
