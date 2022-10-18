@@ -54,7 +54,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.annotation:annotation:1.5.0'
     implementation 'com.google.guava:guava:28.1-android'
     testImplementation 'junit:junit:4.13.2'
 }
