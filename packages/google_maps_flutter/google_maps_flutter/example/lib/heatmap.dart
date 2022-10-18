@@ -122,7 +122,11 @@ class HeatmapBodyState extends State<HeatmapBody> {
                     ),
                     maxIntensity: 1,
                     // Radius behaves differently on web and Android/iOS.
-                    radius: kIsWeb ? 10 : 20,
+                    radius: kIsWeb
+                        ? 10
+                        : defaultTargetPlatform == TargetPlatform.android
+                            ? 20
+                            : 40,
                   )
                 }),
           ),
