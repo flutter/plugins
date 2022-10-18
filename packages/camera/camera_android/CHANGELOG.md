@@ -1,3 +1,7 @@
+## 0.10.0+3
+
+* Upgrades `androidx.annotation` version to 1.5.0.
+
 ## 0.10.0+2
 
 * Removes call to `join` on the camera's background `HandlerThread`.
