@@ -218,7 +218,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
       ((WebViewClientImpl) webViewClient).setReturnValueForShouldOverrideUrlLoading(value);
     } else {
       throw new IllegalStateException(
-          "This WebViewClient doesn't support setting the shouldOverrideUrlLoadingReturnValue.");
+          "This WebViewClient doesn't support setting the returnValueForShouldOverrideUrlLoading.");
     }
   }
 }
