@@ -1,6 +1,6 @@
 ## 2.4.8
 
-* VideoPlayerController.file added http headers,to fix m3u8 access
+* Added option to configure HTTP headers via `VideoPlayerController` to fix access to M3U8 files on Android.
   
 
 ## 2.4.7
