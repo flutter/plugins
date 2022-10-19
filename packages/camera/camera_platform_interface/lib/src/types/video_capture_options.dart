@@ -21,6 +21,7 @@ class VideoCaptureOptions {
   final int cameraId;
 
   /// The maximum time to perform capturing for.
+  ///
   /// By default there is no maximum on the capture time.
   final Duration? maxDuration;
 
@@ -45,8 +46,5 @@ class VideoCaptureOptions {
 
   @override
   int get hashCode =>
-      cameraId.hashCode ^
-      maxDuration.hashCode ^
-      streamCallback.hashCode ^
-      streamOptions.hashCode;
+      Object.hash(cameraId, maxDuration, streamCallback, streamOptions);
 }
