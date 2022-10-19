@@ -3,7 +3,7 @@
 * Updates minimum Flutter version to 2.10.
 * Fixes violations of new analysis option use_named_constants.
 
-## 2.4.0
+## 2.3.10
 
 * Added option to configure the User-Agent in the HTTP headers for the ExoPlayer agent.
 

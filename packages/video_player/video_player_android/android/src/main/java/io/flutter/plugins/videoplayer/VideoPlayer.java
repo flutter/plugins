@@ -74,34 +74,30 @@ final class VideoPlayer {
     this.textureEntry = textureEntry;
     this.options = options;
 
-    exoPlayer = new ExoPlayer.Builder(context).build();
+    ExoPlayer exoPlayer = new ExoPlayer.Builder(context).build();
 
     Uri uri = Uri.parse(dataSource);
 
     DataSource.Factory dataSourceFactory;
+    httpDataSourceFactory =
+        new DefaultHttpDataSource.Factory()
+            .setUserAgent("ExoPlayer")
+            .setAllowCrossProtocolRedirects(true);
+
     DefaultHttpDataSource.Factory httpDataSourceFactory;
+
     if (httpHeaders != null && !httpHeaders.isEmpty()) {
       if (httpHeaders.containsKey(USER_AGENT)) {
         httpDataSourceFactory =
             new DefaultHttpDataSource.Factory()
                 .setUserAgent(httpHeaders.get(USER_AGENT))
                 .setAllowCrossProtocolRedirects(true);
-      } else {
-        httpDataSourceFactory =
-            new DefaultHttpDataSource.Factory()
-                .setUserAgent("ExoPlayer")
-                .setAllowCrossProtocolRedirects(true);
       }
 
       httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
-      dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
-    } else {
-      httpDataSourceFactory =
-          new DefaultHttpDataSource.Factory()
-              .setUserAgent("ExoPlayer")
-              .setAllowCrossProtocolRedirects(true);
-      dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
     }
+
+    dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
 
