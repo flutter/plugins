@@ -25,4 +25,4 @@ dev_dependencies:
   http: ^0.13.0
   integration_test:
     sdk: flutter
-  mockito: ^5.3.0
+  mockito: ^5.3.2
