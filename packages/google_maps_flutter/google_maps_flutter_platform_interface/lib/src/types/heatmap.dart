@@ -32,7 +32,7 @@ class Heatmap implements MapsObject<Heatmap> {
     this.radius = 20,
     this.minimumZoomIntensity = 0,
     this.maximumZoomIntensity = 21,
-  })  : assert(opacity >= 0 && opacity <= 1);
+  }) : assert(opacity >= 0 && opacity <= 1);
 
   /// Uniquely identifies a [Heatmap].
   final HeatmapId heatmapId;
