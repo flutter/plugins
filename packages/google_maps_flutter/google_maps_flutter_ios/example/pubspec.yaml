@@ -32,3 +32,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  google_maps_flutter_platform_interface:
+    path: ../../google_maps_flutter_platform_interface
