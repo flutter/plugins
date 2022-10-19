@@ -787,10 +787,11 @@ class MockWebViewClient extends _i1.Mock implements _i2.WebViewClient {
   }
 
   @override
-  _i5.Future<void> setShouldOverrideUrlLoadingReturnValue(bool? value) =>
+  _i5.Future<void> setSynchronousReturnValueForShouldOverrideUrlLoading(
+          bool? value) =>
       (super.noSuchMethod(
         Invocation.method(
-          #setShouldOverrideUrlLoadingReturnValue,
+          #setSynchronousReturnValueForShouldOverrideUrlLoading,
           [value],
         ),
         returnValue: _i5.Future<void>.value(),

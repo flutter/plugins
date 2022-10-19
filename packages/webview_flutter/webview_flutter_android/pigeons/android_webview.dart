@@ -206,7 +206,10 @@ abstract class JavaScriptChannelFlutterApi {
 abstract class WebViewClientHostApi {
   void create(int instanceId);
 
-  void setShouldOverrideUrlLoadingReturnValue(int instanceId, bool value);
+  void setSynchronousReturnValueForShouldOverrideUrlLoading(
+    int instanceId,
+    bool value,
+  );
 }
 
 @FlutterApi()

@@ -254,7 +254,8 @@ void main() {
           );
 
           verify(
-            mockWebViewClient.setShouldOverrideUrlLoadingReturnValue(true),
+            mockWebViewClient
+                .setSynchronousReturnValueForShouldOverrideUrlLoading(true),
           );
         });
 

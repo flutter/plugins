@@ -557,13 +557,13 @@ class MockTestWebViewClientHostApi extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void setShouldOverrideUrlLoadingReturnValue(
+  void setSynchronousReturnValueForShouldOverrideUrlLoading(
     int? instanceId,
     bool? value,
   ) =>
       super.noSuchMethod(
         Invocation.method(
-          #setShouldOverrideUrlLoadingReturnValue,
+          #setSynchronousReturnValueForShouldOverrideUrlLoading,
           [
             instanceId,
             value,
@@ -1288,10 +1288,11 @@ class MockWebViewClient extends _i1.Mock implements _i2.WebViewClient {
   }
 
   @override
-  _i5.Future<void> setShouldOverrideUrlLoadingReturnValue(bool? value) =>
+  _i5.Future<void> setSynchronousReturnValueForShouldOverrideUrlLoading(
+          bool? value) =>
       (super.noSuchMethod(
         Invocation.method(
-          #setShouldOverrideUrlLoadingReturnValue,
+          #setSynchronousReturnValueForShouldOverrideUrlLoading,
           [value],
         ),
         returnValue: _i5.Future<void>.value(),

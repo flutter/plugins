@@ -550,7 +550,7 @@ class WebViewClientHostApiImpl extends WebViewClientHostApi {
     WebViewClient instance,
     bool value,
   ) {
-    return setShouldOverrideUrlLoadingReturnValue(
+    return setSynchronousReturnValueForShouldOverrideUrlLoading(
       instanceManager.getIdentifier(instance)!,
       value,
     );

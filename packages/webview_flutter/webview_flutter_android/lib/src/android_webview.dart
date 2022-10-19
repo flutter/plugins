@@ -785,39 +785,34 @@ class WebViewClient extends JavaObject {
     String failingUrl,
   )? onReceivedError;
 
-  // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
-  /// When a URL is about to be loaded in the current [WebView].
+  /// When the current [WebView] wants to load a URL.
   ///
-  /// If a [WebViewClient] is not provided, by default [WebView] will ask
-  /// Activity Manager to choose the proper handler for the URL. If a
-  /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
-  /// causes the current [WebView] to abort loading the URL, while returning
-  /// false causes the [WebView] to continue loading the URL as usual.
+  /// The value set by [setSynchronousReturnValueForShouldOverrideUrlLoading]
+  /// indicates whether the [WebView] loaded the request.
   final void Function(WebView webView, WebResourceRequest request)?
       requestLoading;
 
-  // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
-  /// When a URL is about to be loaded in the current [WebView].
+  /// When the current [WebView] wants to load a URL.
   ///
-  /// If a [WebViewClient] is not provided, by default [WebView] will ask
-  /// Activity Manager to choose the proper handler for the URL. If a
-  /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
-  /// causes the current [WebView] to abort loading the URL, while returning
-  /// false causes the [WebView] to continue loading the URL as usual.
+  /// The value set by [setSynchronousReturnValueForShouldOverrideUrlLoading]
+  /// indicates whether the [WebView] loaded the URL.
   final void Function(WebView webView, String url)? urlLoading;
 
-  /// Whether loading a url should be overridden.
+  /// Sets the required synchronous return value for the Java method,
+  /// `WebViewClient.shouldOverrideUrlLoading(...)`.
   ///
-  /// In Java, `shouldOverrideUrlLoading()` must synchronously return a boolean.
-  /// This sets the default return value.
+  /// The Java method, `WebViewClient.shouldOverrideUrlLoading(...)`, requires
+  /// a boolean to be returned and this method sets the returned value for all
+  /// calls to the Java method.
   ///
-  /// Setting [shouldOverrideUrlLoading] to true causes the current [WebView] to
-  /// abort loading the URL, while returning false causes the [WebView] to
-  /// continue loading the URL as usual. [requestLoading] or [urlLoading] will
-  /// still be called either way.
+  /// Setting this to true causes the current [WebView] to abort loading any URL
+  /// received by [requestLoading] or [urlLoading], while setting this to false
+  /// causes the [WebView] to continue loading a URL as usual.
   ///
   /// Defaults to false.
-  Future<void> setShouldOverrideUrlLoadingReturnValue(bool value) {
+  Future<void> setSynchronousReturnValueForShouldOverrideUrlLoading(
+    bool value,
+  ) {
     return api.setShouldOverrideUrlLoadingReturnValueFromInstance(this, value);
   }
 

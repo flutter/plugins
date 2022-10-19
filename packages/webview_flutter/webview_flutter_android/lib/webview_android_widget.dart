@@ -468,7 +468,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
 
   Future<void> _setHasNavigationDelegate(bool hasNavigationDelegate) {
     _hasNavigationDelegate = hasNavigationDelegate;
-    return _webViewClient.setShouldOverrideUrlLoadingReturnValue(
+    return _webViewClient.setSynchronousReturnValueForShouldOverrideUrlLoading(
       hasNavigationDelegate,
     );
   }
