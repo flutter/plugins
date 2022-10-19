@@ -91,8 +91,7 @@ class HeatmapBodyState extends State<HeatmapBody> {
                     data: enabledPoints,
                     gradient: HeatmapGradient(
                       const <HeatmapGradientColor>[
-                        // Web and Android need a first color with 0 alpha.
-                        // On iOS, this causes rendering issues.
+                        // Web needs a first color with 0 alpha
                         if (kIsWeb)
                           HeatmapGradientColor(
                             Color.fromARGB(0, 0, 255, 255),
