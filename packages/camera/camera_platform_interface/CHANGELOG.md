@@ -1,6 +1,6 @@
 ## 2.3.0
 
-* Add new capture method for a camera to allow concurrent streaming and recording.
+* Adds new capture method for a camera to allow concurrent streaming and recording.
 
 ## 2.2.2
 
