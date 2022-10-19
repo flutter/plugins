@@ -5,8 +5,7 @@
 
 ## 2.4.0
 
-* Made DefaultHttpDataSource the default
-* Made passing the user-agent in http headers changes the default exo player agent
+* Added option to configure the User-Agent in the HTTP headers for the ExoPlayer agent.
 
 ## 2.3.9
 
