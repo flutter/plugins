@@ -15,16 +15,14 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
     registrar.addApplicationDelegate(instance)
   }
 
-  private let channel: FlutterMethodChannel
-  private let shortcutStateManager: FLTShortcutStateManager
+  private let channel: MethodChannel
+  private let shortcutStateManager: ShortcutStateManaging
   /// The type of the shortcut item selected when launching the app.
   private var launchingShortcutType: String? = nil
 
-  // TODO: (hellohuanlin) remove `@objc` attribute and make it non-public after migrating tests to Swift.
-  @objc
-  public init(
-    channel: FlutterMethodChannel,
-    shortcutStateManager: FLTShortcutStateManager = FLTShortcutStateManager()
+  init(
+    channel: MethodChannel,
+    shortcutStateManager: ShortcutStateManaging = ShortcutStateManager()
   ) {
     self.channel = channel
     self.shortcutStateManager = shortcutStateManager
