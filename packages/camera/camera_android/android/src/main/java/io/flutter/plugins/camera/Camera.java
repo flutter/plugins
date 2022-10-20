@@ -121,7 +121,7 @@ class Camera
 
   /**
    * Takes an input/output surface and orients the recording correctly. This is needed because
-   * switching cameras while recording causes bad orientation
+   * switching cameras while recording causes the wrong orientation.
    */
   private VideoRenderer videoRenderer;
 
