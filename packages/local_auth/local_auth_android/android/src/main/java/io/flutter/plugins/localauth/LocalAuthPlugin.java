@@ -278,8 +278,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @VisibleForTesting
   public boolean canAuthenticateWithDeviceCredential() {
     if (Build.VERSION.SDK_INT < 30) {
-      // Checking/setting device credential only authentication is not allowed before API 11,
-      // so check for presence of PIN, pattern, or password instead.
+      // Checking for device credential only authentication via the BiometricManager
+      // is not allowed before API level 30, so we check for presence of PIN, pattern,
+      // or password instead.
       return isDeviceSecure();
     }
 

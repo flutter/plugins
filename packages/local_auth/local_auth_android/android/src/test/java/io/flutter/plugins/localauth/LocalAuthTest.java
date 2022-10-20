@@ -112,15 +112,13 @@ public class LocalAuthTest {
   }
 
   @Test
+  @Config(sdk = 30)
   public void authenticate_properlyConfiguresBiometricAndDeviceCredentialAuthenticationRequest() {
     final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
     setPluginActivity(plugin, buildMockActivityWithContext(mock(FragmentActivity.class)));
     when(plugin.isDeviceSupported()).thenReturn(true);
-    when(plugin.canAuthenticateWithDeviceCredential()).thenReturn(true);
 
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
-        .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     plugin.setBiometricManager(mockBiometricManager);
@@ -141,11 +139,11 @@ public class LocalAuthTest {
   }
 
   @Test
+  @Config(sdk = 30)
   public void authenticate_properlyConfiguresDeviceCredentialOnlyAuthenticationRequest() {
     final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
     setPluginActivity(plugin, buildMockActivityWithContext(mock(FragmentActivity.class)));
     when(plugin.isDeviceSupported()).thenReturn(true);
-    when(plugin.canAuthenticateWithDeviceCredential()).thenReturn(true);
 
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
@@ -369,18 +367,6 @@ public class LocalAuthTest {
 
     when(mockKeyguardManager.isDeviceSecure()).thenReturn(false);
     assertFalse(plugin.isDeviceSecure());
-  }
-
-  @Test
-  @Config(sdk = 29)
-  public void canAuthenticateWithDeviceCredential_returnsTrueIfDeviceIsSecureOnBelowApi30() {
-    final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
-
-    when(plugin.isDeviceSecure()).thenReturn(true);
-    assertTrue(plugin.canAuthenticateWithDeviceCredential());
-
-    when(plugin.isDeviceSecure()).thenReturn(false);
-    assertFalse(plugin.canAuthenticateWithDeviceCredential());
   }
 
   @Test
