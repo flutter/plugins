@@ -621,7 +621,6 @@ class Camera {
 
     final bool canUseOffscreenCanvas =
         js_util.hasProperty(html.window, 'OffscreenCanvas');
-    print('[CameraWeb] canUseOffscreenCanvas: $canUseOffscreenCanvas');
     late html.ImageData imageData;
     if (canUseOffscreenCanvas) {
       final html.OffscreenCanvas canvas = html.OffscreenCanvas(width, height);
