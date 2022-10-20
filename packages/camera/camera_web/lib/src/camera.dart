@@ -633,7 +633,7 @@ class Camera {
     final html.CanvasElement canvas =
         html.CanvasElement(width: width, height: height);
     final html.CanvasRenderingContext2D context = canvas.context2D;
-    context.drawImage(videoElement, 0, 0);
+    context.drawImage(videoElement, width, height);
     imageData = context.getImageData(0, 0, width, height);
     //}
     final UnmodifiableByteBufferView byteBuffer =
