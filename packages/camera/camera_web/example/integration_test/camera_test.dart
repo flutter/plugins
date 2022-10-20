@@ -1720,5 +1720,36 @@ void main() {
         });
       });
     });
+
+    group('cameraFrameStream', () {
+      testWidgets(
+        'bytes is a multiple of 4',
+        (WidgetTester tester) async {
+          final MockVideoElement videoElement = MockVideoElement();
+          final Camera camera = Camera(
+            textureId: textureId,
+            cameraService: cameraService,
+          )..videoElement = videoElement;
+
+          when(() => videoElement.srcObject).thenAnswer(
+            (_) => mediaStream,
+          );
+
+          final CameraImageData cameraImageData =
+              await camera.cameraFrameStream().first;
+          expect(
+            cameraImageData,
+            equals(
+              isA<CameraImageData>().having(
+                (CameraImageData e) => e.planes.first.bytes.length % 4,
+                'bytes',
+                equals(0),
+              ),
+            ),
+          );
+        },
+        timeout: const Timeout(Duration(seconds: 1)),
+      );
+    });
   });
 }
