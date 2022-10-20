@@ -621,20 +621,21 @@ class Camera {
 
     final bool canUseOffscreenCanvas =
         js_util.hasProperty(html.window, 'OffscreenCanvas');
+    print('[CameraWeb] canUseOffscreenCanvas: $canUseOffscreenCanvas');
     late html.ImageData imageData;
-    if (canUseOffscreenCanvas) {
-      final html.OffscreenCanvas canvas = html.OffscreenCanvas(width, height);
-      final html.OffscreenCanvasRenderingContext2D context =
-          canvas.getContext('2d')! as html.OffscreenCanvasRenderingContext2D;
-      context.drawImage(videoElement, 0, 0, width, height);
-      imageData = context.getImageData(0, 0, width, height);
-    } else {
-      final html.CanvasElement canvas =
-          html.CanvasElement(width: width, height: height);
-      final html.CanvasRenderingContext2D context = canvas.context2D;
-      context.drawImageScaled(videoElement, 0, 0, width, height);
-      imageData = context.getImageData(0, 0, width, height);
-    }
+    // if (canUseOffscreenCanvas) {
+    //   final html.OffscreenCanvas canvas = html.OffscreenCanvas(width, height);
+    //   final html.OffscreenCanvasRenderingContext2D context =
+    //       canvas.getContext('2d')! as html.OffscreenCanvasRenderingContext2D;
+    //   context.drawImage(videoElement, 0, 0, width, height);
+    //   imageData = context.getImageData(0, 0, width, height);
+    // } else {
+    final html.CanvasElement canvas =
+        html.CanvasElement(width: width, height: height);
+    final html.CanvasRenderingContext2D context = canvas.context2D;
+    context.drawImage(videoElement, 0, 0);
+    imageData = context.getImageData(0, 0, width, height);
+    //}
     final UnmodifiableByteBufferView byteBuffer =
         UnmodifiableByteBufferView(imageData.data.buffer);
 
