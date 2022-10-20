@@ -620,7 +620,7 @@ class Camera {
     final height = int.tryParse(heightString) ?? videoHeight;
 
     final bool canUseOffscreenCanvas =
-        js_util.hasProperty(html.window, 'OffscreenCanvas');
+        false; //js_util.hasProperty(html.window, 'OffscreenCanvas');
     late html.ImageData imageData;
     if (canUseOffscreenCanvas) {
       final html.OffscreenCanvas canvas = html.OffscreenCanvas(width, height);
