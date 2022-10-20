@@ -79,12 +79,11 @@ final class VideoPlayer {
     Uri uri = Uri.parse(dataSource);
 
     DataSource.Factory dataSourceFactory;
-    httpDataSourceFactory =
-        new DefaultHttpDataSource.Factory()
+    
+
+    DefaultHttpDataSource.Factory httpDataSourceFactory= new DefaultHttpDataSource.Factory()
             .setUserAgent("ExoPlayer")
             .setAllowCrossProtocolRedirects(true);
-
-    DefaultHttpDataSource.Factory httpDataSourceFactory;
 
     if (httpHeaders != null && !httpHeaders.isEmpty()) {
       if (httpHeaders.containsKey(USER_AGENT)) {
