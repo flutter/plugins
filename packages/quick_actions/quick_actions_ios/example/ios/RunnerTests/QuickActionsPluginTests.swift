@@ -4,25 +4,27 @@
 
 import Flutter
 import XCTest
+
 @testable import quick_actions_ios
 
 class QuickActionsPluginTests: XCTestCase {
 
   func testHandleMethodCall_setShortcutItems() {
     let rawItem = [
-      "type" : "SearchTheThing",
-      "localizedTitle" : "Search the thing",
-      "icon" : "search_the_thing.png",
+      "type": "SearchTheThing",
+      "localizedTitle": "Search the thing",
+      "icon": "search_the_thing.png",
     ]
     let call = FlutterMethodCall(methodName: "setShortcutItems", arguments: [rawItem])
 
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     let setShortcutItemsExpectation = expectation(description: "setShortcutItems must be called.")
     mockShortcutStateManager.setShortcutItemsStub = { items in
-      XCTAssertEqual(items as? [[String:String]], [rawItem])
+      XCTAssertEqual(items as? [[String: String]], [rawItem])
       setShortcutItemsExpectation.fulfill()
     }
 
@@ -39,7 +41,8 @@ class QuickActionsPluginTests: XCTestCase {
     let call = FlutterMethodCall(methodName: "clearShortcutItems", arguments: nil)
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     let setShortcutItemsExpectation = expectation(description: "setShortcutItems must be called.")
     mockShortcutStateManager.setShortcutItemsStub = { items in
@@ -61,7 +64,8 @@ class QuickActionsPluginTests: XCTestCase {
 
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     let resultExpectation = expectation(description: "result block must be called.")
     plugin.handle(call) { result in
@@ -77,12 +81,15 @@ class QuickActionsPluginTests: XCTestCase {
 
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     let resultExpectation = expectation(description: "result block must be called.")
 
     plugin.handle(call) { result in
-      XCTAssertEqual(result as? NSObject, FlutterMethodNotImplemented, "result block must be called with FlutterMethodNotImplemented")
+      XCTAssertEqual(
+        result as? NSObject, FlutterMethodNotImplemented,
+        "result block must be called with FlutterMethodNotImplemented")
       resultExpectation.fulfill()
     }
 
@@ -92,7 +99,8 @@ class QuickActionsPluginTests: XCTestCase {
   func testApplicationPerformActionForShortcutItem() {
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     let item = UIApplicationShortcutItem(
       type: "SearchTheThing",
@@ -110,7 +118,8 @@ class QuickActionsPluginTests: XCTestCase {
 
     let actionResult = plugin.application(
       UIApplication.shared,
-      performActionFor: item) { success in /* no-op */}
+      performActionFor: item
+    ) { success in /* no-op */ }
 
     XCTAssert(actionResult, "performActionForShortcutItem must return true.")
 
@@ -120,7 +129,8 @@ class QuickActionsPluginTests: XCTestCase {
   func testApplicationDidFinishLaunchingWithOptions_launchWithShortcut() {
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     let item = UIApplicationShortcutItem(
       type: "SearchTheThing",
@@ -129,32 +139,39 @@ class QuickActionsPluginTests: XCTestCase {
       icon: UIApplicationShortcutIcon(templateImageName: "search_the_thing.png"),
       userInfo: nil)
 
-    let launchResult = plugin.application(UIApplication.shared, didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
-    XCTAssertFalse(launchResult, "didFinishLaunchingWithOptions must return false if launched from shortcut.")
+    let launchResult = plugin.application(
+      UIApplication.shared,
+      didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
+    XCTAssertFalse(
+      launchResult, "didFinishLaunchingWithOptions must return false if launched from shortcut.")
 
   }
 
   func testApplicationDidFinishLaunchingWithOptions_launchWithoutShortcut() {
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     let launchResult = plugin.application(UIApplication.shared, didFinishLaunchingWithOptions: [:])
-    XCTAssert(launchResult, "didFinishLaunchingWithOptions must return true if not launched from shortcut.")
+    XCTAssert(
+      launchResult, "didFinishLaunchingWithOptions must return true if not launched from shortcut.")
 
   }
 
   func testApplicationDidBecomeActive_launchWithoutShortcut() {
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     mockChannel.invokeMethodStub = { _, _ in
       XCTFail("invokeMethod should not be called if launch without shortcut.")
     }
 
     let launchResult = plugin.application(UIApplication.shared, didFinishLaunchingWithOptions: [:])
-    XCTAssert(launchResult, "didFinishLaunchingWithOptions must return true if not launched from shortcut.")
+    XCTAssert(
+      launchResult, "didFinishLaunchingWithOptions must return true if not launched from shortcut.")
 
     plugin.applicationDidBecomeActive(UIApplication.shared)
 
@@ -170,7 +187,8 @@ class QuickActionsPluginTests: XCTestCase {
 
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     let invokeMethodExpectation = expectation(description: "invokeMethod must be called.")
     mockChannel.invokeMethodStub = { method, arguments in
@@ -179,9 +197,12 @@ class QuickActionsPluginTests: XCTestCase {
       invokeMethodExpectation.fulfill()
     }
 
-    let launchResult = plugin.application(UIApplication.shared, didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
+    let launchResult = plugin.application(
+      UIApplication.shared,
+      didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
 
-    XCTAssertFalse(launchResult, "didFinishLaunchingWithOptions must return false if launched from shortcut.")
+    XCTAssertFalse(
+      launchResult, "didFinishLaunchingWithOptions must return false if launched from shortcut.")
 
     plugin.applicationDidBecomeActive(UIApplication.shared)
     waitForExpectations(timeout: 1)
@@ -197,7 +218,8 @@ class QuickActionsPluginTests: XCTestCase {
 
     let mockChannel = MockMethodChannel()
     let mockShortcutStateManager = MockShortcutStateManager()
-    let plugin = QuickActionsPlugin(channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel, shortcutStateManager: mockShortcutStateManager)
 
     let invokeMethodExpectation = expectation(description: "invokeMethod must be called.")
 
@@ -207,9 +229,12 @@ class QuickActionsPluginTests: XCTestCase {
       invokeMethodExpectation.fulfill()
     }
 
-    let launchResult = plugin.application(UIApplication.shared, didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
+    let launchResult = plugin.application(
+      UIApplication.shared,
+      didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
 
-    XCTAssertFalse(launchResult, "didFinishLaunchingWithOptions must return false if launched from shortcut.")
+    XCTAssertFalse(
+      launchResult, "didFinishLaunchingWithOptions must return false if launched from shortcut.")
 
     plugin.applicationDidBecomeActive(UIApplication.shared)
     waitForExpectations(timeout: 1)

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import Foundation
+
 @testable import quick_actions_ios
 
 final class MockMethodChannel: MethodChannel {

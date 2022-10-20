@@ -7,7 +7,7 @@
 final class MockShortcutStateManager: ShortcutStateManaging {
   var setShortcutItemsStub: (([[String: Any]]) -> Void)?
 
-  func setShortcutItems(_ items: [[String : Any]]) {
+  func setShortcutItems(_ items: [[String: Any]]) {
     setShortcutItemsStub?(items)
   }
 }

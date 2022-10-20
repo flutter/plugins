@@ -11,5 +11,5 @@ protocol ShortcutItemServicing: AnyObject {
   var shortcutItems: [UIApplicationShortcutItem]? { get set }
 }
 
-/// A default implementation of the `ShortcutItemServicing` protocol. 
+/// A default implementation of the `ShortcutItemServicing` protocol.
 extension UIApplication: ShortcutItemServicing {}

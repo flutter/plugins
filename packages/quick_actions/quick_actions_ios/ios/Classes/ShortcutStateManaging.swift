@@ -10,7 +10,7 @@ protocol ShortcutStateManaging {
   /// Sets the list of shortcut items.
   ///
   /// - Parameter items the list of shortcut items to be parsed and set.
-  func setShortcutItems(_ items: [[String:Any]])
+  func setShortcutItems(_ items: [[String: Any]])
 }
 
 /// A default implementation of `ShortcutStateManaging` protocol.
@@ -24,11 +24,12 @@ final class DefaultShortcutStateManager: ShortcutStateManaging {
     self.service = service
   }
 
-  func setShortcutItems(_ items: [[String : Any]]) {
-    service.shortcutItems = items.compactMap { deserializeShortcutItem(with:$0) }
+  func setShortcutItems(_ items: [[String: Any]]) {
+    service.shortcutItems = items.compactMap { deserializeShortcutItem(with: $0) }
   }
 
-  private func deserializeShortcutItem(with serialized: [String: Any]) -> UIApplicationShortcutItem {
+  private func deserializeShortcutItem(with serialized: [String: Any]) -> UIApplicationShortcutItem
+  {
 
     let icon = (serialized["icon"] as? String).map {
       UIApplicationShortcutIcon(templateImageName: $0)

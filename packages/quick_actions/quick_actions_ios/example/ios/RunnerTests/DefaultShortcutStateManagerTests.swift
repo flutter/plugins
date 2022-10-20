@@ -4,15 +4,16 @@
 
 import Flutter
 import XCTest
+
 @testable import quick_actions_ios
 
 class ShortcutStateManagerTests: XCTestCase {
 
   func testSetShortcutItems_shouldSetItem() {
     let rawItem = [
-      "type" : "SearchTheThing",
-      "localizedTitle" : "Search the thing",
-      "icon" : "search_the_thing.png",
+      "type": "SearchTheThing",
+      "localizedTitle": "Search the thing",
+      "icon": "search_the_thing.png",
     ]
 
     let expectedItem = UIApplicationShortcutItem(
@@ -33,9 +34,9 @@ class ShortcutStateManagerTests: XCTestCase {
 
   func testSetShortcutItems_shouldSetItemWithoutIcon() {
     let rawItem: [String: Any] = [
-      "type" : "SearchTheThing",
-      "localizedTitle" : "Search the thing",
-      "icon" : NSNull(),
+      "type": "SearchTheThing",
+      "localizedTitle": "Search the thing",
+      "icon": NSNull(),
     ]
 
     let expectedItem = UIApplicationShortcutItem(
