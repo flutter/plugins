@@ -4,7 +4,7 @@
 
 import UIKit
 
-/// Controls shortcut items.
+/// Services `UIApplicationShortcutItem`s.
 protocol ShortcutItemServicing: AnyObject {
 
   /// An array of shortcut items for home screen.
