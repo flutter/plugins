@@ -22,7 +22,7 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
 
   init(
     channel: MethodChannel,
-    shortcutStateManager: ShortcutStateManaging = ShortcutStateManager()
+    shortcutStateManager: ShortcutStateManaging = DefaultShortcutStateManager()
   ) {
     self.channel = channel
     self.shortcutStateManager = shortcutStateManager

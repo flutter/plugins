@@ -14,7 +14,7 @@ protocol ShortcutStateManaging {
 }
 
 /// A default implementation of `ShortcutStateManaging` protocol.
-final class ShortcutStateManager: ShortcutStateManaging {
+final class DefaultShortcutStateManager: ShortcutStateManaging {
 
   private let service: ShortcutItemServicing
 
@@ -43,4 +43,3 @@ final class ShortcutStateManager: ShortcutStateManaging {
       userInfo: nil)
   }
 }
-

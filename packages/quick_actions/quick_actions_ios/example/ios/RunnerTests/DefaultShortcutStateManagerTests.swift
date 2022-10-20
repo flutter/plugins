@@ -23,7 +23,7 @@ class ShortcutStateManagerTests: XCTestCase {
       userInfo: nil)
 
     let mockShortcutItemService = MockShortcutItemService()
-    let manager = ShortcutStateManager(service: mockShortcutItemService)
+    let manager = DefaultShortcutStateManager(service: mockShortcutItemService)
 
     manager.setShortcutItems([rawItem])
 
@@ -46,7 +46,7 @@ class ShortcutStateManagerTests: XCTestCase {
       userInfo: nil)
 
     let mockShortcutItemService = MockShortcutItemService()
-    let manager = ShortcutStateManager(service: mockShortcutItemService)
+    let manager = DefaultShortcutStateManager(service: mockShortcutItemService)
 
     manager.setShortcutItems([rawItem])
 
