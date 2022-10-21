@@ -22,7 +22,7 @@ import android.view.Surface;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/** Renders video onto texture */
+/** Renders video onto texture. */
 public class VideoRenderer {
 
   private static String TAG = "VideoRenderer";
@@ -89,7 +89,7 @@ public class VideoRenderer {
 
   private final Object lock = new Object();
 
-  /** Gets surface for input. Blocks until surface is ready */
+  /** Gets surface for input. Blocks until surface is ready. */
   public Surface getInputSurface() throws InterruptedException {
     synchronized (lock) {
       while (inputSurface == null) {
@@ -107,14 +107,14 @@ public class VideoRenderer {
     Log.d(TAG, "VideoRenderer setup complete");
   }
 
-  /** Stop rendering and cleanup resources */
+  /** Stop rendering and cleanup resources. */
   public void close() {
     thread.interrupt();
     surfaceTextureFrameAvailableHandler.quitSafely();
     inputSurfaceTexture.release();
   }
 
-  /** Configures openGL. must be called in same thread as draw is called */
+  /** Configures openGL. Must be called in same thread as draw is called. */
   private void configureOpenGL() {
     synchronized (lock) {
       display = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
@@ -226,7 +226,7 @@ public class VideoRenderer {
     }
   }
 
-  /** Starts and configures Video Renderer */
+  /** Starts and configures Video Renderer. */
   private void startOpenGL() {
     Log.d(TAG, "Starting OpenGL Thread");
     thread =
