@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+   <chapter name="Спутниковые снимки">
+      <map name="EMS Европа (Запад)">
+         <url>https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg</url>
+      </map>
+      <map name="EMS Европа (Центр)">
+         <url>https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_CentralEurope.jpg</url>
+      </map>
+      <map name="EMS Европа (Восток)">
+         <url>https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_EasternEurope.jpg</url>
+      </map>
+      <map name="EMS Африка (Запад)">
+         <url>https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternAfrica.jpg</url>
+      </map>
+      <map name="EMS Африка (Центр)">
+         <url>https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_CentralAfrica.jpg</url>
+      </map>
+      <map name="EMS Африка (Восток)">
+         <url>https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_EasternAfrica.jpg</url>
+      </map>
+      <map name="EMS Африка (Юг)">
+         <url>https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_SouthernAfrica.jpg</url>
+      </map>
+      <map name="NOAA (Европа)">
+         <url>http://www.hobitus.com/noaa/composite/hvct-precip.jpg</url>
+      </map>
+      <map name="MET11 (Зап.Россия-Европа)">
+         <url>https://meteoinfo.ru/images/media/satel/latest_a_i.jpg</url>
+      </map>
+      <map name="MET8 (Россия)">
+         <url>https://meteoinfo.ru/images/media/satel/latest_r_i.jpg</url>
+      </map>
+      <map name="MET7 (Россия-Казахстан)">
+         <url>http://planeta.infospace.ru/prod-cgi/last.pl?product=98</url>
+         <start>/planeta_products/archive/products/image</start>
+         <end>.jpg</end>
+         <begin>http://planeta.infospace.ru</begin>
+      </map>
+      <map name="AWC (Америки)">
+         <url>https://aviationweather.gov/data/obs/sat/intl/sat_irnws_a.jpg</url>
+      </map>
+      <map name="AWC (Африка-Европа)">
+         <url>https://aviationweather.gov/data/obs/sat/intl/sat_irnws_c.jpg</url>
+      </map>
+      <map name="AWC (Евразия)">
+         <url>https://aviationweather.gov/data/obs/sat/intl/sat_irnws_g.jpg</url>
+      </map>
+      <map name="AWC (Индонезия)">
+         <url>https://aviationweather.gov/data/obs/sat/intl/sat_irnws_e.jpg</url>
+      </map>
+      <map name="AWC (Камчатка)">
+         <url>https://aviationweather.gov/data/obs/sat/intl/sat_irnws_m.jpg</url>
+      </map>
+   </chapter>
+   <chapter name="Карты фактической погоды">
+      <map name="Анализ приземный (Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Analiz.png</url>
+      </map>
+      <map name="Анализ приземный на 00UTC (Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Analiz00h.png</url>
+      </map>
+      <map name="Анализ приземный на 06UTC (Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Analiz06h.png</url>
+      </map>
+      <map name="Анализ приземный на 12UTC (Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Analiz12h.png</url>
+      </map>
+      <map name="Анализ приземный на 18UTC (Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Analiz18h.png</url>
+      </map>
+      <map name="Анализ АТ-850 на 00UTC (Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/AT-850-00.png</url>
+      </map>
+      <map name="Анализ АТ-850 на 12UTC (Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/AT-850-12.png</url>
+      </map>
+      <map name="Суммарные осадки за сутки (Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Precip.png</url>
+      </map>
+      <map name="Высота снежного покрова (Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Snow.png</url>
+      </map>
+      <map name="Карта АФ+ЯП (Европа)">
+         <url>http://www.jetplan.com/weather/data/maps/eusfcwx00.gif</url>
+      </map>
+      <map name="Карта АФ+ЯП(Камчатка)">
+         <url>http://www.jetplan.com/weather/data/maps/npsfcwx00.gif</url>
+      </map>
+      <map name="Карта АФ+ЯП(Россия)">
+         <url>http://www.jetplan.com/weather/data/maps/easfcwx00.gif</url>
+      </map>
+      <map name="Карта условий полета (Европа)">
+         <url>http://www.jetplan.com/weather/data/maps/euwxdep00.gif</url>
+      </map>
+      <map name="Карта условий полета (Камчатка)">
+         <url>http://www.jetplan.com/weather/data/maps/npwxdep00.gif</url>
+      </map>
+      <map name="Карта условий полета (Россия)">
+         <url>http://www.jetplan.com/weather/data/maps/eawxdep00.gif</url>
+      </map>
+      <map name="Кольцовка (Европа-Россия)">
+         <url>http://meteocenter.net/circ/QPRS.png</url>
+      </map>
+      <map name="Кольцовка (центральная Россия)">
+         <url>http://meteocenter.net/circ/USSS.png</url>
+      </map>
+      <map name="Кольцовка (восточная Россия)">
+         <url>http://meteocenter.net/circ/QPRA.png</url>
+      </map>
+      <map name="Кольцовка (восточная Сибирь)">
+         <url>http://www.meteocenter.net/circ/UEEE.png</url>
+      </map>
+      <map name="Кольцовка (Дальний Восток)">
+         <url>http://meteocenter.net/circ/UHHH.png</url>
+      </map>
+      <map name="Кольцовка (Камчатка)">
+         <url>http://meteocenter.net/circ/UHPP.png</url>
+      </map>
+      <map name="Кольцовка (северо-запад России)">
+         <url>http://meteocenter.net/circ/USDD.png</url>
+      </map>
+      <map name="Кольцовка (юго-запад России)">
+         <url>http://meteocenter.net/circ/URWA.png</url>
+      </map>
+      <map name="Кольцовка (Россия Урал)">
+         <url>http://meteocenter.net/circ/UNTT.png</url>
+      </map>
+      <map name="Кольцовка (Россия южный Урал)">
+         <url>http://meteocenter.net/circ/UNNN.png</url>
+      </map>
+      <map name="Кольцовка (восточная Европа)">
+         <url>http://meteocenter.net/circ/UUWW.png</url>
+      </map>
+      <map name="Кольцовка (южная Европа)">
+         <url>http://meteocenter.net/circ/LBSF.png</url>
+      </map>
+      <map name="Кольцовка (Прибалтика)">
+         <url>http://meteocenter.net/circ/UMKK.png</url>
+      </map>
+      <map name="Кольцовка (Казахстан)">
+         <url>http://meteocenter.net/circ/ZMUB.png</url>
+      </map>
+      <map name="Кольцовка (ср. Азия)">
+         <url>http://meteocenter.net/circ/UAOL.png</url>
+      </map>
+      <map name="Пожароопасность (Россия)">
+         <url>https://meteoinfo.ru/images/vasiliev/plazma_ppo3.gif</url>
+      </map>
+   </chapter>
+   <chapter name="Карты явлений погоды">
+      <map name="Текущая погода (Европа)">
+         <url>http://meteocenter.net/fact/ts2.png</url>
+      </map>
+      <map name="Карта особых ЯП (Европа)">
+         <url>http://tgftp.nws.noaa.gov/fax/PGDE14.PNG</url>
+      </map>
+      <map name="Карта особых ЯП (Европа-Россия)">
+         <url>http://tgftp.nws.noaa.gov/fax/PGCE05.PNG</url>
+      </map>
+      <map name="Карта особых ЯП (Европа-Африка)">
+         <url>http://tgftp.nws.noaa.gov/fax/PGRE05.PNG</url>
+      </map>
+      <map name="Карта особых ЯП (Азия)">
+         <url>http://tgftp.nws.noaa.gov/fax/PGZE05.PNG</url>
+      </map>
+      <map name="Карта особых ЯП (Атлантика)">
+         <url>http://tgftp.nws.noaa.gov/fax/PGSE05.PNG</url>
+      </map>
+      <map name="Карта особых ЯП (С-Ю Америки)">
+         <url>http://tgftp.nws.noaa.gov/fax/PGEE05.PNG</url>
+      </map>
+      <map name="Грозы (Европа)">
+         <url>http://meteocenter.net/fact/fact_ts.png</url>
+      </map>
+      <map name="Карта молний (Европа-Африка)">
+         <url>http://webflash.ess.washington.edu/EurAfricaL_plot_weather_map.jpg</url>
+      </map>
+   </chapter>
+   <chapter name="Прогнозические карты">
+      <map name="Прогноз (+24ч от 00UTC Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Prognoz24h.png</url>
+      </map>
+      <map name="Прогноз (+24ч от 12UTC Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Prognoz24-12h.png</url>
+      </map>
+      <map name="Прогноз (+36ч от 00UTC Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Prognoz36h.png</url>
+      </map>
+      <map name="Прогноз (+60ч от 00UTC Россия-Европа)">
+         <url>https://meteoinfo.ru/hmc-input/mapsynop/Prognoz60h.png</url>
+      </map>
+      <map name="Прогноз приземный (12UTC Европа)">
+         <url>http://www.jetplan.com/weather/data/maps/eusfcwx24.gif</url>
+      </map>
+      <map name="Прогноз приземный (12UTC Камчатка)">
+         <url>http://www.jetplan.com/weather/data/maps/npsfcwx24.gif</url>
+      </map>
+      <map name="Прогноз приземный (12UTC Россия)">
+         <url>http://www.jetplan.com/weather/data/maps/easfcwx24.gif</url>
+      </map>
+      <map name="Прогноз верхних слоев (00UTC Европа)">
+         <url>http://www.jetplan.com/weather/data/maps/euhisig12.gif</url>
+      </map>
+      <map name="Прогноз верхних слоев (00UTC Камчатка)">
+         <url>http://www.jetplan.com/weather/data/maps/nphisig12.gif</url>
+      </map>
+      <map name="Прогноз верхних слоев (00UTC Россия)">
+         <url>http://www.jetplan.com/weather/data/maps/eahisig12.gif</url>
+      </map>
+   </chapter>
+   <chapter name="Метеорадары бывш.СССР">
+      <map name="Киев (Борисполь)">
+         <url>https://meteoinfo.by/radar/?q=UKBB</url>
+         <start>/UKBB/UKBB</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar/</begin>
+      </map>
+      <map name="Киев (Борисполь) радиоэхо">
+         <url>https://meteoinfo.by/radar/?q=UKBB</url>
+         <start>/UKBB/UKBB</start>
+         <end>71.png</end>
+         <begin>https://meteoinfo.by/radar</begin>
+      </map>
+      <map name="Минск (Минск-2)">
+         <url>https://meteoinfo.by/radar/?q=UMMN</url>
+         <start>/UMMN/UMMN</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar</begin>
+      </map>
+      <map name="Минск (Минск-2) радиоэхо">
+         <url>https://meteoinfo.by/radar/?q=UMMN</url>
+         <start>/UMMN/UMMN</start>
+         <end>71.png</end>
+         <begin>https://meteoinfo.by/radar</begin>
+      </map>
+      <map name="Санкт-Петербург (РГГМУ)">
+         <url>http://weather.rshu.ru/radar/</url>
+         <start>data/</start>
+         <end>MRL.PNG</end>
+         <begin>http://weather.rshu.ru/radar/</begin>
+      </map>
+      <map name="Брест (Тельмы)">
+         <url>https://meteoinfo.by/radar/?q=UMBB</url>
+         <start>UMBB/Radar</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar/</begin>
+      </map>
+      <map name="Брянск">
+         <url>https://meteoinfo.by/radar/?q=RUDB</url>
+         <start>RUDB/RUDB</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar/</begin>
+      </map>
+      <map name="Брянск радиоэхо">
+         <url>https://meteoinfo.by/radar/?q=RUDB</url>
+         <start>RUDB/RUDB</start>
+         <end>71.png</end>
+         <begin>https://meteoinfo.by/radar/</begin>
+      </map>
+      <map name="Великие Луки">
+         <url>https://meteoinfo.by/radar/?q=RAVL</url>
+         <start>/RAVL/RAVL</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar</begin>
+      </map>
+      <map name="Витебск">
+         <url>https://meteoinfo.by/radar/?q=UMII</url>
+         <start>UMII/Radar_</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar/</begin>
+      </map>
+      <map name="Гомель">
+         <url>https://meteoinfo.by/radar/?q=UMGG</url>
+         <start>UMGG/UMGG_</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar/</begin>
+      </map>
+      <map name="Гомель радиоэхо">
+         <url>https://meteoinfo.by/radar/?q=UMGG</url>
+         <start>UMGG/UMGG</start>
+         <end>71.png</end>
+         <begin>https://meteoinfo.by/radar/</begin>
+      </map>
+      <map name="Гродно">
+         <url>https://meteoinfo.by/radar/?q=UMMG</url>
+         <start>UMMG/Radar_</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar/</begin>
+      </map>
+      <map name="Запорожье">
+         <url>https://meteoinfo.by/radar/?q=UKDE</url>
+         <start>/UKDE/UKDE</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar</begin>
+      </map>
+      <map name="Запорожье радиоэхо">
+         <url>https://meteoinfo.by/radar/?q=UKDE</url>
+         <start>/UKDE/UKDE</start>
+         <end>71.png</end>
+         <begin>https://meteoinfo.by/radar</begin>
+      </map>
+      <map name="Курск">
+         <url>https://meteoinfo.by/radar/?q=RAKU</url>
+         <start>/RAKU/RAKU</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar</begin>
+      </map>
+      <map name="Смоленск">
+         <url>https://meteoinfo.by/radar/?q=RUDL</url>
+         <start>/RUDL/RUDL</start>
+         <end>.png</end>
+         <begin>https://meteoinfo.by/radar</begin>
+      </map>
+      <map name="Смоленск радиоэхо">
+         <url>https://meteoinfo.by/radar/?q=RUDL</url>
+         <start>/RUDB/RUDB</start>
+         <end>71.png</end>
+         <begin>https://meteoinfo.by/radar</begin>
+      </map>
+   </chapter>
+   <chapter name="Метеорадары Европа">
+      <map name="Европа">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=euro&amp;CREG=eueu</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Центральная Европа">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=euro&amp;CREG=euce&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Англия-Ирландия">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=ukuk&amp;CREG=ukuk&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Бельгия">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=bxbx&amp;CREG=bxbx</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Германия">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=dldl&amp;CREG=dwddg&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Германия (Берлин)">
+         <url>http://www.met.fu-berlin.de/wetter/radar/radar.gif</url>
+      </map>
+      <map name="Греция">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=grgr&amp;CREG=grgr&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Ирландия">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=euro&amp;CREG=nir&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Исландия">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=isis&amp;CREG=isis</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Испания">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=eses&amp;CREG=r01g&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Италия">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=itit&amp;CREG=itit&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Нидерланды">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CREG=chch&amp;CONT=chch</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Норвегия">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=nono&amp;CREG=norwa&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Польша">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=plpl&amp;CREG=plpl&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Словения">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=sisi&amp;CREG=LJsm&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Франция">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=frfr&amp;CREG=frfr&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Чехия">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=czcz&amp;CREG=cz&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Швейцария">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CREG=chch&amp;CONT=chch</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+   </chapter>
+   <chapter name="Метеорадары Азия - Океания">
+      <map name="Австралия">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=aupa&amp;CREG=aust</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Тайвань">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=asie</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+      <map name="Турция">
+         <url>https://www.mgm.gov.tr/sondurum/radar.aspx?rG=img&amp;rR=00&amp;rU=ppi#sfB</url>
+      </map>
+      <map name="Япония">
+         <url>http://www.weatheronline.co.uk/cgi-app/radar?CONT=jaja&amp;CREG=japan&amp;BIG=1</url>
+         <start>http://www.weatheronline.co.uk/daten/</start>
+         <end>.gif</end>
+      </map>
+   </chapter>
+</data>
