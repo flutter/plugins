@@ -4,13 +4,26 @@ gcp_credentials: ENCRYPTED[!f1177d1ddb5330ffaa9ea11c9c9e8e0c542185e895c36071f18c
 only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
-  PLUGIN_TOOL: "./script/tool/bin/flutter_plugin_tools.dart"
+  PLUGIN_TOOL_COMMAND: "dart ./script/tool/bin/flutter_plugin_tools.dart"
 
 tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
-    - git fetch origin main # To set FETCH_HEAD for "git merge-base" to work
-    - cd script/tool
-    - dart pub get
+    - .ci/scripts/prepare_tool.sh
+
+macos_template: &MACOS_TEMPLATE
+  # Only one macOS task can run in parallel without credits, so use them for
+  # PRs on macOS.
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
+
+macos_intel_template: &MACOS_INTEL_TEMPLATE
+  << : *MACOS_TEMPLATE
+  osx_instance:
+    image: big-sur-xcode-13
+
+macos_arm_template: &MACOS_ARM_TEMPLATE
+  << : *MACOS_TEMPLATE
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-ventura-xcode:14
 
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
@@ -39,7 +52,7 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
 
 build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
   create_all_plugins_app_script:
-    - dart $PLUGIN_TOOL all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
+    - $PLUGIN_TOOL_COMMAND all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
   build_all_plugins_debug_script:
     - cd all_plugins
     - if [[ "$BUILD_ALL_ARGS" == "web" ]]; then
@@ -50,21 +63,6 @@ build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
   build_all_plugins_release_script:
     - cd all_plugins
     - flutter build $BUILD_ALL_ARGS --release
-
-macos_template: &MACOS_TEMPLATE
-  # Only one macOS task can run in parallel without credits, so use them for
-  # PRs on macOS.
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
-
-macos_intel_template: &MACOS_INTEL_TEMPLATE
-  << : *MACOS_TEMPLATE
-  osx_instance:
-    image: big-sur-xcode-13
-
-macos_arm_template: &MACOS_ARM_TEMPLATE
-  << : *MACOS_TEMPLATE
-  macos_instance:
-    image: ghcr.io/cirruslabs/macos-ventura-xcode:14
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
@@ -84,22 +82,13 @@ task:
       script:
         - cd script/tool
         - dart pub run test
-    - name: publishable
-      version_check_script:
-        # For pre-submit, pass the PR labels to the script to allow for version
-        # check overrides.
-        # For post-submit, ignore platform version breaking version changes and
-        # missing version/CHANGELOG detection since the labels aren't
-        # available outside of the context of the PR.
-        - if [[ $CIRRUS_PR == "" ]]; then
-        -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
-        - else
-        -   ./script/tool_runner.sh version-check --check-for-missing-changes --pr-labels="$CIRRUS_PR_LABELS"
-        - fi
-      publish_check_script: ./script/tool_runner.sh publish-check
-    - name: format
+    # Repository rules and best-practice enforcement.
+    # Only channel-agnostic tests should go here since it is only run once
+    # (on Flutter master).
+    - name: repo_checks
       always:
         format_script: ./script/tool_runner.sh format --fail-on-change
+        license_script: $PLUGIN_TOOL_COMMAND license-check
         pubspec_script: ./script/tool_runner.sh pubspec-check
         readme_script:
           - ./script/tool_runner.sh readme-check
@@ -108,19 +97,33 @@ task:
           # has been fixed, this can be removed and there can just be a single
           # run with --require-excerpts and no exclusions.
           - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
-        license_script: dart $PLUGIN_TOOL license-check
-        dependabot_script: dart $PLUGIN_TOOL dependabot-check
-    - name: federated_safety
-      # This check is only meaningful for PRs, as it validates changes
-      # rather than state.
-      only_if: $CIRRUS_PR != ""
-      script: ./script/tool_runner.sh federation-safety-check
+        dependabot_script: $PLUGIN_TOOL_COMMAND dependabot-check
+        version_script:
+          # For pre-submit, pass the PR labels to the script to allow for
+          # check overrides.
+          # For post-submit, ignore platform version breaking version changes
+          # and missing version/CHANGELOG detection since the labels aren't
+          # available outside of the context of the PR.
+          - if [[ $CIRRUS_PR == "" ]]; then
+          -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
+          - else
+          -   ./script/tool_runner.sh version-check --check-for-missing-changes --pr-labels="$CIRRUS_PR_LABELS"
+          - fi
+        publishable_script: ./script/tool_runner.sh publish-check --allow-pre-release
+        federated_safety_script:
+          # This check is only meaningful for PRs, as it validates changes
+          # rather than state.
+          - if [[ $CIRRUS_PR == "" ]]; then
+          -   ./script/tool_runner.sh federation-safety-check
+          - else
+          -   echo "Only run in presubmit"
+          - fi
     - name: dart_unit_tests
       env:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      test_script:
+      unit_test_script:
         - ./script/tool_runner.sh test
     - name: analyze
       env:
@@ -142,39 +145,42 @@ task:
         # This uses --run-on-dirty-packages rather than --packages-for-branch
         # since only the packages changed by 'make-deps-path-based' need to be
         # checked.
-        - dart $PLUGIN_TOOL analyze --run-on-dirty-packages --log-timing --custom-analysis=script/configs/custom_analysis.yaml
+        - $PLUGIN_TOOL_COMMAND analyze --run-on-dirty-packages --log-timing --custom-analysis=script/configs/custom_analysis.yaml
         # Restore the tree to a clean state, to avoid accidental issues if
         # other script steps are added to this task.
         - git checkout .
-    # Does a sanity check that plugins at least pass analysis on the N-1 and N-2
-    # versions of Flutter stable if the plugin claims to support that version.
+    # Does a sanity check that packages at least pass analysis on the N-1 and N-2
+    # versions of Flutter stable if the package claims to support that version.
     # This is to minimize accidentally making changes that break old versions
     # (which we don't commit to supporting, but don't want to actively break)
     # without updating the constraints.
     # Note: The versions below should be manually updated after a new stable
     # version comes out.
-    - name: legacy-version-analyze
+    - name: legacy_version_analyze
       depends_on: analyze
-      env:
-        matrix:
+      matrix:
+        env:
           CHANNEL: "3.0.5"
+          DART_VERSION: "2.17.6"
+        env:
           CHANNEL: "2.10.5"
+          DART_VERSION: "2.16.2"
       package_prep_script:
-        # Allow analyzing plugins that use a Pigeon version with a higher
-        # minimum Flutter/Dart version than the plugin itself.
+        # Allow analyzing packages that use a dev dependency with a higher
+        # minimum Flutter/Dart version than the package itself.
         - ./script/tool_runner.sh remove-dev-dependencies
       analyze_script:
         # Only analyze lib/; non-client code doesn't need to work on
         # all supported legacy version.
-        - ./script/tool_runner.sh analyze --lib-only --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
-    # Does a sanity check that plugins pass analysis with the lowest possible
+        - ./script/tool_runner.sh analyze --lib-only --skip-if-not-supporting-flutter-version="$CHANNEL" --skip-if-not-supporting-dart-version="$DART_VERSION" --custom-analysis=script/configs/custom_analysis.yaml
+    # Does a sanity check that packages pass analysis with the lowest possible
     # versions of all dependencies. This is to catch cases where we add use of
-    # new APIs but forget to update minimum versions of dependencies to when
+    # new APIs but forget to update minimum versions of dependencies to where
     # those APIs are introduced.
     - name: downgraded_analyze
       depends_on: analyze
       analyze_script:
-        - ./script/tool_runner.sh analyze --downgrade
+        - ./script/tool_runner.sh analyze --downgrade --custom-analysis=script/configs/custom_analysis.yaml
     - name: readme_excerpts
       env:
         CIRRUS_CLONE_SUBMODULES: true
@@ -194,8 +200,6 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      setup_script:
-        - flutter config --enable-linux-desktop
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     - name: linux-platform_tests
       # Don't run full platform tests on both channels in pre-submit.
@@ -205,7 +209,6 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       build_script:
-        - flutter config --enable-linux-desktop
         - ./script/tool_runner.sh build-examples --linux
       native_test_script:
         - xvfb-run ./script/tool_runner.sh native-test --linux --no-integration
@@ -339,7 +342,6 @@ task:
           CHANNEL: "stable"
         PATH: $PATH:/usr/local/bin
       build_script:
-        - flutter config --enable-macos-desktop
         - ./script/tool_runner.sh build-examples --macos
       xcode_analyze_script:
         - ./script/tool_runner.sh xcode-analyze --macos
@@ -408,5 +410,4 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       setup_script:
-        - flutter config --enable-macos-desktop
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE

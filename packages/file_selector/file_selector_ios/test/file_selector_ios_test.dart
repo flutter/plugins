@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-// ignore_for_file: prefer_const_literals_to_create_immutables
-
 import 'package:file_selector_ios/file_selector_ios.dart';
 import 'package:file_selector_ios/src/messages.g.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
@@ -39,18 +36,14 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
           mimeTypes: <String>['image/jpg'],
@@ -69,9 +62,7 @@ void main() {
       expect(config.allowMultiSelection, isFalse);
     });
     test('throws for a type group that does not support iOS', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'images',
         webWildCards: <String>['images/*'],
       );
@@ -82,9 +73,7 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
       );
 
@@ -99,18 +88,14 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
           mimeTypes: <String>['image/jpg'],
@@ -129,9 +114,7 @@ void main() {
       expect(config.allowMultiSelection, isTrue);
     });
     test('throws for a type group that does not support iOS', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'images',
         webWildCards: <String>['images/*'],
       );
@@ -142,9 +125,7 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
       );
 

@@ -1,3 +1,11 @@
+## 2.3.0
+
+* Replaces `macUTIs` with `uniformTypeIdentifiers`. `macUTIs` is available as an alias, but will be deprecated in a future release.
+
+## 2.2.0
+
+* Makes `XTypeGroup`'s constructor constant.
+
 ## 2.1.1
 
 * Updates imports for `prefer_relative_imports`.

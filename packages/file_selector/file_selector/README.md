@@ -34,7 +34,7 @@ Please also take a look at our [example][example] app.
 #### Open a single file
 <?code-excerpt "open_image_page.dart (SingleOpen)"?>
 ``` dart
-final XTypeGroup typeGroup = XTypeGroup(
+const XTypeGroup typeGroup = XTypeGroup(
   label: 'images',
   extensions: <String>['jpg', 'png'],
 );
@@ -45,11 +45,11 @@ final XFile? file =
 #### Open multiple files at once
 <?code-excerpt "open_multiple_images_page.dart (MultiOpen)"?>
 ``` dart
-final XTypeGroup jpgsTypeGroup = XTypeGroup(
+const XTypeGroup jpgsTypeGroup = XTypeGroup(
   label: 'JPEGs',
   extensions: <String>['jpg', 'jpeg'],
 );
-final XTypeGroup pngTypeGroup = XTypeGroup(
+const XTypeGroup pngTypeGroup = XTypeGroup(
   label: 'PNGs',
   extensions: <String>['png'],
 );
