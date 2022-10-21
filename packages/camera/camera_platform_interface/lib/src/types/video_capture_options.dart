@@ -17,7 +17,8 @@ class VideoCaptureOptions {
     this.streamOptions,
   }) {
     if (streamOptions != null && streamCallback == null) {
-      throw ArgumentError('Must specify streamCallback if providing streamOptions');
+      throw ArgumentError(
+          'Must specify streamCallback if providing streamOptions');
     }
   }
 
