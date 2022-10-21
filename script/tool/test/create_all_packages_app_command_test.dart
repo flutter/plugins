@@ -7,16 +7,16 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:flutter_plugin_tools/src/create_all_plugins_app_command.dart';
+import 'package:flutter_plugin_tools/src/create_all_packages_app_command.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'util.dart';
 
 void main() {
-  group('$CreateAllPluginsAppCommand', () {
+  group('$CreateAllPackagesAppCommand', () {
     late CommandRunner<void> runner;
-    late CreateAllPluginsAppCommand command;
+    late CreateAllPackagesAppCommand command;
     late FileSystem fileSystem;
     late Directory testRoot;
     late Directory packagesDir;
@@ -29,12 +29,12 @@ void main() {
       testRoot = fileSystem.systemTempDirectory.createTempSync();
       packagesDir = testRoot.childDirectory('packages');
 
-      command = CreateAllPluginsAppCommand(
+      command = CreateAllPackagesAppCommand(
         packagesDir,
         pluginsRoot: testRoot,
       );
       runner = CommandRunner<void>(
-          'create_all_test', 'Test for $CreateAllPluginsAppCommand');
+          'create_all_test', 'Test for $CreateAllPackagesAppCommand');
       runner.addCommand(command);
     });
 
@@ -47,7 +47,7 @@ void main() {
       createFakePlugin('pluginb', packagesDir);
       createFakePlugin('pluginc', packagesDir);
 
-      await runCapturingPrint(runner, <String>['all-plugins-app']);
+      await runCapturingPrint(runner, <String>['create-all-packages-app']);
       final List<String> pubspec = command.app.pubspecFile.readAsLinesSync();
 
       expect(
@@ -64,7 +64,7 @@ void main() {
       createFakePlugin('pluginb', packagesDir);
       createFakePlugin('pluginc', packagesDir);
 
-      await runCapturingPrint(runner, <String>['all-plugins-app']);
+      await runCapturingPrint(runner, <String>['create-all-packages-app']);
       final List<String> pubspec = command.app.pubspecFile.readAsLinesSync();
 
       expect(
@@ -95,7 +95,7 @@ void main() {
 
       createFakePlugin('plugina', packagesDir);
 
-      await runCapturingPrint(runner, <String>['all-plugins-app']);
+      await runCapturingPrint(runner, <String>['create-all-packages-app']);
       final Pubspec generatedPubspec = command.app.parsePubspec();
 
       const String dartSdkKey = 'sdk';
@@ -108,11 +108,13 @@ void main() {
 
       final Directory customOutputDir =
           fileSystem.systemTempDirectory.createTempSync();
-      await runCapturingPrint(runner,
-          <String>['all-plugins-app', '--output-dir=${customOutputDir.path}']);
+      await runCapturingPrint(runner, <String>[
+        'create-all-packages-app',
+        '--output-dir=${customOutputDir.path}'
+      ]);
 
-      expect(
-          command.app.path, customOutputDir.childDirectory('all_plugins').path);
+      expect(command.app.path,
+          customOutputDir.childDirectory('all_packages').path);
     });
 
     test('logs exclusions', () async {
@@ -120,8 +122,8 @@ void main() {
       createFakePlugin('pluginb', packagesDir);
       createFakePlugin('pluginc', packagesDir);
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['all-plugins-app', '--exclude=pluginb,pluginc']);
+      final List<String> output = await runCapturingPrint(runner,
+          <String>['create-all-packages-app', '--exclude=pluginb,pluginc']);
 
       expect(
           output,

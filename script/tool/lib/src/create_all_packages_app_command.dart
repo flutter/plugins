@@ -15,10 +15,12 @@ import 'common/repository_package.dart';
 
 const String _outputDirectoryFlag = 'output-dir';
 
+const String _projectName = 'all_packages';
+
 /// A command to create an application that builds all in a single application.
-class CreateAllPluginsAppCommand extends PackageCommand {
+class CreateAllPackagesAppCommand extends PackageCommand {
   /// Creates an instance of the builder command.
-  CreateAllPluginsAppCommand(
+  CreateAllPackagesAppCommand(
     Directory packagesDir, {
     Directory? pluginsRoot,
   }) : super(packagesDir) {
@@ -26,24 +28,25 @@ class CreateAllPluginsAppCommand extends PackageCommand {
         pluginsRoot ?? packagesDir.fileSystem.currentDirectory;
     argParser.addOption(_outputDirectoryFlag,
         defaultsTo: defaultDir.path,
-        help: 'The path the directory to create the "all_plugins" project in.\n'
+        help:
+            'The path the directory to create the "$_projectName" project in.\n'
             'Defaults to the repository root.');
   }
 
   /// The location to create the synthesized app project.
   Directory get _appDirectory => packagesDir.fileSystem
       .directory(getStringArg(_outputDirectoryFlag))
-      .childDirectory('all_plugins');
+      .childDirectory(_projectName);
 
   /// The synthesized app project.
   RepositoryPackage get app => RepositoryPackage(_appDirectory);
 
   @override
   String get description =>
-      'Generate Flutter app that includes all plugins in packages.';
+      'Generate Flutter app that includes all target packagas.';
 
   @override
-  String get name => 'all-plugins-app';
+  String get name => 'create-all-packages-app';
 
   @override
   Future<void> run() async {
@@ -74,7 +77,7 @@ class CreateAllPluginsAppCommand extends PackageCommand {
       <String>[
         'create',
         '--template=app',
-        '--project-name=all_plugins',
+        '--project-name=$_projectName',
         '--android-language=java',
         _appDirectory.path,
       ],
@@ -134,9 +137,9 @@ class CreateAllPluginsAppCommand extends PackageCommand {
 
     final StringBuffer newManifest = StringBuffer();
     for (final String line in manifestFile.readAsLinesSync()) {
-      if (line.contains('package="com.example.all_plugins"')) {
+      if (line.contains('package="com.example.$_projectName"')) {
         newManifest
-          ..writeln('package="com.example.all_plugins"')
+          ..writeln('package="com.example.$_projectName"')
           ..writeln('xmlns:tools="http://schemas.android.com/tools">')
           ..writeln()
           ..writeln(
@@ -165,7 +168,7 @@ class CreateAllPluginsAppCommand extends PackageCommand {
     final Map<String, PathDependency> pluginDeps =
         await _getValidPathDependencies();
     final Pubspec pubspec = Pubspec(
-      'all_plugins',
+      _projectName,
       description: 'Flutter app containing all 1st party plugins.',
       version: Version.parse('1.0.0+1'),
       environment: <String, VersionConstraint>{
