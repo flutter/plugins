@@ -337,8 +337,8 @@ class Camera
           public void onOpened(@NonNull CameraDevice device) {
             cameraDevice = new DefaultCameraDeviceWrapper(device);
             try {
-              // already recording, since we are flipping the camera we must send it through
-              // VideoRenderer to keep correct orientation
+              // Since we are already recording, we are flipping the camera and must
+              // send it through the VideoRenderer to keep correct orientation.
               if (recordingVideo) {
                 startPreviewWithVideoRendererStream();
               } else {
