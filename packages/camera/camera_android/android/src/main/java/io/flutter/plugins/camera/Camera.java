@@ -126,8 +126,8 @@ class Camera
   private VideoRenderer videoRenderer;
 
   /**
-   * Whether or not the camera aligns with the initial way the camera was facing
-   * if the camera was flipped.
+   * Whether or not the camera aligns with the initial way the camera was facing if the camera was
+   * flipped.
    */
   private int initialCameraFacing;
 
@@ -1123,10 +1123,9 @@ class Camera
                 .getDeviceOrientationManager()
                 .getVideoOrientation(lockedOrientation);
 
-    if (cameraProperties.getLensFacing()
-        != initialCameraFacing) { 
-       // If we are facing the opposite way than the initial recording,
-       // we need to flip 180 degrees.
+    if (cameraProperties.getLensFacing() != initialCameraFacing) {
+      // If we are facing the opposite way than the initial recording,
+      // we need to flip 180 degrees.
       rotation = (rotation + 180) % 360;
     }
     videoRenderer.setRotation(rotation);
