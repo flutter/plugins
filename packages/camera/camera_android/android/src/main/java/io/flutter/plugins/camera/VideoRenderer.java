@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.camera;
 
-
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
