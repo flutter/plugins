@@ -126,8 +126,8 @@ class Camera
   private VideoRenderer videoRenderer;
 
   /**
-   * When we flip the camera we need to know if it aligns with the initial way the camera was facing
-   * or not
+   * Whether or not the camera aligns with the initial way the camera was facing
+   * if the camera was flipped.
    */
   private int initialCameraFacing;
 
