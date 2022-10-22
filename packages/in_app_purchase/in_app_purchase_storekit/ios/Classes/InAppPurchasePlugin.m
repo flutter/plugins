@@ -200,25 +200,23 @@
                                            : [simulatesAskToBuyInSandbox boolValue];
 
   if (@available(iOS 12.2, *)) {
-    NSDictionary *paymentDiscountMap = [paymentMap objectForKey:@"paymentDiscount"];
-    if (![paymentDiscountMap isKindOfClass:[NSNull class]]) {
-      NSString *error = nil;
-      SKPaymentDiscount *paymentDiscount =
-          [FIAObjectTranslator getSKPaymentDiscountFromMap:paymentDiscountMap withError:&error];
+    NSDictionary *paymentDiscountMap = [self getNonNullValueFromDictionary:paymentMap forKey:@"paymentDiscount"];
+    NSString *error = nil;
+    SKPaymentDiscount *paymentDiscount =
+        [FIAObjectTranslator getSKPaymentDiscountFromMap:paymentDiscountMap withError:&error];
 
-      if (error) {
-        result([FlutterError
-            errorWithCode:@"storekit_invalid_payment_discount_object"
-                  message:[NSString
-                              stringWithFormat:@"You have requested a payment and specified a "
-                                               @"payment discount with invalid properties. %@",
-                                               error]
-                  details:call.arguments]);
-        return;
-      }
-
-      payment.paymentDiscount = paymentDiscount;
+    if (error) {
+      result([FlutterError
+          errorWithCode:@"storekit_invalid_payment_discount_object"
+                message:[NSString
+                            stringWithFormat:@"You have requested a payment and specified a "
+                                             @"payment discount with invalid properties. %@",
+                                             error]
+                details:call.arguments]);
+      return;
     }
+
+    payment.paymentDiscount = paymentDiscount;
   }
 
   if (![self.paymentQueueHandler addPayment:payment]) {
@@ -368,6 +366,12 @@
     [_paymentQueueHandler showPriceConsentIfNeeded];
   }
   result(nil);
+}
+
+- (id)getNonNullValueFromDictionary:(NSDictionary *)dictionary
+                             forKey:(NSString *)key {
+  id value = dictionary[key];
+  return [value isKindOfClass:[NSNull class]] ? nil : value;
 }
 
 #pragma mark - transaction observer:
