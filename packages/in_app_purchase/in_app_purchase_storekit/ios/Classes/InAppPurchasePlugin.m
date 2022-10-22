@@ -200,7 +200,8 @@
                                            : [simulatesAskToBuyInSandbox boolValue];
 
   if (@available(iOS 12.2, *)) {
-    NSDictionary *paymentDiscountMap = [self getNonNullValueFromDictionary:paymentMap forKey:@"paymentDiscount"];
+    NSDictionary *paymentDiscountMap = [self getNonNullValueFromDictionary:paymentMap
+                                                                    forKey:@"paymentDiscount"];
     NSString *error = nil;
     SKPaymentDiscount *paymentDiscount =
         [FIAObjectTranslator getSKPaymentDiscountFromMap:paymentDiscountMap withError:&error];
@@ -208,10 +209,9 @@
     if (error) {
       result([FlutterError
           errorWithCode:@"storekit_invalid_payment_discount_object"
-                message:[NSString
-                            stringWithFormat:@"You have requested a payment and specified a "
-                                             @"payment discount with invalid properties. %@",
-                                             error]
+                message:[NSString stringWithFormat:@"You have requested a payment and specified a "
+                                                   @"payment discount with invalid properties. %@",
+                                                   error]
                 details:call.arguments]);
       return;
     }
@@ -368,8 +368,7 @@
   result(nil);
 }
 
-- (id)getNonNullValueFromDictionary:(NSDictionary *)dictionary
-                             forKey:(NSString *)key {
+- (id)getNonNullValueFromDictionary:(NSDictionary *)dictionary forKey:(NSString *)key {
   id value = dictionary[key];
   return [value isKindOfClass:[NSNull class]] ? nil : value;
 }
