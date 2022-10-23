@@ -27,7 +27,13 @@
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
 		A2C6CD5797E6A6721FDBCA1C /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36DEEA66738F64D983F76848 /* Pods_Runner.framework */; };
-		F700DD0528E652A10004836B /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F700DD0428E652A10004836B /* RunnerTests.swift */; };
+		F79BDC102905FBE300E3999D /* FIAPPaymentQueueDeleteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F79BDC0F2905FBE300E3999D /* FIAPPaymentQueueDeleteTests.m */; };
+		F79BDC122905FBF700E3999D /* FIATransactionCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F79BDC112905FBF700E3999D /* FIATransactionCacheTests.m */; };
+		F79BDC142905FBFE00E3999D /* InAppPurchasePluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F79BDC132905FBFE00E3999D /* InAppPurchasePluginTests.m */; };
+		F79BDC182905FC1800E3999D /* PaymentQueueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F79BDC172905FC1800E3999D /* PaymentQueueTests.m */; };
+		F79BDC1A2905FC1F00E3999D /* ProductRequestHandlerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F79BDC192905FC1F00E3999D /* ProductRequestHandlerTests.m */; };
+		F79BDC1C2905FC3200E3999D /* Stubs.m in Sources */ = {isa = PBXBuildFile; fileRef = F79BDC1B2905FC3200E3999D /* Stubs.m */; };
+		F79BDC1E2905FC3900E3999D /* TranslatorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F79BDC1D2905FC3900E3999D /* TranslatorTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,7 +67,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		333000ED22D3DE5D00554162 /* Warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warnings.xcconfig; sourceTree = "<group>"; };
 		335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedPluginRegistrant.swift; sourceTree = "<group>"; };
 		33CC10ED2044A3C60003C045 /* example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33CC10F02044A3C60003C045 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -82,7 +87,15 @@
 		9A4FEABF1DEF0D106FEB7974 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		B6C8FD76BB3278AA51FED870 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		F700DD0228E652A10004836B /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F700DD0428E652A10004836B /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
+		F79BDC0F2905FBE300E3999D /* FIAPPaymentQueueDeleteTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FIAPPaymentQueueDeleteTests.m; path = ../../shared/RunnerTests/FIAPPaymentQueueDeleteTests.m; sourceTree = "<group>"; };
+		F79BDC112905FBF700E3999D /* FIATransactionCacheTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FIATransactionCacheTests.m; path = ../../shared/RunnerTests/FIATransactionCacheTests.m; sourceTree = "<group>"; };
+		F79BDC132905FBFE00E3999D /* InAppPurchasePluginTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InAppPurchasePluginTests.m; path = ../../shared/RunnerTests/InAppPurchasePluginTests.m; sourceTree = "<group>"; };
+		F79BDC152905FC0500E3999D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../shared/RunnerTests/Info.plist; sourceTree = "<group>"; };
+		F79BDC172905FC1800E3999D /* PaymentQueueTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PaymentQueueTests.m; path = ../../shared/RunnerTests/PaymentQueueTests.m; sourceTree = "<group>"; };
+		F79BDC192905FC1F00E3999D /* ProductRequestHandlerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProductRequestHandlerTests.m; path = ../../shared/RunnerTests/ProductRequestHandlerTests.m; sourceTree = "<group>"; };
+		F79BDC1B2905FC3200E3999D /* Stubs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Stubs.m; path = ../../shared/RunnerTests/Stubs.m; sourceTree = "<group>"; };
+		F79BDC1D2905FC3900E3999D /* TranslatorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TranslatorTests.m; path = ../../shared/RunnerTests/TranslatorTests.m; sourceTree = "<group>"; };
+		F79BDC1F2906023C00E3999D /* Stubs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Stubs.h; path = ../../shared/RunnerTests/Stubs.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,7 +133,6 @@
 				33E5194F232828860026EE4D /* AppInfo.xcconfig */,
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
-				333000ED22D3DE5D00554162 /* Warnings.xcconfig */,
 			);
 			path = Configs;
 			sourceTree = "<group>";
@@ -192,7 +204,15 @@
 		F700DD0328E652A10004836B /* RunnerTests */ = {
 			isa = PBXGroup;
 			children = (
-				F700DD0428E652A10004836B /* RunnerTests.swift */,
+				F79BDC0F2905FBE300E3999D /* FIAPPaymentQueueDeleteTests.m */,
+				F79BDC132905FBFE00E3999D /* InAppPurchasePluginTests.m */,
+				F79BDC172905FC1800E3999D /* PaymentQueueTests.m */,
+				F79BDC1F2906023C00E3999D /* Stubs.h */,
+				F79BDC152905FC0500E3999D /* Info.plist */,
+				F79BDC1B2905FC3200E3999D /* Stubs.m */,
+				F79BDC1D2905FC3900E3999D /* TranslatorTests.m */,
+				F79BDC192905FC1F00E3999D /* ProductRequestHandlerTests.m */,
+				F79BDC112905FBF700E3999D /* FIATransactionCacheTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -266,6 +286,7 @@
 					};
 					F700DD0128E652A10004836B = {
 						CreatedOnToolsVersion = 14.0.1;
+						LastSwiftMigration = 1400;
 						TestTargetID = 33CC10EC2044A3C60003C045;
 					};
 				};
@@ -403,7 +424,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F700DD0528E652A10004836B /* RunnerTests.swift in Sources */,
+				F79BDC1A2905FC1F00E3999D /* ProductRequestHandlerTests.m in Sources */,
+				F79BDC1E2905FC3900E3999D /* TranslatorTests.m in Sources */,
+				F79BDC182905FC1800E3999D /* PaymentQueueTests.m in Sources */,
+				F79BDC1C2905FC3200E3999D /* Stubs.m in Sources */,
+				F79BDC102905FBE300E3999D /* FIAPPaymentQueueDeleteTests.m in Sources */,
+				F79BDC142905FBFE00E3999D /* InAppPurchasePluginTests.m in Sources */,
+				F79BDC122905FBF700E3999D /* FIATransactionCacheTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,7 +500,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -553,7 +580,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -600,7 +627,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -670,26 +697,27 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RunnerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests.RunnerTests;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/in_app_purchase_storekit/in_app_purchase_storekit.modulemap\" -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/integration_test/integration_test.modulemap\" -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/shared_preferences_macos/shared_preferences_macos.modulemap\"";
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/example.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/example";
 			};
 			name = Debug;
@@ -699,25 +727,26 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RunnerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests.RunnerTests;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/in_app_purchase_storekit/in_app_purchase_storekit.modulemap\" -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/integration_test/integration_test.modulemap\" -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/shared_preferences_macos/shared_preferences_macos.modulemap\"";
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/example.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/example";
 			};
 			name = Release;
@@ -727,25 +756,26 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RunnerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests.RunnerTests;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/in_app_purchase_storekit/in_app_purchase_storekit.modulemap\" -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/integration_test/integration_test.modulemap\" -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/shared_preferences_macos/shared_preferences_macos.modulemap\"";
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/example.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/example";
 			};
 			name = Profile;
