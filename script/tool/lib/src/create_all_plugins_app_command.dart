@@ -61,10 +61,19 @@ class CreateAllPluginsAppCommand extends PackageCommand {
       print('');
     }
 
+    await _genPubspecWithAllPlugins();
+
+    /// Run `flutter pub get` to generate all native build files for macOS.
+    final int genNativeBuildFilesExitCode = await _genNativeBuildFiles();
+    if (genNativeBuildFilesExitCode != 0) {
+      throw ToolExit(genNativeBuildFilesExitCode);
+    }
+
     await Future.wait(<Future<void>>[
-      _genPubspecWithAllPlugins(),
       _updateAppGradle(),
       _updateManifest(),
+      _updateMacosPodfile(),
+      _updateMacosPbxproj(),
     ]);
   }
 
@@ -258,5 +267,76 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
     }
 
     return buffer.toString();
+  }
+
+  Future<int> _genNativeBuildFiles() async {
+    // Only run on macOS.
+    // Other platforms don't need generation of additional files.
+    if (!io.Platform.isMacOS) {
+      return 0;
+    }
+
+    final io.ProcessResult result = io.Process.runSync(
+      flutterCommand,
+      <String>[
+        'pub',
+        'get',
+      ],
+      workingDirectory: _appDirectory.path,
+    );
+
+    print(result.stdout);
+    print(result.stderr);
+    return result.exitCode;
+  }
+
+  Future<void> _updateMacosPodfile() async {
+    // Only change the macOS deployment target if the host platform is macOS.
+    if (!io.Platform.isMacOS) {
+      return;
+    }
+
+    final File podfileFile =
+        app.platformDirectory(FlutterPlatform.macos).childFile('Podfile');
+    if (!podfileFile.existsSync()) {
+      throw ToolExit(64);
+    }
+
+    final StringBuffer newPodfile = StringBuffer();
+    for (final String line in podfileFile.readAsLinesSync()) {
+      if (line.contains('platform :osx')) {
+        // macOS 10.15 is required by in_app_purchase.
+        newPodfile.writeln("platform :osx, '10.15'");
+      } else {
+        newPodfile.writeln(line);
+      }
+    }
+    podfileFile.writeAsStringSync(newPodfile.toString());
+  }
+
+  Future<void> _updateMacosPbxproj() async {
+    // Only change the macOS deployment target if the host platform is macOS.
+    if (!io.Platform.isMacOS) {
+      return;
+    }
+
+    final File pbxprojFile = app
+        .platformDirectory(FlutterPlatform.macos)
+        .childDirectory('Runner.xcodeproj')
+        .childFile('project.pbxproj');
+    if (!pbxprojFile.existsSync()) {
+      throw ToolExit(64);
+    }
+
+    final StringBuffer newPbxproj = StringBuffer();
+    for (final String line in pbxprojFile.readAsLinesSync()) {
+      if (line.contains('MACOSX_DEPLOYMENT_TARGET')) {
+        // macOS 10.15 is required by in_app_purchase.
+        newPbxproj.writeln('				MACOSX_DEPLOYMENT_TARGET = 10.15;');
+      } else {
+        newPbxproj.writeln(line);
+      }
+    }
+    pbxprojFile.writeAsStringSync(newPbxproj.toString());
   }
 }
