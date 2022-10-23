@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes iOS integration test placeholder and removes exclusion.
+
 ## 0.3.2+2
 
 * Updates imports for `prefer_relative_imports`.
