@@ -75,7 +75,10 @@ class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
             purchaseParam is AppStorePurchaseParam ? purchaseParam.quantity : 1,
         applicationUsername: purchaseParam.applicationUserName,
         simulatesAskToBuyInSandbox: purchaseParam is AppStorePurchaseParam &&
-            purchaseParam.simulatesAskToBuyInSandbox));
+            purchaseParam.simulatesAskToBuyInSandbox,
+        paymentDiscount: purchaseParam is AppStorePurchaseParam
+            ? purchaseParam.discount
+            : null));
 
     return true; // There's no error feedback from iOS here to return.
   }
