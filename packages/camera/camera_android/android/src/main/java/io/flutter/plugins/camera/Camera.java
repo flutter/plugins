@@ -687,10 +687,11 @@ class Camera
 
   /** Stops the background thread and its {@link Handler}. */
   public void stopBackgroundThread() {
+    HandlerThread backgroundHandlerThread = this.backgroundHandlerThread;
     if (backgroundHandlerThread != null) {
       backgroundHandlerThread.quitSafely();
     }
-    backgroundHandlerThread = null;
+    this.backgroundHandlerThread = null;
     backgroundHandler = null;
   }
 
@@ -1189,20 +1190,26 @@ class Camera
   }
 
   private void closeCaptureSession() {
-    if (captureSession != null) {
+    CameraCaptureSession session = this.captureSession;
+    if (session != null) {
       Log.i(TAG, "closeCaptureSession");
 
-      captureSession.close();
-      captureSession = null;
+      session.close();
+      this.captureSession = null;
     }
   }
 
   public void close() {
     Log.i(TAG, "close");
 
+    final CameraDeviceWrapper cameraDevice = this.cameraDevice;
+    final ImageReader pictureImageReader = this.pictureImageReader;
+    final ImageReader imageStreamReader = this.imageStreamReader;
+    final MediaRecorder mediaRecorder = this.mediaRecorder;
+
     if (cameraDevice != null) {
       cameraDevice.close();
-      cameraDevice = null;
+      this.cameraDevice = null;
 
       // Closing the CameraDevice without closing the CameraCaptureSession is recommended
       // for quickly closing the camera:
@@ -1214,16 +1221,16 @@ class Camera
 
     if (pictureImageReader != null) {
       pictureImageReader.close();
-      pictureImageReader = null;
+      this.pictureImageReader = null;
     }
     if (imageStreamReader != null) {
       imageStreamReader.close();
-      imageStreamReader = null;
+      this.imageStreamReader = null;
     }
     if (mediaRecorder != null) {
       mediaRecorder.reset();
       mediaRecorder.release();
-      mediaRecorder = null;
+      this.mediaRecorder = null;
     }
 
     stopBackgroundThread();
