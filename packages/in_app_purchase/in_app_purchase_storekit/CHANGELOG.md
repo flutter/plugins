@@ -1,6 +1,7 @@
-## NEXT
+## 0.3.3
 
-* Fixes iOS integration test placeholder and removes exclusion.
+* Supports adding discount information to AppStorePurchaseParam. 
+* Fixes iOS Promotional Offers bug which prevents them from working.
 
 ## 0.3.2+2
 
