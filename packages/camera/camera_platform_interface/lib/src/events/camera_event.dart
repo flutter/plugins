@@ -117,7 +117,7 @@ class CameraInitializedEvent extends CameraEvent {
 
   @override
   int get hashCode => Object.hash(
-        cameraId,
+        super.hashCode,
         previewWidth,
         previewHeight,
         exposureMode,
@@ -171,7 +171,7 @@ class CameraResolutionChangedEvent extends CameraEvent {
           captureHeight == other.captureHeight;
 
   @override
-  int get hashCode => Object.hash(cameraId, captureWidth, captureHeight);
+  int get hashCode => Object.hash(super.hashCode, captureWidth, captureHeight);
 }
 
 /// An event fired when the camera is going to close.
@@ -238,7 +238,7 @@ class CameraErrorEvent extends CameraEvent {
           description == other.description;
 
   @override
-  int get hashCode => Object.hash(cameraId, description);
+  int get hashCode => Object.hash(super.hashCode, description);
 }
 
 /// An event fired when a video has finished recording.
@@ -283,5 +283,5 @@ class VideoRecordedEvent extends CameraEvent {
           maxVideoDuration == other.maxVideoDuration;
 
   @override
-  int get hashCode => Object.hash(cameraId, file, maxVideoDuration);
+  int get hashCode => Object.hash(super.hashCode, file, maxVideoDuration);
 }
