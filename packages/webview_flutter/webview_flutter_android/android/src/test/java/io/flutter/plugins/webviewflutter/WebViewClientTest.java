@@ -33,6 +33,8 @@ public class WebViewClientTest {
 
   @Mock public WebView mockWebView;
 
+  @Mock public WebViewClientCompatImpl mockWebViewClient;
+
   InstanceManager instanceManager;
   WebViewClientHostApiImpl hostApiImpl;
   WebViewClientCompatImpl webViewClient;
@@ -46,18 +48,15 @@ public class WebViewClientTest {
     final WebViewClientCreator webViewClientCreator =
         new WebViewClientCreator() {
           @Override
-          public WebViewClient createWebViewClient(
-              WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
-            webViewClient =
-                (WebViewClientCompatImpl)
-                    super.createWebViewClient(flutterApi, shouldOverrideUrlLoading);
+          public WebViewClient createWebViewClient(WebViewClientFlutterApiImpl flutterApi) {
+            webViewClient = (WebViewClientCompatImpl) super.createWebViewClient(flutterApi);
             return webViewClient;
           }
         };
 
     hostApiImpl =
         new WebViewClientHostApiImpl(instanceManager, webViewClientCreator, mockFlutterApi);
-    hostApiImpl.create(1L, true);
+    hostApiImpl.create(1L);
   }
 
   @After
@@ -106,5 +105,24 @@ public class WebViewClientTest {
     final GeneratedAndroidWebView.WebResourceRequestData data =
         WebViewClientFlutterApiImpl.createWebResourceRequestData(mockRequest);
     assertEquals(data.getRequestHeaders(), new HashMap<String, String>());
+  }
+
+  @Test
+  public void setReturnValueForShouldOverrideUrlLoading() {
+    final WebViewClientHostApiImpl webViewClientHostApi =
+        new WebViewClientHostApiImpl(
+            instanceManager,
+            new WebViewClientCreator() {
+              @Override
+              public WebViewClient createWebViewClient(WebViewClientFlutterApiImpl flutterApi) {
+                return mockWebViewClient;
+              }
+            },
+            mockFlutterApi);
+
+    instanceManager.addDartCreatedInstance(mockWebViewClient, 0);
+    webViewClientHostApi.setSynchronousReturnValueForShouldOverrideUrlLoading(0L, false);
+
+    verify(mockWebViewClient).setReturnValueForShouldOverrideUrlLoading(false);
   }
 }

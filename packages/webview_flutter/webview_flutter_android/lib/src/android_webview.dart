@@ -634,7 +634,6 @@ class JavaScriptChannel extends JavaObject {
 class WebViewClient extends JavaObject {
   /// Constructs a [WebViewClient].
   WebViewClient({
-    this.shouldOverrideUrlLoading = true,
     this.onPageStarted,
     this.onPageFinished,
     this.onReceivedRequestError,
@@ -651,7 +650,6 @@ class WebViewClient extends JavaObject {
   /// This should only be used by subclasses created by this library or to
   /// create copies.
   WebViewClient.detached({
-    this.shouldOverrideUrlLoading = true,
     this.onPageStarted,
     this.onPageFinished,
     this.onReceivedRequestError,
@@ -744,20 +742,6 @@ class WebViewClient extends JavaObject {
   @visibleForTesting
   static WebViewClientHostApiImpl api = WebViewClientHostApiImpl();
 
-  /// Whether loading a url should be overridden.
-  ///
-  /// In Java, `shouldOverrideUrlLoading()` and `shouldOverrideRequestLoading()`
-  /// callbacks must synchronously return a boolean. This sets the default
-  /// return value.
-  ///
-  /// Setting [shouldOverrideUrlLoading] to true causes the current [WebView] to
-  /// abort loading the URL, while returning false causes the [WebView] to
-  /// continue loading the URL as usual. [requestLoading] or [urlLoading] will
-  /// still be called either way.
-  ///
-  /// Defaults to true.
-  final bool shouldOverrideUrlLoading;
-
   /// Notify the host application that a page has started loading.
   ///
   /// This method is called once for each main frame load so a page with iframes
@@ -801,31 +785,40 @@ class WebViewClient extends JavaObject {
     String failingUrl,
   )? onReceivedError;
 
-  // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
-  /// When a URL is about to be loaded in the current [WebView].
+  /// When the current [WebView] wants to load a URL.
   ///
-  /// If a [WebViewClient] is not provided, by default [WebView] will ask
-  /// Activity Manager to choose the proper handler for the URL. If a
-  /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
-  /// causes the current [WebView] to abort loading the URL, while returning
-  /// false causes the [WebView] to continue loading the URL as usual.
+  /// The value set by [setSynchronousReturnValueForShouldOverrideUrlLoading]
+  /// indicates whether the [WebView] loaded the request.
   final void Function(WebView webView, WebResourceRequest request)?
       requestLoading;
 
-  // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
-  /// When a URL is about to be loaded in the current [WebView].
+  /// When the current [WebView] wants to load a URL.
   ///
-  /// If a [WebViewClient] is not provided, by default [WebView] will ask
-  /// Activity Manager to choose the proper handler for the URL. If a
-  /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
-  /// causes the current [WebView] to abort loading the URL, while returning
-  /// false causes the [WebView] to continue loading the URL as usual.
+  /// The value set by [setSynchronousReturnValueForShouldOverrideUrlLoading]
+  /// indicates whether the [WebView] loaded the URL.
   final void Function(WebView webView, String url)? urlLoading;
+
+  /// Sets the required synchronous return value for the Java method,
+  /// `WebViewClient.shouldOverrideUrlLoading(...)`.
+  ///
+  /// The Java method, `WebViewClient.shouldOverrideUrlLoading(...)`, requires
+  /// a boolean to be returned and this method sets the returned value for all
+  /// calls to the Java method.
+  ///
+  /// Setting this to true causes the current [WebView] to abort loading any URL
+  /// received by [requestLoading] or [urlLoading], while setting this to false
+  /// causes the [WebView] to continue loading a URL as usual.
+  ///
+  /// Defaults to false.
+  Future<void> setSynchronousReturnValueForShouldOverrideUrlLoading(
+    bool value,
+  ) {
+    return api.setShouldOverrideUrlLoadingReturnValueFromInstance(this, value);
+  }
 
   @override
   WebViewClient copy() {
     return WebViewClient.detached(
-      shouldOverrideUrlLoading: shouldOverrideUrlLoading,
       onPageStarted: onPageStarted,
       onPageFinished: onPageFinished,
       onReceivedRequestError: onReceivedRequestError,

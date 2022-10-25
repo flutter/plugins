@@ -204,7 +204,12 @@ abstract class JavaScriptChannelFlutterApi {
 
 @HostApi(dartHostTestHandler: 'TestWebViewClientHostApi')
 abstract class WebViewClientHostApi {
-  void create(int instanceId, bool shouldOverrideUrlLoading);
+  void create(int instanceId);
+
+  void setSynchronousReturnValueForShouldOverrideUrlLoading(
+    int instanceId,
+    bool value,
+  );
 }
 
 @FlutterApi()
