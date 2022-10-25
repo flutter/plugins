@@ -1,3 +1,7 @@
+## 2.3.3
+
+* Update android gradle plugin to 7.3.1.
+
 ## 2.3.2
 
 * Update `com.google.android.gms:play-services-maps` to 18.1.0.
