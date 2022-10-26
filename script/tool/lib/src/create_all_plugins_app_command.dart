@@ -6,6 +6,7 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -27,7 +28,8 @@ class CreateAllPluginsAppCommand extends PackageCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Directory? pluginsRoot,
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     final Directory defaultDir =
         pluginsRoot ?? packagesDir.fileSystem.currentDirectory;
     argParser.addOption(_outputDirectoryFlag,
