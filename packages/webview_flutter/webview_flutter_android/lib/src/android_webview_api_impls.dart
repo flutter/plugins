@@ -537,8 +537,19 @@ class WebViewClientHostApiImpl extends WebViewClientHostApi {
   Future<void> createFromInstance(WebViewClient instance) async {
     if (instanceManager.getIdentifier(instance) == null) {
       final int identifier = instanceManager.addDartCreatedInstance(instance);
-      return create(identifier, instance.shouldOverrideUrlLoading);
+      return create(identifier);
     }
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setShouldOverrideUrlLoadingReturnValueFromInstance(
+    WebViewClient instance,
+    bool value,
+  ) {
+    return setSynchronousReturnValueForShouldOverrideUrlLoading(
+      instanceManager.getIdentifier(instance)!,
+      value,
+    );
   }
 }
 

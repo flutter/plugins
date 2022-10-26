@@ -269,7 +269,6 @@ void main() {
 
         final WebViewClient mockWebViewClient = MockWebViewClient();
         when(mockWebViewClient.copy()).thenReturn(MockWebViewClient());
-        when(mockWebViewClient.shouldOverrideUrlLoading).thenReturn(false);
         instanceManager.addDartCreatedInstance(mockWebViewClient);
         webView.setWebViewClient(mockWebViewClient);
 
