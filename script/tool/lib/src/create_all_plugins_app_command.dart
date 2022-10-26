@@ -17,6 +17,7 @@ const String _outputDirectoryFlag = 'output-dir';
 
 const int _exitUpdateMacosPodfileFailed = 3;
 const int _exitUpdateMacosPbxprojFailed = 4;
+const int _exitGenNativeBuildFilesFailed = 5;
 
 /// A command to create an application that builds all in a single application.
 class CreateAllPluginsAppCommand extends PackageCommand {
@@ -66,10 +67,11 @@ class CreateAllPluginsAppCommand extends PackageCommand {
 
     await _genPubspecWithAllPlugins();
 
-    /// Run `flutter pub get` to generate all native build files for macOS.
-    final int genNativeBuildFilesExitCode = await _genNativeBuildFiles();
-    if (genNativeBuildFilesExitCode != 0) {
-      throw ToolExit(genNativeBuildFilesExitCode);
+    /// Run `flutter pub get` to generate all native build files.
+    final bool didGenNativeBuildFilesSucceed = await _genNativeBuildFiles();
+    if (!didGenNativeBuildFilesSucceed) {
+      printError("Failed to generate native build files via 'flutter pub get'");
+      throw ToolExit(_exitGenNativeBuildFilesFailed);
     }
 
     await Future.wait(<Future<void>>[
@@ -272,23 +274,21 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
     return buffer.toString();
   }
 
-  Future<int> _genNativeBuildFiles() async {
-    final io.ProcessResult result = io.Process.runSync(
+  Future<bool> _genNativeBuildFiles() async {
+    final int exitCode = await processRunner.runAndStream(
       flutterCommand,
       <String>[
         'pub',
         'get',
       ],
-      workingDirectory: _appDirectory.path,
+      workingDir: _appDirectory,
     );
-
-    print(result.stdout);
-    print(result.stderr);
-    return result.exitCode;
+    return exitCode == 0;
   }
 
   Future<void> _updateMacosPodfile() async {
-    // Only change the macOS deployment target if the host platform is macOS.
+    /// Only change the macOS deployment target if the host platform is macOS.
+    /// The Podfile is not generated on other platforms.
     if (!io.Platform.isMacOS) {
       return;
     }
@@ -296,6 +296,7 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
     final File podfileFile =
         app.platformDirectory(FlutterPlatform.macos).childFile('Podfile');
     if (!podfileFile.existsSync()) {
+      printError("Can't find Podfile for macOS");
       throw ToolExit(_exitUpdateMacosPodfileFailed);
     }
 
@@ -317,6 +318,7 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
         .childDirectory('Runner.xcodeproj')
         .childFile('project.pbxproj');
     if (!pbxprojFile.existsSync()) {
+      printError("Can't find project.pbxproj for macOS");
       throw ToolExit(_exitUpdateMacosPbxprojFailed);
     }
 
