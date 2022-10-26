@@ -439,6 +439,7 @@
 }
 
 - (void)testRegisterPaymentQueueDelegate {
+#if TARGET_OS_IOS
   if (@available(iOS 13, *)) {
     FlutterMethodCall *call =
         [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue registerDelegate]"
@@ -464,6 +465,7 @@
     // Verify the delegate is not nil after we registered one.
     XCTAssertNotNil(self.plugin.paymentQueueHandler.delegate);
   }
+#endif
 }
 
 - (void)testRemovePaymentQueueDelegate {
@@ -496,6 +498,7 @@
 }
 
 - (void)testShowPriceConsentIfNeeded {
+#if TARGET_OS_IOS
   FlutterMethodCall *call =
       [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue showPriceConsentIfNeeded]"
                                         arguments:nil];
@@ -515,6 +518,7 @@
     OCMVerify(never(), [mockQueueHandler showPriceConsentIfNeeded]);
   }
 #pragma clang diagnostic pop
+#endif
 }
 
 @end

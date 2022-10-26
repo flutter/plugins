@@ -352,8 +352,6 @@
     _paymentQueueHandler.delegate = _paymentQueueDelegate;
   }
   result(nil);
-#else
-  result(nil);
 #endif
 }
 
@@ -371,10 +369,8 @@
   if (@available(iOS 13.4, *)) {
     [_paymentQueueHandler showPriceConsentIfNeeded];
   }
-  result(nil);
-#else
-  result(nil);
 #endif
+  result(nil);
 }
 
 - (id)getNonNullValueFromDictionary:(NSDictionary *)dictionary forKey:(NSString *)key {

@@ -86,6 +86,7 @@ API_UNAVAILABLE(tvos, macos, watchos)
 }
 
 - (void)testShouldShowPriceConsentIfNeeded {
+#if TARGET_OS_IOS
   if (@available(iOS 13.4, *)) {
     FIAPPaymentQueueDelegate *delegate =
         [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
@@ -100,9 +101,11 @@ API_UNAVAILABLE(tvos, macos, watchos)
 
     XCTAssertFalse(shouldShow);
   }
+#endif
 }
 
 - (void)testShouldShowPriceConsentIfNeeded_should_default_to_yes {
+#if TARGET_OS_IOS
   if (@available(iOS 13.4, *)) {
     FIAPPaymentQueueDelegate *delegate =
         [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
@@ -116,6 +119,7 @@ API_UNAVAILABLE(tvos, macos, watchos)
 
     XCTAssertTrue(shouldShow);
   }
+#endif
 }
 
 @end
