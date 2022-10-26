@@ -15,6 +15,9 @@ import 'common/repository_package.dart';
 
 const String _outputDirectoryFlag = 'output-dir';
 
+const int _exitUpdateMacosPodfileFailed = 3;
+const int _exitUpdateMacosPbxprojFailed = 4;
+
 /// A command to create an application that builds all in a single application.
 class CreateAllPluginsAppCommand extends PackageCommand {
   /// Creates an instance of the builder command.
@@ -270,12 +273,6 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
   }
 
   Future<int> _genNativeBuildFiles() async {
-    // Only run on macOS.
-    // Other platforms don't need generation of additional files.
-    if (!io.Platform.isMacOS) {
-      return 0;
-    }
-
     final io.ProcessResult result = io.Process.runSync(
       flutterCommand,
       <String>[
@@ -291,15 +288,10 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
   }
 
   Future<void> _updateMacosPodfile() async {
-    // Only change the macOS deployment target if the host platform is macOS.
-    if (!io.Platform.isMacOS) {
-      return;
-    }
-
     final File podfileFile =
         app.platformDirectory(FlutterPlatform.macos).childFile('Podfile');
     if (!podfileFile.existsSync()) {
-      throw ToolExit(64);
+      throw ToolExit(_exitUpdateMacosPodfileFailed);
     }
 
     final StringBuffer newPodfile = StringBuffer();
@@ -315,17 +307,12 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
   }
 
   Future<void> _updateMacosPbxproj() async {
-    // Only change the macOS deployment target if the host platform is macOS.
-    if (!io.Platform.isMacOS) {
-      return;
-    }
-
     final File pbxprojFile = app
         .platformDirectory(FlutterPlatform.macos)
         .childDirectory('Runner.xcodeproj')
         .childFile('project.pbxproj');
     if (!pbxprojFile.existsSync()) {
-      throw ToolExit(64);
+      throw ToolExit(_exitUpdateMacosPbxprojFailed);
     }
 
     final StringBuffer newPbxproj = StringBuffer();
