@@ -103,23 +103,28 @@ void main() {
           baselinePubspec.environment?[dartSdkKey]);
     });
 
-    test('macOS deployment target is modified', () async {
+    test('macOS deployment target is modified in Podfile', () async {
       await runCapturingPrint(runner, <String>['all-plugins-app']);
-
       final List<String> podfile = command.app
           .platformDirectory(FlutterPlatform.macos)
           .childFile('Podfile')
-          .readAsLinesSync();
-      final List<String> pbxproj = command.app
-          .platformDirectory(FlutterPlatform.macos)
-          .childDirectory('Runner.xcodeproj')
-          .childFile('project.pbxproj')
           .readAsLinesSync();
 
       expect(
           podfile,
           everyElement((String line) =>
               !line.contains('platform :osx') || line.contains("'10.15'")));
+    },
+        // Podfile is only generated on macOS.
+        skip: !io.Platform.isMacOS);
+
+    test('macOS deployment target is modified in pbxproj', () async {
+      await runCapturingPrint(runner, <String>['all-plugins-app']);
+      final List<String> pbxproj = command.app
+          .platformDirectory(FlutterPlatform.macos)
+          .childDirectory('Runner.xcodeproj')
+          .childFile('project.pbxproj')
+          .readAsLinesSync();
 
       expect(
           pbxproj,

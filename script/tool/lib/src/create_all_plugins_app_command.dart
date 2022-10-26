@@ -288,6 +288,11 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
   }
 
   Future<void> _updateMacosPodfile() async {
+    // Only change the macOS deployment target if the host platform is macOS.
+    if (!io.Platform.isMacOS) {
+      return;
+    }
+
     final File podfileFile =
         app.platformDirectory(FlutterPlatform.macos).childFile('Podfile');
     if (!podfileFile.existsSync()) {
