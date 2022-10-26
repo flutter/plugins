@@ -185,6 +185,7 @@ bool _isExampleBuildFile(List<String> pathComponents) {
     return false;
   }
   return pathComponents.contains('gradle-wrapper.properties') ||
+      pathComponents.contains('gradle.properties') ||
       pathComponents.contains('build.gradle') ||
       pathComponents.contains('Runner.xcodeproj') ||
       pathComponents.contains('CMakeLists.txt');
