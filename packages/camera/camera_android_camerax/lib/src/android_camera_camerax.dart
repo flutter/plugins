@@ -18,4 +18,20 @@ class AndroidCameraCameraX extends CameraPlatform {
   Future<List<CameraDescription>> availableCameras() async {
     throw UnimplementedError('availableCameras() is not implemented.');
   }
+
+  /// [?] buildPreview pseudocode
+  /// Returns a widget showing a live camera preview.
+  @override
+  Widget buildPreview(int cameraId) {
+    ProcessCameraProvider processCameraProvider = processCameraProvider.getInstance();
+    Preview preview = new Preview();
+    CameraSelector cameraSelector = new CameraSelector(CameraSelector.LENS_FACING_FRONT);
+    
+    // [A] //
+    int textureId = preview.setSurfaceProvider();
+
+    // Will save as a field since more operations will need this camera
+    Camera camera = processCameraProvider.bindToLifecycle(cameraSelector, preview);
+    return Texture(textureId: textureId);
+  }
 }

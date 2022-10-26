@@ -70,3 +70,16 @@ abstract class ProcessCameraProviderHostApi {
 abstract class ProcessCameraProviderFlutterApi {
   void create(int identifier);
 }
+
+abstract class PreviewHostApi {
+  int create(int identifier, int rotation);
+
+  int setSurfaceProvider(int identifier);
+
+  void setTargetRotation(int identifier, int targetRotation);
+}
+
+@FlutterApi()
+abstract class PreviewFlutterApi {
+  void create(int identifier, int rotation);
+}

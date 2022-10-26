@@ -25,6 +25,8 @@ class AndroidCameraXCameraFlutterApis {
         cameraSelectorFlutterApi ?? CameraSelectorFlutterApiImpl();
     this.processCameraProviderFlutterApi = processCameraProviderFlutterApi ??
         ProcessCameraProviderFlutterApiImpl();
+    this.previewFlutterApi = previewFlutterApi ??
+        PreviewFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -48,6 +50,9 @@ class AndroidCameraXCameraFlutterApis {
   late final ProcessCameraProviderFlutterApiImpl
       processCameraProviderFlutterApi;
 
+  /// Flutter Api for [Preview].
+  late final PreviewFlutterApiImpl previewFlutterApi;
+
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
     if (!_haveBeenSetUp) {
@@ -55,6 +60,7 @@ class AndroidCameraXCameraFlutterApis {
       CameraInfoFlutterApi.setup(cameraInfoFlutterApi);
       CameraSelectorFlutterApi.setup(cameraSelectorFlutterApi);
       ProcessCameraProviderFlutterApi.setup(processCameraProviderFlutterApi);
+      PreviewFlutterApi.setup(previewFlutterApi);
       _haveBeenSetUp = true;
     }
   }
