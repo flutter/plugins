@@ -1,5 +1,6 @@
-## 0.9.2+1
+## 0.9.2+2
 
+* Improves API docs and examples.
 * Changes XTypeGroup initialization from final to const.
 * Updates minimum Flutter version to 2.10.
 
