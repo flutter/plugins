@@ -79,6 +79,7 @@ void main() {
         'packages/a_plugin/example/linux/flutter/CMakeLists.txt',
         'packages/a_plugin/example/macos/Runner.xcodeproj/project.pbxproj',
         'packages/a_plugin/example/windows/CMakeLists.txt',
+        'packages/a_plugin/example/pubspec.yaml',
       ];
 
       final PackageChangeState state = await checkPackageChangeState(package,

@@ -188,7 +188,8 @@ bool _isExampleBuildFile(List<String> pathComponents) {
       pathComponents.contains('gradle.properties') ||
       pathComponents.contains('build.gradle') ||
       pathComponents.contains('Runner.xcodeproj') ||
-      pathComponents.contains('CMakeLists.txt');
+      pathComponents.contains('CMakeLists.txt') ||
+      pathComponents.contains('pubspec.yaml');
 }
 
 Future<bool> _isGradleTestDependencyChange(List<String> pathComponents,
