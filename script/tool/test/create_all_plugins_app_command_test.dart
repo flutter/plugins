@@ -20,6 +20,7 @@ void main() {
     late FileSystem fileSystem;
     late Directory testRoot;
     late Directory packagesDir;
+    late RecordingProcessRunner processRunner;
 
     setUp(() {
       // Since the core of this command is a call to 'flutter create', the test
@@ -28,9 +29,11 @@ void main() {
       fileSystem = const LocalFileSystem();
       testRoot = fileSystem.systemTempDirectory.createTempSync();
       packagesDir = testRoot.childDirectory('packages');
+      processRunner = RecordingProcessRunner();
 
       command = CreateAllPluginsAppCommand(
         packagesDir,
+        processRunner: processRunner,
         pluginsRoot: testRoot,
       );
       runner = CommandRunner<void>(

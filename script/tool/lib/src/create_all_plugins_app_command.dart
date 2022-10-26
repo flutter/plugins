@@ -11,6 +11,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
 import 'common/package_command.dart';
+import 'common/process_runner.dart';
 import 'common/repository_package.dart';
 
 const String _outputDirectoryFlag = 'output-dir';
@@ -24,8 +25,9 @@ class CreateAllPluginsAppCommand extends PackageCommand {
   /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
     Directory packagesDir, {
+    ProcessRunner processRunner = const ProcessRunner(),
     Directory? pluginsRoot,
-  }) : super(packagesDir) {
+  }) : super(packagesDir, processRunner: processRunner) {
     final Directory defaultDir =
         pluginsRoot ?? packagesDir.fileSystem.currentDirectory;
     argParser.addOption(_outputDirectoryFlag,
