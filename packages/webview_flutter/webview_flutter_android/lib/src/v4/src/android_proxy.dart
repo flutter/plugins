@@ -28,7 +28,6 @@ class AndroidWebViewProxy {
 
   /// Constructs a [android_webview.WebViewClient].
   final android_webview.WebViewClient Function({
-    bool shouldOverrideUrlLoading,
     void Function(android_webview.WebView webView, String url)? onPageStarted,
     void Function(android_webview.WebView webView, String url)? onPageFinished,
     void Function(

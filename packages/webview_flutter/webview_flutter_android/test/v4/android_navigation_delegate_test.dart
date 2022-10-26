@@ -14,11 +14,11 @@ import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_i
 void main() {
   group('AndroidNavigationDelegate', () {
     test('onPageFinished', () {
-      final AndroidNavigationDelegate webKitDelegate =
+      final AndroidNavigationDelegate androidNavigationDelegate =
           AndroidNavigationDelegate(_buildCreationParams());
 
       late final String callbackUrl;
-      webKitDelegate.setOnPageFinished((String url) => callbackUrl = url);
+      androidNavigationDelegate.setOnPageFinished((String url) => callbackUrl = url);
 
       CapturingWebViewClient.lastCreatedDelegate.onPageFinished!(
         android_webview.WebView.detached(),
@@ -29,11 +29,11 @@ void main() {
     });
 
     test('onPageStarted', () {
-      final AndroidNavigationDelegate webKitDelegate =
+      final AndroidNavigationDelegate androidNavigationDelegate =
           AndroidNavigationDelegate(_buildCreationParams());
 
       late final String callbackUrl;
-      webKitDelegate.setOnPageStarted((String url) => callbackUrl = url);
+      androidNavigationDelegate.setOnPageStarted((String url) => callbackUrl = url);
 
       CapturingWebViewClient.lastCreatedDelegate.onPageStarted!(
         android_webview.WebView.detached(),
@@ -44,11 +44,11 @@ void main() {
     });
 
     test('onWebResourceError from onReceivedRequestError', () {
-      final AndroidNavigationDelegate webKitDelegate =
+      final AndroidNavigationDelegate androidNavigationDelegate =
           AndroidNavigationDelegate(_buildCreationParams());
 
       late final WebResourceError callbackError;
-      webKitDelegate.setOnWebResourceError(
+      androidNavigationDelegate.setOnWebResourceError(
           (WebResourceError error) => callbackError = error);
 
       CapturingWebViewClient.lastCreatedDelegate.onReceivedRequestError!(
@@ -74,11 +74,11 @@ void main() {
     });
 
     test('onWebResourceError from onRequestError', () {
-      final AndroidNavigationDelegate webKitDelegate =
+      final AndroidNavigationDelegate androidNavigationDelegate =
           AndroidNavigationDelegate(_buildCreationParams());
 
       late final WebResourceError callbackError;
-      webKitDelegate.setOnWebResourceError(
+      androidNavigationDelegate.setOnWebResourceError(
           (WebResourceError error) => callbackError = error);
 
       CapturingWebViewClient.lastCreatedDelegate.onReceivedError!(
@@ -97,11 +97,11 @@ void main() {
     test(
         'onNavigationRequest from requestLoading should not be called when loadUrlCallback is not specified',
         () {
-      final AndroidNavigationDelegate webKitDelegate =
+      final AndroidNavigationDelegate androidNavigationDelegate =
           AndroidNavigationDelegate(_buildCreationParams());
 
       NavigationRequest? callbackNavigationRequest;
-      webKitDelegate
+      androidNavigationDelegate
           .setOnNavigationRequest((NavigationRequest navigationRequest) {
         callbackNavigationRequest = navigationRequest;
         return NavigationDecision.prevent;
@@ -126,13 +126,16 @@ void main() {
         'onLoadUrl from requestLoading should not be called when navigationRequestCallback is not specified',
         () {
       final Completer<void> completer = Completer<void>();
-      AndroidNavigationDelegate(_buildCreationParams(loadUrlCallback: (
+      final AndroidNavigationDelegate androidNavigationDelegate = AndroidNavigationDelegate(_buildCreationParams());
+
+      androidNavigationDelegate.setOnLoadUrl((
         String url,
         Map<String, String>? headers,
       ) {
         completer.complete();
         return completer.future;
-      }));
+      });
+
 
       CapturingWebViewClient.lastCreatedDelegate.requestLoading!(
         android_webview.WebView.detached(),
@@ -153,17 +156,19 @@ void main() {
         'onLoadUrl from requestLoading should not be called when onNavigationRequestCallback returns NavigationDecision.prevent',
         () {
       final Completer<void> completer = Completer<void>();
-      final AndroidNavigationDelegate webKitDelegate =
-          AndroidNavigationDelegate(_buildCreationParams(loadUrlCallback: (
+      final AndroidNavigationDelegate androidNavigationDelegate =
+          AndroidNavigationDelegate(_buildCreationParams());
+
+      androidNavigationDelegate.setOnLoadUrl((
         String url,
         Map<String, String>? headers,
       ) {
         completer.complete();
         return completer.future;
-      }));
+      });
 
       late final NavigationRequest callbackNavigationRequest;
-      webKitDelegate
+      androidNavigationDelegate
           .setOnNavigationRequest((NavigationRequest navigationRequest) {
         callbackNavigationRequest = navigationRequest;
         return NavigationDecision.prevent;
@@ -192,8 +197,10 @@ void main() {
       final Completer<void> completer = Completer<void>();
       late final String loadUrlCallbackUrl;
       late final Map<String, String>? loadUrlCallbackHeaders;
-      final AndroidNavigationDelegate webKitDelegate =
-          AndroidNavigationDelegate(_buildCreationParams(loadUrlCallback: (
+      final AndroidNavigationDelegate androidNavigationDelegate =
+          AndroidNavigationDelegate(_buildCreationParams());
+
+      androidNavigationDelegate.setOnLoadUrl((
         String url,
         Map<String, String>? headers,
       ) {
@@ -201,10 +208,10 @@ void main() {
         loadUrlCallbackHeaders = headers;
         completer.complete();
         return completer.future;
-      }));
+      });
 
       late final NavigationRequest callbackNavigationRequest;
-      webKitDelegate
+      androidNavigationDelegate
           .setOnNavigationRequest((NavigationRequest navigationRequest) {
         callbackNavigationRequest = navigationRequest;
         return NavigationDecision.navigate;
@@ -232,11 +239,11 @@ void main() {
     test(
         'onNavigationRequest from urlLoading should not be called when loadUrlCallback is not specified',
         () {
-      final AndroidNavigationDelegate webKitDelegate =
+      final AndroidNavigationDelegate androidNavigationDelegate =
           AndroidNavigationDelegate(_buildCreationParams());
 
       NavigationRequest? callbackNavigationRequest;
-      webKitDelegate
+      androidNavigationDelegate
           .setOnNavigationRequest((NavigationRequest navigationRequest) {
         callbackNavigationRequest = navigationRequest;
         return NavigationDecision.prevent;
@@ -254,13 +261,15 @@ void main() {
         'onLoadUrl from urlLoading should not be called when navigationRequestCallback is not specified',
         () {
       final Completer<void> completer = Completer<void>();
-      AndroidNavigationDelegate(_buildCreationParams(loadUrlCallback: (
+      final AndroidNavigationDelegate androidNavigationDelegate = AndroidNavigationDelegate(_buildCreationParams());
+
+      androidNavigationDelegate.setOnLoadUrl((
         String url,
         Map<String, String>? headers,
       ) {
         completer.complete();
         return completer.future;
-      }));
+      });
 
       CapturingWebViewClient.lastCreatedDelegate.urlLoading!(
         android_webview.WebView.detached(),
@@ -274,17 +283,19 @@ void main() {
         'onLoadUrl from urlLoading should not be called when onNavigationRequestCallback returns NavigationDecision.prevent',
         () {
       final Completer<void> completer = Completer<void>();
-      final AndroidNavigationDelegate webKitDelegate =
-          AndroidNavigationDelegate(_buildCreationParams(loadUrlCallback: (
+      final AndroidNavigationDelegate androidNavigationDelegate =
+          AndroidNavigationDelegate(_buildCreationParams());
+
+      androidNavigationDelegate.setOnLoadUrl((
         String url,
         Map<String, String>? headers,
       ) {
         completer.complete();
         return completer.future;
-      }));
+      });
 
       late final NavigationRequest callbackNavigationRequest;
-      webKitDelegate
+      androidNavigationDelegate
           .setOnNavigationRequest((NavigationRequest navigationRequest) {
         callbackNavigationRequest = navigationRequest;
         return NavigationDecision.prevent;
@@ -306,8 +317,10 @@ void main() {
       final Completer<void> completer = Completer<void>();
       late final String loadUrlCallbackUrl;
       late final Map<String, String>? loadUrlCallbackHeaders;
-      final AndroidNavigationDelegate webKitDelegate =
-          AndroidNavigationDelegate(_buildCreationParams(loadUrlCallback: (
+      final AndroidNavigationDelegate androidNavigationDelegate =
+          AndroidNavigationDelegate(_buildCreationParams());
+
+      androidNavigationDelegate.setOnLoadUrl((
         String url,
         Map<String, String>? headers,
       ) {
@@ -315,10 +328,10 @@ void main() {
         loadUrlCallbackHeaders = headers;
         completer.complete();
         return completer.future;
-      }));
+      });
 
       late final NavigationRequest callbackNavigationRequest;
-      webKitDelegate
+      androidNavigationDelegate
           .setOnNavigationRequest((NavigationRequest navigationRequest) {
         callbackNavigationRequest = navigationRequest;
         return NavigationDecision.navigate;
@@ -336,12 +349,23 @@ void main() {
       expect(completer.isCompleted, true);
     });
 
-    test('setOnProgress', () {
-      final AndroidNavigationDelegate webKitDelegate =
+    test('setOnNavigationRequest should override URL loading', () {
+      final AndroidNavigationDelegate androidNavigationDelegate =
+          AndroidNavigationDelegate(_buildCreationParams());
+
+      androidNavigationDelegate.setOnNavigationRequest(
+        (NavigationRequest request) => NavigationDecision.navigate,
+      );
+
+      expect(CapturingWebViewClient.lastCreatedDelegate.synchronousReturnValueForShouldOverrideUrlLoading, isTrue);
+    });
+
+    test('onProgress', () {
+      final AndroidNavigationDelegate androidNavigationDelegate =
           AndroidNavigationDelegate(_buildCreationParams());
 
       late final int callbackProgress;
-      webKitDelegate
+      androidNavigationDelegate
           .setOnProgress((int progress) => callbackProgress = progress);
 
       CapturingWebChromeClient.lastCreatedDelegate.onProgressChanged!(
@@ -354,13 +378,10 @@ void main() {
   });
 }
 
-AndroidNavigationDelegateCreationParams _buildCreationParams({
-  LoadUrlCallback? loadUrlCallback,
-}) {
+AndroidNavigationDelegateCreationParams _buildCreationParams() {
   return AndroidNavigationDelegateCreationParams
       .fromPlatformNavigationDelegateCreationParams(
     const PlatformNavigationDelegateCreationParams(),
-    loadUrl: loadUrlCallback,
     androidWebViewProxy: const AndroidWebViewProxy(
       createAndroidWebChromeClient: CapturingWebChromeClient.new,
       createAndroidWebViewClient: CapturingWebViewClient.new,
@@ -376,12 +397,19 @@ class CapturingWebViewClient extends android_webview.WebViewClient {
     super.onReceivedError,
     super.onReceivedRequestError,
     super.requestLoading,
-    super.shouldOverrideUrlLoading,
     super.urlLoading,
   }) : super.detached() {
     lastCreatedDelegate = this;
   }
+
   static CapturingWebViewClient lastCreatedDelegate = CapturingWebViewClient();
+
+  bool synchronousReturnValueForShouldOverrideUrlLoading = false;
+
+  @override
+  Future<void> setSynchronousReturnValueForShouldOverrideUrlLoading(bool value) async {
+    synchronousReturnValueForShouldOverrideUrlLoading = value;
+  }
 }
 
 // Records the last created instance of itself.

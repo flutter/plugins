@@ -81,7 +81,6 @@ class AndroidNavigationDelegateCreationParams
     extends PlatformNavigationDelegateCreationParams {
   /// Creates a new [AndroidNavigationDelegateCreationParams] instance.
   const AndroidNavigationDelegateCreationParams._({
-    this.loadUrl,
     @visibleForTesting this.androidWebViewProxy = const AndroidWebViewProxy(),
   }) : super();
 
@@ -90,18 +89,13 @@ class AndroidNavigationDelegateCreationParams
     // Recommended placeholder to prevent being broken by platform interface.
     // ignore: avoid_unused_constructor_parameters
     PlatformNavigationDelegateCreationParams params, {
-    LoadUrlCallback? loadUrl,
     @visibleForTesting
         AndroidWebViewProxy androidWebViewProxy = const AndroidWebViewProxy(),
   }) {
     return AndroidNavigationDelegateCreationParams._(
-      loadUrl: loadUrl,
       androidWebViewProxy: androidWebViewProxy,
     );
   }
-
-  /// Callback responsible for loading the [url] after a navigation request is approved.
-  final LoadUrlCallback? loadUrl;
 
   /// Handles constructing objects and calling static methods for the Android WebView
   /// native library.
@@ -211,19 +205,17 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
   ProgressCallback? _onProgress;
   WebResourceErrorCallback? _onWebResourceError;
   NavigationRequestCallback? _onNavigationRequest;
-
-  AndroidNavigationDelegateCreationParams get _androidParams =>
-      params as AndroidNavigationDelegateCreationParams;
-
-  bool get _handlesNavigation =>
-      _onNavigationRequest != null && _androidParams.loadUrl != null;
+  LoadUrlCallback? _onLoadUrl;
 
   void _handleNavigation(String url, Map<String, String> headers) {
-    if (!_handlesNavigation) {
+    final LoadUrlCallback? onLoadUrl = _onLoadUrl;
+    final NavigationRequestCallback? onNavigationRequest = _onNavigationRequest;
+
+    if (onNavigationRequest == null || onLoadUrl == null) {
       return;
     }
 
-    final FutureOr<NavigationDecision> returnValue = _onNavigationRequest!(
+    final FutureOr<NavigationDecision> returnValue = onNavigationRequest(
       NavigationRequest(
         isMainFrame: true,
         url: url,
@@ -232,14 +224,21 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
 
     if (returnValue is NavigationDecision &&
         returnValue == NavigationDecision.navigate) {
-      _androidParams.loadUrl!(url, headers);
+      onLoadUrl(url, headers);
     } else if (returnValue is Future<NavigationDecision>) {
       returnValue.then((NavigationDecision shouldLoadUrl) {
         if (shouldLoadUrl == NavigationDecision.navigate) {
-          _androidParams.loadUrl!(url, headers);
+          onLoadUrl(url, headers);
         }
       });
     }
+  }
+
+  /// Invoked when loading the [url] after a navigation request is approved.
+  Future<void> setOnLoadUrl(
+    LoadUrlCallback onLoadUrl,
+  ) async {
+    _onLoadUrl = onLoadUrl;
   }
 
   @override
@@ -247,6 +246,7 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
     NavigationRequestCallback onNavigationRequest,
   ) async {
     _onNavigationRequest = onNavigationRequest;
+    _webViewClient.setSynchronousReturnValueForShouldOverrideUrlLoading(true);
   }
 
   @override
