@@ -205,7 +205,7 @@ class CreateAllPluginsAppCommand extends PackageCommand {
       },
       dependencyOverrides: pluginDeps,
     );
-    app.pubspecFile.writeAsStringSync(_pubspecToString(pubspec), flush: true);
+    app.pubspecFile.writeAsStringSync(_pubspecToString(pubspec));
   }
 
   Future<Map<String, PathDependency>> _getValidPathDependencies() async {
