@@ -405,7 +405,8 @@ class SKPaymentWrapper {
       'applicationUsername': applicationUsername,
       'requestData': requestData,
       'quantity': quantity,
-      'simulatesAskToBuyInSandbox': simulatesAskToBuyInSandbox
+      'simulatesAskToBuyInSandbox': simulatesAskToBuyInSandbox,
+      'paymentDiscount': paymentDiscount?.toMap(),
     };
   }
 

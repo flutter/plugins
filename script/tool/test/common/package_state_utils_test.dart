@@ -61,13 +61,25 @@ void main() {
           createFakePlugin('a_plugin', packagesDir);
 
       const List<String> changedFiles = <String>[
+        'packages/a_plugin/CHANGELOG.md',
+        // Analysis.
         'packages/a_plugin/example/android/lint-baseline.xml',
+        // Tests.
         'packages/a_plugin/example/android/src/androidTest/foo/bar/FooTest.java',
         'packages/a_plugin/example/ios/RunnerTests/Foo.m',
         'packages/a_plugin/example/ios/RunnerUITests/info.plist',
-        'packages/a_plugin/tool/a_development_tool.dart',
+        // Test scripts.
         'packages/a_plugin/run_tests.sh',
-        'packages/a_plugin/CHANGELOG.md',
+        // Tools.
+        'packages/a_plugin/tool/a_development_tool.dart',
+        // Example build files.
+        'packages/a_plugin/example/android/build.gradle',
+        'packages/a_plugin/example/android/gradle/wrapper/gradle-wrapper.properties',
+        'packages/a_plugin/example/ios/Runner.xcodeproj/project.pbxproj',
+        'packages/a_plugin/example/linux/flutter/CMakeLists.txt',
+        'packages/a_plugin/example/macos/Runner.xcodeproj/project.pbxproj',
+        'packages/a_plugin/example/windows/CMakeLists.txt',
+        'packages/a_plugin/example/pubspec.yaml',
       ];
 
       final PackageChangeState state = await checkPackageChangeState(package,

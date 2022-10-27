@@ -22,7 +22,7 @@
 # repository.
 
 analyzer:
-  strong-mode:
+  language:
     strict-casts: true
     strict-raw-types: true
   errors:

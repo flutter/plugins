@@ -30,6 +30,7 @@ class FakeStoreKitPlatform {
   PlatformException? restoreException;
   SKError? testRestoredError;
   bool queueIsActive = false;
+  Map<String, dynamic> discountReceived = <String, dynamic>{};
 
   void reset() {
     transactions = <SKPaymentTransactionWrapper>[];
@@ -54,6 +55,7 @@ class FakeStoreKitPlatform {
     restoreException = null;
     testRestoredError = null;
     queueIsActive = false;
+    discountReceived = <String, dynamic>{};
   }
 
   SKPaymentTransactionWrapper createPendingTransaction(String id,
@@ -169,6 +171,18 @@ class FakeStoreKitPlatform {
       case '-[InAppPurchasePlugin addPayment:result:]':
         final String id = call.arguments['productIdentifier'] as String;
         final int quantity = call.arguments['quantity'] as int;
+
+        // Keep the received paymentDiscount parameter when testing payment with discount.
+        if (call.arguments['applicationUsername'] == 'userWithDiscount') {
+          if (call.arguments['paymentDiscount'] != null) {
+            final Map<dynamic, dynamic> discountArgument =
+                call.arguments['paymentDiscount'] as Map<dynamic, dynamic>;
+            discountReceived = discountArgument.cast<String, dynamic>();
+          } else {
+            discountReceived = <String, dynamic>{};
+          }
+        }
+
         final SKPaymentTransactionWrapper transaction =
             createPendingTransaction(id, quantity: quantity);
         transactions.add(transaction);
