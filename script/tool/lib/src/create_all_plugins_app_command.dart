@@ -71,18 +71,26 @@ class CreateAllPluginsAppCommand extends PackageCommand {
 
     await _genPubspecWithAllPlugins();
 
-    /// Run `flutter pub get` to generate all native build files.
-    final bool didGenNativeBuildFilesSucceed = await _genNativeBuildFiles();
-    if (!didGenNativeBuildFilesSucceed) {
-      printError("Failed to generate native build files via 'flutter pub get'");
-      throw ToolExit(_exitGenNativeBuildFilesFailed);
+    // Run `flutter pub get` to generate all native build files.
+    // TODO(stuartmorgan): This hangs on Windows for some reason. Since it's
+    // currently not needed on Windows, skip it there, but we should investigate
+    // further and/or implement https://github.com/flutter/flutter/issues/93407,
+    // and remove the need for this conditional.
+    if (!platform.isWindows) {
+      if (!await _genNativeBuildFiles()) {
+        printError(
+            "Failed to generate native build files via 'flutter pub get'");
+        throw ToolExit(_exitGenNativeBuildFilesFailed);
+      }
     }
 
     await Future.wait(<Future<void>>[
       _updateAppGradle(),
       _updateManifest(),
-      _updateMacosPodfile(),
       _updateMacosPbxproj(),
+      // This step requires the native file generation triggered by
+      // flutter pub get above, so can't currently be run on Windows.
+      if (!platform.isWindows) _updateMacosPodfile(),
     ]);
   }
 
@@ -197,7 +205,7 @@ class CreateAllPluginsAppCommand extends PackageCommand {
       },
       dependencyOverrides: pluginDeps,
     );
-    app.pubspecFile.writeAsStringSync(_pubspecToString(pubspec));
+    app.pubspecFile.writeAsStringSync(_pubspecToString(pubspec), flush: true);
   }
 
   Future<Map<String, PathDependency>> _getValidPathDependencies() async {
@@ -281,10 +289,7 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
   Future<bool> _genNativeBuildFiles() async {
     final int exitCode = await processRunner.runAndStream(
       flutterCommand,
-      <String>[
-        'pub',
-        'get',
-      ],
+      <String>['pub', 'get'],
       workingDir: _appDirectory,
     );
     return exitCode == 0;
@@ -293,7 +298,7 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
   Future<void> _updateMacosPodfile() async {
     /// Only change the macOS deployment target if the host platform is macOS.
     /// The Podfile is not generated on other platforms.
-    if (!io.Platform.isMacOS) {
+    if (!platform.isMacOS) {
       return;
     }
 

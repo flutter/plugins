@@ -171,7 +171,9 @@ platform :osx, '10.11'
                 const <String>['pub', 'get'],
                 testRoot.childDirectory('all_plugins').path),
           ]));
-    });
+    },
+        // See comment about Windows in create_all_plugins_app_command.dart
+        skip: io.Platform.isWindows);
 
     test('fails if flutter pub get fails', () async {
       createFakePlugin('plugina', packagesDir);
@@ -193,7 +195,9 @@ platform :osx, '10.11'
             contains(
                 "Failed to generate native build files via 'flutter pub get'"),
           ]));
-    });
+    },
+        // See comment about Windows in create_all_plugins_app_command.dart
+        skip: io.Platform.isWindows);
 
     test('handles --output-dir', () async {
       createFakePlugin('plugina', packagesDir);
