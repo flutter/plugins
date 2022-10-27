@@ -45,7 +45,7 @@ class Preview extends UseCase {
   /// Target rotation of the camera used for the preview stream.
   final int? targetRotation;
 
-  /// (TENTATIVELY) Sets surface provider for the preview stream.
+  /// [?] Sets surface provider for the preview stream.
   ///
   /// Returns the ID of the FlutterSurfaceTextureEntry used on the back end
   /// used to display the preview stream on a [Texture] of the same ID.

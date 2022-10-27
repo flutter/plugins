@@ -6,10 +6,10 @@ public class buildPreview_java {
         CameraSelector cameraSelector = cameraSelectorBuilder.requireLensFacing(CameraSelector.LENS_FACING_FRONT).build();
 
         // [B] //
-        Preview.setSurfaceProvider surfaceProvider =
+        Preview.SurfaceProvider surfaceProvider =
             new Preview.SurfaceProvider() {
                 @Override
-                void onSurface(SurfaceRequest(request)) {
+                void onSurface(SurfaceRequest request) {
                     // Will provide Surface to preview that is derived from
                     // Flutter's TextureRegistry.
                 }

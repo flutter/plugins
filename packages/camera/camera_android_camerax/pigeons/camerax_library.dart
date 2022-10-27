@@ -71,6 +71,7 @@ abstract class ProcessCameraProviderFlutterApi {
   void create(int identifier);
 }
 
+@HostApi(dartHostTestHandler: 'TestPreviewHostApi')
 abstract class PreviewHostApi {
   int create(int identifier, int rotation);
 
@@ -82,4 +83,25 @@ abstract class PreviewHostApi {
 @FlutterApi()
 abstract class PreviewFlutterApi {
   void create(int identifier, int rotation);
+}
+
+@HostApi(dartHostTestHandler: 'TestCameraHostApi')
+abstract class CameraHostApi {
+  int getCameraControl(int identifier);
+}
+
+@FlutterApi()
+abstract class CameraFlutterApi {
+  void create(int identifier); // [?] may need more parameters
+}
+
+@HostApi(dartHostTestHandler: 'TestCameraControlHostApi')
+abstract class CameraControlHostApi {
+  @async
+  void setZoomRatio(int identifier, double ratio); // [?] double for Java float?
+}
+
+@FlutterApi()
+abstract class CameraControlFlutterApi {
+  void create(int identifier); // [?] may need more parameters
 }
