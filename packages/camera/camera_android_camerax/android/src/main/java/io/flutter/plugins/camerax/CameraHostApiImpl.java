@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.camerax;
 
+import androidx.camera.core.Camera;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraHostApi;
 
 public class CameraHostApiImpl {
@@ -22,10 +23,9 @@ public class CameraHostApiImpl {
         Camera camera = (Camera) instanceManager.getInstance(identifier);
         CameraControl cameraControl = camera.getCameraControl();
 
-        // here
-        final CameraInfoFlutterApiImpl cameraInfoFlutterApiImpl =
-        new CameraInfoFlutterApiImpl(binaryMessenger, instanceManager);
-        cameraInfoFlutterApiImpl.create(cameraInfo, result -> {});
-        Long filteredCameraInfoId = instanceManager.getIdentifierForStrongReference(cameraInfo);
+        final CameraControlFlutterApiImpl cameraControlFlutterApiImpl =
+            new CameraControlFlutterApiImpl(binaryMessenger, instanceManager);
+        cameraControlFlutterApiImpl.create(cameraControl, result -> {});
+        return instanceManager.getIdentifierForStrongReference(cameraControl);
     }
 }
