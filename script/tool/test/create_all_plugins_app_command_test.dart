@@ -109,9 +109,12 @@ void main() {
     });
 
     test('macOS deployment target is modified in Podfile', () async {
-      final RepositoryPackage plugin = createFakePlugin('plugina', packagesDir);
-      final File podfileFile =
-          plugin.directory.childDirectory('macos').childFile('Podfile');
+      createFakePlugin('plugina', packagesDir);
+
+      final File podfileFile = command.packagesDir.parent
+          .childDirectory('all_plugins')
+          .childDirectory('macos')
+          .childFile('Podfile');
       podfileFile.createSync(recursive: true);
       podfileFile.writeAsStringSync("""
 platform :osx, '10.11'
@@ -133,16 +136,7 @@ platform :osx, '10.11'
         skip: !io.Platform.isMacOS);
 
     test('macOS deployment target is modified in pbxproj', () async {
-      final RepositoryPackage plugin = createFakePlugin('plugina', packagesDir);
-      final File pbxprojFile = plugin.directory
-          .childDirectory('Runner.xcodeproj')
-          .childFile('project.pbxproj');
-      pbxprojFile.createSync(recursive: true);
-      pbxprojFile.writeAsStringSync('''
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-/* some other line */
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-''');
+      createFakePlugin('plugina', packagesDir);
 
       await runCapturingPrint(runner, <String>['all-plugins-app']);
       final List<String> pbxproj = command.app
