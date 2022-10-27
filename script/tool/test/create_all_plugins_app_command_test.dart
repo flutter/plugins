@@ -20,7 +20,6 @@ void main() {
     late CommandRunner<void> runner;
     late CreateAllPluginsAppCommand command;
     late FileSystem fileSystem;
-    late MockPlatform mockPlatform;
     late Directory testRoot;
     late Directory packagesDir;
     late RecordingProcessRunner processRunner;
@@ -30,7 +29,6 @@ void main() {
       // has to use the real filesystem. Put everything possible in a unique
       // temporary to minimize effect on the host system.
       fileSystem = const LocalFileSystem();
-      mockPlatform = MockPlatform();
       testRoot = fileSystem.systemTempDirectory.createTempSync();
       packagesDir = testRoot.childDirectory('packages');
       processRunner = RecordingProcessRunner();
@@ -39,7 +37,6 @@ void main() {
         packagesDir,
         processRunner: processRunner,
         pluginsRoot: testRoot,
-        platform: mockPlatform,
       );
       runner = CommandRunner<void>(
           'create_all_test', 'Test for $CreateAllPluginsAppCommand');
@@ -170,7 +167,7 @@ platform :osx, '10.11'
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                getFlutterCommand(mockPlatform),
+                getFlutterCommand(const LocalPlatform()),
                 const <String>['pub', 'get'],
                 testRoot.childDirectory('all_plugins').path),
           ]));
@@ -179,9 +176,10 @@ platform :osx, '10.11'
     test('fails if flutter pub get fails', () async {
       createFakePlugin('plugina', packagesDir);
 
-      processRunner
-              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
-          <io.Process>[MockProcess(exitCode: 1)];
+      processRunner.mockProcessesForExecutable[
+          getFlutterCommand(const LocalPlatform())] = <io.Process>[
+        MockProcess(exitCode: 1)
+      ];
       Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['all-plugins-app'], errorHandler: (Error e) {
