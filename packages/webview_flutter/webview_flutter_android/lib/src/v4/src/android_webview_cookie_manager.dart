@@ -44,10 +44,10 @@ class AndroidWebViewCookieManager extends PlatformWebViewCookieManager {
   /// with the default [AndroidWebViewCookieManager] constructor.
   @visibleForTesting
   AndroidWebViewCookieManager.fromNativeApi(
-    AndroidWebViewCookieManagerCreationParams params, {
+    AndroidWebViewCookieManagerCreationParams super.params, {
     required CookieManager cookieManager,
   })  : _cookieManager = cookieManager,
-        super.implementation(params);
+        super.implementation();
 
   final CookieManager _cookieManager;
 

@@ -128,10 +128,9 @@ class JavaObjectFlutterApiImpl implements JavaObjectFlutterApi {
 class WebViewHostApiImpl extends WebViewHostApi {
   /// Constructs a [WebViewHostApiImpl].
   WebViewHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;
@@ -342,10 +341,9 @@ class WebViewHostApiImpl extends WebViewHostApi {
 class WebSettingsHostApiImpl extends WebSettingsHostApi {
   /// Constructs a [WebSettingsHostApiImpl].
   WebSettingsHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;
@@ -484,10 +482,9 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
 class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
   /// Constructs a [JavaScriptChannelHostApiImpl].
   JavaScriptChannelHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;
@@ -529,10 +526,9 @@ class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
 class WebViewClientHostApiImpl extends WebViewClientHostApi {
   /// Constructs a [WebViewClientHostApiImpl].
   WebViewClientHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;
@@ -717,10 +713,9 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
 class DownloadListenerHostApiImpl extends DownloadListenerHostApi {
   /// Constructs a [DownloadListenerHostApiImpl].
   DownloadListenerHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;
@@ -772,10 +767,9 @@ class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
 class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
   /// Constructs a [WebChromeClientHostApiImpl].
   WebChromeClientHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;
@@ -822,10 +816,9 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
 class WebStorageHostApiImpl extends WebStorageHostApi {
   /// Constructs a [WebStorageHostApiImpl].
   WebStorageHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;

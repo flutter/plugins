@@ -16,7 +16,7 @@ import 'src/android_webview.dart' as android_webview;
 class WebViewAndroidWidget extends StatefulWidget {
   /// Constructs a [WebViewAndroidWidget].
   const WebViewAndroidWidget({
-    Key? key,
+    super.key,
     required this.creationParams,
     required this.useHybridComposition,
     required this.callbacksHandler,
@@ -26,7 +26,7 @@ class WebViewAndroidWidget extends StatefulWidget {
     @visibleForTesting
         this.flutterAssetManager = const android_webview.FlutterAssetManager(),
     @visibleForTesting this.webStorage,
-  }) : super(key: key);
+  });
 
   /// Initial parameters used to setup the WebView.
   final CreationParams creationParams;
@@ -570,10 +570,9 @@ class WebViewAndroidJavaScriptChannel
     extends android_webview.JavaScriptChannel {
   /// Creates a [WebViewAndroidJavaScriptChannel].
   WebViewAndroidJavaScriptChannel(
-    String channelName,
+    super.channelName,
     this.javascriptChannelRegistry,
   ) : super(
-          channelName,
           postMessage: withWeakRefenceTo(
             javascriptChannelRegistry,
             (WeakReference<JavascriptChannelRegistry> weakReference) {
