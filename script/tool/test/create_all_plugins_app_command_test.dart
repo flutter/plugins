@@ -7,10 +7,12 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/create_all_plugins_app_command.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import 'mocks.dart';
 import 'util.dart';
 
 void main() {
@@ -20,6 +22,7 @@ void main() {
     late FileSystem fileSystem;
     late Directory testRoot;
     late Directory packagesDir;
+    late RecordingProcessRunner processRunner;
 
     setUp(() {
       // Since the core of this command is a call to 'flutter create', the test
@@ -28,9 +31,11 @@ void main() {
       fileSystem = const LocalFileSystem();
       testRoot = fileSystem.systemTempDirectory.createTempSync();
       packagesDir = testRoot.childDirectory('packages');
+      processRunner = RecordingProcessRunner();
 
       command = CreateAllPluginsAppCommand(
         packagesDir,
+        processRunner: processRunner,
         pluginsRoot: testRoot,
       );
       runner = CommandRunner<void>(
@@ -102,6 +107,91 @@ void main() {
       expect(generatedPubspec.environment?[dartSdkKey],
           baselinePubspec.environment?[dartSdkKey]);
     });
+
+    test('macOS deployment target is modified in Podfile', () async {
+      createFakePlugin('plugina', packagesDir);
+
+      final File podfileFile = command.packagesDir.parent
+          .childDirectory('all_plugins')
+          .childDirectory('macos')
+          .childFile('Podfile');
+      podfileFile.createSync(recursive: true);
+      podfileFile.writeAsStringSync("""
+platform :osx, '10.11'
+# some other line
+""");
+
+      await runCapturingPrint(runner, <String>['all-plugins-app']);
+      final List<String> podfile = command.app
+          .platformDirectory(FlutterPlatform.macos)
+          .childFile('Podfile')
+          .readAsLinesSync();
+
+      expect(
+          podfile,
+          everyElement((String line) =>
+              !line.contains('platform :osx') || line.contains("'10.15'")));
+    },
+        // Podfile is only generated (and thus only edited) on macOS.
+        skip: !io.Platform.isMacOS);
+
+    test('macOS deployment target is modified in pbxproj', () async {
+      createFakePlugin('plugina', packagesDir);
+
+      await runCapturingPrint(runner, <String>['all-plugins-app']);
+      final List<String> pbxproj = command.app
+          .platformDirectory(FlutterPlatform.macos)
+          .childDirectory('Runner.xcodeproj')
+          .childFile('project.pbxproj')
+          .readAsLinesSync();
+
+      expect(
+          pbxproj,
+          everyElement((String line) =>
+              !line.contains('MACOSX_DEPLOYMENT_TARGET') ||
+              line.contains('10.15')));
+    });
+
+    test('calls flutter pub get', () async {
+      createFakePlugin('plugina', packagesDir);
+
+      await runCapturingPrint(runner, <String>['all-plugins-app']);
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                getFlutterCommand(const LocalPlatform()),
+                const <String>['pub', 'get'],
+                testRoot.childDirectory('all_plugins').path),
+          ]));
+    },
+        // See comment about Windows in create_all_plugins_app_command.dart
+        skip: io.Platform.isWindows);
+
+    test('fails if flutter pub get fails', () async {
+      createFakePlugin('plugina', packagesDir);
+
+      processRunner.mockProcessesForExecutable[
+          getFlutterCommand(const LocalPlatform())] = <io.Process>[
+        MockProcess(exitCode: 1)
+      ];
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['all-plugins-app'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains(
+                "Failed to generate native build files via 'flutter pub get'"),
+          ]));
+    },
+        // See comment about Windows in create_all_plugins_app_command.dart
+        skip: io.Platform.isWindows);
 
     test('handles --output-dir', () async {
       createFakePlugin('plugina', packagesDir);
