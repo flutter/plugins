@@ -18,19 +18,20 @@ enum DirectoryType {
   temp,
 }
 
-
 class PathProviderApi {
   /// Constructor for [PathProviderApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  PathProviderApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  PathProviderApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = StandardMessageCodec();
 
   Future<String?> getDirectoryPath(DirectoryType arg_type) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.PathProviderApi.getDirectoryPath', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.PathProviderApi.getDirectoryPath', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_type.index]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -39,7 +40,8 @@ class PathProviderApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
