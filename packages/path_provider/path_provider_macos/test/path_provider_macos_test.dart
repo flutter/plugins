@@ -4,61 +4,33 @@
 
 import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider_macos/messages.g.dart';
 import 'package:path_provider_macos/path_provider_macos.dart';
 
+import 'messages_test.g.dart';
+import 'path_provider_macos_test.mocks.dart';
+
+@GenerateMocks(<Type>[TestPathProviderApi])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('PathProviderMacOS', () {
     late PathProviderMacOS pathProvider;
-    late List<MethodCall> log;
+    late MockTestPathProviderApi mockApi;
     // These unit tests use the actual filesystem, since an injectable
     // filesystem would add a runtime dependency to the package, so everything
     // is contained to a temporary directory.
     late Directory testRoot;
 
-    late String temporaryPath;
-    late String applicationSupportPath;
-    late String libraryPath;
-    late String applicationDocumentsPath;
-    late String downloadsPath;
-
     setUp(() async {
-      pathProvider = PathProviderMacOS();
-
       testRoot = Directory.systemTemp.createTempSync();
-      final String basePath = testRoot.path;
-      temporaryPath = p.join(basePath, 'temporary', 'path');
-      applicationSupportPath =
-          p.join(basePath, 'application', 'support', 'path');
-      libraryPath = p.join(basePath, 'library', 'path');
-      applicationDocumentsPath =
-          p.join(basePath, 'application', 'documents', 'path');
-      downloadsPath = p.join(basePath, 'downloads', 'path');
-
-      log = <MethodCall>[];
-      TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
-          .setMockMethodCallHandler(pathProvider.methodChannel,
-              (MethodCall methodCall) async {
-        log.add(methodCall);
-        switch (methodCall.method) {
-          case 'getTemporaryDirectory':
-            return temporaryPath;
-          case 'getApplicationSupportDirectory':
-            return applicationSupportPath;
-          case 'getLibraryDirectory':
-            return libraryPath;
-          case 'getApplicationDocumentsDirectory':
-            return applicationDocumentsPath;
-          case 'getDownloadsDirectory':
-            return downloadsPath;
-          default:
-            return null;
-        }
-      });
+      pathProvider = PathProviderMacOS();
+      mockApi = MockTestPathProviderApi();
+      TestPathProviderApi.setup(mockApi);
     });
 
     tearDown(() {
@@ -66,57 +38,71 @@ void main() {
     });
 
     test('getTemporaryPath', () async {
+      final String temporaryPath = p.join(testRoot.path, 'temporary', 'path');
+      when(mockApi.getDirectoryPath(DirectoryType.temp))
+          .thenReturn(temporaryPath);
+
       final String? path = await pathProvider.getTemporaryPath();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getTemporaryDirectory', arguments: null)],
-      );
+
+      verify(mockApi.getDirectoryPath(DirectoryType.temp));
       expect(path, temporaryPath);
     });
 
     test('getApplicationSupportPath', () async {
+      final String applicationSupportPath =
+          p.join(testRoot.path, 'application', 'support', 'path');
+      when(mockApi.getDirectoryPath(DirectoryType.applicationSupport))
+          .thenReturn(applicationSupportPath);
+
       final String? path = await pathProvider.getApplicationSupportPath();
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getApplicationSupportDirectory', arguments: null)
-        ],
-      );
+
+      verify(mockApi.getDirectoryPath(DirectoryType.applicationSupport));
       expect(path, applicationSupportPath);
     });
 
     test('getApplicationSupportPath creates the directory if necessary',
         () async {
+      final String applicationSupportPath =
+          p.join(testRoot.path, 'application', 'support', 'path');
+      when(mockApi.getDirectoryPath(DirectoryType.applicationSupport))
+          .thenReturn(applicationSupportPath);
+
       final String? path = await pathProvider.getApplicationSupportPath();
+
       expect(Directory(path!).existsSync(), isTrue);
     });
 
     test('getLibraryPath', () async {
+      final String libraryPath = p.join(testRoot.path, 'library', 'path');
+      when(mockApi.getDirectoryPath(DirectoryType.library))
+          .thenReturn(libraryPath);
+
       final String? path = await pathProvider.getLibraryPath();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getLibraryDirectory', arguments: null)],
-      );
+
+      verify(mockApi.getDirectoryPath(DirectoryType.library));
       expect(path, libraryPath);
     });
 
     test('getApplicationDocumentsPath', () async {
+      final String applicationDocumentsPath =
+          p.join(testRoot.path, 'application', 'documents', 'path');
+      when(mockApi.getDirectoryPath(DirectoryType.applicationDocuments))
+          .thenReturn(applicationDocumentsPath);
+
       final String? path = await pathProvider.getApplicationDocumentsPath();
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getApplicationDocumentsDirectory', arguments: null)
-        ],
-      );
+
+      verify(mockApi.getDirectoryPath(DirectoryType.applicationDocuments));
       expect(path, applicationDocumentsPath);
     });
 
     test('getDownloadsPath', () async {
+      final String downloadsPath = p.join(testRoot.path, 'downloads', 'path');
+      when(mockApi.getDirectoryPath(DirectoryType.downloads))
+          .thenReturn(downloadsPath);
+
       final String? result = await pathProvider.getDownloadsPath();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getDownloadsDirectory', arguments: null)],
-      );
+
+      verify(mockApi.getDirectoryPath(DirectoryType.downloads));
       expect(result, downloadsPath);
     });
 

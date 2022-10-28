@@ -1,5 +1,6 @@
-## NEXT
+## 2.0.7
 
+* Switches platform channel implementation to Pigeon.
 * Updates minimum Flutter version to 2.10.
 
 ## 2.0.6
