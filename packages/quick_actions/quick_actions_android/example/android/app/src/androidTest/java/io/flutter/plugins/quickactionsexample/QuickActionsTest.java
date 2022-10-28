@@ -86,6 +86,8 @@ public class QuickActionsTest {
     }
   }
 
+  // TODO(bparrishMines): The test is ignored because it fails when ran on Firebase Test Lab. See
+  // https://github.com/flutter/flutter/issues/114246.
   @Ignore
   @Test
   public void appShortcutLaunchActivityAfterStarting() {
