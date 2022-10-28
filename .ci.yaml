@@ -45,7 +45,7 @@ targets:
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
-      target_file: darwin_lint_podspecs.yaml
+      target_file: mac_darwin_lint_podspecs.yaml
 
   - name: Windows win32-platform_tests master
     recipe: plugins/plugins
