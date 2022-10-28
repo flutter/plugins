@@ -10,17 +10,15 @@ import 'camera_image_data.dart';
 @immutable
 class VideoCaptureOptions {
   /// Constructs a new instance.
-  VideoCaptureOptions(
+  const VideoCaptureOptions(
     this.cameraId, {
     this.maxDuration,
     this.streamCallback,
     this.streamOptions,
-  }) {
-    if (streamOptions != null && streamCallback == null) {
-      throw ArgumentError(
-          'Must specify streamCallback if providing streamOptions');
-    }
-  }
+  }) : assert(
+          streamOptions == null || streamCallback != null,
+          'Must specify streamCallback if providing streamOptions.',
+        );
 
   /// The ID of the camera to use for capturing.
   final int cameraId;
