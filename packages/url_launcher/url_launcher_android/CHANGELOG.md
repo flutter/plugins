@@ -1,6 +1,6 @@
 ## 6.0.21
 
-* Updates androidx.annotation to 1.3.0.
+* Updates androidx.annotation to 1.2.0.
 
 ## 6.0.20
 
