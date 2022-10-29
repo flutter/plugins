@@ -2,5 +2,5 @@ tasks:
   - name: prepare tool
     script: .ci/scripts/prepare_tool.sh
   - name: create all_plugins app
-    script: script/tool_runner.sh podspecs
+    script: script/tool_runner.sh
     args: podspecs
