@@ -12,11 +12,20 @@
 @end
 
 @implementation FWFWebView
+(WKProcessPool *)commonPool {
+  static WKProcessPool *sWKProcessPool;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sWKProcessPool = [[WKProcessPool alloc] init];
+  });
+  return sWKProcessPool;
+}
 - (instancetype)initWithFrame:(CGRect)frame
                 configuration:(nonnull WKWebViewConfiguration *)configuration
               binaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
               instanceManager:(FWFInstanceManager *)instanceManager {
   self = [self initWithFrame:frame configuration:configuration];
+  configuration.processPool = [FWFWebView commonPool];
   if (self) {
     _objectApi = [[FWFObjectFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
                                                           instanceManager:instanceManager];
