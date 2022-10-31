@@ -52,7 +52,6 @@ public class PreviewHostApiImpl {
             };
         
         return flutterSurfaceTexture.id();
-
     }
 
     @Override
