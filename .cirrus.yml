@@ -52,16 +52,16 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
 
 build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
   create_all_plugins_app_script:
-    - $PLUGIN_TOOL_COMMAND all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
+    - $PLUGIN_TOOL_COMMAND create-all-packages-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
   build_all_plugins_debug_script:
-    - cd all_plugins
+    - cd all_packages
     - if [[ "$BUILD_ALL_ARGS" == "web" ]]; then
     -   echo "Skipping; web does not support debug builds"
     - else
     -   flutter build $BUILD_ALL_ARGS --debug
     - fi
   build_all_plugins_release_script:
-    - cd all_plugins
+    - cd all_packages
     - flutter build $BUILD_ALL_ARGS --release
 
 # Light-workload Linux tasks.

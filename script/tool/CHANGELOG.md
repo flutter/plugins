@@ -1,3 +1,9 @@
+## 0.13.0
+
+* Renames `all-plugins-app` to `create-all-packages-app` to clarify what it
+  actually does. Also renames the project directory it creates from
+  `all_plugins` to `all_packages`.
+
 ## 0.12.1
 
 * Modifies `publish_check_command.dart` to do a `dart pub get` in all examples
