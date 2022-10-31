@@ -46,12 +46,15 @@ void main() {
     testRoot.deleteSync(recursive: true);
   });
 
-  group('linux host', () {
+  group('non-macOS host', () {
     setUp(() {
       command = CreateAllPackagesAppCommand(
         packagesDir,
         processRunner: processRunner,
-        platform: MockPlatform(isLinux: true),
+        // Set isWindows or not based on the actual host, so that
+        // `flutterCommand` works, since these tests actually call 'flutter'.
+        // The important thing is that isMacOS always returns false.
+        platform: MockPlatform(isWindows: const LocalPlatform().isWindows),
         pluginsRoot: testRoot,
       );
       runner = CommandRunner<void>(
