@@ -3,4 +3,4 @@ tasks:
     script: .ci/scripts/prepare_tool.sh
   - name: create all_plugins app
     script: script/tool_runner.sh
-    args: podspecs
+    args: ["podspecs"]
