@@ -16,35 +16,47 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  group('$CreateAllPackagesAppCommand', () {
-    late CommandRunner<void> runner;
-    late CreateAllPackagesAppCommand command;
-    late FileSystem fileSystem;
-    late Directory testRoot;
-    late Directory packagesDir;
-    late RecordingProcessRunner processRunner;
+  late CommandRunner<void> runner;
+  late CreateAllPackagesAppCommand command;
+  late FileSystem fileSystem;
+  late Directory testRoot;
+  late Directory packagesDir;
+  late RecordingProcessRunner processRunner;
 
+  setUp(() {
+    // Since the core of this command is a call to 'flutter create', the test
+    // has to use the real filesystem. Put everything possible in a unique
+    // temporary to minimize effect on the host system.
+    fileSystem = const LocalFileSystem();
+    testRoot = fileSystem.systemTempDirectory.createTempSync();
+    packagesDir = testRoot.childDirectory('packages');
+    processRunner = RecordingProcessRunner();
+
+    command = CreateAllPackagesAppCommand(
+      packagesDir,
+      processRunner: processRunner,
+      pluginsRoot: testRoot,
+    );
+    runner = CommandRunner<void>(
+        'create_all_test', 'Test for $CreateAllPackagesAppCommand');
+    runner.addCommand(command);
+  });
+
+  tearDown(() {
+    testRoot.deleteSync(recursive: true);
+  });
+
+  group('linux host', () {
     setUp(() {
-      // Since the core of this command is a call to 'flutter create', the test
-      // has to use the real filesystem. Put everything possible in a unique
-      // temporary to minimize effect on the host system.
-      fileSystem = const LocalFileSystem();
-      testRoot = fileSystem.systemTempDirectory.createTempSync();
-      packagesDir = testRoot.childDirectory('packages');
-      processRunner = RecordingProcessRunner();
-
       command = CreateAllPackagesAppCommand(
         packagesDir,
         processRunner: processRunner,
+        platform: MockPlatform(isLinux: true),
         pluginsRoot: testRoot,
       );
       runner = CommandRunner<void>(
           'create_all_test', 'Test for $CreateAllPackagesAppCommand');
       runner.addCommand(command);
-    });
-
-    tearDown(() {
-      testRoot.deleteSync(recursive: true);
     });
 
     test('pubspec includes all plugins', () async {
@@ -107,33 +119,6 @@ void main() {
       expect(generatedPubspec.environment?[dartSdkKey],
           baselinePubspec.environment?[dartSdkKey]);
     });
-
-    test('macOS deployment target is modified in Podfile', () async {
-      createFakePlugin('plugina', packagesDir);
-
-      final File podfileFile = command.packagesDir.parent
-          .childDirectory('all_packages')
-          .childDirectory('macos')
-          .childFile('Podfile');
-      podfileFile.createSync(recursive: true);
-      podfileFile.writeAsStringSync("""
-platform :osx, '10.11'
-# some other line
-""");
-
-      await runCapturingPrint(runner, <String>['create-all-packages-app']);
-      final List<String> podfile = command.app
-          .platformDirectory(FlutterPlatform.macos)
-          .childFile('Podfile')
-          .readAsLinesSync();
-
-      expect(
-          podfile,
-          everyElement((String line) =>
-              !line.contains('platform :osx') || line.contains("'10.15'")));
-    },
-        // Podfile is only generated (and thus only edited) on macOS.
-        skip: !io.Platform.isMacOS);
 
     test('macOS deployment target is modified in pbxproj', () async {
       createFakePlugin('plugina', packagesDir);
@@ -223,5 +208,46 @@ platform :osx, '10.11'
             '  pluginc',
           ]));
     });
+  });
+
+  group('macOS host', () {
+    setUp(() {
+      command = CreateAllPackagesAppCommand(
+        packagesDir,
+        processRunner: processRunner,
+        platform: MockPlatform(isMacOS: true),
+        pluginsRoot: testRoot,
+      );
+      runner = CommandRunner<void>(
+          'create_all_test', 'Test for $CreateAllPackagesAppCommand');
+      runner.addCommand(command);
+    });
+
+    test('macOS deployment target is modified in Podfile', () async {
+      createFakePlugin('plugina', packagesDir);
+
+      final File podfileFile = RepositoryPackage(
+              command.packagesDir.parent.childDirectory('all_packages'))
+          .platformDirectory(FlutterPlatform.macos)
+          .childFile('Podfile');
+      podfileFile.createSync(recursive: true);
+      podfileFile.writeAsStringSync("""
+platform :osx, '10.11'
+# some other line
+""");
+
+      await runCapturingPrint(runner, <String>['create-all-packages-app']);
+      final List<String> podfile = command.app
+          .platformDirectory(FlutterPlatform.macos)
+          .childFile('Podfile')
+          .readAsLinesSync();
+
+      expect(
+          podfile,
+          everyElement((String line) =>
+              !line.contains('platform :osx') || line.contains("'10.15'")));
+    },
+        // Podfile is only generated (and thus only edited) on macOS.
+        skip: !io.Platform.isMacOS);
   });
 }
