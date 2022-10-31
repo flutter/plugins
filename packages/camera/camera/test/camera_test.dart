@@ -379,7 +379,7 @@ void main() {
           cameraController.setDescriptionWhileRecording(newDescription),
           throwsA(isA<CameraException>().having(
             (CameraException error) => error.description,
-            'Video was not being recording',
+            'Video was not being recorded',
             'setDescriptionWhileRecording was called while a video was not being recorded',
           )));
     });

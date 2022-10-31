@@ -390,7 +390,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       CameraDescription description) async {
     if (!value.isRecordingVideo) {
       throw CameraException(
-        'Video was not being recording',
+        'Video was not being recorded',
         'setDescriptionWhileRecording was called while a video was not being recorded',
       );
     }
