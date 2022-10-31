@@ -41,6 +41,7 @@ platform_properties:
 targets:
   - name: Mac_x64 darwin_lint_podspecs
     recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6637
     timeout: 30
     properties:
       add_recipes_cq: "true"
