@@ -91,6 +91,7 @@ public class QuickActionsTest {
     // Arrange
     List<ShortcutInfo> shortcuts = createMockShortcuts();
     ShortcutInfo firstShortcut = shortcuts.get(0);
+    ShortcutInfo secondShortcut = shortcuts.get(0);
     ShortcutManager shortcutManager =
         (ShortcutManager) context.getSystemService(Context.SHORTCUT_SERVICE);
     List<ShortcutInfo> dynamicShortcuts = shortcutManager.getDynamicShortcuts();
@@ -107,17 +108,19 @@ public class QuickActionsTest {
 
     // Act
     context.startActivity(dynamicShortcutIntent);
-    device.wait(Until.hasObject(By.descContains(appReadySentinel)), 2000);
+    Boolean condition = device.wait(Until.hasObject(By.descContains(appReadySentinel)), 2000);
+    System.out.println("APP READY SENTINEL FOUND: " + condition);
     AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
     scenario.onActivity(currentActivity::set);
-    device.wait(Until.hasObject(By.descContains(firstShortcut.getId())), 2000);
+    Boolean condition2 = device.wait(Until.hasObject(By.descContains(appReadySentinel)), 2000);
+    System.out.println("APP READY SENTINEL FOUND AFTER SECOND LAUNCH: " + condition2);
 
     // Assert
     Assert.assertTrue(
-        "AppShortcut:" + firstShortcut.getId() + " does not launch the correct activity",
+        "AppShortcut:" + secondShortcut.getId() + " does not launch the correct activity",
         // We can only find the shortcut type in content description while inspecting it in Ui
         // Automator Viewer.
-        device.hasObject(By.desc(firstShortcut.getId() + appReadySentinel)));
+        device.hasObject(By.desc(secondShortcut.getId() + appReadySentinel)));
     // This is Android SingleTop behavior in which Android does not destroy the initial activity and
     // launch a new activity.
     Assert.assertEquals(initialActivity.get(), currentActivity.get());
