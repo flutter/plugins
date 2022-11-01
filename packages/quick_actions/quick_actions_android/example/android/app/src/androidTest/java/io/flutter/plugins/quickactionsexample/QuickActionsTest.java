@@ -117,7 +117,7 @@ public class QuickActionsTest {
     scenario.onActivity(currentActivity::set);
     System.out.println("CHECK 4: " + initialActivity.get().toString());
     System.out.println("CHECK A: " + currentActivity.get().toString());
-    // Boolean condition2 = device.wait(Until.hasObject(By.descContains(appReadySentinel)), 2000);
+    Boolean condition2 = device.wait(Until.hasObject(By.descContains(appReadySentinel)), 2000);
     System.out.println("APP READY SENTINEL FOUND AFTER SECOND LAUNCH: " + condition2);
 
     // Assert
