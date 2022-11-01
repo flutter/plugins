@@ -86,7 +86,6 @@ public class QuickActionsTest {
     }
   }
 
-  @Ignore
   @Test
   public void appShortcutLaunchActivityAfterStarting() {
     // Arrange
