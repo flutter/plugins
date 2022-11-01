@@ -124,7 +124,7 @@ public class QuickActionsTest {
       device.hasObject(By.descContains("no action set"))
     );
     Assert.assertFalse(
-      device.hasObject(By.descContains("actions ready")
+      device.hasObject(By.descContains("actions ready"))
       );
     Assert.assertTrue(
         "AppShortcut:" + firstShortcut.getId() + " does not launch the correct activity",
