@@ -135,6 +135,11 @@ public class VideoRenderer {
         throw new RuntimeException(
             "eglInitialize(): " + GLUtils.getEGLErrorString(EGL14.eglGetError()));
 
+      String eglExtensions = EGL14.eglQueryString(display, EGL14.EGL_EXTENSIONS);
+      if (!eglExtensions.contains("EGL_ANDROID_presentation_time"))
+        throw new RuntimeException(
+            "cannot configure OpenGL. missing EGL_ANDROID_presentation_time");
+
       int[] attribList =
           new int[] {
             EGL14.EGL_RED_SIZE, 8,
