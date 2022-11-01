@@ -1267,11 +1267,23 @@ class Camera
   private void prepareVideoRenderer() {
     if (videoRenderer != null) return;
     final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
+
+    // handle videoRenderer errors
+    Thread.UncaughtExceptionHandler videoRendererUncaughtExceptionHandler =
+        new Thread.UncaughtExceptionHandler() {
+          @Override
+          public void uncaughtException(Thread thread, Throwable ex) {
+            dartMessenger.sendCameraErrorEvent(
+                "Failed to process frames after camera was flipped.");
+          }
+        };
+
     videoRenderer =
         new VideoRenderer(
             mediaRecorder.getSurface(),
             resolutionFeature.getCaptureSize().getWidth(),
-            resolutionFeature.getCaptureSize().getHeight());
+            resolutionFeature.getCaptureSize().getHeight(),
+            videoRendererUncaughtExceptionHandler);
   }
 
   public void setDescriptionWhileRecording(

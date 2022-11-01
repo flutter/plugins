@@ -89,6 +89,8 @@ public class VideoRenderer {
 
   private final Object lock = new Object();
 
+  private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
+
   /** Gets surface for input. Blocks until surface is ready. */
   public Surface getInputSurface() throws InterruptedException {
     synchronized (lock) {
@@ -99,10 +101,15 @@ public class VideoRenderer {
     return inputSurface;
   }
 
-  public VideoRenderer(Surface outputSurface, int recordingWidth, int recordingHeight) {
+  public VideoRenderer(
+      Surface outputSurface,
+      int recordingWidth,
+      int recordingHeight,
+      Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
     this.outputSurface = outputSurface;
     this.recordingHeight = recordingHeight;
     this.recordingWidth = recordingWidth;
+    this.uncaughtExceptionHandler = uncaughtExceptionHandler;
     startOpenGL();
     Log.d(TAG, "VideoRenderer setup complete");
   }
@@ -267,6 +274,7 @@ public class VideoRenderer {
             }
           }
         };
+    thread.setUncaughtExceptionHandler(uncaughtExceptionHandler);
     thread.start();
   }
 
@@ -324,6 +332,9 @@ public class VideoRenderer {
     GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_INT, 0);
 
     EGLExt.eglPresentationTimeANDROID(display, surface, timestamp);
-    EGL14.eglSwapBuffers(display, surface);
+    if (!EGL14.eglSwapBuffers(display, surface)) {
+      throw new RuntimeException(
+          "eglSwapBuffers()" + GLUtils.getEGLErrorString(EGL14.eglGetError()));
+    }
   }
 }
