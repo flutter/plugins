@@ -183,6 +183,9 @@ public class VideoRenderer {
       GLES20.glAttachShader(program, fragmentShader);
       GLES20.glLinkProgram(program);
 
+      deleteShader(vertexShader);
+      deleteShader(fragmentShader);
+
       vertexHandle = GLES20.glGetAttribLocation(program, "vertexPosition");
       uvsHandle = GLES20.glGetAttribLocation(program, "uvs");
       texMatrixHandle = GLES20.glGetUniformLocation(program, "texMatrix");
@@ -289,6 +292,10 @@ public class VideoRenderer {
     GLES20.glShaderSource(shader, code);
     GLES20.glCompileShader(shader);
     return shader;
+  }
+
+  private void deleteShader(int shader) {
+    GLES20.glDeleteShader(shader);
   }
 
   public void draw(int viewportWidth, int viewportHeight, float[] texMatrix, long timestamp) {
