@@ -86,7 +86,7 @@ public class QuickActionsTest {
       assertEquals(expectedShortcut.getLongLabel(), dynamicShortcut.getLongLabel());
     }
   }
-
+// fake commit
   @Test
   public void appShortcutLaunchActivityAfterStarting() {
     // Arrange
@@ -105,19 +105,13 @@ public class QuickActionsTest {
     Intent dynamicShortcutIntent = dynamicShortcut.getIntent();
     AtomicReference<QuickActionsTestActivity> initialActivity = new AtomicReference<>();
     scenario.onActivity(initialActivity::set);
-    System.out.println("CHECK 1: " + initialActivity.get().toString());
     String appReadySentinel = " has launched";
 
     // Act
     context.startActivity(dynamicShortcutIntent);
-    System.out.println("CHECK 2: " + initialActivity.get().toString());
     Boolean condition = device.wait(Until.hasObject(By.descContains(appReadySentinel)), 2000);
-    System.out.println("APP READY SENTINEL FOUND: " + condition);
-    System.out.println("CHECK 3: " + initialActivity.get().toString());
     AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
     scenario.onActivity(currentActivity::set);
-    System.out.println("CHECK 4: " + initialActivity.get().toString());
-    System.out.println("CHECK A: " + currentActivity.get().toString());
 
     // Assert
     Assert.assertFalse(
