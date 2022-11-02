@@ -787,6 +787,59 @@ void main() {
 
       expect(callbackProgress, 0);
     });
+
+    test(
+        'setPlatformNavigationDelegate onProgress can be changed by the WebKitNavigationDelegage',
+        () async {
+      final MockWKWebView mockWebView = MockWKWebView();
+
+      late final void Function(
+        String keyPath,
+        NSObject object,
+        Map<NSKeyValueChangeKey, Object?> change,
+      ) webViewObserveValue;
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        createMockWebView: (
+          _, {
+          void Function(
+            String keyPath,
+            NSObject object,
+            Map<NSKeyValueChangeKey, Object?> change,
+          )?
+              observeValue,
+        }) {
+          webViewObserveValue = observeValue!;
+          return mockWebView;
+        },
+      );
+
+      final WebKitNavigationDelegate navigationDelegate =
+          WebKitNavigationDelegate(
+        const WebKitNavigationDelegateCreationParams(
+          webKitProxy: WebKitProxy(
+            createNavigationDelegate: CapturingNavigationDelegate.new,
+          ),
+        ),
+      );
+
+      await navigationDelegate.setOnProgress((_) {});
+
+      await controller.setPlatformNavigationDelegate(navigationDelegate);
+
+      late final int callbackProgress;
+      await navigationDelegate.setOnProgress(
+        (int progress) => callbackProgress = progress,
+      );
+
+      webViewObserveValue(
+        'estimatedProgress',
+        mockWebView,
+        <NSKeyValueChangeKey, Object?>{NSKeyValueChangeKey.newValue: 0.0},
+      );
+
+      expect(callbackProgress, 0);
+    });
   });
 
   group('WebKitJavaScriptChannelParams', () {
