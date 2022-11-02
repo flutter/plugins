@@ -288,8 +288,11 @@
   if (!controller) {
     return NO;
   }
-  [self.methodChannel invokeMethod:@"marker#onTap" arguments:@{@"markerId" : identifier}];
-  return controller.consumeTapEvents;
+  if (controller.consumeTapEvents) {
+    [self.methodChannel invokeMethod:@"marker#onTap" arguments:@{@"markerId" : identifier}];
+    return YES;
+  }
+  return NO;
 }
 
 - (void)didStartDraggingMarkerWithIdentifier:(NSString *)identifier

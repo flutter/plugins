@@ -103,11 +103,11 @@ void main() {
     maps.ensureChannelInitialized(mapId);
 
     final StreamQueue<MarkerDragStartEvent> markerDragStartStream =
-        StreamQueue<MarkerDragStartEvent>(maps.onMarkerDragStart(mapId: mapId));
+    StreamQueue<MarkerDragStartEvent>(maps.onMarkerDragStart(mapId: mapId));
     final StreamQueue<MarkerDragEvent> markerDragStream =
-        StreamQueue<MarkerDragEvent>(maps.onMarkerDrag(mapId: mapId));
+    StreamQueue<MarkerDragEvent>(maps.onMarkerDrag(mapId: mapId));
     final StreamQueue<MarkerDragEndEvent> markerDragEndStream =
-        StreamQueue<MarkerDragEndEvent>(maps.onMarkerDragEnd(mapId: mapId));
+    StreamQueue<MarkerDragEndEvent>(maps.onMarkerDragEnd(mapId: mapId));
 
     await sendPlatformMessage(
         mapId, 'marker#onDragStart', jsonMarkerDragStartEvent);
@@ -120,5 +120,23 @@ void main() {
     expect((await markerDragStream.next).value.value, equals('drag-marker'));
     expect((await markerDragEndStream.next).value.value,
         equals('drag-end-marker'));
+  });
+
+  test('markers send onTap event to correct streams', () async {
+    const int mapId = 1;
+    final Map<dynamic, dynamic> jsonMarkerOnTapEvent = <dynamic, dynamic>{
+      'mapId': mapId,
+      'markerId': 'on-tap-marker',
+      'position': <double>[1.0, 1.0]
+    };
+
+    final GoogleMapsFlutterIOS maps = GoogleMapsFlutterIOS();
+    maps.ensureChannelInitialized(mapId);
+
+    final StreamQueue<MarkerTapEvent> markerOnTapStream =
+    StreamQueue<MarkerTapEvent>(maps.onMarkerTap(mapId: mapId));
+
+    await sendPlatformMessage(
+        mapId, 'marker#onTap', jsonMarkerOnTapEvent);
   });
 }
