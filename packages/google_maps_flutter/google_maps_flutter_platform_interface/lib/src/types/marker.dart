@@ -175,9 +175,10 @@ class Marker implements MapsObject<Marker> {
   /// of (1.0, 1.0) means the bottom right corner of the image.
   final Offset anchor;
 
-  /// True if the marker icon consumes tap events. If not, the map will perform
-  /// default tap handling by centering the map on the marker and displaying its
-  /// info window.
+  /// True if the marker icon consumes tap events.
+  /// If this is false, [onTap] callback will not be triggered the map will
+  /// perform default tap handling by centering the map on the marker and
+  /// displaying its info window.
   final bool consumeTapEvents;
 
   /// True if the marker is draggable by user touch events.
