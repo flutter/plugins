@@ -97,6 +97,68 @@ void main() {
       return controller;
     }
 
+    group('WebKitWebViewControllerCreationParams', () {
+      test('mediaTypesRequiringUserAction', () {
+        final MockWKWebViewConfiguration mockConfiguration =
+            MockWKWebViewConfiguration();
+
+        WebKitWebViewControllerCreationParams(
+          webKitProxy: WebKitProxy(
+            createWebViewConfiguration: () => mockConfiguration,
+          ),
+          mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{
+            PlaybackMediaTypes.video,
+            PlaybackMediaTypes.audio,
+          },
+        );
+
+        verify(
+          mockConfiguration.setMediaTypesRequiringUserActionForPlayback(
+            <WKAudiovisualMediaType>{
+              WKAudiovisualMediaType.video,
+              WKAudiovisualMediaType.audio,
+            },
+          ),
+        );
+      });
+
+      test('mediaTypesRequiringUserAction defaults to all', () {
+        final MockWKWebViewConfiguration mockConfiguration =
+            MockWKWebViewConfiguration();
+
+        WebKitWebViewControllerCreationParams(
+          webKitProxy: WebKitProxy(
+            createWebViewConfiguration: () => mockConfiguration,
+          ),
+        );
+
+        verify(
+          mockConfiguration.setMediaTypesRequiringUserActionForPlayback(
+            <WKAudiovisualMediaType>{WKAudiovisualMediaType.all},
+          ),
+        );
+      });
+
+      test('mediaTypesRequiringUserAction does not allow values alongside none',
+          () {
+        final MockWKWebViewConfiguration mockConfiguration =
+            MockWKWebViewConfiguration();
+
+        expect(
+          () => WebKitWebViewControllerCreationParams(
+            webKitProxy: WebKitProxy(
+              createWebViewConfiguration: () => mockConfiguration,
+            ),
+            mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{
+              PlaybackMediaTypes.none,
+              PlaybackMediaTypes.audio,
+            },
+          ),
+          throwsAssertionError,
+        );
+      });
+    });
+
     test('loadFile', () async {
       final MockWKWebView mockWebView = MockWKWebView();
 
