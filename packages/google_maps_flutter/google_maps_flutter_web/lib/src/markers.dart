@@ -62,8 +62,11 @@ class MarkersController extends GeometryController {
       infoWindow: gmInfoWindow,
       consumeTapEvents: marker.consumeTapEvents,
       onTap: () {
-        showMarkerInfoWindow(marker.markerId);
-        _onMarkerTap(marker.markerId);
+        if (marker.consumeTapEvents) {
+          _onMarkerTap(marker.markerId);
+        } else {
+          showMarkerInfoWindow(marker.markerId)
+        }
       },
       onDragStart: (gmaps.LatLng latLng) {
         _onMarkerDragStart(marker.markerId, latLng);
@@ -140,11 +143,10 @@ class MarkersController extends GeometryController {
 
   // Handle internal events
 
-  bool _onMarkerTap(MarkerId markerId) {
+  void _onMarkerTap(MarkerId markerId) {
     // Have you ended here on your debugging? Is this wrong?
     // Comment here: https://github.com/flutter/flutter/issues/64084
     _streamController.add(MarkerTapEvent(mapId, markerId));
-    return _markerIdToController[markerId]?.consumeTapEvents ?? false;
   }
 
   void _onInfoWindowTap(MarkerId markerId) {

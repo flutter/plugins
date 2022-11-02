@@ -1,6 +1,7 @@
 ## NEXT
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
+* `Marker.consumeTapEvents` will determine whether to call `Marker.onTap`
 
 ## 0.4.0+3
 

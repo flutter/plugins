@@ -18,7 +18,7 @@ class MarkerController {
   })  : _marker = marker,
         _infoWindow = infoWindow,
         _consumeTapEvents = consumeTapEvents {
-    if (onTap != null) {
+    if (onTap != null && consumeTapEvents) {
       marker.onClick.listen((gmaps.MapMouseEvent event) {
         onTap.call();
       });
