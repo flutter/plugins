@@ -9,6 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
   js: ^0.6.0
+  video_player_platform_interface: ">=4.2.0 <6.0.0"
   video_player_web:
     path: ../
 

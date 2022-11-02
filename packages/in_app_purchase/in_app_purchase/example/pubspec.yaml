@@ -16,12 +16,15 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  in_app_purchase_android: ^0.2.1
+  in_app_purchase_storekit: ^0.3.0+1
   shared_preferences: ^2.0.0
 
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-
+  flutter_test:
+    sdk: flutter
   integration_test:
     sdk: flutter
 

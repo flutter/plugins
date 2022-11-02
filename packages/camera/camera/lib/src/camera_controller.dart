@@ -5,12 +5,13 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quiver/core.dart';
+
+import '../camera.dart';
 
 /// Signature for a callback receiving the a camera image.
 ///
@@ -281,7 +282,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      final Completer<CameraInitializedEvent> _initializeCompleter =
+      final Completer<CameraInitializedEvent> initializeCompleter =
           Completer<CameraInitializedEvent>();
 
       _deviceOrientationSubscription = CameraPlatform.instance
@@ -302,7 +303,7 @@ class CameraController extends ValueNotifier<CameraValue> {
           .onCameraInitialized(_cameraId)
           .first
           .then((CameraInitializedEvent event) {
-        _initializeCompleter.complete(event);
+        initializeCompleter.complete(event);
       }));
 
       await CameraPlatform.instance.initializeCamera(
@@ -312,18 +313,18 @@ class CameraController extends ValueNotifier<CameraValue> {
 
       value = value.copyWith(
         isInitialized: true,
-        previewSize: await _initializeCompleter.future
+        previewSize: await initializeCompleter.future
             .then((CameraInitializedEvent event) => Size(
                   event.previewWidth,
                   event.previewHeight,
                 )),
-        exposureMode: await _initializeCompleter.future
+        exposureMode: await initializeCompleter.future
             .then((CameraInitializedEvent event) => event.exposureMode),
-        focusMode: await _initializeCompleter.future
+        focusMode: await initializeCompleter.future
             .then((CameraInitializedEvent event) => event.focusMode),
-        exposurePointSupported: await _initializeCompleter.future.then(
+        exposurePointSupported: await initializeCompleter.future.then(
             (CameraInitializedEvent event) => event.exposurePointSupported),
-        focusPointSupported: await _initializeCompleter.future
+        focusPointSupported: await initializeCompleter.future
             .then((CameraInitializedEvent event) => event.focusPointSupported),
       );
     } on PlatformException catch (e) {

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:webview_flutter_android/src/android_webview.dart'
-    as android_webview;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+
+import 'src/android_webview.dart' as android_webview;
 
 /// Handles all cookie operations for the current platform.
 class WebViewAndroidCookieManager extends WebViewCookieManagerPlatform {

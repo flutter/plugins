@@ -18,7 +18,7 @@ import 'package:test/test.dart';
 
 import '../mocks.dart';
 import '../util.dart';
-import 'plugin_command_test.mocks.dart';
+import 'package_command_test.mocks.dart';
 
 // Constants for colorized output start and end.
 const String _startElapsedTimeColor = '\x1B[90m';
@@ -373,9 +373,10 @@ void main() {
 
     test('skips unsupported Dart versions when requested', () async {
       final RepositoryPackage excluded = createFakePackage(
-          'excluded_package', packagesDir, dartConstraint: '>=2.17.0 <3.0.0');
-      final RepositoryPackage included = createFakePackage(
-          'a_package', packagesDir);
+          'excluded_package', packagesDir,
+          dartConstraint: '>=2.17.0 <3.0.0');
+      final RepositoryPackage included =
+          createFakePackage('a_package', packagesDir);
 
       final TestPackageLoopingCommand command = createTestCommand(
           packageLoopingType: PackageLoopingType.includeAllSubpackages,
@@ -406,8 +407,7 @@ void main() {
       createFakePlugin('package_a', packagesDir);
       createFakePackage('package_b', packagesDir);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand();
+      final TestPackageLoopingCommand command = createTestCommand();
       final List<String> output = await runCommand(command);
 
       const String separator =
@@ -440,8 +440,7 @@ void main() {
       createFakePlugin('package_a', packagesDir);
       createFakePackage('package_b', packagesDir);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand();
+      final TestPackageLoopingCommand command = createTestCommand();
       final List<String> output =
           await runCommand(command, arguments: <String>['--log-timing']);
 
@@ -783,8 +782,7 @@ void main() {
 
       createFakePackage('package_f', packagesDir);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand();
+      final TestPackageLoopingCommand command = createTestCommand();
       final List<String> output = await runCommand(command);
 
       expect(
@@ -809,8 +807,7 @@ void main() {
     test('prints exclusions as skips in long-form run summary', () async {
       createFakePackage('package_a', packagesDir);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand();
+      final TestPackageLoopingCommand command = createTestCommand();
       final List<String> output =
           await runCommand(command, arguments: <String>['--exclude=package_a']);
 

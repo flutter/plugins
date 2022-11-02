@@ -8,7 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 
 import 'common/core.dart';
-import 'common/plugin_command.dart';
+import 'common/package_command.dart';
 
 const Set<String> _codeFileExtensions = <String>{
   '.c',
@@ -105,7 +105,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ''';
 
 /// Validates that code files have copyright and license blocks.
-class LicenseCheckCommand extends PluginCommand {
+class LicenseCheckCommand extends PackageCommand {
   /// Creates a new license check command for [packagesDir].
   LicenseCheckCommand(Directory packagesDir,
       {Platform platform = const LocalPlatform(), GitDir? gitDir})

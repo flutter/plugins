@@ -1,3 +1,11 @@
+## 1.9.5
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 1.9.4
+
+* Updates imports for `prefer_relative_imports`.
+
 ## 1.9.3
 
 * Updates minimum Flutter version to 2.10.

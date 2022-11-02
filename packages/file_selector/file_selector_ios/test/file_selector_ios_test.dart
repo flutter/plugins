@@ -36,14 +36,14 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
           mimeTypes: <String>['image/jpg'],
@@ -62,7 +62,7 @@ void main() {
       expect(config.allowMultiSelection, isFalse);
     });
     test('throws for a type group that does not support iOS', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'images',
         webWildCards: <String>['images/*'],
       );
@@ -73,7 +73,7 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
       );
 
@@ -88,14 +88,14 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
           mimeTypes: <String>['image/jpg'],
@@ -114,7 +114,7 @@ void main() {
       expect(config.allowMultiSelection, isTrue);
     });
     test('throws for a type group that does not support iOS', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'images',
         webWildCards: <String>['images/*'],
       );
@@ -125,7 +125,7 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
       );
 

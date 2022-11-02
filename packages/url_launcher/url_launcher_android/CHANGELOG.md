@@ -1,3 +1,11 @@
+## 6.0.21
+
+* Updates androidx.annotation to 1.2.0.
+
+## 6.0.20
+
+* Updates android gradle plugin to 4.2.0.
+
 ## 6.0.19
 
 * Revert gradle back to 3.4.2.
