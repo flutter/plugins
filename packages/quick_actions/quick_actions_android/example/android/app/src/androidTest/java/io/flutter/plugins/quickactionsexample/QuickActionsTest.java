@@ -44,7 +44,6 @@ public class QuickActionsTest {
     device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     scenario = ensureAppRunToView();
     ensureAllAppShortcutsAreCreated();
-    device.pressHome();
   }
 
   @After
@@ -110,8 +109,8 @@ public class QuickActionsTest {
     // Act
     context.startActivity(dynamicShortcutIntent);
     Boolean condition = device.wait(Until.hasObject(By.descContains(appReadySentinel)), 2000);
-    AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
-    scenario.onActivity(currentActivity::set);
+    // AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
+    // scenario.onActivity(currentActivity::set);
 
     // Assert
     Assert.assertFalse(
