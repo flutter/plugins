@@ -1,4 +1,15 @@
-## 12.0
+## 0.13.0
+
+* Renames `all-plugins-app` to `create-all-packages-app` to clarify what it
+  actually does. Also renames the project directory it creates from
+  `all_plugins` to `all_packages`.
+
+## 0.12.1
+
+* Modifies `publish_check_command.dart` to do a `dart pub get` in all examples
+  of the package being checked. Workaround for [dart-lang/pub#3618](https://github.com/dart-lang/pub/issues/3618).
+
+## 0.12.0
 
 * Changes the behavior of `--packages-for-branch` on main/master to run for
   packages changed in the last commit, rather than running for all packages.
@@ -6,7 +17,7 @@
   tested in presubmit.
 * Adds a `fix` command to run `dart fix --apply` in target packages.
 
-## 0.11
+## 0.11.0
 
 * Renames `publish-plugin` to `publish`.
 * Renames arguments to `list`:

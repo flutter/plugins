@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-// ignore_for_file: prefer_const_literals_to_create_immutables
-
 import 'dart:io';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
@@ -18,16 +15,12 @@ class OpenMultipleImagesPage extends StatelessWidget {
   const OpenMultipleImagesPage({Key? key}) : super(key: key);
 
   Future<void> _openImageFile(BuildContext context) async {
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
-    final XTypeGroup jpgsTypeGroup = XTypeGroup(
+    const XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'JPEGs',
       extensions: <String>['jpg', 'jpeg'],
       macUTIs: <String>['public.jpeg'],
     );
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
-    final XTypeGroup pngTypeGroup = XTypeGroup(
+    const XTypeGroup pngTypeGroup = XTypeGroup(
       label: 'PNGs',
       extensions: <String>['png'],
       macUTIs: <String>['public.png'],

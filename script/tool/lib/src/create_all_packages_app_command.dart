@@ -6,44 +6,55 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
 import 'common/package_command.dart';
+import 'common/process_runner.dart';
 import 'common/repository_package.dart';
 
 const String _outputDirectoryFlag = 'output-dir';
 
+const String _projectName = 'all_packages';
+
+const int _exitUpdateMacosPodfileFailed = 3;
+const int _exitUpdateMacosPbxprojFailed = 4;
+const int _exitGenNativeBuildFilesFailed = 5;
+
 /// A command to create an application that builds all in a single application.
-class CreateAllPluginsAppCommand extends PackageCommand {
+class CreateAllPackagesAppCommand extends PackageCommand {
   /// Creates an instance of the builder command.
-  CreateAllPluginsAppCommand(
+  CreateAllPackagesAppCommand(
     Directory packagesDir, {
+    ProcessRunner processRunner = const ProcessRunner(),
     Directory? pluginsRoot,
-  }) : super(packagesDir) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     final Directory defaultDir =
         pluginsRoot ?? packagesDir.fileSystem.currentDirectory;
     argParser.addOption(_outputDirectoryFlag,
         defaultsTo: defaultDir.path,
-        help: 'The path the directory to create the "all_plugins" project in.\n'
+        help:
+            'The path the directory to create the "$_projectName" project in.\n'
             'Defaults to the repository root.');
   }
 
   /// The location to create the synthesized app project.
   Directory get _appDirectory => packagesDir.fileSystem
       .directory(getStringArg(_outputDirectoryFlag))
-      .childDirectory('all_plugins');
+      .childDirectory(_projectName);
 
   /// The synthesized app project.
   RepositoryPackage get app => RepositoryPackage(_appDirectory);
 
   @override
   String get description =>
-      'Generate Flutter app that includes all plugins in packages.';
+      'Generate Flutter app that includes all target packagas.';
 
   @override
-  String get name => 'all-plugins-app';
+  String get name => 'create-all-packages-app';
 
   @override
   Future<void> run() async {
@@ -61,10 +72,28 @@ class CreateAllPluginsAppCommand extends PackageCommand {
       print('');
     }
 
+    await _genPubspecWithAllPlugins();
+
+    // Run `flutter pub get` to generate all native build files.
+    // TODO(stuartmorgan): This hangs on Windows for some reason. Since it's
+    // currently not needed on Windows, skip it there, but we should investigate
+    // further and/or implement https://github.com/flutter/flutter/issues/93407,
+    // and remove the need for this conditional.
+    if (!platform.isWindows) {
+      if (!await _genNativeBuildFiles()) {
+        printError(
+            "Failed to generate native build files via 'flutter pub get'");
+        throw ToolExit(_exitGenNativeBuildFilesFailed);
+      }
+    }
+
     await Future.wait(<Future<void>>[
-      _genPubspecWithAllPlugins(),
       _updateAppGradle(),
       _updateManifest(),
+      _updateMacosPbxproj(),
+      // This step requires the native file generation triggered by
+      // flutter pub get above, so can't currently be run on Windows.
+      if (!platform.isWindows) _updateMacosPodfile(),
     ]);
   }
 
@@ -74,7 +103,7 @@ class CreateAllPluginsAppCommand extends PackageCommand {
       <String>[
         'create',
         '--template=app',
-        '--project-name=all_plugins',
+        '--project-name=$_projectName',
         '--android-language=java',
         _appDirectory.path,
       ],
@@ -134,9 +163,9 @@ class CreateAllPluginsAppCommand extends PackageCommand {
 
     final StringBuffer newManifest = StringBuffer();
     for (final String line in manifestFile.readAsLinesSync()) {
-      if (line.contains('package="com.example.all_plugins"')) {
+      if (line.contains('package="com.example.$_projectName"')) {
         newManifest
-          ..writeln('package="com.example.all_plugins"')
+          ..writeln('package="com.example.$_projectName"')
           ..writeln('xmlns:tools="http://schemas.android.com/tools">')
           ..writeln()
           ..writeln(
@@ -165,7 +194,7 @@ class CreateAllPluginsAppCommand extends PackageCommand {
     final Map<String, PathDependency> pluginDeps =
         await _getValidPathDependencies();
     final Pubspec pubspec = Pubspec(
-      'all_plugins',
+      _projectName,
       description: 'Flutter app containing all 1st party plugins.',
       version: Version.parse('1.0.0+1'),
       environment: <String, VersionConstraint>{
@@ -258,5 +287,62 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
     }
 
     return buffer.toString();
+  }
+
+  Future<bool> _genNativeBuildFiles() async {
+    final int exitCode = await processRunner.runAndStream(
+      flutterCommand,
+      <String>['pub', 'get'],
+      workingDir: _appDirectory,
+    );
+    return exitCode == 0;
+  }
+
+  Future<void> _updateMacosPodfile() async {
+    /// Only change the macOS deployment target if the host platform is macOS.
+    /// The Podfile is not generated on other platforms.
+    if (!platform.isMacOS) {
+      return;
+    }
+
+    final File podfileFile =
+        app.platformDirectory(FlutterPlatform.macos).childFile('Podfile');
+    if (!podfileFile.existsSync()) {
+      printError("Can't find Podfile for macOS");
+      throw ToolExit(_exitUpdateMacosPodfileFailed);
+    }
+
+    final StringBuffer newPodfile = StringBuffer();
+    for (final String line in podfileFile.readAsLinesSync()) {
+      if (line.contains('platform :osx')) {
+        // macOS 10.15 is required by in_app_purchase.
+        newPodfile.writeln("platform :osx, '10.15'");
+      } else {
+        newPodfile.writeln(line);
+      }
+    }
+    podfileFile.writeAsStringSync(newPodfile.toString());
+  }
+
+  Future<void> _updateMacosPbxproj() async {
+    final File pbxprojFile = app
+        .platformDirectory(FlutterPlatform.macos)
+        .childDirectory('Runner.xcodeproj')
+        .childFile('project.pbxproj');
+    if (!pbxprojFile.existsSync()) {
+      printError("Can't find project.pbxproj for macOS");
+      throw ToolExit(_exitUpdateMacosPbxprojFailed);
+    }
+
+    final StringBuffer newPbxproj = StringBuffer();
+    for (final String line in pbxprojFile.readAsLinesSync()) {
+      if (line.contains('MACOSX_DEPLOYMENT_TARGET')) {
+        // macOS 10.15 is required by in_app_purchase.
+        newPbxproj.writeln('				MACOSX_DEPLOYMENT_TARGET = 10.15;');
+      } else {
+        newPbxproj.writeln(line);
+      }
+    }
+    pbxprojFile.writeAsStringSync(newPbxproj.toString());
   }
 }

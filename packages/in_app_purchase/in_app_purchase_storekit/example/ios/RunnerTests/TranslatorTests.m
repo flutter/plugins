@@ -390,4 +390,27 @@
   }
 }
 
+- (void)testSKPaymentDiscountFromMapOverflowingTimestamp {
+  if (@available(iOS 12.2, *)) {
+    NSDictionary *discountMap = @{
+      @"identifier" : @"payment_discount_identifier",
+      @"keyIdentifier" : @"payment_discount_key_identifier",
+      @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+      @"signature" : @"this is a encrypted signature",
+      @"timestamp" : @1665044583595,  // timestamp 2022 Oct
+    };
+    NSString *error = nil;
+    SKPaymentDiscount *paymentDiscount =
+        [FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap withError:&error];
+    XCTAssertNil(error);
+    XCTAssertNotNil(paymentDiscount);
+    XCTAssertEqual(paymentDiscount.identifier, discountMap[@"identifier"]);
+    XCTAssertEqual(paymentDiscount.keyIdentifier, discountMap[@"keyIdentifier"]);
+    XCTAssertEqualObjects(paymentDiscount.nonce,
+                          [[NSUUID alloc] initWithUUIDString:discountMap[@"nonce"]]);
+    XCTAssertEqual(paymentDiscount.signature, discountMap[@"signature"]);
+    XCTAssertEqual(paymentDiscount.timestamp, discountMap[@"timestamp"]);
+  }
+}
+
 @end
