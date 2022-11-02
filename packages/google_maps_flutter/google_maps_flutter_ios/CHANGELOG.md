@@ -1,3 +1,7 @@
+## 2.1.13
+
+* `Marker.consumeTapEvents` will determine whether to call `Marker.onTap`
+
 ## 2.1.12
 
 * Updates imports for `prefer_relative_imports`.
