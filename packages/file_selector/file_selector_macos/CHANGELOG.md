@@ -1,5 +1,10 @@
-## NEXT
+## 0.9.0+3
 
+* Changes XTypeGroup initialization from final to const.
+
+## 0.9.0+2
+
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 
 ## 0.9.0+1

@@ -80,6 +80,16 @@ void main() {
       verify(mockPlatform.signIn());
     });
 
+    test('forceCodeForRefreshToken sent with init method call', () async {
+      final GoogleSignIn googleSignIn =
+          GoogleSignIn(forceCodeForRefreshToken: true);
+
+      await googleSignIn.signIn();
+
+      _verifyInit(mockPlatform, forceCodeForRefreshToken: true);
+      verify(mockPlatform.signIn());
+    });
+
     test('signOut', () async {
       final GoogleSignIn googleSignIn = GoogleSignIn();
 

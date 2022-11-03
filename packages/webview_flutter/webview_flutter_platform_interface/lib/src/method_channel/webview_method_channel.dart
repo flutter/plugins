@@ -247,30 +247,29 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
 
   static Map<String, dynamic> _webSettingsToMap(WebSettings? settings) {
     final Map<String, dynamic> map = <String, dynamic>{};
-    void _addIfNonNull(String key, dynamic value) {
+    void addIfNonNull(String key, dynamic value) {
       if (value == null) {
         return;
       }
       map[key] = value;
     }
 
-    void _addSettingIfPresent<T>(String key, WebSetting<T> setting) {
+    void addSettingIfPresent<T>(String key, WebSetting<T> setting) {
       if (!setting.isPresent) {
         return;
       }
       map[key] = setting.value;
     }
 
-    _addIfNonNull('jsMode', settings!.javascriptMode?.index);
-    _addIfNonNull('hasNavigationDelegate', settings.hasNavigationDelegate);
-    _addIfNonNull('hasProgressTracking', settings.hasProgressTracking);
-    _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
-    _addIfNonNull(
-        'gestureNavigationEnabled', settings.gestureNavigationEnabled);
-    _addIfNonNull(
+    addIfNonNull('jsMode', settings!.javascriptMode?.index);
+    addIfNonNull('hasNavigationDelegate', settings.hasNavigationDelegate);
+    addIfNonNull('hasProgressTracking', settings.hasProgressTracking);
+    addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
+    addIfNonNull('gestureNavigationEnabled', settings.gestureNavigationEnabled);
+    addIfNonNull(
         'allowsInlineMediaPlayback', settings.allowsInlineMediaPlayback);
-    _addSettingIfPresent('userAgent', settings.userAgent);
-    _addIfNonNull('zoomEnabled', settings.zoomEnabled);
+    addSettingIfPresent('userAgent', settings.userAgent);
+    addIfNonNull('zoomEnabled', settings.zoomEnabled);
     return map;
   }
 

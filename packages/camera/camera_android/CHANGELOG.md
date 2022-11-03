@@ -1,3 +1,11 @@
+## 0.10.0+4
+
+* Upgrades `androidx.annotation` version to 1.5.0.
+
+## 0.10.0+3
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
 ## 0.10.0+2
 
 * Removes call to `join` on the camera's background `HandlerThread`.

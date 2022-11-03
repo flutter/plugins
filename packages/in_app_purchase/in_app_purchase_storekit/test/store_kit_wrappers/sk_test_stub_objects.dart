@@ -10,6 +10,15 @@ const SKPaymentWrapper dummyPayment = SKPaymentWrapper(
     requestData: 'fake-data-utf8',
     quantity: 2,
     simulatesAskToBuyInSandbox: true);
+
+final SKPaymentWrapper dummyPaymentWithDiscount = SKPaymentWrapper(
+    productIdentifier: 'prod-id',
+    applicationUsername: 'app-user-name',
+    requestData: 'fake-data-utf8',
+    quantity: 2,
+    simulatesAskToBuyInSandbox: true,
+    paymentDiscount: dummyPaymentDiscountWrapper);
+
 const SKError dummyError = SKError(
     code: 111,
     domain: 'dummy-domain',
@@ -186,3 +195,12 @@ Map<String, dynamic> buildTransactionMap(
   };
   return map;
 }
+
+final SKPaymentDiscountWrapper dummyPaymentDiscountWrapper =
+    SKPaymentDiscountWrapper.fromJson(const <String, dynamic>{
+  'identifier': 'dummy-discount-identifier',
+  'keyIdentifier': 'KEYIDTEST1',
+  'nonce': '00000000-0000-0000-0000-000000000000',
+  'signature': 'dummy-signature-string',
+  'timestamp': 1231231231,
+});

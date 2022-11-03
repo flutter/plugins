@@ -253,12 +253,12 @@ Future<void> main() async {
   testWidgets('set custom userAgent', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter1 =
         Completer<WebViewController>();
-    final GlobalKey _globalKey = GlobalKey();
+    final GlobalKey globalKey = GlobalKey();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
-          key: _globalKey,
+          key: globalKey,
           initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent1',
@@ -276,7 +276,7 @@ Future<void> main() async {
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
-          key: _globalKey,
+          key: globalKey,
           initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent2',
@@ -292,13 +292,13 @@ Future<void> main() async {
       (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
-    final GlobalKey _globalKey = GlobalKey();
+    final GlobalKey globalKey = GlobalKey();
     // Build the webView with no user agent to get the default platform user agent.
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
-          key: _globalKey,
+          key: globalKey,
           initialUrl: primaryUrl,
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController controller) {
@@ -314,7 +314,7 @@ Future<void> main() async {
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
-          key: _globalKey,
+          key: globalKey,
           initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent',
@@ -328,7 +328,7 @@ Future<void> main() async {
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
-          key: _globalKey,
+          key: globalKey,
           initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
         ),

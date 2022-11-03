@@ -177,6 +177,147 @@ samples, guidance on mobile development, and a full API reference.
   });
 
   test(
+      'fails when a plugin implementation package example README has the '
+      'template boilerplate', () async {
+    final RepositoryPackage package = createFakePlugin(
+        'a_plugin_ios', packagesDir.childDirectory('a_plugin'));
+    package.getExamples().first.readmeFile.writeAsStringSync('''
+# a_plugin_ios_example
+
+Demonstrates how to use the a_plugin_ios plugin.
+''');
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['readme-check'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('The boilerplate should not be left in for a federated plugin '
+            "implementation package's example."),
+        contains('Contains template boilerplate'),
+      ]),
+    );
+  });
+
+  test(
+      'allows the template boilerplate in the example README for packages '
+      'other than plugin implementation packages', () async {
+    final RepositoryPackage package = createFakePlugin(
+      'a_plugin',
+      packagesDir.childDirectory('a_plugin'),
+      platformSupport: <String, PlatformDetails>{
+        platformAndroid: const PlatformDetails(PlatformSupport.inline),
+      },
+    );
+    // Write a README with an OS support table so that the main README check
+    // passes.
+    package.readmeFile.writeAsStringSync('''
+# a_plugin
+
+|                | Android |
+|----------------|---------|
+| **Support**    | SDK 19+ |
+
+A great plugin.
+''');
+    package.getExamples().first.readmeFile.writeAsStringSync('''
+# a_plugin_example
+
+Demonstrates how to use the a_plugin plugin.
+''');
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['readme-check']);
+
+    expect(
+      output,
+      containsAll(<Matcher>[
+        contains('  Checking README.md...'),
+        contains('  Checking example/README.md...'),
+      ]),
+    );
+  });
+
+  test(
+      'fails when a plugin implementation package example README does not have '
+      'the repo-standard message', () async {
+    final RepositoryPackage package = createFakePlugin(
+        'a_plugin_ios', packagesDir.childDirectory('a_plugin'));
+    package.getExamples().first.readmeFile.writeAsStringSync('''
+# a_plugin_ios_example
+
+Some random description.
+''');
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['readme-check'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('The example README for a platform implementation package '
+            'should warn readers about its intended use. Please copy the '
+            'example README from another implementation package in this '
+            'repository.'),
+        contains('Missing implementation package example warning'),
+      ]),
+    );
+  });
+
+  test('passes for a plugin implementation package with the expected content',
+      () async {
+    final RepositoryPackage package = createFakePlugin(
+      'a_plugin',
+      packagesDir.childDirectory('a_plugin'),
+      platformSupport: <String, PlatformDetails>{
+        platformAndroid: const PlatformDetails(PlatformSupport.inline),
+      },
+    );
+    // Write a README with an OS support table so that the main README check
+    // passes.
+    package.readmeFile.writeAsStringSync('''
+# a_plugin
+
+|                | Android |
+|----------------|---------|
+| **Support**    | SDK 19+ |
+
+A great plugin.
+''');
+    package.getExamples().first.readmeFile.writeAsStringSync('''
+# Platform Implementation Test App
+
+This is a test app for manual testing and automated integration testing
+of this platform implementation. It is not intended to demonstrate actual use of
+this package, since the intent is that plugin clients use the app-facing
+package.
+
+Unless you are making changes to this implementation package, this example is
+very unlikely to be relevant.
+''');
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['readme-check']);
+
+    expect(
+      output,
+      containsAll(<Matcher>[
+        contains('  Checking README.md...'),
+        contains('  Checking example/README.md...'),
+      ]),
+    );
+  });
+
+  test(
       'fails when multi-example top-level example directory README still has '
       'application template boilerplate', () async {
     final RepositoryPackage package = createFakePackage(

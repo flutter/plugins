@@ -200,10 +200,11 @@
                                            : [simulatesAskToBuyInSandbox boolValue];
 
   if (@available(iOS 12.2, *)) {
+    NSDictionary *paymentDiscountMap = [self getNonNullValueFromDictionary:paymentMap
+                                                                    forKey:@"paymentDiscount"];
     NSString *error = nil;
-    SKPaymentDiscount *paymentDiscount = [FIAObjectTranslator
-        getSKPaymentDiscountFromMap:[paymentMap objectForKey:@"paymentDiscount"]
-                          withError:&error];
+    SKPaymentDiscount *paymentDiscount =
+        [FIAObjectTranslator getSKPaymentDiscountFromMap:paymentDiscountMap withError:&error];
 
     if (error) {
       result([FlutterError
@@ -365,6 +366,11 @@
     [_paymentQueueHandler showPriceConsentIfNeeded];
   }
   result(nil);
+}
+
+- (id)getNonNullValueFromDictionary:(NSDictionary *)dictionary forKey:(NSString *)key {
+  id value = dictionary[key];
+  return [value isKindOfClass:[NSNull class]] ? nil : value;
 }
 
 #pragma mark - transaction observer:

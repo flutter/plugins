@@ -54,7 +54,7 @@ dart pub global run flutter_plugin_tools <args>
 ## Commands
 
 Run with `--help` for a full list of commands and arguments, but the
-following shows a number of common commands being run for a specific plugin.
+following shows a number of common commands being run for a specific package.
 
 All examples assume running from source; see above for running the
 published version instead.
@@ -71,29 +71,29 @@ command is targetting. An package name can be any of:
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart format --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart format --packages package_name
 ```
 
 ### Run the Dart Static Analyzer
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart analyze --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart analyze --packages package_name
 ```
 
 ### Run Dart Unit Tests
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart test --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart test --packages package_name
 ```
 
 ### Run Dart Integration Tests
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart build-examples --apk --packages plugin_name
-dart run ./script/tool/bin/flutter_plugin_tools.dart drive-examples --android --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart build-examples --apk --packages package_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart drive-examples --android --packages package_name
 ```
 
 Replace `--apk`/`--android` with the platform you want to test against
@@ -110,11 +110,11 @@ Examples:
 ```sh
 cd <repository root>
 # Run just unit tests for iOS and Android:
-dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --ios --android --no-integration --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --ios --android --no-integration --packages package_name
 # Run all tests for macOS:
-dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --macos --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --macos --packages package_name
 # Run all tests for Windows:
-dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --windows --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --windows --packages package_name
 ```
 
 ### Update README.md from Example Sources
@@ -125,7 +125,7 @@ before running this command.
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart update-excerpts --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart update-excerpts --packages package_name
 ```
 
 ### Update CHANGELOG and Version
@@ -165,18 +165,18 @@ on the Flutter Wiki first.
 ```sh
 cd <path_to_plugins>
 git checkout <commit_hash_to_publish>
-dart run ./script/tool/bin/flutter_plugin_tools.dart publish-plugin --packages <package>
+dart run ./script/tool/bin/flutter_plugin_tools.dart publish --packages <package>
 ```
 
 By default the tool tries to push tags to the `upstream` remote, but some
 additional settings can be configured. Run `dart run ./script/tool/bin/flutter_plugin_tools.dart
-publish-plugin --help` for more usage information.
+publish --help` for more usage information.
 
 The tool wraps `pub publish` for pushing the package to pub, and then will
 automatically use git to try to create and push tags. It has some additional
 safety checking around `pub publish` too. By default `pub publish` publishes
 _everything_, including untracked or uncommitted files in version control.
-`publish-plugin` will first check the status of the local
+`publish` will first check the status of the local
 directory and refuse to publish if there are any mismatched files with version
 control present.
 
