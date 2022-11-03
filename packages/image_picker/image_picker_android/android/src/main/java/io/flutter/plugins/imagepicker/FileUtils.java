@@ -29,12 +29,25 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
-import java.io.*;
+import io.flutter.Log;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 
 class FileUtils {
-
-  @SuppressWarnings("IOStreamConstructor")
+  /**
+   * Copies the file from the given content URI to a temporary directory, retaining the original
+   * file name if possible.
+   *
+   * <p>Each file is placed in its own directory to avoid conflicts according to the following
+   * scheme: {cacheDir}/{randomUuid}/{fileName}
+   *
+   * <p>If the original file name is unknown, a predefined "image_picker" filename is used and the
+   * file extension is deduced from the mime type (with fallback to ".jpg" in case of failure).
+   */
   String getPathFromUri(final Context context, final Uri uri) {
     try (InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
       String uuid = UUID.randomUUID().toString();
@@ -45,7 +58,8 @@ class FileUtils {
       targetDirectory.deleteOnExit();
       String fileName = getImageName(context, uri);
       if (fileName == null) {
-        fileName = uuid + getImageExtension(context, uri);
+        Log.w("FileUtils", "Cannot get file name for " + uri);
+        fileName = "image_picker" + getImageExtension(context, uri);
       }
       File file = new File(targetDirectory, fileName);
       try (OutputStream outputStream = new FileOutputStream(file)) {
@@ -88,8 +102,7 @@ class FileUtils {
   /** @return name of the image provided by ContentResolver; this may be null. */
   private static String getImageName(Context context, Uri uriImage) {
     try (Cursor cursor = queryImageName(context, uriImage)) {
-      if (cursor == null) return null;
-      cursor.moveToFirst();
+      if (cursor == null || !cursor.moveToFirst() || cursor.getColumnCount() < 1) return null;
       return cursor.getString(0);
     }
   }

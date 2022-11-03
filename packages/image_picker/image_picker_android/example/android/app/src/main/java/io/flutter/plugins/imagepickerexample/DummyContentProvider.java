@@ -23,7 +23,7 @@ public class DummyContentProvider extends ContentProvider {
   @Nullable
   @Override
   public AssetFileDescriptor openAssetFile(@NonNull Uri uri, @NonNull String mode) {
-    return getContext().getResources().openRawResourceFd(R.raw.flutter_logo);
+    return getContext().getResources().openRawResourceFd(R.raw.ic_launcher);
   }
 
   @Nullable
