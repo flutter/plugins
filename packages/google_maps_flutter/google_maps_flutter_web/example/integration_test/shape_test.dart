@@ -15,20 +15,20 @@ void main() {
 
   // Since onTap events happen asynchronously, we need to store when the event
   // is fired. We use a completer so the test can wait for the future to be completed.
-  late Completer<bool> _methodCalledCompleter;
+  late Completer<bool> methodCalledCompleter;
 
-  /// This is the future value of the [_methodCalledCompleter]. Reinitialized
+  /// This is the future value of the [methodCalledCompleter]. Reinitialized
   /// in the [setUp] method, and completed (as `true`) by [onTap], when it gets
   /// called by the corresponding Shape Controller.
   late Future<bool> methodCalled;
 
   void onTap() {
-    _methodCalledCompleter.complete(true);
+    methodCalledCompleter.complete(true);
   }
 
   setUp(() {
-    _methodCalledCompleter = Completer<bool>();
-    methodCalled = _methodCalledCompleter.future;
+    methodCalledCompleter = Completer<bool>();
+    methodCalled = methodCalledCompleter.future;
   });
 
   group('CircleController', () {

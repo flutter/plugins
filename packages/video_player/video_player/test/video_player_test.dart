@@ -105,7 +105,7 @@ class _FakeClosedCaptionFile extends ClosedCaptionFile {
 }
 
 void main() {
-  void _verifyPlayStateRespondsToLifecycle(
+  void verifyPlayStateRespondsToLifecycle(
     VideoPlayerController controller, {
     required bool shouldPlayInBackground,
   }) {
@@ -248,7 +248,7 @@ void main() {
         );
         await controller.initialize();
         await controller.play();
-        _verifyPlayStateRespondsToLifecycle(controller,
+        verifyPlayStateRespondsToLifecycle(controller,
             shouldPlayInBackground: false);
       });
 
@@ -1025,7 +1025,7 @@ void main() {
       );
       await controller.initialize();
       await controller.play();
-      _verifyPlayStateRespondsToLifecycle(
+      verifyPlayStateRespondsToLifecycle(
         controller,
         shouldPlayInBackground: true,
       );
@@ -1038,7 +1038,7 @@ void main() {
       );
       await controller.initialize();
       await controller.play();
-      _verifyPlayStateRespondsToLifecycle(
+      verifyPlayStateRespondsToLifecycle(
         controller,
         shouldPlayInBackground: false,
       );

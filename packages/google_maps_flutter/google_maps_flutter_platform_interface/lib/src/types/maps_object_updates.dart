@@ -31,7 +31,7 @@ class MapsObjectUpdates<T extends MapsObject<T>> {
     ///
     /// It is a programming error to call this with an ID that is not guaranteed
     /// to be in [currentObjects].
-    T _idToCurrentObject(MapsObjectId<T> id) {
+    T idToCurrentObject(MapsObjectId<T> id) {
       return currentObjects[id]!;
     }
 
@@ -39,7 +39,7 @@ class MapsObjectUpdates<T extends MapsObject<T>> {
 
     _objectsToAdd = currentObjectIds
         .difference(previousObjectIds)
-        .map(_idToCurrentObject)
+        .map(idToCurrentObject)
         .toSet();
 
     // Returns `true` if [current] is not equals to previous one with the
@@ -51,7 +51,7 @@ class MapsObjectUpdates<T extends MapsObject<T>> {
 
     _objectsToChange = currentObjectIds
         .intersection(previousObjectIds)
-        .map(_idToCurrentObject)
+        .map(idToCurrentObject)
         .where(hasChanged)
         .toSet();
   }

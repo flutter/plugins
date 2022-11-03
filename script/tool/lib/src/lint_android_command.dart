@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
+import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 import 'common/repository_package.dart';
 
