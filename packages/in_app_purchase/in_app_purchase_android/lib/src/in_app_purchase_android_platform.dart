@@ -6,10 +6,10 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import '../billing_client_wrappers.dart';
+import '../in_app_purchase_android.dart';
 
 /// [IAPError.code] code for failed purchases.
 const String kPurchaseErrorCode = 'purchase_error';

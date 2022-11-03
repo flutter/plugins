@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
+import '../../store_kit_wrappers.dart';
 
 /// A wrapper around
 /// [`SKPaymentQueueDelegate`](https://developer.apple.com/documentation/storekit/skpaymentqueuedelegate?language=objc).

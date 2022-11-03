@@ -117,10 +117,10 @@ void main() {
   });
 
   testWidgets('Mutate a polyline', (WidgetTester tester) async {
-    final List<LatLng> _points = <LatLng>[const LatLng(0.0, 0.0)];
+    final List<LatLng> points = <LatLng>[const LatLng(0.0, 0.0)];
     final Polyline p1 = Polyline(
       polylineId: const PolylineId('polyline_1'),
-      points: _points,
+      points: points,
     );
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
 
