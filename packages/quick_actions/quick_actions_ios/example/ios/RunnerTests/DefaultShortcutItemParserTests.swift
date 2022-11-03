@@ -25,7 +25,6 @@ class DefaultShortcutItemParserTests: XCTestCase {
 
     let parser = DefaultShortcutItemParser()
     XCTAssertEqual(parser.parseShortcutItems([rawItem]), [expectedItem])
-
   }
 
   func testparseShortcutItems_noIcon() {

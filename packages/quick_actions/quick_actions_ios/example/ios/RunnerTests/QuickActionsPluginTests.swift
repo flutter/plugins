@@ -51,10 +51,19 @@ class QuickActionsPluginTests: XCTestCase {
   }
 
   func testHandleMethodCall_clearShortcutItems() {
+    let item = UIApplicationShortcutItem(
+      type: "SearchTheThing",
+      localizedTitle: "Search the thing",
+      localizedSubtitle: nil,
+      icon: UIApplicationShortcutIcon(templateImageName: "search_the_thing.png"),
+      userInfo: nil)
+
     let call = FlutterMethodCall(methodName: "clearShortcutItems", arguments: nil)
     let mockChannel = MockMethodChannel()
     let mockAppShortcutController = MockAppShortcutController()
     let mockShortcutItemParser = MockShortcutItemParser()
+
+    mockAppShortcutController.shortcutItems = [item]
 
     let plugin = QuickActionsPlugin(
       channel: mockChannel,
@@ -146,7 +155,6 @@ class QuickActionsPluginTests: XCTestCase {
     ) { success in /* no-op */ }
 
     XCTAssert(actionResult, "performActionForShortcutItem must return true.")
-
     waitForExpectations(timeout: 1)
   }
 
@@ -172,7 +180,6 @@ class QuickActionsPluginTests: XCTestCase {
       didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
     XCTAssertFalse(
       launchResult, "didFinishLaunchingWithOptions must return false if launched from shortcut.")
-
   }
 
   func testApplicationDidFinishLaunchingWithOptions_launchWithoutShortcut() {
@@ -188,7 +195,6 @@ class QuickActionsPluginTests: XCTestCase {
     let launchResult = plugin.application(UIApplication.shared, didFinishLaunchingWithOptions: [:])
     XCTAssert(
       launchResult, "didFinishLaunchingWithOptions must return true if not launched from shortcut.")
-
   }
 
   func testApplicationDidBecomeActive_launchWithoutShortcut() {
@@ -210,7 +216,6 @@ class QuickActionsPluginTests: XCTestCase {
       launchResult, "didFinishLaunchingWithOptions must return true if not launched from shortcut.")
 
     plugin.applicationDidBecomeActive(UIApplication.shared)
-
   }
 
   func testApplicationDidBecomeActive_launchWithShortcut() {
