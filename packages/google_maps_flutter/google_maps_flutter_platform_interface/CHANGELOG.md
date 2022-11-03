@@ -1,3 +1,23 @@
+## 2.2.4
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 2.2.3
+
+* Updates imports for `prefer_relative_imports`.
+* Updates minimum Flutter version to 2.10.
+
+## 2.2.2
+
+* Adds a `size` parameter to `BitmapDescriptor.fromBytes`, so **web** applications
+  can specify the actual *physical size* of the bitmap. The parameter is not needed
+  (and ignored) in other platforms. Issue [#73789](https://github.com/flutter/flutter/issues/73789).
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 2.2.1
+
+* Adds a new interface for inspecting the platform map state in tests.
+
 ## 2.2.0
 
 * Adds new versions of `buildView` and `updateOptions` that take a new option

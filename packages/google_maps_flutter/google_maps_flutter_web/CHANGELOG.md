@@ -1,3 +1,18 @@
+## NEXT
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 0.4.0+3
+
+* Updates imports for `prefer_relative_imports`.
+* Updates minimum Flutter version to 2.10.
+
+## 0.4.0+2
+
+* Updates conversion of `BitmapDescriptor.fromBytes` marker icons to support the
+  new `size` parameter. Issue [#73789](https://github.com/flutter/flutter/issues/73789).
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 0.4.0+1
 
 * Updates `README.md` to describe a hit-testing issue when Flutter widgets are overlaid on top of the Map widget.

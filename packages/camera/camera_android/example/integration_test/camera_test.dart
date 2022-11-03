@@ -225,16 +225,16 @@ void main() {
       );
 
       await controller.initialize();
-      bool _isDetecting = false;
+      bool isDetecting = false;
 
       await controller.startImageStream((CameraImageData image) {
-        if (_isDetecting) {
+        if (isDetecting) {
           return;
         }
 
-        _isDetecting = true;
+        isDetecting = true;
 
-        expectLater(image, isNotNull).whenComplete(() => _isDetecting = false);
+        expectLater(image, isNotNull).whenComplete(() => isDetecting = false);
       });
 
       expect(controller.value.isStreamingImages, true);

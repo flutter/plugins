@@ -3,13 +3,14 @@ publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.8.0"
+  flutter: ">=2.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
   image_picker_for_web:
     path: ../
+  image_picker_platform_interface: ^2.2.0
 
 dev_dependencies:
   flutter_driver:

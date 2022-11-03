@@ -8,6 +8,8 @@
 
 #import <OCMock/OCMock.h>
 
+static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
+
 @interface FWFWebViewHostApiTests : XCTestCase
 @end
 
@@ -407,5 +409,61 @@
   XCTAssertEqualObjects(errorData.code, @0);
   XCTAssertEqualObjects(errorData.domain, @"errorDomain");
   XCTAssertEqualObjects(errorData.localizedDescription, @"description");
+}
+
+- (void)testWebViewContentInsetBehaviorShouldBeNeverOnIOS11 API_AVAILABLE(ios(11.0)) {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
+
+  [instanceManager addDartCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
+
+  FlutterError *error;
+  [hostAPI createWithIdentifier:@1 configurationIdentifier:@0 error:&error];
+  FWFWebView *webView = (FWFWebView *)[instanceManager instanceForIdentifier:1];
+
+  XCTAssertEqual(webView.scrollView.contentInsetAdjustmentBehavior,
+                 UIScrollViewContentInsetAdjustmentNever);
+}
+
+- (void)testScrollViewsAutomaticallyAdjustsScrollIndicatorInsetsShouldbeNoOnIOS13 API_AVAILABLE(
+    ios(13.0)) {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
+
+  [instanceManager addDartCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
+
+  FlutterError *error;
+  [hostAPI createWithIdentifier:@1 configurationIdentifier:@0 error:&error];
+  FWFWebView *webView = (FWFWebView *)[instanceManager instanceForIdentifier:1];
+
+  XCTAssertFalse(webView.scrollView.automaticallyAdjustsScrollIndicatorInsets);
+}
+
+- (void)testContentInsetsSumAlwaysZeroAfterSetFrame {
+  FWFWebView *webView = [[FWFWebView alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                            configuration:[[WKWebViewConfiguration alloc] init]];
+
+  webView.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 300, 0);
+  XCTAssertFalse(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
+
+  webView.frame = CGRectMake(0, 0, 300, 200);
+  XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
+  XCTAssertTrue(CGRectEqualToRect(webView.frame, CGRectMake(0, 0, 300, 200)));
+
+  if (@available(iOS 11, *)) {
+    // After iOS 11, we need to make sure the contentInset compensates the adjustedContentInset.
+    UIScrollView *partialMockScrollView = OCMPartialMock(webView.scrollView);
+    UIEdgeInsets insetToAdjust = UIEdgeInsetsMake(0, 0, 300, 0);
+    OCMStub(partialMockScrollView.adjustedContentInset).andReturn(insetToAdjust);
+    XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
+
+    webView.frame = CGRectMake(0, 0, 300, 100);
+    XCTAssertTrue(feq(webView.scrollView.contentInset.bottom, -insetToAdjust.bottom));
+    XCTAssertTrue(CGRectEqualToRect(webView.frame, CGRectMake(0, 0, 300, 100)));
+  }
 }
 @end

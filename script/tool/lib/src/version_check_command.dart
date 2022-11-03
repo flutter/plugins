@@ -18,8 +18,6 @@ import 'common/process_runner.dart';
 import 'common/pub_version_finder.dart';
 import 'common/repository_package.dart';
 
-const int _exitMissingChangeDescriptionFile = 3;
-
 /// Categories of version change types.
 enum NextVersionType {
   /// A breaking change.
@@ -115,55 +113,49 @@ class VersionCheckCommand extends PackageLoopingCommand {
       help: 'Whether the version check should run against the version on pub.\n'
           'Defaults to false, which means the version check only run against '
           'the previous version in code.',
-      defaultsTo: false,
-      negatable: true,
     );
-    argParser.addOption(_changeDescriptionFile,
-        help: 'The path to a file containing the description of the change '
-            '(e.g., PR description or commit message).\n\n'
-            'If supplied, this is used to allow overrides to some version '
+    argParser.addOption(_prLabelsArg,
+        help: 'A comma-separated list of labels associated with this PR, '
+            'if applicable.\n\n'
+            'If supplied, this may be to allow overrides to some version '
             'checks.');
     argParser.addFlag(_checkForMissingChanges,
         help: 'Validates that changes to packages include CHANGELOG and '
             'version changes unless they meet an established exemption.\n\n'
-            'If used with --$_changeDescriptionFile, this is should only be '
-            'used in pre-submit CI checks, to  prevent the possibility of '
-            'post-submit breakage if an override justification is not '
-            'transferred into the commit message.',
+            'If used with --$_prLabelsArg, this is should only be '
+            'used in pre-submit CI checks, to  prevent post-submit breakage '
+            'when labels are no longer applicable.',
         hide: true);
     argParser.addFlag(_ignorePlatformInterfaceBreaks,
         help: 'Bypasses the check that platform interfaces do not contain '
             'breaking changes.\n\n'
             'This is only intended for use in post-submit CI checks, to '
-            'prevent the possibility of post-submit breakage if a change '
-            'description justification is not transferred into the commit '
-            'message. Pre-submit checks should always use '
-            '--$_changeDescriptionFile instead.',
+            'prevent post-submit breakage when overriding the check with '
+            'labels. Pre-submit checks should always use '
+            '--$_prLabelsArg instead.',
         hide: true);
   }
 
   static const String _againstPubFlag = 'against-pub';
-  static const String _changeDescriptionFile = 'change-description-file';
+  static const String _prLabelsArg = 'pr-labels';
   static const String _checkForMissingChanges = 'check-for-missing-changes';
   static const String _ignorePlatformInterfaceBreaks =
       'ignore-platform-interface-breaks';
 
-  /// The string that must be in [_changeDescriptionFile] to allow a breaking
+  /// The label that must be on a PR to allow a breaking
   /// change to a platform interface.
-  static const String _breakingChangeJustificationMarker =
-      '## Breaking change justification';
+  static const String _breakingChangeOverrideLabel =
+      'override: allow breaking change';
 
-  /// The string that must be at the start of a line in [_changeDescriptionFile]
-  /// to allow skipping a version change for a PR that would normally require
-  /// one.
-  static const String _missingVersionChangeJustificationMarker =
-      'No version change:';
+  /// The label that must be on a PR to allow skipping a version change for a PR
+  /// that would normally require one.
+  static const String _missingVersionChangeOverrideLabel =
+      'override: no versioning needed';
 
-  /// The string that must be at the start of a line in [_changeDescriptionFile]
-  /// to allow skipping a CHANGELOG change for a PR that would normally require
-  /// one.
-  static const String _missingChangelogChangeJustificationMarker =
-      'No CHANGELOG change:';
+  /// The label that must be on a PR to allow skipping a CHANGELOG change for a
+  /// PR that would normally require one.
+  static const String _missingChangelogChangeOverrideLabel =
+      'override: no changelog needed';
 
   final PubVersionFinder _pubVersionFinder;
 
@@ -171,14 +163,14 @@ class VersionCheckCommand extends PackageLoopingCommand {
   late final String _mergeBase;
   late final List<String> _changedFiles;
 
-  late final String _changeDescription = _loadChangeDescription();
+  late final Set<String> _prLabels = _getPRLabels();
 
   @override
   final String name = 'version-check';
 
   @override
   final String description =
-      'Checks if the versions of the plugins have been incremented per pub specification.\n'
+      'Checks if the versions of packages have been incremented per pub specification.\n'
       'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
 
@@ -326,7 +318,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       print('${indentation}Unable to find previous version '
           '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
       logWarning(
-          '${indentation}If this plugin is not new, something has gone wrong.');
+          '${indentation}If this package is not new, something has gone wrong.');
       return _CurrentVersionState.validIncrease; // Assume new, thus valid.
     }
 
@@ -498,32 +490,24 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       return true;
     }
 
-    if (_getChangeDescription().contains(_breakingChangeJustificationMarker)) {
+    if (_prLabels.contains(_breakingChangeOverrideLabel)) {
       logWarning(
           '${indentation}Allowing breaking change to ${package.displayName} '
-          'due to "$_breakingChangeJustificationMarker" in the change '
-          'description.');
+          'due to the "$_breakingChangeOverrideLabel" label.');
       return true;
     }
 
     return false;
   }
 
-  String _getChangeDescription() => _changeDescription;
-
-  /// Returns the contents of the file pointed to by [_changeDescriptionFile],
-  /// or an empty string if that flag is not provided.
-  String _loadChangeDescription() {
-    final String path = getStringArg(_changeDescriptionFile);
-    if (path.isEmpty) {
-      return '';
+  /// Returns the labels associated with this PR, if any, or an empty set
+  /// if that flag is not provided.
+  Set<String> _getPRLabels() {
+    final String labels = getStringArg(_prLabelsArg);
+    if (labels.isEmpty) {
+      return <String>{};
     }
-    final File file = packagesDir.fileSystem.file(path);
-    if (!file.existsSync()) {
-      printError('${indentation}No such file: $path');
-      throw ToolExit(_exitMissingChangeDescriptionFile);
-    }
-    return file.readAsStringSync();
+    return labels.split(',').map((String label) => label.trim()).toSet();
   }
 
   /// Returns true if the given version transition should be allowed.
@@ -561,44 +545,44 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     final String relativePackagePath =
         getRelativePosixPath(package.directory, from: gitRoot);
 
-    final PackageChangeState state = checkPackageChangeState(package,
-        changedPaths: _changedFiles, relativePackagePath: relativePackagePath);
+    final PackageChangeState state = await checkPackageChangeState(package,
+        changedPaths: _changedFiles,
+        relativePackagePath: relativePackagePath,
+        git: await retrieveVersionFinder());
 
     if (!state.hasChanges) {
       return null;
     }
 
     if (state.needsVersionChange) {
-      if (_getChangeDescription().split('\n').any((String line) =>
-          line.startsWith(_missingVersionChangeJustificationMarker))) {
-        logWarning('Ignoring lack of version change due to '
-            '"$_missingVersionChangeJustificationMarker" in the '
-            'change description.');
+      if (_prLabels.contains(_missingVersionChangeOverrideLabel)) {
+        logWarning('Ignoring lack of version change due to the '
+            '"$_missingVersionChangeOverrideLabel" label.');
       } else {
         printError(
             'No version change found, but the change to this package could '
             'not be verified to be exempt from version changes according to '
-            'repository policy. If this is a false positive, please '
-            'add a line starting with\n'
-            '$_missingVersionChangeJustificationMarker\n'
-            'to your PR description with an explanation of why it is exempt.');
+            'repository policy. If this is a false positive, please comment in '
+            'the PR to explain why the PR is exempt, and add (or ask your '
+            'reviewer to add) the "$_missingVersionChangeOverrideLabel" '
+            'label.');
         return 'Missing version change';
       }
     }
 
-    if (!state.hasChangelogChange) {
-      if (_getChangeDescription().split('\n').any((String line) =>
-          line.startsWith(_missingChangelogChangeJustificationMarker))) {
-        logWarning('Ignoring lack of CHANGELOG update due to '
-            '"$_missingChangelogChangeJustificationMarker" in the '
-            'change description.');
+    if (!state.hasChangelogChange && state.needsChangelogChange) {
+      if (_prLabels.contains(_missingChangelogChangeOverrideLabel)) {
+        logWarning('Ignoring lack of CHANGELOG update due to the '
+            '"$_missingChangelogChangeOverrideLabel" label.');
       } else {
         printError(
             'No CHANGELOG change found. If this PR needs an exemption from '
             'the standard policy of listing all changes in the CHANGELOG, '
-            'please add a line starting with\n'
-            '$_missingChangelogChangeJustificationMarker\n'
-            'to your PR description with an explanation of why.');
+            'comment in the PR to explain why the PR is exempt, and add (or '
+            'ask your reviewer to add) the '
+            '"$_missingChangelogChangeOverrideLabel" label. Otherwise, '
+            'please add a NEXT entry in the CHANGELOG as described in '
+            'the contributing guide.');
         return 'Missing CHANGELOG change';
       }
     }

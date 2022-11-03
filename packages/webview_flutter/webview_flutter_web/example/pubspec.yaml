@@ -10,6 +10,7 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
+  webview_flutter_platform_interface: ^1.8.0
   webview_flutter_web:
     # When depending on this package from a real application you should use:
     #   webview_flutter_web: ^x.y.z
@@ -19,14 +20,12 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  espresso: ^0.1.0+2
   flutter_driver:
     sdk: flutter
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-  pedantic: ^1.10.0
 
 flutter:
   uses-material-design: true

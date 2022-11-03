@@ -20,6 +20,12 @@
   if (self) {
     _objectApi = [[FWFObjectFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
                                                           instanceManager:instanceManager];
+    if (@available(iOS 11.0, *)) {
+      self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+      if (@available(iOS 13.0, *)) {
+        self.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
+      }
+    }
   }
   return self;
 }

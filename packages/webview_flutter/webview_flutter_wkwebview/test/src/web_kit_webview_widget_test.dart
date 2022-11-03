@@ -212,8 +212,6 @@ void main() {
         await buildWidget(
           tester,
           creationParams: CreationParams(
-            autoMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
             webSettings: WebSettings(
               userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
@@ -737,11 +735,28 @@ void main() {
         await buildWidget(tester);
 
         when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
-          (_) => Future<String?>.value(null),
+          (_) => Future<String?>.value(),
         );
         expect(
           () => testController.runJavascriptReturningResult('runJavaScript'),
           throwsArgumentError,
+        );
+      });
+
+      testWidgets('runJavascriptReturningResult with bool return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(false),
+        );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies bool
+        // is represented the way it is in Objective-C.
+        // `NSNumber.description` converts bool values to a 1 or 0.
+        expect(
+          testController.runJavascriptReturningResult('runJavaScript'),
+          completion('0'),
         );
       });
 
@@ -1200,7 +1215,7 @@ void main() {
 
       testWidgets('progress observer is not removed without being set first',
           (WidgetTester tester) async {
-        await buildWidget(tester, hasProgressTracking: false);
+        await buildWidget(tester);
 
         verifyNever(mockWebView.removeObserver(
           mockWebView,

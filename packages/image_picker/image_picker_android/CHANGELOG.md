@@ -1,6 +1,16 @@
-## 0.8.5+2
+## 0.8.5+4
 
 * Fixes names of picked files to match original filenames where possible.
+
+## 0.8.5+3
+
+* Updates minimum Flutter version to 2.10.
+* Bumps gradle from 7.1.2 to 7.2.1.
+
+## 0.8.5+2
+
+* Updates `image_picker_platform_interface` constraint to the correct minimum
+  version.
 
 ## 0.8.5+1
 

@@ -1,3 +1,17 @@
+## 1.0.10
+
+* Updates imports for `prefer_relative_imports`.
+* Updates minimum Flutter version to 2.10.
+
+## 1.0.9
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 1.0.8
+
+* Updates `local_auth_platform_interface` constraint to the correct minimum
+  version.
+
 ## 1.0.7
 
 * Updates references to the obsolete master branch.

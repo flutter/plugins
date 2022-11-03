@@ -340,10 +340,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @override
   Future<String> evaluateJavascript(String javascript) async {
     final Object? result = await webView.evaluateJavaScript(javascript);
-    // The legacy implementation of webview_flutter_wkwebview would convert
-    // objects to strings before returning them to Dart. This method attempts
-    // to converts Dart objects to Strings the way it is done in Objective-C
-    // to avoid breaking users expecting the same String format.
     return _asObjectiveCString(result);
   }
 
@@ -373,7 +369,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         'Use `runJavascript` when expecting a null return value.',
       );
     }
-    return result.toString();
+    return _asObjectiveCString(result);
   }
 
   @override
@@ -603,6 +599,12 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     );
   }
 
+  // The legacy implementation of webview_flutter_wkwebview would convert
+  // objects to strings before returning them to Dart. This method attempts
+  // to converts Dart objects to Strings the way it is done in Objective-C
+  // to avoid breaking users expecting the same String format.
+  // TODO(bparrishMines): Remove this method with the next breaking change.
+  // See https://github.com/flutter/flutter/issues/107491
   String _asObjectiveCString(Object? value, {bool inContainer = false}) {
     if (value == null) {
       // An NSNull inside an NSArray or NSDictionary is represented as a String

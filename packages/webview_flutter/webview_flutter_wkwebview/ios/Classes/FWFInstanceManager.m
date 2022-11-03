@@ -40,7 +40,9 @@
 }
 
 - (void)dealloc {
-  _callback(_identifier);
+  if (_callback) {
+    _callback(_identifier);
+  }
 }
 @end
 

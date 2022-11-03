@@ -1,5 +1,34 @@
 ## NEXT
 
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 2.2.1
+
+* Updates imports for `prefer_relative_imports`.
+
+## 2.2.0
+
+* Deprecates `AndroidGoogleMapsFlutter.useAndroidViewSurface` in favor of
+  [setting the flag directly in the Android implementation](https://pub.dev/packages/google_maps_flutter_android#display-mode).
+* Updates minimum Flutter version to 2.10.
+
+## 2.1.12
+
+* Fixes violations of new analysis option use_named_constants.
+
+## 2.1.11
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Moves Android and iOS implementations to federated packages.
+
+## 2.1.10
+
+* Avoids map shift when scrolling on iOS.
+
+## 2.1.9
+
+* Updates integration tests to use the new inspector interface.
+* Removes obsolete test-only method for accessing a map controller's method channel.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 2.1.8

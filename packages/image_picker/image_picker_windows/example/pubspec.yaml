@@ -5,11 +5,12 @@ version: 1.0.0
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.8.0"
+  flutter: ">=2.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  image_picker_platform_interface: ^2.4.3
   image_picker_windows:
     # When depending on this package from a real application you should use:
     #   image_picker_windows: ^x.y.z

@@ -30,6 +30,7 @@ class FakeStoreKitPlatform {
   PlatformException? restoreException;
   SKError? testRestoredError;
   bool queueIsActive = false;
+  Map<String, dynamic> discountReceived = <String, dynamic>{};
 
   void reset() {
     transactions = <SKPaymentTransactionWrapper>[];
@@ -54,6 +55,7 @@ class FakeStoreKitPlatform {
     restoreException = null;
     testRestoredError = null;
     queueIsActive = false;
+    discountReceived = <String, dynamic>{};
   }
 
   SKPaymentTransactionWrapper createPendingTransaction(String id,
@@ -63,8 +65,6 @@ class FakeStoreKitPlatform {
       payment: SKPaymentWrapper(productIdentifier: id, quantity: quantity),
       transactionState: SKPaymentTransactionStateWrapper.purchasing,
       transactionTimeStamp: 123123.121,
-      error: null,
-      originalTransaction: null,
     );
   }
 
@@ -76,9 +76,7 @@ class FakeStoreKitPlatform {
             SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
         transactionState: SKPaymentTransactionStateWrapper.purchased,
         transactionTimeStamp: 123123.121,
-        transactionIdentifier: transactionId,
-        error: null,
-        originalTransaction: null);
+        transactionIdentifier: transactionId);
   }
 
   SKPaymentTransactionWrapper createFailedTransaction(String productId,
@@ -92,8 +90,7 @@ class FakeStoreKitPlatform {
         error: const SKError(
             code: 0,
             domain: 'ios_domain',
-            userInfo: <String, Object>{'message': 'an error message'}),
-        originalTransaction: null);
+            userInfo: <String, Object>{'message': 'an error message'}));
   }
 
   SKPaymentTransactionWrapper createCanceledTransaction(
@@ -108,8 +105,7 @@ class FakeStoreKitPlatform {
         error: SKError(
             code: errorCode,
             domain: 'ios_domain',
-            userInfo: const <String, Object>{'message': 'an error message'}),
-        originalTransaction: null);
+            userInfo: const <String, Object>{'message': 'an error message'}));
   }
 
   SKPaymentTransactionWrapper createRestoredTransaction(
@@ -120,9 +116,7 @@ class FakeStoreKitPlatform {
             SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
         transactionState: SKPaymentTransactionStateWrapper.restored,
         transactionTimeStamp: 123123.121,
-        transactionIdentifier: transactionId,
-        error: null,
-        originalTransaction: null);
+        transactionIdentifier: transactionId);
   }
 
   Future<dynamic> onMethodCall(MethodCall call) {
@@ -177,6 +171,18 @@ class FakeStoreKitPlatform {
       case '-[InAppPurchasePlugin addPayment:result:]':
         final String id = call.arguments['productIdentifier'] as String;
         final int quantity = call.arguments['quantity'] as int;
+
+        // Keep the received paymentDiscount parameter when testing payment with discount.
+        if (call.arguments['applicationUsername'] == 'userWithDiscount') {
+          if (call.arguments['paymentDiscount'] != null) {
+            final Map<dynamic, dynamic> discountArgument =
+                call.arguments['paymentDiscount'] as Map<dynamic, dynamic>;
+            discountReceived = discountArgument.cast<String, dynamic>();
+          } else {
+            discountReceived = <String, dynamic>{};
+          }
+        }
+
         final SKPaymentTransactionWrapper transaction =
             createPendingTransaction(id, quantity: quantity);
         transactions.add(transaction);

@@ -8,7 +8,7 @@ import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit_cookie_manager.dart';
+import 'package:webview_flutter_wkwebview/src/wkwebview_cookie_manager.dart';
 
 import 'web_kit_cookie_manager_test.mocks.dart';
 
@@ -23,7 +23,7 @@ void main() {
     late MockWKWebsiteDataStore mockWebsiteDataStore;
     late MockWKHttpCookieStore mockWKHttpCookieStore;
 
-    late WebKitCookieManager cookieManager;
+    late WKWebViewCookieManager cookieManager;
 
     setUp(() {
       mockWebsiteDataStore = MockWKWebsiteDataStore();
@@ -32,7 +32,7 @@ void main() {
           .thenReturn(mockWKHttpCookieStore);
 
       cookieManager =
-          WebKitCookieManager(websiteDataStore: mockWebsiteDataStore);
+          WKWebViewCookieManager(websiteDataStore: mockWebsiteDataStore);
     });
 
     test('clearCookies', () async {

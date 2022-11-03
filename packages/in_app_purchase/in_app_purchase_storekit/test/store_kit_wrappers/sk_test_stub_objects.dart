@@ -10,6 +10,15 @@ const SKPaymentWrapper dummyPayment = SKPaymentWrapper(
     requestData: 'fake-data-utf8',
     quantity: 2,
     simulatesAskToBuyInSandbox: true);
+
+final SKPaymentWrapper dummyPaymentWithDiscount = SKPaymentWrapper(
+    productIdentifier: 'prod-id',
+    applicationUsername: 'app-user-name',
+    requestData: 'fake-data-utf8',
+    quantity: 2,
+    simulatesAskToBuyInSandbox: true,
+    paymentDiscount: dummyPaymentDiscountWrapper);
+
 const SKError dummyError = SKError(
     code: 111,
     domain: 'dummy-domain',
@@ -19,7 +28,6 @@ final SKPaymentTransactionWrapper dummyOriginalTransaction =
     SKPaymentTransactionWrapper(
   transactionState: SKPaymentTransactionStateWrapper.purchased,
   payment: dummyPayment,
-  originalTransaction: null,
   transactionTimeStamp: 1231231231.00,
   transactionIdentifier: '123123',
   error: dummyError,
@@ -59,6 +67,19 @@ final SKProductDiscountWrapper dummyDiscount = SKProductDiscountWrapper(
   numberOfPeriods: 1,
   paymentMode: SKProductDiscountPaymentMode.payUpFront,
   subscriptionPeriod: dummySubscription,
+  identifier: 'id',
+  type: SKProductDiscountType.subscription,
+);
+
+final SKProductDiscountWrapper dummyDiscountMissingIdentifierAndType =
+    SKProductDiscountWrapper(
+  price: '1.0',
+  priceLocale: dollarLocale,
+  numberOfPeriods: 1,
+  paymentMode: SKProductDiscountPaymentMode.payUpFront,
+  subscriptionPeriod: dummySubscription,
+  identifier: null,
+  type: SKProductDiscountType.introductory,
 );
 
 final SKProductWrapper dummyProductWrapper = SKProductWrapper(
@@ -107,6 +128,21 @@ Map<String, dynamic> buildDiscountMap(SKProductDiscountWrapper discount) {
         SKProductDiscountPaymentMode.values.indexOf(discount.paymentMode),
     'subscriptionPeriod':
         buildSubscriptionPeriodMap(discount.subscriptionPeriod),
+    'identifier': discount.identifier,
+    'type': SKProductDiscountType.values.indexOf(discount.type)
+  };
+}
+
+Map<String, dynamic> buildDiscountMapMissingIdentifierAndType(
+    SKProductDiscountWrapper discount) {
+  return <String, dynamic>{
+    'price': discount.price,
+    'priceLocale': buildLocaleMap(discount.priceLocale),
+    'numberOfPeriods': discount.numberOfPeriods,
+    'paymentMode':
+        SKProductDiscountPaymentMode.values.indexOf(discount.paymentMode),
+    'subscriptionPeriod':
+        buildSubscriptionPeriodMap(discount.subscriptionPeriod)
   };
 }
 
@@ -159,3 +195,12 @@ Map<String, dynamic> buildTransactionMap(
   };
   return map;
 }
+
+final SKPaymentDiscountWrapper dummyPaymentDiscountWrapper =
+    SKPaymentDiscountWrapper.fromJson(const <String, dynamic>{
+  'identifier': 'dummy-discount-identifier',
+  'keyIdentifier': 'KEYIDTEST1',
+  'nonce': '00000000-0000-0000-0000-000000000000',
+  'signature': 'dummy-signature-string',
+  'timestamp': 1231231231,
+});

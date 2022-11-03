@@ -1,3 +1,13 @@
+## 6.1.1
+
+* Corrects typos in plugin error logs and removes not actionable warnings.
+* Updates minimum Flutter version to 2.10.
+* Updates play-services-auth version to 20.3.0.
+
+## 6.1.0
+
+* Adds override for `GoogleSignIn.initWithParams` to handle new `forceCodeForRefreshToken` parameter.
+
 ## 6.0.1
 
 * Updates gradle version to 7.2.1 on Android.

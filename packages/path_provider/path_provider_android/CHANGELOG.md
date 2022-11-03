@@ -1,3 +1,27 @@
+## 2.0.21
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+* Updates minimum Flutter version to 2.10.
+* Upgrades `androidx.annotation` version to 1.5.0.
+* Upgrades Android Gradle plugin version to 7.3.1.
+
+## 2.0.20
+
+* Reverts changes in versions 2.0.18 and 2.0.19.
+
+## 2.0.19
+
+* Bumps kotlin to 1.7.10
+
+## 2.0.18
+
+* Bumps `androidx.annotation:annotation` version to 1.4.0.
+* Bumps gradle version to 7.2.2.
+
+## 2.0.17
+
+* Lower minimim version back to 2.8.1.
+
 ## 2.0.16
 
 * Fixes bug with `getExternalStoragePaths(null)`.

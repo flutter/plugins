@@ -117,10 +117,10 @@ void main() {
   });
 
   testWidgets('Mutate a polyline', (WidgetTester tester) async {
-    final List<LatLng> _points = <LatLng>[const LatLng(0.0, 0.0)];
+    final List<LatLng> points = <LatLng>[const LatLng(0.0, 0.0)];
     final Polyline p1 = Polyline(
       polylineId: const PolylineId('polyline_1'),
-      points: _points,
+      points: points,
     );
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
 
@@ -200,8 +200,7 @@ void main() {
   });
 
   testWidgets('Update non platform related attr', (WidgetTester tester) async {
-    Polyline p1 =
-        const Polyline(polylineId: PolylineId('polyline_1'), onTap: null);
+    Polyline p1 = const Polyline(polylineId: PolylineId('polyline_1'));
     final Set<Polyline> prev = <Polyline>{p1};
     p1 = Polyline(
         polylineId: const PolylineId('polyline_1'), onTap: () => print(2 + 2));

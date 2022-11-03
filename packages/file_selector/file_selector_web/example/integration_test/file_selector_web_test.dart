@@ -21,13 +21,12 @@ void main() {
 
         final MockDomHelper mockDomHelper = MockDomHelper(
             files: <XFile>[mockFile],
-            expectAccept: '.jpg,.jpeg,image/png,image/*',
-            expectMultiple: false);
+            expectAccept: '.jpg,.jpeg,image/png,image/*');
 
         final FileSelectorWeb plugin =
             FileSelectorWeb(domHelper: mockDomHelper);
 
-        final XTypeGroup typeGroup = XTypeGroup(
+        const XTypeGroup typeGroup = XTypeGroup(
           label: 'images',
           extensions: <String>['jpg', 'jpeg'],
           mimeTypes: <String>['image/png'],
@@ -57,7 +56,7 @@ void main() {
         final FileSelectorWeb plugin =
             FileSelectorWeb(domHelper: mockDomHelper);
 
-        final XTypeGroup typeGroup = XTypeGroup(
+        const XTypeGroup typeGroup = XTypeGroup(
           label: 'files',
           extensions: <String>['.txt'],
         );

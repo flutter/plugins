@@ -39,6 +39,16 @@ void main() {
     });
 
     test(
+        'SKProductDiscountWrapper missing identifier and type should have '
+        'property values consistent with map', () {
+      final SKProductDiscountWrapper wrapper =
+          SKProductDiscountWrapper.fromJson(
+              buildDiscountMapMissingIdentifierAndType(
+                  dummyDiscountMissingIdentifierAndType));
+      expect(wrapper, equals(dummyDiscountMissingIdentifierAndType));
+    });
+
+    test(
         'SKProductDiscountWrapper should have properties to be default if map is empty',
         () {
       final SKProductDiscountWrapper wrapper =
@@ -129,6 +139,21 @@ void main() {
       final SKPaymentWrapper payment =
           SKPaymentWrapper.fromJson(dummyPayment.toMap());
       expect(payment, equals(dummyPayment));
+    });
+
+    test('SKPaymentWrapper should have propery values consistent with .toMap()',
+        () {
+      final Map<String, dynamic> mapResult = dummyPaymentWithDiscount.toMap();
+      expect(mapResult['productIdentifier'],
+          dummyPaymentWithDiscount.productIdentifier);
+      expect(mapResult['applicationUsername'],
+          dummyPaymentWithDiscount.applicationUsername);
+      expect(mapResult['requestData'], dummyPaymentWithDiscount.requestData);
+      expect(mapResult['quantity'], dummyPaymentWithDiscount.quantity);
+      expect(mapResult['simulatesAskToBuyInSandbox'],
+          dummyPaymentWithDiscount.simulatesAskToBuyInSandbox);
+      expect(mapResult['paymentDiscount'],
+          equals(dummyPaymentWithDiscount.paymentDiscount?.toMap()));
     });
 
     test('Should construct correct SKError from json', () {

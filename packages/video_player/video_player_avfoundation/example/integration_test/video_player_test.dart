@@ -39,12 +39,12 @@ String getUrlForAssetAsNetworkSource(String assetKey) {
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  late MiniController _controller;
-  tearDown(() async => _controller.dispose());
+  late MiniController controller;
+  tearDown(() async => controller.dispose());
 
   group('asset videos', () {
     setUp(() {
-      _controller = MiniController.asset(_videoAssetKey);
+      controller = MiniController.asset(_videoAssetKey);
     });
 
     testWidgets('registers expected implementation',
@@ -54,51 +54,50 @@ void main() {
     });
 
     testWidgets('can be initialized', (WidgetTester tester) async {
-      await _controller.initialize();
+      await controller.initialize();
 
-      expect(_controller.value.isInitialized, true);
-      expect(await _controller.position, const Duration(seconds: 0));
-      expect(_controller.value.duration,
+      expect(controller.value.isInitialized, true);
+      expect(await controller.position, Duration.zero);
+      expect(controller.value.duration,
           const Duration(seconds: 7, milliseconds: 540));
     });
 
     testWidgets('can be played', (WidgetTester tester) async {
-      await _controller.initialize();
+      await controller.initialize();
 
-      await _controller.play();
+      await controller.play();
       await tester.pumpAndSettle(_playDuration);
 
-      expect(
-          await _controller.position, greaterThan(const Duration(seconds: 0)));
+      expect(await controller.position, greaterThan(Duration.zero));
     });
 
     testWidgets('can seek', (WidgetTester tester) async {
-      await _controller.initialize();
+      await controller.initialize();
 
-      await _controller.seekTo(const Duration(seconds: 3));
+      await controller.seekTo(const Duration(seconds: 3));
 
       // TODO(stuartmorgan): Switch to _controller.position once seekTo is
       // fixed on the native side to wait for completion, so this is testing
       // the native code rather than the MiniController position cache.
-      expect(_controller.value.position, const Duration(seconds: 3));
+      expect(controller.value.position, const Duration(seconds: 3));
     });
 
     testWidgets('can be paused', (WidgetTester tester) async {
-      await _controller.initialize();
+      await controller.initialize();
 
       // Play for a second, then pause, and then wait a second.
-      await _controller.play();
+      await controller.play();
       await tester.pumpAndSettle(_playDuration);
-      await _controller.pause();
-      final Duration pausedPosition = (await _controller.position)!;
+      await controller.pause();
+      final Duration pausedPosition = (await controller.position)!;
       await tester.pumpAndSettle(_playDuration);
 
       // Verify that we stopped playing after the pause.
       // TODO(stuartmorgan): Investigate why this has a slight discrepency, and
       // fix it if possible. Is AVPlayer's pause method internally async?
       const Duration allowableDelta = Duration(milliseconds: 10);
-      expect(await _controller.position,
-          lessThan(pausedPosition + allowableDelta));
+      expect(
+          await controller.position, lessThan(pausedPosition + allowableDelta));
     });
   });
 
@@ -113,53 +112,51 @@ void main() {
       final File file = File('$tempDir/$filename');
       await file.writeAsBytes(bytes.buffer.asInt8List());
 
-      _controller = MiniController.file(file);
+      controller = MiniController.file(file);
     });
 
     testWidgets('test video player using static file() method as constructor',
         (WidgetTester tester) async {
-      await _controller.initialize();
+      await controller.initialize();
 
-      await _controller.play();
+      await controller.play();
       await tester.pumpAndSettle(_playDuration);
 
-      expect(
-          await _controller.position, greaterThan(const Duration(seconds: 0)));
+      expect(await controller.position, greaterThan(Duration.zero));
     });
   });
 
   group('network videos', () {
     setUp(() {
       final String videoUrl = getUrlForAssetAsNetworkSource(_videoAssetKey);
-      _controller = MiniController.network(videoUrl);
+      controller = MiniController.network(videoUrl);
     });
 
     testWidgets('reports buffering status', (WidgetTester tester) async {
-      await _controller.initialize();
+      await controller.initialize();
 
       final Completer<void> started = Completer<void>();
       final Completer<void> ended = Completer<void>();
-      _controller.addListener(() {
-        if (!started.isCompleted && _controller.value.isBuffering) {
+      controller.addListener(() {
+        if (!started.isCompleted && controller.value.isBuffering) {
           started.complete();
         }
         if (started.isCompleted &&
-            !_controller.value.isBuffering &&
+            !controller.value.isBuffering &&
             !ended.isCompleted) {
           ended.complete();
         }
       });
 
-      await _controller.play();
-      await _controller.seekTo(const Duration(seconds: 5));
+      await controller.play();
+      await controller.seekTo(const Duration(seconds: 5));
       await tester.pumpAndSettle(_playDuration);
-      await _controller.pause();
+      await controller.pause();
 
       // TODO(stuartmorgan): Switch to _controller.position once seekTo is
       // fixed on the native side to wait for completion, so this is testing
       // the native code rather than the MiniController position cache.
-      expect(
-          _controller.value.position, greaterThan(const Duration(seconds: 0)));
+      expect(controller.value.position, greaterThan(Duration.zero));
 
       await expectLater(started.future, completes);
       await expectLater(ended.future, completes);
@@ -179,6 +176,20 @@ void main() {
       // See https://exoplayer.dev/doc/reference/com/google/android/exoplayer2/Player.html#getDuration--
       expect(livestreamController.value.duration,
           (Duration duration) => duration != Duration.zero);
+    });
+
+    testWidgets('rotated m3u8 has correct aspect ratio',
+        (WidgetTester tester) async {
+      // Some m3u8 files contain rotation data that may incorrectly invert the aspect ratio.
+      // More info [here](https://github.com/flutter/flutter/issues/109116).
+      final MiniController livestreamController = MiniController.network(
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/hls/rotated_nail_manifest.m3u8',
+      );
+      await livestreamController.initialize();
+
+      expect(livestreamController.value.isInitialized, true);
+      expect(livestreamController.value.size.width,
+          lessThan(livestreamController.value.size.height));
     });
   });
 }

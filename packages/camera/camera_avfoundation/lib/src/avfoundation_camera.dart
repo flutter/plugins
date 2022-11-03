@@ -126,10 +126,10 @@ class AVFoundationCamera extends CameraPlatform {
       return channel;
     });
 
-    final Completer<void> _completer = Completer<void>();
+    final Completer<void> completer = Completer<void>();
 
     onCameraInitialized(cameraId).first.then((CameraInitializedEvent value) {
-      _completer.complete();
+      completer.complete();
     });
 
     _channel.invokeMapMethod<String, dynamic>(
@@ -138,24 +138,23 @@ class AVFoundationCamera extends CameraPlatform {
         'cameraId': cameraId,
         'imageFormatGroup': imageFormatGroup.name(),
       },
-    )
-        // TODO(srawlins): This should return a value of the future's type. This
-        // will fail upcoming analysis checks with
-        // https://github.com/flutter/flutter/issues/105750.
-        // ignore: body_might_complete_normally_catch_error
-        .catchError(
+    ).catchError(
+      // TODO(srawlins): This should return a value of the future's type. This
+      // will fail upcoming analysis checks with
+      // https://github.com/flutter/flutter/issues/105750.
+      // ignore: body_might_complete_normally_catch_error
       (Object error, StackTrace stackTrace) {
         if (error is! PlatformException) {
           throw error;
         }
-        _completer.completeError(
+        completer.completeError(
           CameraException(error.code, error.message),
           stackTrace,
         );
       },
     );
 
-    return _completer.future;
+    return completer.future;
   }
 
   @override

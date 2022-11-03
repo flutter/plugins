@@ -1,6 +1,32 @@
-## NEXT
+## 0.9.2+2
 
-* Ignores deprecation warnings for upcoming styleFrom button API changes.
+* Improves API docs and examples.
+* Changes XTypeGroup initialization from final to const.
+* Updates minimum Flutter version to 2.10.
+
+## 0.9.2
+
+* Adds an endorsed iOS implementation.
+
+## 0.9.1
+
+* Adds an endorsed Linux implementation.
+
+## 0.9.0
+
+* **BREAKING CHANGE**: The following methods:
+    * `openFile`
+    * `openFiles`
+    * `getSavePath`
+
+  can throw `ArgumentError`s if called with any `XTypeGroup`s that
+  do not contain appropriate filters for the current platform. For
+  example, an `XTypeGroup` that only specifies `webWildCards` will
+  throw on non-web platforms.
+
+  To avoid runtime errors, ensure that all `XTypeGroup`s (other than
+  wildcards) set filters that cover every platform your application
+  targets. See the README for details.
 
 ## 0.8.4+3
 

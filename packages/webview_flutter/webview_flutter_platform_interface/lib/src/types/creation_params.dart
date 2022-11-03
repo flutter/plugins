@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/widgets.dart';
-import 'package:webview_flutter_platform_interface/src/types/types.dart';
+
+import 'types.dart';
 
 /// Configuration to use when creating a new [WebViewPlatformController].
 ///

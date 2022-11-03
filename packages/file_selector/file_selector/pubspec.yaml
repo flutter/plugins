@@ -3,15 +3,19 @@ description: Flutter plugin for opening and saving files, or selecting
   directories, using native file selection UI.
 repository: https://github.com/flutter/plugins/tree/main/packages/file_selector/file_selector
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+file_selector%22
-version: 0.8.4+3
+version: 0.9.2+2
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.8.0"
+  flutter: ">=2.10.0"
 
 flutter:
   plugin:
     platforms:
+      ios:
+        default_package: file_selector_ios
+      linux:
+        default_package: file_selector_linux
       macos:
         default_package: file_selector_macos
       web:
@@ -20,16 +24,17 @@ flutter:
         default_package: file_selector_windows
 
 dependencies:
-  file_selector_macos: ^0.8.2
-  file_selector_platform_interface: ^2.0.0
-  file_selector_web: ^0.8.1
-  file_selector_windows: ^0.8.2
+  file_selector_ios: ^0.5.0
+  file_selector_linux: ^0.9.0
+  file_selector_macos: ^0.9.0
+  file_selector_platform_interface: ^2.2.0
+  file_selector_web: ^0.9.0
+  file_selector_windows: ^0.9.0
   flutter:
     sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.10.0
   plugin_platform_interface: ^2.0.0
   test: ^1.16.3

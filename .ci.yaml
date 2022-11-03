@@ -47,6 +47,7 @@ targets:
       add_recipes_cq: "true"
       target_file: windows_build_and_platform_tests.yaml
       channel: stable
+      version_file: flutter_stable.version
       dependencies: >
         [
           {"dependency": "vs_build", "version": "version:vs2019"}
@@ -72,6 +73,7 @@ targets:
       add_recipes_cq: "true"
       target_file: build_all_plugins.yaml
       channel: stable
+      version_file: flutter_stable.version
       dependencies: >
         [
           {"dependency": "vs_build", "version": "version:vs2019"}

@@ -12,7 +12,7 @@ class OpenTextPage extends StatelessWidget {
   const OpenTextPage({Key? key}) : super(key: key);
 
   Future<void> _openTextFile(BuildContext context) async {
-    final XTypeGroup typeGroup = XTypeGroup(
+    const XTypeGroup typeGroup = XTypeGroup(
       label: 'text',
       extensions: <String>['txt', 'json'],
     );

@@ -72,7 +72,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   @override
   void initState() {
     super.initState();
-    _ambiguate(WidgetsBinding.instance)?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -102,7 +102,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   void dispose() {
-    _ambiguate(WidgetsBinding.instance)?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     _flashModeControlRowAnimationController.dispose();
     _exposureModeControlRowAnimationController.dispose();
     super.dispose();
@@ -159,7 +159,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 _cameraTogglesRowWidget(),
                 _thumbnailWidget(),
@@ -271,7 +270,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       children: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             IconButton(
               icon: const Icon(Icons.flash_on),
@@ -325,7 +323,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       child: ClipRect(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             IconButton(
               icon: const Icon(Icons.flash_off),
@@ -397,7 +394,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   TextButton(
                     style: styleAuto,
@@ -435,7 +431,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   Text(_minAvailableExposureOffset.toString()),
                   Slider(
@@ -486,7 +481,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   TextButton(
                     style: styleAuto,
@@ -523,7 +517,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         IconButton(
           icon: const Icon(Icons.camera_alt),
@@ -592,7 +585,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     if (_cameras.isEmpty) {
-      _ambiguate(SchedulerBinding.instance)?.addPostFrameCallback((_) async {
+      SchedulerBinding.instance.addPostFrameCallback((_) async {
         showInSnackBar('No camera found.');
       });
       return const Text('None');
@@ -715,10 +708,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         case 'AudioAccessRestricted':
           // iOS only
           showInSnackBar('Audio access is restricted.');
-          break;
-        case 'cameraPermission':
-          // Android & web only
-          showInSnackBar('Unknown permission error.');
           break;
         default:
           _showCameraException(e);
@@ -1090,10 +1079,3 @@ Future<void> main() async {
   }
   runApp(const CameraApp());
 }
-
-/// This allows a value of type T or T? to be treated as a value of type T?.
-///
-/// We use this so that APIs that have become non-nullable can still be used
-/// with `!` and `?` on the stable branch.
-// TODO(ianh): Remove this once we roll stable in late 2021.
-T? _ambiguate<T>(T? value) => value;

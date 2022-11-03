@@ -1,6 +1,60 @@
-## NEXT
+## 2.10.4
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+* Bumps androidx.annotation from 1.4.0 to 1.5.0.
+
+## 2.10.3
+
+* Updates imports for `prefer_relative_imports`.
+
+## 2.10.2
+
+* Adds a getter to expose the Java InstanceManager.
+
+## 2.10.1
+
+* Adds a method to the `WebView` wrapper to retrieve the X and Y positions simultaneously.
+* Removes reference to https://github.com/flutter/flutter/issues/97744 from `README`.
+
+## 2.10.0
+
+* Bumps webkit from 1.0.0 to 1.5.0.
+* Raises minimum `compileSdkVersion` to 32.
+
+## 2.9.5
+
+* Adds dispose methods for HostApi and FlutterApi of JavaObject.
+
+## 2.9.4
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Bumps gradle from 7.2.1 to 7.2.2.
+
+## 2.9.3
+
+* Updates the Dart InstanceManager to take a listener for when an object is garbage collected.
+  See https://github.com/flutter/flutter/issues/107199.
+
+## 2.9.2
+
+* Updates the Java InstanceManager to take a listener for when an object is garbage collected.
+  See https://github.com/flutter/flutter/issues/107199.
+
+## 2.9.1
+
+* Updates Android WebView classes as Copyable. This is a part of moving the api to handle garbage
+  collection automatically. See https://github.com/flutter/flutter/issues/107199.
+
+## 2.9.0
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+* Fixes bug where `Directionality` from context didn't affect `SurfaceAndroidWebView`.
+* Fixes bug where default text direction was different for `SurfaceAndroidWebView` and `AndroidWebView`.
+  Default is now `TextDirection.ltr` for both.
+* Fixes bug where setting WebView to a transparent background could cause visual errors when using
+  `SurfaceAndroidWebView`. Hybrid composition is now used when the background color is not 100%
+  opaque.
+* Raises minimum Flutter version to 3.0.0.
 
 ## 2.8.14
 

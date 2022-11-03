@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
-import 'package:in_app_purchase_storekit_example/example_payment_queue_delegate.dart';
 
 import 'consumable_store.dart';
+import 'example_payment_queue_delegate.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +20,6 @@ void main() {
 
   runApp(_MyApp());
 }
-
-const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
 const String _kUpgradeId = 'upgrade';
@@ -191,7 +188,9 @@ class _MyAppState extends State<_MyApp> {
     }
     final Widget storeHeader = ListTile(
       leading: Icon(_isAvailable ? Icons.check : Icons.block,
-          color: _isAvailable ? Colors.green : ThemeData.light().errorColor),
+          color: _isAvailable
+              ? Colors.green
+              : ThemeData.light().colorScheme.error),
       title:
           Text('The store is ${_isAvailable ? 'available' : 'unavailable'}.'),
     );
@@ -202,7 +201,7 @@ class _MyAppState extends State<_MyApp> {
         const Divider(),
         ListTile(
           title: Text('Not connected',
-              style: TextStyle(color: ThemeData.light().errorColor)),
+              style: TextStyle(color: ThemeData.light().colorScheme.error)),
           subtitle: const Text(
               'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'),
         ),
@@ -226,7 +225,7 @@ class _MyAppState extends State<_MyApp> {
     if (_notFoundIds.isNotEmpty) {
       productList.add(ListTile(
           title: Text('[${_notFoundIds.join(", ")}] not found',
-              style: TextStyle(color: ThemeData.light().errorColor)),
+              style: TextStyle(color: ThemeData.light().colorScheme.error)),
           subtitle: const Text(
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
@@ -268,12 +267,10 @@ class _MyAppState extends State<_MyApp> {
                     onPressed: () {
                       final PurchaseParam purchaseParam = PurchaseParam(
                         productDetails: productDetails,
-                        applicationUserName: null,
                       );
                       if (productDetails.id == _kConsumableId) {
                         _iapStoreKitPlatform.buyConsumable(
-                            purchaseParam: purchaseParam,
-                            autoConsume: _kAutoConsume || Platform.isIOS);
+                            purchaseParam: purchaseParam);
                       } else {
                         _iapStoreKitPlatform.buyNonConsumable(
                             purchaseParam: purchaseParam);
@@ -335,12 +332,11 @@ class _MyAppState extends State<_MyApp> {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
               // ignore: deprecated_member_use
               primary: Colors.white,

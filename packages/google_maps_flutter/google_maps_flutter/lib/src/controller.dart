@@ -35,20 +35,6 @@ class GoogleMapController {
     );
   }
 
-  /// Used to communicate with the native platform.
-  ///
-  /// Accessible only for testing.
-  // TODO(dit): Remove this getter, https://github.com/flutter/flutter/issues/55504.
-  @visibleForTesting
-  MethodChannel? get channel {
-    if (GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter) {
-      return (GoogleMapsFlutterPlatform.instance
-              as MethodChannelGoogleMapsFlutter)
-          .channel(mapId);
-    }
-    return null;
-  }
-
   final _GoogleMapState _googleMapState;
 
   void _connectStreams(int mapId) {

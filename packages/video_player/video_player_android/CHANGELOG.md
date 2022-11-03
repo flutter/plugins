@@ -1,3 +1,18 @@
+## NEXT
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+* Updates minimum Flutter version to 2.10.
+* Fixes violations of new analysis option use_named_constants.
+
+## 2.3.9
+
+* Updates ExoPlayer to 2.18.1.
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 2.3.8
+
+* Updates ExoPlayer to 2.18.0.
+
 ## 2.3.7
 
 * Bumps gradle version to 7.2.1.

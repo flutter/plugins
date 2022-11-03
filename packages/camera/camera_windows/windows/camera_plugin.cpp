@@ -398,9 +398,11 @@ void CameraPlugin::CreateMethodHandler(
       resolution_preset = ResolutionPreset::kAuto;
     }
 
-    camera->InitCamera(texture_registrar_, messenger_, *record_audio,
-                       resolution_preset);
-    cameras_.push_back(std::move(camera));
+    bool initialized = camera->InitCamera(texture_registrar_, messenger_,
+                                          *record_audio, resolution_preset);
+    if (initialized) {
+      cameras_.push_back(std::move(camera));
+    }
   }
 }
 
