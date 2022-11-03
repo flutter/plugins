@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds an integration test for a bug where the aspect ratios of some HLS videos are incorrectly inverted.
+
 ## 2.3.7
 
 * Fixes a bug where the aspect ratio of some HLS videos are incorrectly inverted.
