@@ -247,9 +247,7 @@ class AVFoundationCamera extends CameraPlatform {
 
   @override
   Future<void> startVideoRecording(int cameraId,
-      {Duration? maxVideoDuration,
-      Function(CameraImageData image)? streamCallback,
-      CameraImageStreamOptions? streamOptions}) async {
+      {Duration? maxVideoDuration}) async {
     return startVideoCapturing(
         VideoCaptureOptions(cameraId, maxDuration: maxVideoDuration));
   }
@@ -318,7 +316,6 @@ class AVFoundationCamera extends CameraPlatform {
       onResume: _onFrameStreamPauseResume,
       onCancel: _onFrameStreamCancel,
     );
-    return _frameStreamController!;
   }
 
   void _onFrameStreamListen() {

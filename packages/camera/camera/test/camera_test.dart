@@ -336,30 +336,6 @@ void main() {
           )));
     });
 
-    test(
-        'startVideoRecording() throws $CameraException when already streaming images',
-        () async {
-      final CameraController cameraController = CameraController(
-          const CameraDescription(
-              name: 'cam',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 90),
-          ResolutionPreset.max);
-
-      await cameraController.initialize();
-
-      cameraController.value =
-          cameraController.value.copyWith(isStreamingImages: true);
-
-      expect(
-          cameraController.startVideoRecording(),
-          throwsA(isA<CameraException>().having(
-            (CameraException error) => error.description,
-            'A camera has started streaming images.',
-            'startVideoRecording was called while a camera was streaming images.',
-          )));
-    });
-
     test('getMaxZoomLevel() throws $CameraException when uninitialized',
         () async {
       final CameraController cameraController = CameraController(

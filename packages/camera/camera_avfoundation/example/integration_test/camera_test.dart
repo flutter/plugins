@@ -253,4 +253,33 @@ void main() {
       expect(image.planes.length, 1);
     },
   );
+
+  testWidgets('Recording with video streaming', (WidgetTester tester) async {
+    final List<CameraDescription> cameras =
+        await CameraPlatform.instance.availableCameras();
+    if (cameras.isEmpty) {
+      return;
+    }
+
+    final CameraController controller = CameraController(
+      cameras[0],
+      ResolutionPreset.low,
+      enableAudio: false,
+    );
+
+    await controller.initialize();
+    await controller.prepareForVideoRecording();
+    final Completer<CameraImageData> _completer = Completer<CameraImageData>();
+    await controller.startVideoRecording(
+        streamCallback: (CameraImageData image) {
+      if (!_completer.isCompleted) {
+        _completer.complete(image);
+      }
+    });
+    sleep(const Duration(milliseconds: 500));
+    await controller.stopVideoRecording();
+    await controller.dispose();
+
+    expect(await _completer.future, isNotNull);
+  });
 }
