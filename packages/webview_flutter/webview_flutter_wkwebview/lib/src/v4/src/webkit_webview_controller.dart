@@ -21,28 +21,18 @@ import 'webkit_proxy.dart';
 ///
 /// See [WebKitWebViewControllerCreationParams.mediaTypesRequiringUserAction].
 enum PlaybackMediaTypes {
-  /// No media types require a user gesture to begin playing.
-  none,
-
   /// A media type that contains audio.
   audio,
 
   /// A media type that contains video.
-  video,
-
-  /// All media types require a user gesture to begin playing.
-  all;
+  video;
 
   WKAudiovisualMediaType _toWKAudiovisualMediaType() {
     switch (this) {
-      case PlaybackMediaTypes.none:
-        return WKAudiovisualMediaType.none;
       case PlaybackMediaTypes.audio:
         return WKAudiovisualMediaType.audio;
       case PlaybackMediaTypes.video:
         return WKAudiovisualMediaType.video;
-      case PlaybackMediaTypes.all:
-        return WKAudiovisualMediaType.all;
     }
   }
 }
@@ -55,20 +45,26 @@ class WebKitWebViewControllerCreationParams
   WebKitWebViewControllerCreationParams({
     @visibleForTesting this.webKitProxy = const WebKitProxy(),
     Set<PlaybackMediaTypes>? mediaTypesRequiringUserAction,
-  })  : assert(mediaTypesRequiringUserAction == null ||
-            !mediaTypesRequiringUserAction.contains(PlaybackMediaTypes.none) ||
-            mediaTypesRequiringUserAction.length <= 1),
-        _configuration = webKitProxy.createWebViewConfiguration(),
+  })  : _configuration = webKitProxy.createWebViewConfiguration(),
         mediaTypesRequiringUserAction = mediaTypesRequiringUserAction ??
-            const <PlaybackMediaTypes>{PlaybackMediaTypes.all} {
-    _configuration.setMediaTypesRequiringUserActionForPlayback(
-      this
-          .mediaTypesRequiringUserAction
-          .map<WKAudiovisualMediaType>(
-            (PlaybackMediaTypes type) => type._toWKAudiovisualMediaType(),
-          )
-          .toSet(),
-    );
+            const <PlaybackMediaTypes>{
+              PlaybackMediaTypes.audio,
+              PlaybackMediaTypes.video,
+            } {
+    if (this.mediaTypesRequiringUserAction.isEmpty) {
+      _configuration.setMediaTypesRequiringUserActionForPlayback(
+        <WKAudiovisualMediaType>{WKAudiovisualMediaType.none},
+      );
+    } else {
+      _configuration.setMediaTypesRequiringUserActionForPlayback(
+        this
+            .mediaTypesRequiringUserAction
+            .map<WKAudiovisualMediaType>(
+              (PlaybackMediaTypes type) => type._toWKAudiovisualMediaType(),
+            )
+            .toSet(),
+      );
+    }
   }
 
   /// Constructs a [WebKitWebViewControllerCreationParams] using a
@@ -88,10 +84,8 @@ class WebKitWebViewControllerCreationParams
 
   /// Media types that require a user gesture to begin playing.
   ///
-  /// Throws assertion error if the set contains [PlaybackMediaTypes.none] with
-  /// another value.
-  ///
-  /// Defaults to [PlaybackMediaTypes.all].
+  /// Defaults to include [PlaybackMediaTypes.audio] and
+  /// [PlaybackMediaTypes.video].
   final Set<PlaybackMediaTypes> mediaTypesRequiringUserAction;
 
   /// Handles constructing objects and calling static methods for the WebKit

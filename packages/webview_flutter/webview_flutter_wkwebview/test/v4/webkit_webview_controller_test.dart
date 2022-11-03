@@ -108,7 +108,6 @@ void main() {
           ),
           mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{
             PlaybackMediaTypes.video,
-            PlaybackMediaTypes.audio,
           },
         );
 
@@ -116,13 +115,13 @@ void main() {
           mockConfiguration.setMediaTypesRequiringUserActionForPlayback(
             <WKAudiovisualMediaType>{
               WKAudiovisualMediaType.video,
-              WKAudiovisualMediaType.audio,
             },
           ),
         );
       });
 
-      test('mediaTypesRequiringUserAction defaults to all', () {
+      test('mediaTypesRequiringUserAction defaults to include audio and video',
+          () {
         final MockWKWebViewConfiguration mockConfiguration =
             MockWKWebViewConfiguration();
 
@@ -134,27 +133,30 @@ void main() {
 
         verify(
           mockConfiguration.setMediaTypesRequiringUserActionForPlayback(
-            <WKAudiovisualMediaType>{WKAudiovisualMediaType.all},
+            <WKAudiovisualMediaType>{
+              WKAudiovisualMediaType.audio,
+              WKAudiovisualMediaType.video,
+            },
           ),
         );
       });
 
-      test('mediaTypesRequiringUserAction does not allow values alongside none',
+      test('mediaTypesRequiringUserAction sets value to none if set is empty',
           () {
         final MockWKWebViewConfiguration mockConfiguration =
             MockWKWebViewConfiguration();
 
-        expect(
-          () => WebKitWebViewControllerCreationParams(
-            webKitProxy: WebKitProxy(
-              createWebViewConfiguration: () => mockConfiguration,
-            ),
-            mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{
-              PlaybackMediaTypes.none,
-              PlaybackMediaTypes.audio,
-            },
+        WebKitWebViewControllerCreationParams(
+          webKitProxy: WebKitProxy(
+            createWebViewConfiguration: () => mockConfiguration,
           ),
-          throwsAssertionError,
+          mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+        );
+
+        verify(
+          mockConfiguration.setMediaTypesRequiringUserActionForPlayback(
+            <WKAudiovisualMediaType>{WKAudiovisualMediaType.none},
+          ),
         );
       });
     });
