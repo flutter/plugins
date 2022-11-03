@@ -88,6 +88,8 @@ class WebKitWebViewController extends PlatformWebViewController {
       <String, WebKitJavaScriptChannelParams>{};
 
   bool _zoomEnabled = true;
+  // A function for retrieving the latest ProgressCallback from the last
+  // NavigationDelegate set.
   ProgressCallback? Function()? _getOnProgressCallback;
 
   WebKitWebViewControllerCreationParams get _webKitParams =>

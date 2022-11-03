@@ -823,10 +823,11 @@ void main() {
         ),
       );
 
+      // First value of onProgress does nothing.
       await navigationDelegate.setOnProgress((_) {});
-
       await controller.setPlatformNavigationDelegate(navigationDelegate);
 
+      // Second value of onProgress sets `callbackProgress`.
       late final int callbackProgress;
       await navigationDelegate.setOnProgress(
         (int progress) => callbackProgress = progress,
