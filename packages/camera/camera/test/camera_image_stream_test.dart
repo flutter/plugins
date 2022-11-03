@@ -130,28 +130,6 @@ void main() {
     );
   });
 
-  test('stopImageStream() throws $CameraException when recording videos',
-      () async {
-    final CameraController cameraController = CameraController(
-        const CameraDescription(
-            name: 'cam',
-            lensDirection: CameraLensDirection.back,
-            sensorOrientation: 90),
-        ResolutionPreset.max);
-    await cameraController.initialize();
-
-    await cameraController.startImageStream((CameraImage image) => null);
-    cameraController.value =
-        cameraController.value.copyWith(isRecordingVideo: true);
-    expect(
-        cameraController.stopImageStream,
-        throwsA(isA<CameraException>().having(
-          (CameraException error) => error.description,
-          'A video recording is already started.',
-          'stopImageStream was called while a video is being recorded.',
-        )));
-  });
-
   test('stopImageStream() throws $CameraException when not streaming images',
       () async {
     final CameraController cameraController = CameraController(
@@ -185,6 +163,39 @@ void main() {
     expect(mockPlatform.streamCallLog,
         <String>['onStreamedFrameAvailable', 'listen', 'cancel']);
   });
+
+  test('startVideoRecording() can stream images', () async {
+    final CameraController cameraController = CameraController(
+        const CameraDescription(
+            name: 'cam',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 90),
+        ResolutionPreset.max);
+
+    await cameraController.initialize();
+
+    cameraController.startVideoRecording(
+        onAvailable: (CameraImage image) => null);
+
+    expect(mockPlatform.streamCallLog,
+        <String>['startVideoRecording with stream']);
+  });
+
+  test('startVideoRecording() by default does not stream', () async {
+    final CameraController cameraController = CameraController(
+        const CameraDescription(
+            name: 'cam',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 90),
+        ResolutionPreset.max);
+
+    await cameraController.initialize();
+
+    cameraController.startVideoRecording();
+
+    expect(mockPlatform.streamCallLog,
+        <String>['startVideoRecording without stream']);
+  });
 }
 
 class MockStreamingCameraPlatform extends MockCameraPlatform {
@@ -201,6 +212,20 @@ class MockStreamingCameraPlatform extends MockCameraPlatform {
       onCancel: _onFrameStreamCancel,
     );
     return _streamController!.stream;
+  }
+
+  @override
+  Future<XFile> startVideoRecording(int cameraId,
+      {Duration? maxVideoDuration}) {
+    streamCallLog.add('startVideoRecording');
+    return super
+        .startVideoRecording(cameraId, maxVideoDuration: maxVideoDuration);
+  }
+
+  @override
+  Future<void> startVideoCapturing(VideoCaptureOptions options) {
+    streamCallLog.add('startVideoCapturing');
+    return super.startVideoCapturing(options);
   }
 
   void _onFrameStreamListen() {

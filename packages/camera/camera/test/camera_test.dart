@@ -1460,6 +1460,12 @@ class MockCameraPlatform extends Mock
       Future<XFile>.value(mockVideoRecordingXFile);
 
   @override
+  Future<void> startVideoCapturing(VideoCaptureOptions options) {
+    return startVideoRecording(options.cameraId,
+        maxVideoDuration: options.maxDuration);
+  }
+
+  @override
   Future<void> lockCaptureOrientation(
           int? cameraId, DeviceOrientation? orientation) async =>
       super.noSuchMethod(Invocation.method(
