@@ -44,21 +44,18 @@ class WebKitWebViewControllerCreationParams
   /// Constructs a [WebKitWebViewControllerCreationParams].
   WebKitWebViewControllerCreationParams({
     @visibleForTesting this.webKitProxy = const WebKitProxy(),
-    Set<PlaybackMediaTypes>? mediaTypesRequiringUserAction,
-  })  : _configuration = webKitProxy.createWebViewConfiguration(),
-        mediaTypesRequiringUserAction = mediaTypesRequiringUserAction ??
-            const <PlaybackMediaTypes>{
-              PlaybackMediaTypes.audio,
-              PlaybackMediaTypes.video,
-            } {
-    if (this.mediaTypesRequiringUserAction.isEmpty) {
+    this.mediaTypesRequiringUserAction = const <PlaybackMediaTypes>{
+      PlaybackMediaTypes.audio,
+      PlaybackMediaTypes.video,
+    },
+  }) : _configuration = webKitProxy.createWebViewConfiguration() {
+    if (mediaTypesRequiringUserAction.isEmpty) {
       _configuration.setMediaTypesRequiringUserActionForPlayback(
         <WKAudiovisualMediaType>{WKAudiovisualMediaType.none},
       );
     } else {
       _configuration.setMediaTypesRequiringUserActionForPlayback(
-        this
-            .mediaTypesRequiringUserAction
+        mediaTypesRequiringUserAction
             .map<WKAudiovisualMediaType>(
               (PlaybackMediaTypes type) => type._toWKAudiovisualMediaType(),
             )
@@ -74,7 +71,11 @@ class WebKitWebViewControllerCreationParams
     // ignore: avoid_unused_constructor_parameters
     PlatformWebViewControllerCreationParams params, {
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-    Set<PlaybackMediaTypes>? mediaTypesRequiringUserAction,
+    Set<PlaybackMediaTypes> mediaTypesRequiringUserAction =
+        const <PlaybackMediaTypes>{
+      PlaybackMediaTypes.audio,
+      PlaybackMediaTypes.video,
+    },
   }) : this(
           webKitProxy: webKitProxy,
           mediaTypesRequiringUserAction: mediaTypesRequiringUserAction,
