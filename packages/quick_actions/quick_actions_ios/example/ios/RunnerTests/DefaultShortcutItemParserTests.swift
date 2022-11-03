@@ -7,9 +7,9 @@ import XCTest
 
 @testable import quick_actions_ios
 
-class ShortcutStateManagerTests: XCTestCase {
+class DefaultShortcutItemParserTests: XCTestCase {
 
-  func testSetShortcutItems_shouldSetItem() {
+  func testparseShortcutItems() {
     let rawItem = [
       "type": "SearchTheThing",
       "localizedTitle": "Search the thing",
@@ -23,16 +23,12 @@ class ShortcutStateManagerTests: XCTestCase {
       icon: UIApplicationShortcutIcon(templateImageName: "search_the_thing.png"),
       userInfo: nil)
 
-    let mockShortcutItemService = MockShortcutItemService()
-    let manager = DefaultShortcutStateManager(service: mockShortcutItemService)
-
-    manager.setShortcutItems([rawItem])
-
-    XCTAssertEqual(mockShortcutItemService.shortcutItems, [expectedItem])
+    let parser = DefaultShortcutItemParser()
+    XCTAssertEqual(parser.parseShortcutItems([rawItem]), [expectedItem])
 
   }
 
-  func testSetShortcutItems_shouldSetItemWithoutIcon() {
+  func testparseShortcutItems_noIcon() {
     let rawItem: [String: Any] = [
       "type": "SearchTheThing",
       "localizedTitle": "Search the thing",
@@ -46,11 +42,7 @@ class ShortcutStateManagerTests: XCTestCase {
       icon: nil,
       userInfo: nil)
 
-    let mockShortcutItemService = MockShortcutItemService()
-    let manager = DefaultShortcutStateManager(service: mockShortcutItemService)
-
-    manager.setShortcutItems([rawItem])
-
-    XCTAssertEqual(mockShortcutItemService.shortcutItems, [expectedItem])
+    let parser = DefaultShortcutItemParser()
+    XCTAssertEqual(parser.parseShortcutItems([rawItem]), [expectedItem])
   }
 }

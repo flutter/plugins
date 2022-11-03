@@ -4,6 +4,6 @@
 
 @testable import quick_actions_ios
 
-final class MockShortcutItemService: ShortcutItemServicing {
+final class MockAppShortcutController: AppShortcutControlling {
   var shortcutItems: [UIApplicationShortcutItem]? = nil
 }

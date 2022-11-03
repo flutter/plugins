@@ -18,10 +18,10 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		E092A7ED28D10802005C7F67 /* MockMethodChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7EA28D10801005C7F67 /* MockMethodChannel.swift */; };
 		E092A7EE28D10802005C7F67 /* QuickActionsPluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7EB28D10802005C7F67 /* QuickActionsPluginTests.swift */; };
-		E092A7EF28D10802005C7F67 /* MockShortcutStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7EC28D10802005C7F67 /* MockShortcutStateManager.swift */; };
-		E092A7F128D10890005C7F67 /* MockShortcutItemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7F028D10890005C7F67 /* MockShortcutItemService.swift */; };
-		E092A7F428D110B3005C7F67 /* DefaultShortcutStateManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7F328D110B3005C7F67 /* DefaultShortcutStateManagerTests.swift */; };
+		E092A7F128D10890005C7F67 /* MockAppShortcutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7F028D10890005C7F67 /* MockAppShortcutController.swift */; };
+		E092A7F428D110B3005C7F67 /* DefaultShortcutItemParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7F328D110B3005C7F67 /* DefaultShortcutItemParserTests.swift */; };
 		E092A7F628D128EB005C7F67 /* RunnerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7F528D128EB005C7F67 /* RunnerUITests.swift */; };
+		E0A075D529147FE200329BAE /* MockShortcutItemParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A075D429147FE200329BAE /* MockShortcutItemParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,10 +80,10 @@
 		C35AD3650AB6BF850E016715 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E092A7EA28D10801005C7F67 /* MockMethodChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockMethodChannel.swift; sourceTree = "<group>"; };
 		E092A7EB28D10802005C7F67 /* QuickActionsPluginTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickActionsPluginTests.swift; sourceTree = "<group>"; };
-		E092A7EC28D10802005C7F67 /* MockShortcutStateManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockShortcutStateManager.swift; sourceTree = "<group>"; };
-		E092A7F028D10890005C7F67 /* MockShortcutItemService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockShortcutItemService.swift; sourceTree = "<group>"; };
-		E092A7F328D110B3005C7F67 /* DefaultShortcutStateManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultShortcutStateManagerTests.swift; sourceTree = "<group>"; };
+		E092A7F028D10890005C7F67 /* MockAppShortcutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAppShortcutController.swift; sourceTree = "<group>"; };
+		E092A7F328D110B3005C7F67 /* DefaultShortcutItemParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultShortcutItemParserTests.swift; sourceTree = "<group>"; };
 		E092A7F528D128EB005C7F67 /* RunnerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerUITests.swift; sourceTree = "<group>"; };
+		E0A075D429147FE200329BAE /* MockShortcutItemParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockShortcutItemParser.swift; sourceTree = "<group>"; };
 		F0609304FBCAEC2289164BD5 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -120,7 +120,7 @@
 				E092A7F228D10908005C7F67 /* Mocks */,
 				33E20B3626EFCDFC00A4A191 /* Info.plist */,
 				E092A7EB28D10802005C7F67 /* QuickActionsPluginTests.swift */,
-				E092A7F328D110B3005C7F67 /* DefaultShortcutStateManagerTests.swift */,
+				E092A7F328D110B3005C7F67 /* DefaultShortcutItemParserTests.swift */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -216,8 +216,8 @@
 			isa = PBXGroup;
 			children = (
 				E092A7EA28D10801005C7F67 /* MockMethodChannel.swift */,
-				E092A7F028D10890005C7F67 /* MockShortcutItemService.swift */,
-				E092A7EC28D10802005C7F67 /* MockShortcutStateManager.swift */,
+				E092A7F028D10890005C7F67 /* MockAppShortcutController.swift */,
+				E0A075D429147FE200329BAE /* MockShortcutItemParser.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -436,9 +436,9 @@
 			files = (
 				E092A7EE28D10802005C7F67 /* QuickActionsPluginTests.swift in Sources */,
 				E092A7ED28D10802005C7F67 /* MockMethodChannel.swift in Sources */,
-				E092A7F128D10890005C7F67 /* MockShortcutItemService.swift in Sources */,
-				E092A7EF28D10802005C7F67 /* MockShortcutStateManager.swift in Sources */,
-				E092A7F428D110B3005C7F67 /* DefaultShortcutStateManagerTests.swift in Sources */,
+				E092A7F128D10890005C7F67 /* MockAppShortcutController.swift in Sources */,
+				E0A075D529147FE200329BAE /* MockShortcutItemParser.swift in Sources */,
+				E092A7F428D110B3005C7F67 /* DefaultShortcutItemParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

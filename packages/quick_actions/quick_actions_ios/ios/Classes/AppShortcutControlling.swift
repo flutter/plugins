@@ -4,12 +4,12 @@
 
 import UIKit
 
-/// Services `UIApplicationShortcutItem`s.
-protocol ShortcutItemServicing: AnyObject {
+/// Controlls app's shortcut behavior.
+protocol AppShortcutControlling: AnyObject {
 
   /// An array of shortcut items for home screen.
   var shortcutItems: [UIApplicationShortcutItem]? { get set }
 }
 
-/// A default implementation of the `ShortcutItemServicing` protocol.
-extension UIApplication: ShortcutItemServicing {}
+/// A default implementation of the `AppShortcutControlling` protocol.
+extension UIApplication: AppShortcutControlling {}
