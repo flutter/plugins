@@ -51,6 +51,26 @@ targets:
       version_file: flutter_master.version
       target_file: mac_lint_podspecs.yaml
 
+  - name: Mac_x64 build_all_plugins master
+    recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6671
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: mac_build_all_plugins.yaml
+      channel: master
+
+  - name: Mac_x64 build_all_plugins stable
+    recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6671
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: mac_build_all_plugins.yaml
+      channel: stable
+
   - name: Windows win32-platform_tests master
     recipe: plugins/plugins
     timeout: 30
