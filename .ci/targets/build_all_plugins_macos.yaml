@@ -5,3 +5,4 @@ tasks:
     script: .ci/scripts/create_all_plugins_app.sh
   - name: build all_plugins
     script: .ci/scripts/build_all_plugins.sh
+    args: ["macos"]
