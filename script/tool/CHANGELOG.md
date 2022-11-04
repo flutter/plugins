@@ -1,6 +1,8 @@
 ## NEXT
 
-* Updates dependencies to `git:^2.2.0`, `mockito:^5.3.2` and regenerates mocks.
+* Pins `package:git` dependency to `2.0.x` until `dart >=2.18.0` becomes our
+  oldest legacy.
+* Updates test mocks.
 
 ## 0.13.0
 
