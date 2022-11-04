@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates dependencies to `git:^2.2.0`, `mockito:^5.3.2` and regenerates mocks.
+
 ## 0.13.0
 
 * Renames `all-plugins-app` to `create-all-packages-app` to clarify what it
