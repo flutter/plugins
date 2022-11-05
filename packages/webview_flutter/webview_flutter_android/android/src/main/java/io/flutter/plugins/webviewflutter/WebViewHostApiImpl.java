@@ -351,7 +351,9 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @Override
   public void loadData(Long instanceId, String data, String mimeType, String encoding) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.loadData(data, mimeType, encoding);
+    if (webView != null) {
+      webView.loadData(data, mimeType, encoding);
+    }
   }
 
   @Override
@@ -363,98 +365,133 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       String encoding,
       String historyUrl) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+    if (webView != null) {
+      webView.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+    }
   }
 
   @Override
   public void loadUrl(Long instanceId, String url, Map<String, String> headers) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.loadUrl(url, headers);
+    if (webView != null) {
+      webView.loadUrl(url, headers);
+    }
   }
 
   @Override
   public void postUrl(Long instanceId, String url, byte[] data) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.postUrl(url, data);
+    if (webView != null) {
+      webView.postUrl(url, data);
+    }
   }
 
   @Override
   public String getUrl(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    return webView.getUrl();
+    if (webView != null) {
+      return webView.getUrl();
+    }
   }
 
   @Override
   public Boolean canGoBack(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    return webView.canGoBack();
+    if (webView != null) {
+      return webView.canGoBack();
+    }
   }
 
   @Override
   public Boolean canGoForward(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    return webView.canGoForward();
+    if (webView != null) {
+      return webView.canGoForward();
+    }
   }
 
   @Override
   public void goBack(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.goBack();
+    if (webView != null) {
+      webView.goBack();
+    }
   }
 
   @Override
   public void goForward(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.goForward();
+    if (webView != null) {
+      webView.goForward();
+    }
   }
 
   @Override
   public void reload(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.reload();
+    if (webView != null) {
+      webView.reload();
+    }
   }
 
   @Override
   public void clearCache(Long instanceId, Boolean includeDiskFiles) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.clearCache(includeDiskFiles);
+    if (webView != null) {
+      webView.clearCache(includeDiskFiles);
+    }
   }
 
   @Override
   public void evaluateJavascript(
       Long instanceId, String javascriptString, GeneratedAndroidWebView.Result<String> result) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.evaluateJavascript(javascriptString, result::success);
+    if (webView != null) {
+      webView.evaluateJavascript(javascriptString, result::success);
+    }
   }
 
   @Override
   public String getTitle(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    return webView.getTitle();
+    if (webView != null) {
+      return webView.getTitle();
+    }
+    return "";
   }
 
   @Override
   public void scrollTo(Long instanceId, Long x, Long y) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.scrollTo(x.intValue(), y.intValue());
+    if (webView != null) {
+      webView.scrollTo(x.intValue(), y.intValue());
+    }
   }
 
   @Override
   public void scrollBy(Long instanceId, Long x, Long y) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.scrollBy(x.intValue(), y.intValue());
+    if (webView != null) {
+      webView.scrollBy(x.intValue(), y.intValue());
+    }
   }
 
   @Override
   public Long getScrollX(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    return (long) webView.getScrollX();
+    if (webView != null) {
+      return (long) webView.getScrollX();
+    }
+    return 0L;
   }
 
   @Override
   public Long getScrollY(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    return (long) webView.getScrollY();
+    if (webView != null) {
+      return (long) webView.getScrollY();
+    }
+    return 0L;
   }
 
   @NonNull
@@ -475,7 +512,9 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @Override
   public void setWebViewClient(Long instanceId, Long webViewClientInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.setWebViewClient((WebViewClient) instanceManager.getInstance(webViewClientInstanceId));
+    if (webView != null) {
+      webView.setWebViewClient((WebViewClient) instanceManager.getInstance(webViewClientInstanceId));
+    }
   }
 
   @Override
@@ -483,7 +522,9 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     final JavaScriptChannel javaScriptChannel =
         (JavaScriptChannel) instanceManager.getInstance(javaScriptChannelInstanceId);
-    webView.addJavascriptInterface(javaScriptChannel, javaScriptChannel.javaScriptChannelName);
+    if (webView != null) {
+      webView.addJavascriptInterface(javaScriptChannel, javaScriptChannel.javaScriptChannelName);
+    }
   }
 
   @Override
@@ -491,25 +532,33 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     final JavaScriptChannel javaScriptChannel =
         (JavaScriptChannel) instanceManager.getInstance(javaScriptChannelInstanceId);
-    webView.removeJavascriptInterface(javaScriptChannel.javaScriptChannelName);
+    if (webView != null) {
+      webView.removeJavascriptInterface(javaScriptChannel.javaScriptChannelName);
+    }
   }
 
   @Override
   public void setDownloadListener(Long instanceId, Long listenerInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.setDownloadListener((DownloadListener) instanceManager.getInstance(listenerInstanceId));
+    if (webView != null) {
+      webView.setDownloadListener((DownloadListener) instanceManager.getInstance(listenerInstanceId));
+    }
   }
 
   @Override
   public void setWebChromeClient(Long instanceId, Long clientInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(clientInstanceId));
+    if (webView != null) {
+      webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(clientInstanceId));
+    }
   }
 
   @Override
   public void setBackgroundColor(Long instanceId, Long color) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.setBackgroundColor(color.intValue());
+    if (webView != null) {
+      webView.setBackgroundColor(color.intValue());
+    }
   }
 
   /** Maintains instances used to communicate with the corresponding WebView Dart object. */
