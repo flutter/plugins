@@ -392,6 +392,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     if (webView != null) {
       return webView.getUrl();
     }
+    return "";
   }
 
   @Override
@@ -400,6 +401,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     if (webView != null) {
       return webView.canGoBack();
     }
+    return false;
   }
 
   @Override
@@ -408,6 +410,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     if (webView != null) {
       return webView.canGoForward();
     }
+    return false;
   }
 
   @Override
