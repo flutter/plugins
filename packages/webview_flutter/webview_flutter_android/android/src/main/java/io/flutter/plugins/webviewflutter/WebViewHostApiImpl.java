@@ -516,7 +516,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public void setWebViewClient(Long instanceId, Long webViewClientInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     if (webView != null) {
-      webView.setWebViewClient((WebViewClient) instanceManager.getInstance(webViewClientInstanceId));
+      webView.setWebViewClient(
+          (WebViewClient) instanceManager.getInstance(webViewClientInstanceId));
     }
   }
 
@@ -544,7 +545,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public void setDownloadListener(Long instanceId, Long listenerInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     if (webView != null) {
-      webView.setDownloadListener((DownloadListener) instanceManager.getInstance(listenerInstanceId));
+      webView.setDownloadListener(
+          (DownloadListener) instanceManager.getInstance(listenerInstanceId));
     }
   }
 
