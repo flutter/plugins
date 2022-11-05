@@ -17,6 +17,7 @@ flutter:
         fileName: google_maps_flutter_web.dart
 
 dependencies:
+  collection: ^1.16.0
   flutter:
     sdk: flutter
   flutter_web_plugins:

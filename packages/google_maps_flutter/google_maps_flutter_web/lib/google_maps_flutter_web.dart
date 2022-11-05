@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:js_util';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +31,8 @@ part 'src/google_maps_controller.dart';
 part 'src/google_maps_flutter_web.dart';
 part 'src/marker.dart';
 part 'src/markers.dart';
+part 'src/overlay.dart';
+part 'src/overlays.dart';
 part 'src/polygon.dart';
 part 'src/polygons.dart';
 part 'src/polyline.dart';
