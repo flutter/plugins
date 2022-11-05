@@ -1,3 +1,7 @@
+## 2.10.5
+
+* Fixes crash wheen `loadUrl`.
+
 ## 2.10.4
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
