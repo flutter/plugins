@@ -16,9 +16,17 @@ import '../../android_webview.dart' as android_webview;
 class AndroidWebViewProxy {
   /// Constructs a [AndroidWebViewProxy].
   const AndroidWebViewProxy({
+    this.createAndroidWebView = android_webview.WebView.new,
     this.createAndroidWebChromeClient = android_webview.WebChromeClient.new,
     this.createAndroidWebViewClient = android_webview.WebViewClient.new,
+    this.createFlutterAssetManager = android_webview.FlutterAssetManager.new,
+    this.createJavaScriptChannel = android_webview.JavaScriptChannel.new,
   });
+
+  /// Constructs a [android_webview.WebView].
+  final android_webview.WebView Function({
+    required bool useHybridComposition,
+  }) createAndroidWebView;
 
   /// Constructs a [android_webview.WebChromeClient].
   final android_webview.WebChromeClient Function({
@@ -51,4 +59,26 @@ class AndroidWebViewProxy {
         requestLoading,
     void Function(android_webview.WebView webView, String url)? urlLoading,
   }) createAndroidWebViewClient;
+
+  /// Constructs a [android_webview.FlutterAssetManager].
+  final android_webview.FlutterAssetManager Function()
+      createFlutterAssetManager;
+
+  /// Constructs a [android_webview.JavaScriptChannel].
+  final android_webview.JavaScriptChannel Function(
+    String channelName, {
+    required void Function(String) postMessage,
+  }) createJavaScriptChannel;
+
+  /// Enables debugging of web contents (HTML / CSS / JavaScript) loaded into any WebViews of this application.
+  ///
+  /// This flag can be enabled in order to facilitate debugging of web layouts
+  /// and JavaScript code running inside WebViews. Please refer to
+  /// [android_webview.WebView] documentation for the debugging guide. The
+  /// default is false.
+  ///
+  /// See [android_webview.WebView].setWebContentsDebuggingEnabled.
+  Future<void> setWebContentsDebuggingEnabled(bool enabled) {
+    return android_webview.WebView.setWebContentsDebuggingEnabled(enabled);
+  }
 }
