@@ -19,6 +19,9 @@ class AndroidCameraXCameraFlutterApis {
     CameraInfoFlutterApiImpl? cameraInfoFlutterApi,
     CameraSelectorFlutterApiImpl? cameraSelectorFlutterApi,
     ProcessCameraProviderFlutterApiImpl? processCameraProviderFlutterApi,
+    PreviewFlutterApiImpl? previewFlutterApi,
+    CameraFlutterApiImpl? cameraFlutterApi,
+    CameraControlFlutterApiImpl? cameraControlFlutterApi,
   }) {
     this.javaObjectFlutterApi =
         javaObjectFlutterApi ?? JavaObjectFlutterApiImpl();
@@ -30,7 +33,7 @@ class AndroidCameraXCameraFlutterApis {
         ProcessCameraProviderFlutterApiImpl();
     this.previewFlutterApi = previewFlutterApi ??
         PreviewFlutterApiImpl();
-    this.cameraFlutterApi = cameraFluterApi ??
+    this.cameraFlutterApi = cameraFlutterApi ??
         CameraFlutterApiImpl();
     this.cameraControlFlutterApi = cameraControlFlutterApi ??
         CameraControlFlutterApiImpl();

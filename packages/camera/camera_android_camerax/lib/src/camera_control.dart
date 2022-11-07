@@ -2,27 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/services.dart' show BinaryMessenger;
+
 import 'android_camera_camerax_flutter_api_impls.dart';
+import 'camerax_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
 class CameraControl extends JavaObject {
   /// Constructs a [Camera] that is not automatically attached to a native object. 
     CameraControl.detached(
-      {BinaryMessneger? binaryMessenger,
+      {BinaryMessenger? binaryMessenger,
       InstanceManager? instanceManager})
     : super.detached(
         binaryMessenger: binaryMessenger,
         instanceManager: instanceManager) {
     _api = CameraControlHostApiImpl(
-      binaryMessenger: instanceManager: instanceManager);
+      binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
    }
 
   late final CameraControlHostApiImpl _api;
 
   /// Sets the zoom ratio of the [Camera] this instance corresponds to.
-  Future<void> setZoomRatio(double ratio) {
+  void setZoomRatio(double ratio) {
     return _api.setZoomRatioFromInstance(this, ratio);
   }
 }
@@ -30,7 +33,7 @@ class CameraControl extends JavaObject {
 /// Host API implementation of [CameraControl].
 class CameraControlHostApiImpl extends CameraControlHostApi {
   /// Constructs a [CameraHostApiImpl].
-  CameraHostApiImpl(
+  CameraControlHostApiImpl(
       {this.binaryMessenger, InstanceManager? instanceManager})
       : super(binaryMessenger: binaryMessenger) {
     this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
@@ -46,7 +49,7 @@ class CameraControlHostApiImpl extends CameraControlHostApi {
   late final InstanceManager instanceManager;
 
   /// Waits for the specified zoom ratio to be set by the camera.
-  Future<void> setZoomRatioFromInstance(CameraControl instance, double ratio) {
+  void setZoomRatioFromInstance(CameraControl instance, double ratio) {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (CameraControl original) {
@@ -55,7 +58,7 @@ class CameraControlHostApiImpl extends CameraControlHostApi {
           instanceManager: instanceManager);
     });
 
-    await setZoomRatio(identifier, ratio);
+    setZoomRatio(identifier, ratio);
   }
 }
 
@@ -77,7 +80,7 @@ class CameraControlFlutterApiImpl implements CameraControlFlutterApi {
   final InstanceManager instanceManager;
 
   @override
-  void create(int identifier, int? lensFacing) {
+  void create(int identifier) {
     instanceManager.addHostCreatedInstance(
       CameraControl.detached(
           binaryMessenger: binaryMessenger,

@@ -8,6 +8,7 @@ import 'android_camera_camerax_flutter_api_impls.dart';
 import 'camerax_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
+import 'use_case.dart';
 
 /// Use case that provides a camera preview stream for display.
 ///
@@ -45,7 +46,7 @@ class Preview extends UseCase {
   /// Target rotation of the camera used for the preview stream.
   final int? targetRotation;
 
-  /// [?] Sets surface provider for the preview stream.
+  /// Sets surface provider for the preview stream.
   ///
   /// Returns the ID of the FlutterSurfaceTextureEntry used on the back end
   /// used to display the preview stream on a [Texture] of the same ID.
@@ -63,9 +64,15 @@ class Preview extends UseCase {
 class PreviewHostApiImpl extends PreviewHostApi {
   /// Constructs a [PreviewHostApiImpl].
   PreviewHostApiImpl(
-      {super.binaryMessenger, InstanceManager? instanceManager}) {
+      {this.binaryMessenger, InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
   }
+
+  /// Receives binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with native language objects.
   late final InstanceManager instanceManager;
@@ -84,7 +91,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
 
   /// Sets the surface provider of the provided [Preview] instance and returns
   /// the ID corresponding to the surface it will provide.
-  Future<int> setSurfaceProviderFromInstance(Preview instance) {
+  Future<int> setSurfaceProviderFromInstance(Preview instance) async {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (Preview original) {
@@ -94,7 +101,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
           targetRotation: original.targetRotation);
     });
 
-    int surfaceTextureEntryId = await setSurfaceProvider(identifier);
+    final int surfaceTextureEntryId = await setSurfaceProvider(identifier);
     return surfaceTextureEntryId;
   }
 
@@ -132,7 +139,7 @@ class PreviewFlutterApiImpl extends PreviewFlutterApi {
   final InstanceManager instanceManager;
 
   @override
-  void create(int identifier) {
+  void create(int identifier, int? targetRotation) {
     instanceManager.addHostCreatedInstance(
       Preview.detached(
           binaryMessenger: binaryMessenger, instanceManager: instanceManager, targetRotation: targetRotation),

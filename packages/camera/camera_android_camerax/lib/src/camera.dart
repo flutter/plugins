@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/services.dart' show BinaryMessenger;
+
 import 'android_camera_camerax_flutter_api_impls.dart';
 import 'camera_control.dart';
+import 'camerax_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
 class Camera extends JavaObject {
   /// Constructs a [Camera] that is not automatically attached to a native object. 
     Camera.detached(
-      {BinaryMessneger? binaryMessenger,
+      {BinaryMessenger? binaryMessenger,
       InstanceManager? instanceManager})
     : super.detached(
         binaryMessenger: binaryMessenger,
         instanceManager: instanceManager) {
     _api = CameraHostApiImpl(
-      binaryMessenger: instanceManager: instanceManager);
+      binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
    }
 
@@ -48,7 +51,7 @@ class CameraHostApiImpl extends CameraHostApi {
 
   /// Retrieves instance of [CameraControl] that corresponds to the specified
   /// instance of the [Camera].
-  Future<CameraControl> getCameraControlFormInstance(Camera instance) {
+  Future<CameraControl> getCameraControlFromInstance(Camera instance) async {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (Camera original) {
@@ -58,7 +61,7 @@ class CameraHostApiImpl extends CameraHostApi {
     });
 
     int cameraControlId = await getCameraControl(identifier);
-    return instanceManager.getInstanceWithWeakReference(cameraControlId!)! as CameraControl;
+    return instanceManager.getInstanceWithWeakReference(cameraControlId)! as CameraControl;
   }
 }
 
@@ -80,7 +83,7 @@ class CameraFlutterApiImpl implements CameraFlutterApi {
   final InstanceManager instanceManager;
 
   @override
-  void create(int identifier, int? lensFacing) {
+  void create(int identifier) {
     instanceManager.addHostCreatedInstance(
       Camera.detached(
           binaryMessenger: binaryMessenger,

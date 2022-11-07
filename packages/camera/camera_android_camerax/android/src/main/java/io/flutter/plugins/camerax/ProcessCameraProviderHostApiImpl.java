@@ -84,4 +84,27 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
     }
     return availableCamerasIds;
   }
+
+  /** Binds specified @code UseCase}s to the lifecycle of the @code LifecycleOwner}
+   * that corresponds to this instance.
+   */
+  @Override
+  public Long bindToLifecycle(@NonNull Long identifier, @NonNull Long cameraSelectorIdentifier, @NonNull List<Long> useCaseIds) {
+    ProcessCameraProvider processCameraProvider =
+        (ProcessCameraProvider) instanceManager.getInstance(identifier);
+    CameraSelector cameraSelector =
+        (CameraSelector) instanceManager.getInstance(cameraSelectorIdentifier);
+    List<UseCase> useCases;
+    for (Long useCaseId : useCaseIds) {
+      useCases.add(instanceManager.getIdentifierForStrongReference(useCaseId));
+    }
+
+    Camera camera = processCameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, useCases); // [?] might not work
+
+    final CameraFlutterApiImpl camraFlutterApi =
+        new CameraFlutterApiImpl(binaryMessenger, instanceManager);
+    camraFlutterApi.create(camera, result -> {});
+    
+    return instanceManager.getIdentifierForStrongReference(camera);
+  }
 }

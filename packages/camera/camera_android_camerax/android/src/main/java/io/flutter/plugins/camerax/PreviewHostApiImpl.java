@@ -33,7 +33,6 @@ public class PreviewHostApiImpl {
 
     @Override
     public int setSurfaceProvider(@NonNull Long identifier) {
-        // [?] sample implementation based on [A]
         Preview preview = (Preview) instanceManager.getInstance(identifier);
         Preview.SurfaceProvider surfaceProvider = 
             new Preview.SurfaceProvider() {

@@ -5,10 +5,13 @@
 import 'package:flutter/services.dart';
 
 import 'android_camera_camerax_flutter_api_impls.dart';
+import 'camera.dart';
 import 'camera_info.dart';
+import 'camera_selector.dart';
 import 'camerax_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
+import 'use_case.dart';
 
 /// Provides an object to manage the camera.
 ///
@@ -41,6 +44,13 @@ class ProcessCameraProvider extends JavaObject {
   /// Retrieves the cameras available to the device.
   Future<List<CameraInfo>> getAvailableCameraInfos() {
     return _api.getAvailableCameraInfosFromInstances(this);
+  }
+
+  /// Binds the specified [UseCase]s to the lifecycle of the camera that it
+  /// returns.
+  Future<Camera> bindToLifecycle(
+    CameraSelector cameraSelector, List<UseCase> useCases) {
+    return _api.bindToLifecycleFromInstances(this, cameraSelector, useCases);
   }
 }
 
@@ -83,6 +93,32 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
     return (cameraInfos.map<CameraInfo>((int? id) =>
             instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo))
         .toList();
+  }
+
+  /// Binds the specified [UseCase]s to the lifecycle of the camera which follows
+  /// that which corresponds to the [ProcessCameraProvider] instance.
+  ///
+  // This camera is returned.
+  Future<Camera> bindToLifecycleFromInstances(
+    ProcessCameraProvider instance,
+    CameraSelector cameraSelector,
+    List<UseCase> useCases,
+  ) async {
+    int? identifier = instanceManager.getIdentifier(instance);
+    identifier ??= instanceManager.addDartCreatedInstance(instance,
+        onCopy: (ProcessCameraProvider original) {
+      return ProcessCameraProvider.detached(
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+    });
+    final List<int> useCaseIds = (useCases.map<int>(
+      (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
+
+    final int cameraIdentifier = await bindToLifecycle(
+      identifier,
+      instanceManager.getIdentifier(cameraSelector)!,
+      useCaseIds,
+    );
+    return instanceManager.getInstanceWithWeakReference(cameraIdentifier)! as Camera;
   }
 }
 
