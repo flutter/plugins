@@ -118,7 +118,16 @@ public class VideoRenderer {
   public void close() {
     thread.interrupt();
     surfaceTextureFrameAvailableHandler.quitSafely();
+    cleanupOpenGL();
     inputSurfaceTexture.release();
+  }
+
+  private void cleanupOpenGL() {
+    GLES20.glDeleteBuffers(2, bufferHandles, 0);
+    GLES20.glDeleteTextures(1, textureHandles, 0);
+    EGL14.eglDestroyContext(display, context);
+    EGL14.eglDestroySurface(display, surface);
+    GLES20.glDeleteProgram(program);
   }
 
   /** Configures openGL. Must be called in same thread as draw is called. */
