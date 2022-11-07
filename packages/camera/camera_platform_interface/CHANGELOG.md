@@ -1,3 +1,7 @@
+## 2.3.0
+
+* Adds new capture method for a camera to allow concurrent streaming and recording.
+
 ## 2.2.2
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
