@@ -16,18 +16,18 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
   }
 
   private let channel: MethodChannel
-  private let appShortcutController: AppShortcutControlling
+  private let shortcutItemProvider: ShortcutItemProviding
   private let shortcutItemParser: ShortcutItemParser
   /// The type of the shortcut item selected when launching the app.
   private var launchingShortcutType: String? = nil
 
   init(
     channel: MethodChannel,
-    appShortcutController: AppShortcutControlling = UIApplication.shared,
+    shortcutItemProvider: ShortcutItemProviding = UIApplication.shared,
     shortcutItemParser: ShortcutItemParser = DefaultShortcutItemParser()
   ) {
     self.channel = channel
-    self.appShortcutController = appShortcutController
+    self.shortcutItemProvider = shortcutItemProvider
     self.shortcutItemParser = shortcutItemParser
   }
 
@@ -36,10 +36,10 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
     case "setShortcutItems":
       // `arguments` must be an array of dictionaries
       let items = call.arguments as! [[String: Any]]
-      appShortcutController.shortcutItems = shortcutItemParser.parseShortcutItems(items)
+      shortcutItemProvider.shortcutItems = shortcutItemParser.parseShortcutItems(items)
       result(nil)
     case "clearShortcutItems":
-      appShortcutController.shortcutItems = []
+      shortcutItemProvider.shortcutItems = []
       result(nil)
     case "getLaunchAction":
       result(nil)

@@ -4,12 +4,12 @@
 
 import UIKit
 
-/// Controlls app's shortcut behavior.
-protocol AppShortcutControlling: AnyObject {
+/// Provides the capability to get and set the app's home screen shortcut items.
+protocol ShortcutItemProviding: AnyObject {
 
   /// An array of shortcut items for home screen.
   var shortcutItems: [UIApplicationShortcutItem]? { get set }
 }
 
-/// A default implementation of the `AppShortcutControlling` protocol.
-extension UIApplication: AppShortcutControlling {}
+/// A default implementation of the `ShortcutItemProviding` protocol.
+extension UIApplication: ShortcutItemProviding {}
