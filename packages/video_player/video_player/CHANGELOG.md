@@ -1,5 +1,6 @@
-## NEXT
+## 2.5.0
 
+* Exposes `VideoScrubber` so it can be used to make custom video progress indicators
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 2.4.7
