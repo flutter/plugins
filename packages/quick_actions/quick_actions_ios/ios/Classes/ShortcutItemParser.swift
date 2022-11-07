@@ -22,8 +22,14 @@ final class DefaultShortcutItemParser: ShortcutItemParser {
     return items.compactMap { deserializeShortcutItem(with: $0) }
   }
 
-  private func deserializeShortcutItem(with serialized: [String: Any]) -> UIApplicationShortcutItem
+  private func deserializeShortcutItem(with serialized: [String: Any]) -> UIApplicationShortcutItem?
   {
+    guard
+      let type = serialized["type"] as? String,
+      let localizedTitle = serialized["localizedTitle"] as? String
+    else {
+      return nil
+    }
 
     let icon = (serialized["icon"] as? String).map {
       UIApplicationShortcutIcon(templateImageName: $0)
@@ -31,8 +37,8 @@ final class DefaultShortcutItemParser: ShortcutItemParser {
 
     // type and localizedTitle are required.
     return UIApplicationShortcutItem(
-      type: serialized["type"] as! String,
-      localizedTitle: serialized["localizedTitle"] as! String,
+      type: type,
+      localizedTitle: localizedTitle,
       localizedSubtitle: nil,
       icon: icon,
       userInfo: nil)
