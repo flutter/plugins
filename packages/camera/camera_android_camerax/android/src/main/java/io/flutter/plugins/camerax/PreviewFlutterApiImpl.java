@@ -4,9 +4,12 @@
 
 package io.flutter.plugins.camerax;
 
+import androidx.camera.core.Preview;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.PreviewFlutterApi;
+import io.flutter.plugin.common.BinaryMessenger;
 
-public class PreviewFlutterApiImpl {
+
+public class PreviewFlutterApiImpl extends PreviewFlutterApi {
     private final InstanceManager instanceManager;
 
     public PreviewFlutterApiImpl(

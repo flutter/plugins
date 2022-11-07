@@ -4,10 +4,14 @@
 
 package io.flutter.plugins.camerax;
 
+import androidx.annotation.NonNull;
 import androidx.camera.core.Camera;
+import androidx.camera.core.CameraControl;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraHostApi;
+import io.flutter.plugin.common.BinaryMessenger;
 
-public class CameraHostApiImpl {
+
+public class CameraHostApiImpl implements CameraHostApi {
     private final BinaryMessenger binaryMessenger;
     private final InstanceManager instanceManager;
 
@@ -19,7 +23,7 @@ public class CameraHostApiImpl {
         }
 
     @Override
-    public int getCameraControl(@NonNull Long identifier) {
+    public Long getCameraControl(@NonNull Long identifier) {
         Camera camera = (Camera) instanceManager.getInstance(identifier);
         CameraControl cameraControl = camera.getCameraControl();
 

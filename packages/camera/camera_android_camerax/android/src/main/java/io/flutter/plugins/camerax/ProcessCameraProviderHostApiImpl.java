@@ -6,9 +6,13 @@ package io.flutter.plugins.camerax;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
+import androidx.camera.core.Camera;
 import androidx.camera.core.CameraInfo;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.UseCase;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderHostApi;
@@ -96,10 +100,10 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         (CameraSelector) instanceManager.getInstance(cameraSelectorIdentifier);
     List<UseCase> useCases;
     for (Long useCaseId : useCaseIds) {
-      useCases.add(instanceManager.getIdentifierForStrongReference(useCaseId));
+      useCases.add(instanceManager.getInstance(useCaseId));
     }
 
-    Camera camera = processCameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, useCases); // [?] might not work
+    Camera camera = processCameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, useCases.toArray()); // [?] might not work
 
     final CameraFlutterApiImpl camraFlutterApi =
         new CameraFlutterApiImpl(binaryMessenger, instanceManager);

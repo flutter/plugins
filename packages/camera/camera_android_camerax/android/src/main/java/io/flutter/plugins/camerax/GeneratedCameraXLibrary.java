@@ -401,7 +401,7 @@ public class GeneratedCameraXLibrary {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface PreviewHostApi {
-    @NonNull Long create(@NonNull Long identifier, @NonNull Long rotation);
+    void create(@NonNull Long identifier, @NonNull Long rotation);
     @NonNull Long setSurfaceProvider(@NonNull Long identifier);
     void setTargetRotation(@NonNull Long identifier, @NonNull Long targetRotation);
 
@@ -428,8 +428,8 @@ public class GeneratedCameraXLibrary {
               if (rotationArg == null) {
                 throw new NullPointerException("rotationArg unexpectedly null.");
               }
-              Long output = api.create((identifierArg == null) ? null : identifierArg.longValue(), (rotationArg == null) ? null : rotationArg.longValue());
-              wrapped.put("result", output);
+              api.create((identifierArg == null) ? null : identifierArg.longValue(), (rotationArg == null) ? null : rotationArg.longValue());
+              wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
@@ -512,10 +512,10 @@ public class GeneratedCameraXLibrary {
       return PreviewFlutterApiCodec.INSTANCE;
     }
 
-    public void create(@NonNull Long identifierArg, @NonNull Long rotationArg, Reply<Void> callback) {
+    public void create(@NonNull Long identifierArg, @NonNull Long targetRotationArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PreviewFlutterApi.create", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(identifierArg, rotationArg)), channelReply -> {
+      channel.send(new ArrayList<Object>(Arrays.asList(identifierArg, targetRotationArg)), channelReply -> {
         callback.reply(null);
       });
     }
@@ -595,7 +595,7 @@ public class GeneratedCameraXLibrary {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface CameraControlHostApi {
-    void setZoomRatio(@NonNull Long identifier, @NonNull Double ratio, Result<Void> result);
+    void setZoomRatio(@NonNull Long identifier, @NonNull Double ratio);
 
     /** The codec used by CameraControlHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -620,23 +620,13 @@ public class GeneratedCameraXLibrary {
               if (ratioArg == null) {
                 throw new NullPointerException("ratioArg unexpectedly null.");
               }
-              Result<Void> resultCallback = new Result<Void>() {
-                public void success(Void result) {
-                  wrapped.put("result", null);
-                  reply.reply(wrapped);
-                }
-                public void error(Throwable error) {
-                  wrapped.put("error", wrapError(error));
-                  reply.reply(wrapped);
-                }
-              };
-
-              api.setZoomRatio((identifierArg == null) ? null : identifierArg.longValue(), ratioArg, resultCallback);
+              api.setZoomRatio((identifierArg == null) ? null : identifierArg.longValue(), ratioArg);
+              wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
-              reply.reply(wrapped);
             }
+            reply.reply(wrapped);
           });
         } else {
           channel.setMessageHandler(null);

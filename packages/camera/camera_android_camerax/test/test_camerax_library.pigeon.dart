@@ -182,7 +182,7 @@ class _TestPreviewHostApiCodec extends StandardMessageCodec {
 abstract class TestPreviewHostApi {
   static const MessageCodec<Object?> codec = _TestPreviewHostApiCodec();
 
-  int create(int identifier, int rotation);
+  void create(int identifier, int rotation);
   int setSurfaceProvider(int identifier);
   void setTargetRotation(int identifier, int targetRotation);
   static void setup(TestPreviewHostApi? api, {BinaryMessenger? binaryMessenger}) {
@@ -199,8 +199,8 @@ abstract class TestPreviewHostApi {
           assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.PreviewHostApi.create was null, expected non-null int.');
           final int? arg_rotation = (args[1] as int?);
           assert(arg_rotation != null, 'Argument for dev.flutter.pigeon.PreviewHostApi.create was null, expected non-null int.');
-          final int output = api.create(arg_identifier!, arg_rotation!);
-          return <Object?, Object?>{'result': output};
+          api.create(arg_identifier!, arg_rotation!);
+          return <Object?, Object?>{};
         });
       }
     }
@@ -274,7 +274,7 @@ class _TestCameraControlHostApiCodec extends StandardMessageCodec {
 abstract class TestCameraControlHostApi {
   static const MessageCodec<Object?> codec = _TestCameraControlHostApiCodec();
 
-  Future<void> setZoomRatio(int identifier, double ratio);
+  void setZoomRatio(int identifier, double ratio);
   static void setup(TestCameraControlHostApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -289,7 +289,7 @@ abstract class TestCameraControlHostApi {
           assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.CameraControlHostApi.setZoomRatio was null, expected non-null int.');
           final double? arg_ratio = (args[1] as double?);
           assert(arg_ratio != null, 'Argument for dev.flutter.pigeon.CameraControlHostApi.setZoomRatio was null, expected non-null double.');
-          await api.setZoomRatio(arg_identifier!, arg_ratio!);
+          api.setZoomRatio(arg_identifier!, arg_ratio!);
           return <Object?, Object?>{};
         });
       }

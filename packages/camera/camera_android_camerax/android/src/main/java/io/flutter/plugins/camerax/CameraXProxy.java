@@ -12,7 +12,7 @@ public class CameraXProxy {
     return new CameraSelector.Builder();
   }
 
-  public Preview.Build createPreviewBuilder() {
+  public Preview.Builder createPreviewBuilder() {
     return new Preview.Builder();
   }
 }

@@ -372,7 +372,7 @@ class PreviewHostApi {
 
   static const MessageCodec<Object?> codec = _PreviewHostApiCodec();
 
-  Future<int> create(int arg_identifier, int arg_rotation) async {
+  Future<void> create(int arg_identifier, int arg_rotation) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.PreviewHostApi.create', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
@@ -389,13 +389,8 @@ class PreviewHostApi {
         message: error['message'] as String?,
         details: error['details'],
       );
-    } else if (replyMap['result'] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
     } else {
-      return (replyMap['result'] as int?)!;
+      return;
     }
   }
 
@@ -455,7 +450,7 @@ class _PreviewFlutterApiCodec extends StandardMessageCodec {
 abstract class PreviewFlutterApi {
   static const MessageCodec<Object?> codec = _PreviewFlutterApiCodec();
 
-  void create(int identifier, int rotation);
+  void create(int identifier, int targetRotation);
   static void setup(PreviewFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -468,9 +463,9 @@ abstract class PreviewFlutterApi {
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_identifier = (args[0] as int?);
           assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.PreviewFlutterApi.create was null, expected non-null int.');
-          final int? arg_rotation = (args[1] as int?);
-          assert(arg_rotation != null, 'Argument for dev.flutter.pigeon.PreviewFlutterApi.create was null, expected non-null int.');
-          api.create(arg_identifier!, arg_rotation!);
+          final int? arg_targetRotation = (args[1] as int?);
+          assert(arg_targetRotation != null, 'Argument for dev.flutter.pigeon.PreviewFlutterApi.create was null, expected non-null int.');
+          api.create(arg_identifier!, arg_targetRotation!);
           return;
         });
       }

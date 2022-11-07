@@ -8,7 +8,7 @@ import androidx.camera.core.CameraControl;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraControlFlutterApi;
 
-public class CameraControlFlutterApiImpl extends CameraFlutterApi {
+public class CameraControlFlutterApiImpl extends CameraControlFlutterApi {
   private final InstanceManager instanceManager;
 
   public CameraControlFlutterApiImpl(

@@ -15,8 +15,11 @@ import 'use_case.dart';
 
 /// The Android implementation of [CameraPlatform] that uses the CameraX library.
 class AndroidCameraCameraX extends CameraPlatform {
-  /// Camera currently in use.
-  Camera? camera;
+  
+  Preview? preview;
+  CameraSelector? cameraSelector;
+  ProcessCameraProvider? processCameraProvider;
+  int? cameraId;
 
   /// Registers this class as the default instance of [CameraPlatform].
   static void registerWith() {
@@ -36,21 +39,22 @@ class AndroidCameraCameraX extends CameraPlatform {
     CameraDescription cameraDescription,
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
-  }) {
-    // here
+  }) async {
+    processCameraProvider = await ProcessCameraProvider.getInstance();
+    preview = Preview();
+    cameraSelector = CameraSelector(lensFacing: CameraSelector.LENS_FACING_FRONT);
+    
+    // Will save as a field since more operations will need this camera
+    Camera camera = await processCameraProvider!.bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
+
+    // cameraId = await 
+    return preview!.setSurfaceProvider();
+    // return cameraId;
   }
 
   /// Returns a widget showing a live camera preview.
   @override
   Widget buildPreview(int cameraId) {
-    final ProcessCameraProvider processCameraProvider = await ProcessCameraProvider.getInstance();
-    final Preview preview = Preview();
-    final CameraSelector cameraSelector = CameraSelector(lensFacing: CameraSelector.LENS_FACING_FRONT);
-    
-    final int textureId = await preview.setSurfaceProvider();
-
-    // Will save as a field since more operations will need this camera
-    camera = processCameraProvider.bindToLifecycle(cameraSelector, <UseCase>[preview]);
-    return Texture(textureId: textureId);
+    return Texture(textureId: cameraId);
   }
 }

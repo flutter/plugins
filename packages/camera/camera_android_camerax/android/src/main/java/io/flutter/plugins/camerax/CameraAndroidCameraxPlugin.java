@@ -10,6 +10,7 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.view.TextureRegistry;
 
 /** Platform implementation of the camera_plugin implemented with the CameraX library. */
 public final class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware {
@@ -24,7 +25,7 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
    */
   public CameraAndroidCameraxPlugin() {}
 
-  void setUp(BinaryMessenger binaryMessenger, Context context) {
+  void setUp(BinaryMessenger binaryMessenger, Context context, TextureRegistry textureRegistry) {
     // Set up instance manager.
     instanceManager =
         InstanceManager.open(
@@ -34,12 +35,19 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
             });
 
     // Set up Host APIs.
+    // [?] Alphabetize these!
     GeneratedCameraXLibrary.CameraInfoHostApi.setup(
         binaryMessenger, new CameraInfoHostApiImpl(instanceManager));
     GeneratedCameraXLibrary.JavaObjectHostApi.setup(
         binaryMessenger, new JavaObjectHostApiImpl(instanceManager));
     GeneratedCameraXLibrary.CameraSelectorHostApi.setup(
         binaryMessenger, new CameraSelectorHostApiImpl(binaryMessenger, instanceManager));
+    GeneratedCameraXLibrary.CameraHostApi.setup(
+        binaryMessenger, new CameraHostApiImpl(binaryMessenger, instanceManager));
+    GeneratedCameraXLibrary.CameraControlHostApi.setup(
+        binaryMessenger, new CameraControlHostApiImpl(binaryMessenger, instanceManager));
+    GeneratedCameraXLibrary.PreviewHostApi.setup(
+        binaryMessenger, new PreviewHostApiImpl(binaryMessenger, instanceManager, textureRegistry));
     processCameraProviderHostApi =
         new ProcessCameraProviderHostApiImpl(binaryMessenger, instanceManager, context);
     GeneratedCameraXLibrary.ProcessCameraProviderHostApi.setup(
@@ -52,7 +60,8 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
     (new CameraAndroidCameraxPlugin())
         .setUp(
             flutterPluginBinding.getBinaryMessenger(),
-            flutterPluginBinding.getApplicationContext());
+            flutterPluginBinding.getApplicationContext(),
+            flutterPluginBinding.getTextureRegistry());
   }
 
   @Override
