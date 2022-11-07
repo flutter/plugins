@@ -15,6 +15,7 @@ protocol ShortcutItemParser {
   func parseShortcutItems(_ items: [[String: Any]]) -> [UIApplicationShortcutItem]
 }
 
+/// A default implementation of the `ShortcutItemParser` protocol.
 final class DefaultShortcutItemParser: ShortcutItemParser {
 
   func parseShortcutItems(_ items: [[String: Any]]) -> [UIApplicationShortcutItem] {
