@@ -839,7 +839,7 @@ class VideoProgressColors {
 /// A scrubber to control [VideoPlayerController]s
 class VideoScrubber extends StatefulWidget {
   /// Create a [VideoScrubber] handler with the given [child].
-  /// 
+  ///
   /// [controller] is the [VideoPlayerController] that will be controlled by
   /// this scrubber.
   const VideoScrubber({
