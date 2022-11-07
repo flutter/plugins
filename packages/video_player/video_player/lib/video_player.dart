@@ -836,8 +836,8 @@ class VideoProgressColors {
   final Color backgroundColor;
 }
 
-class _VideoScrubber extends StatefulWidget {
-  const _VideoScrubber({
+class VideoScrubber extends StatefulWidget {
+  const VideoScrubber({
     required this.child,
     required this.controller,
   });
@@ -849,7 +849,7 @@ class _VideoScrubber extends StatefulWidget {
   _VideoScrubberState createState() => _VideoScrubberState();
 }
 
-class _VideoScrubberState extends State<_VideoScrubber> {
+class _VideoScrubberState extends State<VideoScrubber> {
   bool _controllerWasPlaying = false;
 
   VideoPlayerController get controller => widget.controller;
@@ -1014,7 +1014,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       child: progressIndicator,
     );
     if (widget.allowScrubbing) {
-      return _VideoScrubber(
+      return VideoScrubber(
         controller: controller,
         child: paddedProgressIndicator,
       );
