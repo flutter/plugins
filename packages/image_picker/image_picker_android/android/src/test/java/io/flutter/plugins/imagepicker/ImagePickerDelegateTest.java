@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -276,6 +277,16 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
+  public void onActivityResult_WhenPickFromGalleryCanceled_StoresNothingInCache() {
+    ImagePickerDelegate delegate = createDelegate();
+
+    delegate.onActivityResult(
+        ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY, Activity.RESULT_CANCELED, null);
+
+    verify(cache, never()).saveResult(any(), any(), any());
+  }
+
+  @Test
   public void
       onActivityResult_WhenImagePickedFromGallery_AndNoResizeNeeded_FinishesWithImagePath() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
@@ -285,6 +296,18 @@ public class ImagePickerDelegateTest {
 
     verify(mockResult).success("originalPath");
     verifyNoMoreInteractions(mockResult);
+  }
+
+  @Test
+  public void onActivityResult_WhenImagePickedFromGallery_AndNoResizeNeeded_StoresImageInCache() {
+    ImagePickerDelegate delegate = createDelegate();
+
+    delegate.onActivityResult(
+        ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY, Activity.RESULT_OK, mockIntent);
+
+    ArgumentCaptor<ArrayList<String>> pathListCapture = ArgumentCaptor.forClass(ArrayList.class);
+    verify(cache, times(1)).saveResult(pathListCapture.capture(), any(), any());
+    assertEquals("pathFromUri", pathListCapture.getValue().get(0));
   }
 
   @Test
