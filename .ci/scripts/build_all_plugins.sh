@@ -3,11 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-arg="$1"
+platform="$1"
+build_mode="$2"
 cd all_packages
-if [[ "$arg" == "web" ]]; then
-  echo "Skipping; web does not support debug builds"
-else
-  flutter build "$arg" --debug
-  flutter build "$arg" --release
-fi
+flutter build "$platform" --"$build_mode"
