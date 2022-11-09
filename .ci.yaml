@@ -80,7 +80,7 @@ targets:
   # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
   - name: Max_x64 ios_platform_tests_0_4 master
     recipe: plugins/plugins
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
+    bringup: true # New target:
     timeout: 30
     properties:
       add_recipes_cq: "true"
