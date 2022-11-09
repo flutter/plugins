@@ -98,12 +98,12 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         (ProcessCameraProvider) instanceManager.getInstance(identifier);
     CameraSelector cameraSelector =
         (CameraSelector) instanceManager.getInstance(cameraSelectorIdentifier);
-    List<UseCase> useCases;
-    for (Long useCaseId : useCaseIds) {
-      useCases.add(instanceManager.getInstance(useCaseId));
+    UseCase[] useCases = new UseCase[useCaseIds.size()];
+    for (int i = 0; i < useCaseIds.size(); i++) {
+      useCases[i] = instanceManager.getInstance(useCaseIds.get(i));
     }
 
-    Camera camera = processCameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, useCases.toArray()); // [?] might not work
+    Camera camera = processCameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, useCases); // [?] might not work
 
     final CameraFlutterApiImpl camraFlutterApi =
         new CameraFlutterApiImpl(binaryMessenger, instanceManager);

@@ -99,7 +99,7 @@ abstract class CameraFlutterApi {
 
 @HostApi(dartHostTestHandler: 'TestCameraControlHostApi')
 abstract class CameraControlHostApi {
-  void setZoomRatio(int identifier, double ratio); // [?] double for Java float?
+  void setZoomRatio(int identifier, int ratio); // [?] double for Java float?
 }
 
 @FlutterApi()

@@ -25,7 +25,7 @@ class CameraControl extends JavaObject {
   late final CameraControlHostApiImpl _api;
 
   /// Sets the zoom ratio of the [Camera] this instance corresponds to.
-  void setZoomRatio(double ratio) {
+  void setZoomRatio(int ratio) {
     return _api.setZoomRatioFromInstance(this, ratio);
   }
 }
@@ -49,7 +49,7 @@ class CameraControlHostApiImpl extends CameraControlHostApi {
   late final InstanceManager instanceManager;
 
   /// Waits for the specified zoom ratio to be set by the camera.
-  void setZoomRatioFromInstance(CameraControl instance, double ratio) {
+  void setZoomRatioFromInstance(CameraControl instance, int ratio) {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (CameraControl original) {

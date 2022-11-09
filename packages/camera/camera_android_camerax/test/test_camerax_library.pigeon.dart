@@ -274,7 +274,7 @@ class _TestCameraControlHostApiCodec extends StandardMessageCodec {
 abstract class TestCameraControlHostApi {
   static const MessageCodec<Object?> codec = _TestCameraControlHostApiCodec();
 
-  void setZoomRatio(int identifier, double ratio);
+  void setZoomRatio(int identifier, int ratio);
   static void setup(TestCameraControlHostApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -287,8 +287,8 @@ abstract class TestCameraControlHostApi {
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_identifier = (args[0] as int?);
           assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.CameraControlHostApi.setZoomRatio was null, expected non-null int.');
-          final double? arg_ratio = (args[1] as double?);
-          assert(arg_ratio != null, 'Argument for dev.flutter.pigeon.CameraControlHostApi.setZoomRatio was null, expected non-null double.');
+          final int? arg_ratio = (args[1] as int?);
+          assert(arg_ratio != null, 'Argument for dev.flutter.pigeon.CameraControlHostApi.setZoomRatio was null, expected non-null int.');
           api.setZoomRatio(arg_identifier!, arg_ratio!);
           return <Object?, Object?>{};
         });

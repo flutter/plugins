@@ -556,7 +556,7 @@ class CameraControlHostApi {
 
   static const MessageCodec<Object?> codec = _CameraControlHostApiCodec();
 
-  Future<void> setZoomRatio(int arg_identifier, double arg_ratio) async {
+  Future<void> setZoomRatio(int arg_identifier, int arg_ratio) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.CameraControlHostApi.setZoomRatio', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =

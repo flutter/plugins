@@ -595,7 +595,7 @@ public class GeneratedCameraXLibrary {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface CameraControlHostApi {
-    void setZoomRatio(@NonNull Long identifier, @NonNull Double ratio);
+    void setZoomRatio(@NonNull Long identifier, @NonNull Long ratio);
 
     /** The codec used by CameraControlHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -616,11 +616,11 @@ public class GeneratedCameraXLibrary {
               if (identifierArg == null) {
                 throw new NullPointerException("identifierArg unexpectedly null.");
               }
-              Double ratioArg = (Double)args.get(1);
+              Number ratioArg = (Number)args.get(1);
               if (ratioArg == null) {
                 throw new NullPointerException("ratioArg unexpectedly null.");
               }
-              api.setZoomRatio((identifierArg == null) ? null : identifierArg.longValue(), ratioArg);
+              api.setZoomRatio((identifierArg == null) ? null : identifierArg.longValue(), (ratioArg == null) ? null : ratioArg.longValue());
               wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {
