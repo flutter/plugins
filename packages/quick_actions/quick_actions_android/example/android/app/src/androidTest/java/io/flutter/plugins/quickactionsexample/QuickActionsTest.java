@@ -114,7 +114,7 @@ public class QuickActionsTest {
     System.out.println("It ran????");
 
     // Assert
-    Assert.assertFalse(
+    Assert.assertTrue(
         "AppShortcut:" + firstShortcut.getId() + " does not launch the correct activity",
         // We can only find the shortcut type in content description while inspecting it in Ui
         // Automator Viewer.
