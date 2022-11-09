@@ -51,7 +51,8 @@ targets:
       add_recipes_cq: "true"
       version_file: flutter_master.version
       target_file: mac_lint_podspecs.yaml
-### macOS desktop tasks ###
+
+  ### macOS desktop tasks ###
   # macos-platform_tests builds all the plugins on M1, so this build is run
   # on Intel to give us build coverage of both host types.
   - name: Mac_x64 build_all_plugins master
@@ -80,7 +81,7 @@ targets:
   # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
   - name: Max_x64 ios_platform_tests_0_4 master
     recipe: plugins/plugins
-    bringup: true # New target:
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
     timeout: 30
     properties:
       add_recipes_cq: "true"
