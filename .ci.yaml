@@ -25,8 +25,56 @@ platform_properties:
         ]
       device_type: none
       os: Windows
+  mac_x64:
+    properties:
+      dependencies: >-
+        [
+          {"dependency": "xcode", "version": "14a5294e"},
+          {"dependency": "gems", "version": "v3.3.14"}
+        ]
+      os: Mac-12
+      device_type: none
+      cpu: x86
+      xcode: 14a5294e # xcode 14.0 beta 5
+      
 
 targets:
+  ### iOS+macOS tasks ***
+  # TODO(stuartmorgan): Move this to ARM once google_maps_flutter has ARM
+  # support. `pod lint` makes a synthetic target that doesn't respect the
+  # pod's arch exclusions, so fails to build.
+  - name: Mac_x64 lint_podspecs
+    recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6637
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: mac_lint_podspecs.yaml
+
+  ### macOS desktop tasks ###
+  # macos-platform_tests builds all the plugins on M1, so this build is run
+  # on Intel to give us build coverage of both host types.
+  - name: Mac_x64 build_all_plugins master
+    recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6671
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: mac_build_all_plugins.yaml
+      channel: master
+
+  - name: Mac_x64 build_all_plugins stable
+    recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6671
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: mac_build_all_plugins.yaml
+      channel: stable
+
   - name: Windows win32-platform_tests master
     recipe: plugins/plugins
     timeout: 30

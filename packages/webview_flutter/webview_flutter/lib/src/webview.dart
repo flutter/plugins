@@ -316,7 +316,7 @@ class _WebViewState extends State<WebView> {
       webViewPlatformCallbacksHandler: _platformCallbacksHandler,
       javascriptChannelRegistry: _javascriptChannelRegistry,
       gestureRecognizers: widget.gestureRecognizers,
-      creationParams: _creationParamsfromWidget(widget),
+      creationParams: _creationParamsFromWidget(widget),
     );
   }
 
@@ -361,7 +361,7 @@ class _WebViewState extends State<WebView> {
   }
 }
 
-CreationParams _creationParamsfromWidget(WebView widget) {
+CreationParams _creationParamsFromWidget(WebView widget) {
   return CreationParams(
     initialUrl: widget.initialUrl,
     webSettings: _webSettingsFromWidget(widget),
