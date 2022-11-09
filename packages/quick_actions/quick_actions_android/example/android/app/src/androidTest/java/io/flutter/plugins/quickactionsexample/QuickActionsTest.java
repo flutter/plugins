@@ -121,6 +121,7 @@ public class QuickActionsTest {
         // device.hasObject(By.descContains(appReadySentinel))); // works confirmed
 
         device.hasObject(By.descContains(firstShortcut.getId() + appReadySentinel)));
+    System.out.println(device.findObject(By.descContains(firstShortcut.getId() + appReadySentinel)).getContentDescription());
     // This is Android SingleTop behavior in which Android does not destroy the initial activity and
     // launch a new activity.
     Assert.assertEquals(initialActivity.get(), currentActivity.get());
