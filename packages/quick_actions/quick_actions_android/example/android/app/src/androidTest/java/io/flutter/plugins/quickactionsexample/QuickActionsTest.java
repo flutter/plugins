@@ -111,6 +111,7 @@ public class QuickActionsTest {
     Assert.assertTrue("Did not find sentinel", condition);
     AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
     scenario.onActivity(currentActivity::set);
+    System.out.println("It ran????");
 
     // Assert
     Assert.assertTrue(
