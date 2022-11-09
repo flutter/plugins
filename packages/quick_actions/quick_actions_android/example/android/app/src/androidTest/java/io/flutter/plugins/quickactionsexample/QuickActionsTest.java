@@ -107,7 +107,7 @@ public class QuickActionsTest {
 
     // Act
     context.startActivity(dynamicShortcutIntent);
-    Boolean condition = device.wait(Until.hasObject(By.descContains(appReadySentinel)), 5000);
+    Boolean condition = device.wait(Until.hasObject(By.descContains(appReadySentinel)), 2000);
     Assert.assertTrue("Did not find sentinel", condition);
     AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
     scenario.onActivity(currentActivity::set);
