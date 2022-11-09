@@ -106,7 +106,7 @@ public class QuickActionsTest {
     String appReadySentinel = " has launched";
 
     // Act
-    context.startActivity(dynamicShortcutIndtent);
+    context.startActivity(dynamicShortcutIntent);
     Boolean condition = device.wait(Until.hasObject(By.descContains(appReadySentinel)), 2000);
     Assert.assertTrue("Did not find sentinel", condition);
     AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
