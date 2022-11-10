@@ -6,10 +6,15 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 
 late List<CameraDescription> _cameras;
+late int _cameraId;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  _cameras = await CameraPlatform.instance.availableCameras();
+  // _cameras = await CameraPlatform.instance.availableCameras();
+  _cameraId = await CameraPlatform.instance.createCamera(        const CameraDescription(
+            name: 'cam',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 90), ResolutionPreset.medium);
 
   runApp(const MyApp());
 }
@@ -25,18 +30,20 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    String availableCameraNames = 'Available cameras:';
-    for (final CameraDescription cameraDescription in _cameras) {
-      availableCameraNames = '$availableCameraNames ${cameraDescription.name},';
-    }
+    // String availableCameraNames = 'Available cameras:';
+    // for (final CameraDescription cameraDescription in _cameras) {
+    //   availableCameraNames = '$availableCameraNames ${cameraDescription.name},';
+    // }
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Camera Example'),
         ),
         body: Center(
-          child: Text(availableCameraNames.substring(
-              0, availableCameraNames.length - 1)),
+            child: CameraPlatform.instance.buildPreview(_cameraId),
+          // child: Text(availableCameraNames.substring(
+          //     0, availableCameraNames.length - 1)),
         ),
       ),
     );

@@ -100,7 +100,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         (CameraSelector) instanceManager.getInstance(cameraSelectorIdentifier);
     UseCase[] useCases = new UseCase[useCaseIds.size()];
     for (int i = 0; i < useCaseIds.size(); i++) {
-      useCases[i] = instanceManager.getInstance(useCaseIds.get(i));
+      useCases[i] = (UseCase) instanceManager.getInstance(useCaseIds.get(i));
     }
 
     Camera camera = processCameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, useCases); // [?] might not work
