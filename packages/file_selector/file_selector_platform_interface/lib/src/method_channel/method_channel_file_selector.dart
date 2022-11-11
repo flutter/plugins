@@ -81,14 +81,13 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String>? pathList = await _channel.invokeListMethod<String>(
+    return _channel.invokeMethod<String>(
       'getDirectoryPath',
       <String, dynamic>{
         'initialDirectory': initialDirectory,
         'confirmButtonText': confirmButtonText,
       },
     );
-    return pathList?.first;
   }
 
   @override
