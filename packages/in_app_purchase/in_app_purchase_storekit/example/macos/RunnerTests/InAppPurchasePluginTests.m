@@ -1,0 +1,1 @@
+../../shared/RunnerTests/InAppPurchasePluginTests.m
