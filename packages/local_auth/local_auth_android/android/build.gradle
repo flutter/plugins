@@ -53,7 +53,7 @@ android {
 dependencies {
     api "androidx.core:core:1.8.0"
     api "androidx.biometric:biometric:1.1.0"
-    api "androidx.fragment:fragment:1.5.2"
+    api "androidx.fragment:fragment:1.5.4"
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-inline:4.7.0'
     testImplementation 'org.robolectric:robolectric:4.5'

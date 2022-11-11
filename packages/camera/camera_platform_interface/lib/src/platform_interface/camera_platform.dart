@@ -11,6 +11,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../../camera_platform_interface.dart';
 import '../method_channel/method_channel_camera.dart';
+import '../types/video_capture_options.dart';
 
 /// The interface that implementations of camera must implement.
 ///
@@ -131,8 +132,19 @@ abstract class CameraPlatform extends PlatformInterface {
   /// meaning the recording will continue until manually stopped.
   /// With [maxVideoDuration] set the video is returned in a [VideoRecordedEvent]
   /// through the [onVideoRecordedEvent] stream when the set duration is reached.
+  ///
+  /// This method is deprecated in favour of [startVideoCapturing].
   Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
+  }
+
+  /// Starts a video recording and/or streaming session.
+  ///
+  /// Please see [VideoCaptureOptions] for documentation on the
+  /// configuration options.
+  Future<void> startVideoCapturing(VideoCaptureOptions options) {
+    return startVideoRecording(options.cameraId,
+        maxVideoDuration: options.maxDuration);
   }
 
   /// Stops the video recording and returns the file where it was saved.
