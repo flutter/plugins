@@ -97,9 +97,11 @@
     [self finishTransaction:call result:result];
   } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
     [self restoreTransactions:call result:result];
+#if TARGET_OS_IOS
   } else if ([@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]"
                  isEqualToString:call.method]) {
     [self presentCodeRedemptionSheet:call result:result];
+#endif
   } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
     [self retrieveReceiptData:call result:result];
   } else if ([@"-[InAppPurchasePlugin refreshReceipt:result:]" isEqualToString:call.method]) {
@@ -108,12 +110,16 @@
     [self startObservingPaymentQueue:result];
   } else if ([@"-[SKPaymentQueue stopObservingTransactionQueue]" isEqualToString:call.method]) {
     [self stopObservingPaymentQueue:result];
+#if TARGET_OS_IOS
   } else if ([@"-[SKPaymentQueue registerDelegate]" isEqualToString:call.method]) {
     [self registerPaymentQueueDelegate:result];
+#endif
   } else if ([@"-[SKPaymentQueue removeDelegate]" isEqualToString:call.method]) {
     [self removePaymentQueueDelegate:result];
+#if TARGET_OS_IOS
   } else if ([@"-[SKPaymentQueue showPriceConsentIfNeeded]" isEqualToString:call.method]) {
     [self showPriceConsentIfNeeded:result];
+#endif
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -281,10 +287,12 @@
   result(nil);
 }
 
+#if TARGET_OS_IOS
 - (void)presentCodeRedemptionSheet:(FlutterMethodCall *)call result:(FlutterResult)result {
   [self.paymentQueueHandler presentCodeRedemptionSheet];
   result(nil);
 }
+#endif
 
 - (void)retrieveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
   FlutterError *error = nil;
@@ -340,8 +348,8 @@
   result(nil);
 }
 
-- (void)registerPaymentQueueDelegate:(FlutterResult)result {
 #if TARGET_OS_IOS
+- (void)registerPaymentQueueDelegate:(FlutterResult)result {
   if (@available(iOS 13.0, *)) {
     _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel
         methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
@@ -352,8 +360,8 @@
     _paymentQueueHandler.delegate = _paymentQueueDelegate;
   }
   result(nil);
-#endif
 }
+#endif
 
 - (void)removePaymentQueueDelegate:(FlutterResult)result {
   if (@available(iOS 13.0, *)) {
@@ -364,14 +372,14 @@
   result(nil);
 }
 
-- (void)showPriceConsentIfNeeded:(FlutterResult)result {
 #if TARGET_OS_IOS
+- (void)showPriceConsentIfNeeded:(FlutterResult)result {
   if (@available(iOS 13.4, *)) {
     [_paymentQueueHandler showPriceConsentIfNeeded];
   }
-#endif
   result(nil);
 }
+#endif
 
 - (id)getNonNullValueFromDictionary:(NSDictionary *)dictionary forKey:(NSString *)key {
   id value = dictionary[key];

@@ -104,7 +104,7 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 // Can throw exceptions if the transaction type is purchasing, should always used in a @try block.
 - (void)finishTransaction:(nonnull SKPaymentTransaction *)transaction;
 - (void)restoreTransactions:(nullable NSString *)applicationName;
-- (void)presentCodeRedemptionSheet;
+- (void)presentCodeRedemptionSheet API_UNAVAILABLE(tvos, macos, watchos);
 - (NSArray<SKPaymentTransaction *> *)getUnfinishedTransactions;
 
 // This method needs to be called before any other methods.
@@ -121,11 +121,11 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 // Displays the price consent sheet.
 //
 // The price consent sheet is only displayed when the following
-// it true:
+// is true:
 // - You have increased the price of the subscription in App Store Connect.
 // - The subscriber has not yet responded to a price consent query.
 // Otherwise the method has no effect.
-- (void)showPriceConsentIfNeeded API_AVAILABLE(ios(13.4))API_UNAVAILABLE(tvos, macos, watchos);
+- (void)showPriceConsentIfNeeded API_AVAILABLE(ios(13.4)) API_UNAVAILABLE(tvos, macos, watchos);
 
 @end
 
