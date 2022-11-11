@@ -49,6 +49,7 @@ class GoogleSignInIOS extends GoogleSignInPlatform {
       'scopes': params.scopes,
       'hostedDomain': params.hostedDomain,
       'clientId': params.clientId,
+      'serverClientId': params.serverClientId,
     });
   }
 
