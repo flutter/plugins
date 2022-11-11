@@ -408,7 +408,9 @@ class GoogleMapController {
   }
 
   /// Clears the tile cache associated with the given [TileOverlayId].
-  void clearTileCache(TileOverlayId id) {}
+  void clearTileCache(TileOverlayId id) {
+    _tileOverlaysController?.clearTileCache(id);
+  }
 
   /// Shows the [InfoWindow] of the marker identified by its [MarkerId].
   void showInfoWindow(MarkerId markerId) {

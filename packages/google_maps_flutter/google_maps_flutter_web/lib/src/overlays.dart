@@ -75,4 +75,16 @@ class TileOverlaysController {
       }
     }
   }
+
+  /// Invalidates the tile overlay associated with the given [TileOverlayId].
+  void clearTileCache(TileOverlayId tileOverlayId) {
+    final TileOverlayController? controller = _tileOverlays[tileOverlayId];
+    if (controller == null || !controller.tileOverlay.visible) {
+      return;
+    }
+
+    final int i = _visibleTileOverlays.indexOf(controller);
+    googleMap.overlayMapTypes!.setAt(i, controller.gmMapType);
+    // It's that simple; this causes the map to reload the overlay.
+  }
 }
