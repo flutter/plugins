@@ -1,3 +1,7 @@
+## 6.1.2
+
+* Fixes passing `serverClientId` via the channelled `init` call
+
 ## 6.1.1
 
 * Corrects typos in plugin error logs and removes not actionable warnings.
