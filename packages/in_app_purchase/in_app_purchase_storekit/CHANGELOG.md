@@ -1,4 +1,4 @@
-## 0.3.3+1
+## 0.3.4
 
 * Adds macOS as a supported platform.
 
