@@ -75,9 +75,7 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
     DecoderBufferCallback decode,
   ) async {
     assert(key == this);
-    return _futureBytes.then((Uint8List bytes) {
-      return ui.ImmutableBuffer.fromUint8List(bytes);
-    }).then(decode);
+    return _futureBytes.then(ui.ImmutableBuffer.fromUint8List).then(decode);
   }
 
   /// See [ImageProvider.operator==].
