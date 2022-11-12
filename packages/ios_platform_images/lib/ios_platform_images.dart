@@ -62,7 +62,8 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
   }
 
   @override
-  ImageStreamCompleter loadBuffer(_FutureMemoryImage key, DecoderBufferCallback decode) {
+  ImageStreamCompleter loadBuffer(
+      _FutureMemoryImage key, DecoderBufferCallback decode) {
     return _FutureImageStreamCompleter(
       codec: _loadAsync(key, decode),
       futureScale: _futureScale,
