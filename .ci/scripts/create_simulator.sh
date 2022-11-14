@@ -3,5 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+device=com.apple.CoreSimulator.SimDeviceType.iPhone-11
+os=com.apple.CoreSimulator.SimRuntime.iOS-16-0
+
 xcrun simctl list
-xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-16-0 | xargs xcrun simctl boot
+xcrun simctl create Flutter-iPhone "$device" "$os" | xargs xcrun simctl boot
