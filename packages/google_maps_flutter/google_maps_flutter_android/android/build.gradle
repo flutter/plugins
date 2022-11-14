@@ -40,7 +40,7 @@ android {
         implementation 'com.google.android.gms:play-services-maps:18.1.0'
         androidTestImplementation 'androidx.test:runner:1.2.0'
         androidTestImplementation 'androidx.test:rules:1.4.0'
-        androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+        androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
         testImplementation 'junit:junit:4.13.2'
         testImplementation 'org.mockito:mockito-core:4.7.0'
         testImplementation 'androidx.test:core:1.2.0'
