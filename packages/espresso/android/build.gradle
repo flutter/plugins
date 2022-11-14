@@ -59,7 +59,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.google.truth:truth:1.0"
     api 'androidx.test:runner:1.1.1'
-    api 'androidx.test.espresso:espresso-core:3.1.1'
+    api 'androidx.test.espresso:espresso-core:3.5.0'
 
     // Core library
     api 'androidx.test:core:1.0.0'
@@ -74,7 +74,7 @@ dependencies {
     api 'com.google.truth:truth:0.42'
 
     // Espresso dependencies
-    api 'androidx.test.espresso:espresso-core:3.1.0'
+    api 'androidx.test.espresso:espresso-core:3.5.0'
     api 'androidx.test.espresso:espresso-contrib:3.1.0'
     api 'androidx.test.espresso:espresso-intents:3.1.0'
     api 'androidx.test.espresso:espresso-accessibility:3.1.0'
