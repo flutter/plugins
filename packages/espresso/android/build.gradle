@@ -75,7 +75,7 @@ dependencies {
 
     // Espresso dependencies
     api 'androidx.test.espresso:espresso-core:3.1.0'
-    api 'androidx.test.espresso:espresso-contrib:3.1.0'
+    api 'androidx.test.espresso:espresso-contrib:3.5.0'
     api 'androidx.test.espresso:espresso-intents:3.1.0'
     api 'androidx.test.espresso:espresso-accessibility:3.1.0'
     api 'androidx.test.espresso:espresso-web:3.1.0'
