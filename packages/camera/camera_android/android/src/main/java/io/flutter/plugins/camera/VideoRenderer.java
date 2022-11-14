@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.camera;
 
+import static android.os.SystemClock.uptimeMillis;
+
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
@@ -277,11 +279,7 @@ public class VideoRenderer {
                 float[] surfaceTextureMatrix = new float[16];
                 inputSurfaceTexture.getTransformMatrix(surfaceTextureMatrix);
 
-                draw(
-                    recordingWidth,
-                    recordingHeight,
-                    surfaceTextureMatrix,
-                    inputSurfaceTexture.getTimestamp());
+                draw(recordingWidth, recordingHeight, surfaceTextureMatrix);
               }
             } catch (InterruptedException e) {
               Log.d(TAG, "thread interrupted while waiting for frames");
@@ -320,7 +318,7 @@ public class VideoRenderer {
     GLES20.glDeleteShader(shader);
   }
 
-  public void draw(int viewportWidth, int viewportHeight, float[] texMatrix, long timestamp) {
+  public void draw(int viewportWidth, int viewportHeight, float[] texMatrix) {
 
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
     GLES20.glClearColor(0f, 0f, 0f, 0f);
@@ -345,7 +343,7 @@ public class VideoRenderer {
 
     GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_INT, 0);
 
-    EGLExt.eglPresentationTimeANDROID(display, surface, timestamp);
+    EGLExt.eglPresentationTimeANDROID(display, surface, uptimeMillis() * 1000000);
     if (!EGL14.eglSwapBuffers(display, surface)) {
       throw new RuntimeException(
           "eglSwapBuffers()" + GLUtils.getEGLErrorString(EGL14.eglGetError()));
