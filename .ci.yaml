@@ -75,6 +75,99 @@ targets:
       target_file: mac_build_all_plugins.yaml
       channel: stable
 
+  ### iOS tasks ###
+  # TODO(stuartmorgan): Swap this and ios-build_all_plugins once simulator
+  # tests are reliable on the ARM infrastructure. See discussion at
+  # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
+  - name: Mac_x64 ios_platform_tests_1_of_4 master
+    recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: mac_ios_platform_tests.yaml
+      package_sharding: "--shardIndex 0 --shardCount 4"
+
+  - name: Mac_x64 ios_platform_tests_2_of_4 master
+    recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: mac_ios_platform_tests.yaml
+      package_sharding: "--shardIndex 1 --shardCount 4"
+
+  - name: Mac_x64 ios_platform_tests_3_of_4 master
+    recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: mac_ios_platform_tests.yaml
+      package_sharding: "--shardIndex 2 --shardCount 4"
+
+  - name: Mac_x64 ios_platform_tests_4_of_4 master
+    recipe: plugins/plugins
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: mac_ios_platform_tests.yaml
+      package_sharding: "--shardIndex 3 --shardCount 4"
+
+  # Don't run full platform tests on both channels in pre-submit.
+  - name: Mac_x64 ios_platform_tests_1_of_4 stable
+    recipe: plugins/plugins
+    presubmit: false
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
+    timeout: 30
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: mac_ios_platform_tests.yaml
+      package_sharding: "--shardIndex 0 --shardCount 4"
+
+  - name: Mac_x64 ios_platform_tests_2_of_4 stable
+    recipe: plugins/plugins
+    presubmit: false
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
+    timeout: 30
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: mac_ios_platform_tests.yaml
+      package_sharding: "--shardIndex 1 --shardCount 4"
+
+  - name: Mac_x64 ios_platform_tests_3_of_4 stable
+    recipe: plugins/plugins
+    presubmit: false
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
+    timeout: 30
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: mac_ios_platform_tests.yaml
+      package_sharding: "--shardIndex 2 --shardCount 4"
+
+  - name: Mac_x64 ios_platform_tests_4_of_4 stable
+    recipe: plugins/plugins
+    presubmit: false
+    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
+    timeout: 30
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: mac_ios_platform_tests.yaml
+      package_sharding: "--shardIndex 3 --shardCount 4"
+
   - name: Windows win32-platform_tests master
     recipe: plugins/plugins
     timeout: 30
