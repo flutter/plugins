@@ -4,6 +4,10 @@
 
 import 'dart:math';
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -71,25 +75,29 @@ class AndroidWebViewController extends PlatformWebViewController {
       params as AndroidWebViewControllerCreationParams;
 
   /// The native [android_webview.WebView] being controlled.
-  late final android_webview.WebView _webView = withWeakRefenceTo(this, (
-    WeakReference<AndroidWebViewController> weakReference,
-  ) {
-    return _androidWebViewParams.androidWebViewProxy.createAndroidWebView(
-      useHybridComposition: true,
-    );
-  });
+  late android_webview.WebView _webView =
+      _androidWebViewParams.androidWebViewProxy.createAndroidWebView(
+    useHybridComposition: false,
+  );
 
   /// The native [android_webview.FlutterAssetManager] allows managing assets.
   late final android_webview.FlutterAssetManager _flutterAssetManager =
-      withWeakRefenceTo(this, (
-    WeakReference<AndroidWebViewController> weakReference,
-  ) {
-    return _androidWebViewParams.androidWebViewProxy
-        .createFlutterAssetManager();
-  });
+      _androidWebViewParams.androidWebViewProxy.createFlutterAssetManager();
 
   final Map<String, AndroidJavaScriptChannelParams> _javaScriptChannelParams =
       <String, AndroidJavaScriptChannelParams>{};
+
+  /// Initializes the [android_webview.WebView] to be rendered with an [AndroidViewSurface].
+  ///
+  /// This implementation uses hybrid composition to render the
+  /// [android_webview.WebView]. This comes at the cost of some performance on
+  /// Android versions below 10. See
+  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance
+  /// for more information.
+  void initExpensiveAndroidView() {
+    _webView = _androidWebViewParams.androidWebViewProxy
+        .createAndroidWebView(useHybridComposition: true);
+  }
 
   @override
   Future<void> loadFile(
@@ -97,7 +105,7 @@ class AndroidWebViewController extends PlatformWebViewController {
   ) {
     final String url = absoluteFilePath.startsWith('file://')
         ? absoluteFilePath
-        : 'file://$absoluteFilePath';
+        : Uri.file(absoluteFilePath).toString();
 
     _webView.settings.setAllowFileAccess(true);
     return _webView.loadUrl(url, <String, String>{});
@@ -122,7 +130,7 @@ class AndroidWebViewController extends PlatformWebViewController {
     }
 
     return _webView.loadUrl(
-      'file:///android_asset/$assetFilePath',
+      Uri.file('/android_asset/$assetFilePath').toString(),
       <String, String>{},
     );
   }
@@ -154,7 +162,7 @@ class AndroidWebViewController extends PlatformWebViewController {
             params.uri.toString(), params.body ?? Uint8List(0));
       default:
         throw UnimplementedError(
-          'This version of webview_android_widget currently has no implementation for HTTP method ${params.method.serialize()} in loadRequest.',
+          'This version of `AndroidWebViewController` currently has no implementation for HTTP method ${params.method.serialize()} in loadRequest.',
         );
     }
   }
@@ -211,7 +219,7 @@ class AndroidWebViewController extends PlatformWebViewController {
             : AndroidJavaScriptChannelParams.fromJavaScriptChannelParams(
                 javaScriptChannelParams);
 
-    // When JavaScript channel with the same name exists make sure toremove it
+    // When JavaScript channel with the same name exists make sure to remove it
     // before registering the new channel.
     if (_javaScriptChannelParams.containsKey(androidJavaScriptParams.name)) {
       _webView
@@ -229,7 +237,6 @@ class AndroidWebViewController extends PlatformWebViewController {
   Future<void> removeJavaScriptChannel(String javaScriptChannelName) async {
     final AndroidJavaScriptChannelParams? javaScriptChannelParams =
         _javaScriptChannelParams[javaScriptChannelName];
-
     if (javaScriptChannelParams == null) {
       return;
     }
