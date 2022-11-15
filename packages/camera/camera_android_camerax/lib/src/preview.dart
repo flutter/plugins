@@ -19,7 +19,7 @@ class Preview extends UseCase {
       {BinaryMessenger? binaryMessenger,
       InstanceManager? instanceManager,
       this.targetRotation})
-      : super(
+      : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
     _api = PreviewHostApiImpl(
@@ -33,7 +33,7 @@ class Preview extends UseCase {
       {BinaryMessenger? binaryMessenger,
       InstanceManager? instanceManager,
       this.targetRotation})
-      : super(
+      : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
     _api = PreviewHostApiImpl(
@@ -87,6 +87,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
           instanceManager: instanceManager,
           targetRotation: original.targetRotation);
     });
+    create(identifier, targetRotation);
   }
 
   /// Sets the surface provider of the provided [Preview] instance and returns

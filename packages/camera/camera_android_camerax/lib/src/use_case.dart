@@ -12,8 +12,8 @@ import 'java_object.dart';
 ///
 /// See https://developer.android.com/reference/androidx/camera/core/UseCase.
 class UseCase extends JavaObject {
-    /// Creates a [UseCase].
-    UseCase(
+  /// Creates a detached [UseCase].
+    UseCase.detached(
       {BinaryMessenger? binaryMessenger,
       InstanceManager? instanceManager})
     : super.detached(

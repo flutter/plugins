@@ -182,7 +182,7 @@ class _TestPreviewHostApiCodec extends StandardMessageCodec {
 abstract class TestPreviewHostApi {
   static const MessageCodec<Object?> codec = _TestPreviewHostApiCodec();
 
-  void create(int identifier, int rotation);
+  void create(int identifier, int? rotation);
   int setSurfaceProvider(int identifier);
   void setTargetRotation(int identifier, int targetRotation);
   static void setup(TestPreviewHostApi? api, {BinaryMessenger? binaryMessenger}) {
@@ -198,8 +198,7 @@ abstract class TestPreviewHostApi {
           final int? arg_identifier = (args[0] as int?);
           assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.PreviewHostApi.create was null, expected non-null int.');
           final int? arg_rotation = (args[1] as int?);
-          assert(arg_rotation != null, 'Argument for dev.flutter.pigeon.PreviewHostApi.create was null, expected non-null int.');
-          api.create(arg_identifier!, arg_rotation!);
+          api.create(arg_identifier!, arg_rotation);
           return <Object?, Object?>{};
         });
       }

@@ -372,7 +372,7 @@ class PreviewHostApi {
 
   static const MessageCodec<Object?> codec = _PreviewHostApiCodec();
 
-  Future<void> create(int arg_identifier, int arg_rotation) async {
+  Future<void> create(int arg_identifier, int? arg_rotation) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.PreviewHostApi.create', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =

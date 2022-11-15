@@ -11,11 +11,11 @@ late int _cameraId;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // _cameras = await CameraPlatform.instance.availableCameras();
-  _cameraId = await CameraPlatform.instance.createCamera(        const CameraDescription(
+  _cameraId = await CameraPlatform.instance.createCamera(const CameraDescription(
             name: 'cam',
             lensDirection: CameraLensDirection.back,
             sensorOrientation: 90), ResolutionPreset.medium);
-
+  print("CAMILLE, camera id : $_cameraId");
   runApp(const MyApp());
 }
 

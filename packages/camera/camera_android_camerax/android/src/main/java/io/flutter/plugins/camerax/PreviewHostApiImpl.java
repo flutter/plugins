@@ -46,7 +46,6 @@ public class PreviewHostApiImpl implements PreviewHostApi {
         TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
             textureRegistry.createSurfaceTexture(); // get this from the plugin
         SurfaceTexture surfaceTexture = flutterSurfaceTexture.surfaceTexture();
-        Surface flutterSurface = new Surface(surfaceTexture);
         Preview.SurfaceProvider surfaceProvider = 
             new Preview.SurfaceProvider() {
                 @Override
@@ -54,10 +53,11 @@ public class PreviewHostApiImpl implements PreviewHostApi {
                     // [?] Is this the correct Executor?
                     // [?] can use resultListener param to track when provided Surface is
                     //     no longer in use by the camera
+                    Surface flutterSurface = new Surface(surfaceTexture);
                     request.provideSurface(flutterSurface, Executors.newSingleThreadExecutor(), (result) -> {});
                 }
-            };
-        
+;            };
+        preview.setSurfaceProvider(surfaceProvider);
         return flutterSurfaceTexture.id();
     }
 
