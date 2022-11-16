@@ -28,6 +28,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+  IconData currButtonIcon = Icons.pause_circle; // THIS NEEDS TO BE A STATEFUL WIDGET FOR THIS TO WORK
+  bool buttonPressed = false;
+
   @override
   Widget build(BuildContext context) {
     // String availableCameraNames = 'Available cameras:';
@@ -40,12 +44,44 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Camera Example'),
         ),
-        body: Center(
-            child: CameraPlatform.instance.buildPreview(_cameraId),
+        body: Column(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border.all(
+                        color: Colors.redAccent,
+                        width: 3.0,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: Center(
+                        child: CameraPlatform.instance.buildPreview(_cameraId),
+                      )
+                    )
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(currButtonIcon),
+                  onPressed: () {
+                    buttonPressed = !buttonPressed;
+                    if (buttonPressed) {
+                      CameraPlatform.instance.pausePreview(_cameraId);
+                      currButtonIcon = Icons.play_circle;
+                    } else {
+                      CameraPlatform.instance.resumePreview(_cameraId);
+                      currButtonIcon = Icons.pause_circle;
+                    }
+                  }
+                ),
+              ],
+            ),
+            // child: CameraPlatform.instance.buildPreview(_cameraId),
           // child: Text(availableCameraNames.substring(
           //     0, availableCameraNames.length - 1)),
         ),
-      ),
     );
   }
 }

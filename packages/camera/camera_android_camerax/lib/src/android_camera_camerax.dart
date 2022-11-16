@@ -52,6 +52,18 @@ class AndroidCameraCameraX extends CameraPlatform {
     // return cameraId;
   }
 
+  /// Pause the active preview on the current frame for the selected camera.
+  @override
+  Future<void> pausePreview(int cameraId) async {
+    processCameraProvider!.unbind(<UseCase>[preview!]);
+  }
+
+   /// Resume the paused preview for the selected camera.
+  @override
+  Future<void> resumePreview(int cameraId) async {
+    Camera camera = await processCameraProvider!.bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
+  }
+
   /// Returns a widget showing a live camera preview.
   @override
   Widget buildPreview(int cameraId) {

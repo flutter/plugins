@@ -273,6 +273,8 @@ public class GeneratedCameraXLibrary {
     void getInstance(Result<Long> result);
     @NonNull List<Long> getAvailableCameraInfos(@NonNull Long identifier);
     @NonNull Long bindToLifecycle(@NonNull Long identifier, @NonNull Long cameraSelectorIdentifier, @NonNull List<Long> useCaseIds);
+    void unbind(@NonNull Long identifier, @NonNull List<Long> useCaseIds);
+    void unbindAll(@NonNull Long identifier);
 
     /** The codec used by ProcessCameraProviderHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -356,6 +358,58 @@ public class GeneratedCameraXLibrary {
               }
               Long output = api.bindToLifecycle((identifierArg == null) ? null : identifierArg.longValue(), (cameraSelectorIdentifierArg == null) ? null : cameraSelectorIdentifierArg.longValue(), useCaseIdsArg);
               wrapped.put("result", output);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ProcessCameraProviderHostApi.unbind", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Number identifierArg = (Number)args.get(0);
+              if (identifierArg == null) {
+                throw new NullPointerException("identifierArg unexpectedly null.");
+              }
+              List<Long> useCaseIdsArg = (List<Long>)args.get(1);
+              if (useCaseIdsArg == null) {
+                throw new NullPointerException("useCaseIdsArg unexpectedly null.");
+              }
+              api.unbind((identifierArg == null) ? null : identifierArg.longValue(), useCaseIdsArg);
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ProcessCameraProviderHostApi.unbindAll", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Number identifierArg = (Number)args.get(0);
+              if (identifierArg == null) {
+                throw new NullPointerException("identifierArg unexpectedly null.");
+              }
+              api.unbindAll((identifierArg == null) ? null : identifierArg.longValue());
+              wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

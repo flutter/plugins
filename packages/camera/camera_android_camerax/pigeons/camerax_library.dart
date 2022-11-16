@@ -66,6 +66,10 @@ abstract class ProcessCameraProviderHostApi {
   List<int> getAvailableCameraInfos(int identifier);
 
   int bindToLifecycle(int identifier, int cameraSelectorIdentifier, List<int> useCaseIds);
+
+  void unbind(int identifier, List<int> useCaseIds);
+
+  void unbindAll(int identifier);
 }
 
 @FlutterApi()

@@ -123,6 +123,8 @@ abstract class TestProcessCameraProviderHostApi {
   Future<int> getInstance();
   List<int?> getAvailableCameraInfos(int identifier);
   int bindToLifecycle(int identifier, int cameraSelectorIdentifier, List<int?> useCaseIds);
+  void unbind(int identifier, List<int?> useCaseIds);
+  void unbindAll(int identifier);
   static void setup(TestProcessCameraProviderHostApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -170,6 +172,40 @@ abstract class TestProcessCameraProviderHostApi {
           assert(arg_useCaseIds != null, 'Argument for dev.flutter.pigeon.ProcessCameraProviderHostApi.bindToLifecycle was null, expected non-null List<int?>.');
           final int output = api.bindToLifecycle(arg_identifier!, arg_cameraSelectorIdentifier!, arg_useCaseIds!);
           return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.ProcessCameraProviderHostApi.unbind', codec, binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.ProcessCameraProviderHostApi.unbind was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.ProcessCameraProviderHostApi.unbind was null, expected non-null int.');
+          final List<int?>? arg_useCaseIds = (args[1] as List<Object?>?)?.cast<int?>();
+          assert(arg_useCaseIds != null, 'Argument for dev.flutter.pigeon.ProcessCameraProviderHostApi.unbind was null, expected non-null List<int?>.');
+          api.unbind(arg_identifier!, arg_useCaseIds!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.ProcessCameraProviderHostApi.unbindAll', codec, binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.ProcessCameraProviderHostApi.unbindAll was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.ProcessCameraProviderHostApi.unbindAll was null, expected non-null int.');
+          api.unbindAll(arg_identifier!);
+          return <Object?, Object?>{};
         });
       }
     }

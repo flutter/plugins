@@ -114,10 +114,8 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
     CameraSelector cameraSelector =
         (CameraSelector) instanceManager.getInstance(cameraSelectorIdentifier);
     UseCase[] useCases = new UseCase[useCaseIds.size()];
-    UseCaseGroup.Builder useCaseGroupBuilder = new UseCaseGroup.Builder();
     for (int i = 0; i < useCaseIds.size(); i++) {
       useCases[i] = (Preview) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
-      useCaseGroupBuilder.addUseCase((UseCase) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue()));
     }
 
     // For testing purposes only
@@ -142,5 +140,24 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
       return null; // error
     }
 
+  }
+
+  @Override
+  public void unbind(@NonNull Long identifier, @NonNull List<Long> useCaseIds) {
+    ProcessCameraProvider processCameraProvider =
+        (ProcessCameraProvider) instanceManager.getInstance(identifier);
+    UseCase[] useCases = new UseCase[useCaseIds.size()];
+    for (int i = 0; i < useCaseIds.size(); i++) {
+      useCases[i] = (Preview) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
+    }
+    
+    processCameraProvider.unbind(useCases);
+  }
+
+  @Override
+  public void unbindAll(@NonNull Long identifier) {
+    ProcessCameraProvider processCameraProvider =
+      (ProcessCameraProvider) instanceManager.getInstance(identifier);
+    processCameraProvider.unbindAll(); 
   }
 }

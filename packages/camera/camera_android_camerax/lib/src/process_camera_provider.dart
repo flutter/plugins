@@ -52,6 +52,14 @@ class ProcessCameraProvider extends JavaObject {
     CameraSelector cameraSelector, List<UseCase> useCases) {
     return _api.bindToLifecycleFromInstances(this, cameraSelector, useCases);
   }
+
+  void unbind(List<UseCase> useCases) {
+    return _api.unbindFromInstances(this, useCases);
+  }
+
+  void unbindAll() {
+    return _api.unbindAllFromInstances(this);
+  }
 }
 
 /// Host API implementation of [ProcessCameraProvider].
@@ -119,6 +127,33 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
       useCaseIds,
     );
     return instanceManager.getInstanceWithWeakReference(cameraIdentifier)! as Camera;
+  }
+
+  void unbindFromInstances(
+    ProcessCameraProvider instance,
+    List<UseCase> useCases,
+  ) {
+    int? identifier = instanceManager.getIdentifier(instance);
+    identifier ??= instanceManager.addDartCreatedInstance(instance,
+        onCopy: (ProcessCameraProvider original) {
+      return ProcessCameraProvider.detached(
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+    });
+    final List<int> useCaseIds = (useCases.map<int>(
+      (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
+
+    unbind(identifier, useCaseIds);
+  }
+
+  void unbindAllFromInstances(ProcessCameraProvider instance) {
+    int? identifier = instanceManager.getIdentifier(instance);
+    identifier ??= instanceManager.addDartCreatedInstance(instance,
+        onCopy: (ProcessCameraProvider original) {
+      return ProcessCameraProvider.detached(
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+    });
+
+    unbindAll(identifier);
   }
 }
 
