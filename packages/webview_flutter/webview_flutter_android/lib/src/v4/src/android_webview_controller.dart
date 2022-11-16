@@ -75,9 +75,13 @@ class AndroidWebViewController extends PlatformWebViewController {
       params as AndroidWebViewControllerCreationParams;
 
   /// The native [android_webview.WebView] being controlled.
-  late android_webview.WebView _webView =
+  late final android_webview.WebView _webView =
       _androidWebViewParams.androidWebViewProxy.createAndroidWebView(
-    useHybridComposition: false,
+    // Due to changes in Flutter 3.0 the `useHybridComposition` doesn't have
+    // any effect and is purposefully not exposed publicly by the
+    // [AndroidWebViewController]. More info here:
+    // https://github.com/flutter/flutter/issues/108106
+    useHybridComposition: true,
   );
 
   /// The native [android_webview.FlutterAssetManager] allows managing assets.
@@ -86,18 +90,6 @@ class AndroidWebViewController extends PlatformWebViewController {
 
   final Map<String, AndroidJavaScriptChannelParams> _javaScriptChannelParams =
       <String, AndroidJavaScriptChannelParams>{};
-
-  /// Initializes the [android_webview.WebView] to be rendered with an [AndroidViewSurface].
-  ///
-  /// This implementation uses hybrid composition to render the
-  /// [android_webview.WebView]. This comes at the cost of some performance on
-  /// Android versions below 10. See
-  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance
-  /// for more information.
-  void initExpensiveAndroidView() {
-    _webView = _androidWebViewParams.androidWebViewProxy
-        .createAndroidWebView(useHybridComposition: true);
-  }
 
   @override
   Future<void> loadFile(
