@@ -621,17 +621,14 @@ class Camera {
 
     final bool canUseOffscreenCanvas =
         js_util.hasProperty(html.window, 'OffscreenCanvas');
-    print('canUseOffscreenCanvas: $canUseOffscreenCanvas');
     late html.ImageData imageData;
     if (canUseOffscreenCanvas) {
-      print('Using html.OffscreenCanvas');
       final html.OffscreenCanvas canvas = html.OffscreenCanvas(width, height);
       final html.OffscreenCanvasRenderingContext2D context =
           canvas.getContext('2d')! as html.OffscreenCanvasRenderingContext2D;
       context.drawImage(videoElement, 0, 0, width, height);
       imageData = context.getImageData(0, 0, width, height);
     } else {
-      print('Using html.CanvasElement');
       final html.CanvasElement canvas =
           html.CanvasElement(width: width, height: height);
       final html.CanvasRenderingContext2D context = canvas.context2D;
