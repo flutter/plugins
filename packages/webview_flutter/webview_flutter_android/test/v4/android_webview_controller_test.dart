@@ -129,6 +129,24 @@ void main() {
       )).called(1);
     });
 
+    test('loadFile without file prefix and characters to be escaped', () async {
+      final MockWebView mockWebView = MockWebView();
+      final MockWebSettings mockWebSettings = MockWebSettings();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+      );
+
+      when(mockWebView.settings).thenReturn(mockWebSettings);
+
+      await controller.loadFile('/path/to/?_<_>_.html');
+
+      verify(mockWebSettings.setAllowFileAccess(true)).called(1);
+      verify(mockWebView.loadUrl(
+        'file:///path/to/%3F_%3C_%3E_.html',
+        <String, String>{},
+      )).called(1);
+    });
+
     test('loadFile with file prefix', () async {
       final MockWebView mockWebView = MockWebView();
       final MockWebSettings mockWebSettings = MockWebSettings();
@@ -196,6 +214,30 @@ void main() {
       verify(mockAssetManager.list('www')).called(1);
       verify(mockWebView.loadUrl(
           'file:///android_asset/www/mock_file.html', <String, String>{}));
+    });
+
+    test(
+        'loadFlutterAsset when asset name contains characters that should be escaped',
+        () async {
+      final MockWebView mockWebView = MockWebView();
+      final MockFlutterAssetManager mockAssetManager =
+          MockFlutterAssetManager();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        mockFlutterAssetManager: mockAssetManager,
+        mockWebView: mockWebView,
+      );
+
+      when(mockAssetManager.getAssetFilePathByName('mock_key'))
+          .thenAnswer((_) => Future<String>.value('www/?_<_>_.html'));
+      when(mockAssetManager.list('www')).thenAnswer(
+          (_) => Future<List<String>>.value(<String>['?_<_>_.html']));
+
+      await controller.loadFlutterAsset('mock_key');
+
+      verify(mockAssetManager.getAssetFilePathByName('mock_key')).called(1);
+      verify(mockAssetManager.list('www')).called(1);
+      verify(mockWebView.loadUrl(
+          'file:///android_asset/www/%3F_%3C_%3E_.html', <String, String>{}));
     });
 
     test('loadHtmlString without baseUrl', () async {
