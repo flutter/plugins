@@ -106,6 +106,7 @@ class WebResourceError {
     required this.errorCode,
     required this.description,
     this.errorType,
+    this.isForMainFrame,
   });
 
   /// Raw code of the error from the respective platform.
@@ -116,4 +117,7 @@ class WebResourceError {
 
   /// The type this error can be categorized as.
   final WebResourceErrorType? errorType;
+
+  /// Whether the error originated from the main frame.
+  final bool? isForMainFrame;
 }
