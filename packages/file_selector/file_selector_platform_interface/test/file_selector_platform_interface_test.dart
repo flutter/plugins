@@ -22,10 +22,10 @@ void main() {
 
   group('#GetDirectoryPaths', () {
     test('Should throw unimplemented exception', () async {
-      final FileSelectorPlatform sut = ExtendsFileSelectorPlatform();
+      final FileSelectorPlatform fileSelector = ExtendsFileSelectorPlatform();
 
       await expectLater(() async {
-        return sut.getDirectoryPaths();
+        return fileSelector.getDirectoryPaths();
       }, throwsA(isA<UnimplementedError>()));
     });
   });
