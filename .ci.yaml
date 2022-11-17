@@ -45,7 +45,6 @@ targets:
   # pod's arch exclusions, so fails to build.
   - name: Mac_x64 lint_podspecs
     recipe: plugins/plugins
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6637
     timeout: 30
     properties:
       add_recipes_cq: "true"
@@ -57,7 +56,6 @@ targets:
   # on Intel to give us build coverage of both host types.
   - name: Mac_x64 build_all_plugins master
     recipe: plugins/plugins
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6671
     timeout: 30
     properties:
       add_recipes_cq: "true"
@@ -67,7 +65,6 @@ targets:
 
   - name: Mac_x64 build_all_plugins stable
     recipe: plugins/plugins
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6671
     timeout: 30
     properties:
       add_recipes_cq: "true"

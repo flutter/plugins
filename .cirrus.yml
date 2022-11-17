@@ -340,13 +340,6 @@ task:
   << : *MACOS_INTEL_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
-    ### iOS+macOS tasks ***
-    # TODO(stuartmorgan): Move this to ARM once google_maps_flutter has ARM
-    # support. `pod lint` makes a synthetic target that doesn't respect the
-    # pod's arch exclusions, so fails to build.
-    - name: darwin-lint_podspecs
-      script:
-        - ./script/tool_runner.sh podspecs
     ### iOS tasks ###
     # TODO(stuartmorgan): Swap this and ios-build_all_plugins once simulator
     # tests are reliable on the ARM infrastructure. See discussion at
@@ -382,14 +375,3 @@ task:
         # This UI change sometimes affects `xctest`.
         # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
         - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml
-    ### macOS desktop tasks ###
-    # macos-platform_tests builds all the plugins on M1, so this build is run
-    # on Intel to give us build coverage of both host types.
-    - name: macos-build_all_plugins
-      env:
-        BUILD_ALL_ARGS: "macos"
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      setup_script:
-      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
