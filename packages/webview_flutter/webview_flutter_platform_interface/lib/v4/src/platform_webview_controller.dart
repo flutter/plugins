@@ -269,9 +269,10 @@ abstract class PlatformWebViewController extends PlatformInterface {
 }
 
 /// Describes the parameters necessary for registering a JavaScript channel.
+@immutable
 class JavaScriptChannelParams {
   /// Creates a new [JavaScriptChannelParams] object.
-  JavaScriptChannelParams({
+  const JavaScriptChannelParams({
     required this.name,
     required this.onMessageReceived,
   });
