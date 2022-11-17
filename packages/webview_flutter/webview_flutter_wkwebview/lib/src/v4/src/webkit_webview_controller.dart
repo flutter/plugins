@@ -454,11 +454,12 @@ class WebKitWebViewWidget extends PlatformWebViewWidget {
 
 /// An implementation of [WebResourceError] with the WebKit API.
 class WebKitWebResourceError extends WebResourceError {
-  WebKitWebResourceError._(this._nsError)
+  WebKitWebResourceError._(this._nsError, {required bool isForMainFrame})
       : super(
           errorCode: _nsError.code,
           description: _nsError.localizedDescription,
           errorType: _toWebResourceErrorType(_nsError.code),
+          isForMainFrame: isForMainFrame,
         );
 
   static WebResourceErrorType? _toWebResourceErrorType(int code) {
@@ -553,14 +554,14 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
       didFailNavigation: (WKWebView webView, NSError error) {
         if (weakThis.target?._onWebResourceError != null) {
           weakThis.target!._onWebResourceError!(
-            WebKitWebResourceError._(error),
+            WebKitWebResourceError._(error, isForMainFrame: true),
           );
         }
       },
       didFailProvisionalNavigation: (WKWebView webView, NSError error) {
         if (weakThis.target?._onWebResourceError != null) {
           weakThis.target!._onWebResourceError!(
-            WebKitWebResourceError._(error),
+            WebKitWebResourceError._(error, isForMainFrame: true),
           );
         }
       },
@@ -574,6 +575,7 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
                 domain: 'WKErrorDomain',
                 localizedDescription: '',
               ),
+              isForMainFrame: true,
             ),
           );
         }
