@@ -151,7 +151,6 @@ void main() {
             LoadRequestParams(
               uri: Uri.parse('www.google.com'),
               method: LoadRequestMethod.get,
-              headers: const <String, String>{},
             ),
           ),
           throwsA(isA<ArgumentError>()),
@@ -169,7 +168,6 @@ void main() {
           LoadRequestParams(
             uri: Uri.parse('https://www.google.com'),
             method: LoadRequestMethod.get,
-            headers: const <String, String>{},
           ),
         );
 
@@ -214,7 +212,6 @@ void main() {
         await controller.loadRequest(LoadRequestParams(
           uri: Uri.parse('https://www.google.com'),
           method: LoadRequestMethod.post,
-          headers: const <String, String>{},
         ));
 
         final NSUrlRequest request = verify(mockWebView.loadRequest(captureAny))
@@ -235,7 +232,6 @@ void main() {
           uri: Uri.parse('https://www.google.com'),
           method: LoadRequestMethod.post,
           body: Uint8List.fromList('Test Body'.codeUnits),
-          headers: const <String, String>{},
         ));
 
         final NSUrlRequest request = verify(mockWebView.loadRequest(captureAny))
