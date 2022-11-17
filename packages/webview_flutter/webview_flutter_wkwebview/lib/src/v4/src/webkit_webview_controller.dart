@@ -48,6 +48,7 @@ class WebKitWebViewControllerCreationParams
       PlaybackMediaTypes.audio,
       PlaybackMediaTypes.video,
     },
+    this.allowsInlineMediaPlayback = false,
   }) : _configuration = webKitProxy.createWebViewConfiguration() {
     if (mediaTypesRequiringUserAction.isEmpty) {
       _configuration.setMediaTypesRequiringUserActionForPlayback(
@@ -62,6 +63,7 @@ class WebKitWebViewControllerCreationParams
             .toSet(),
       );
     }
+    _configuration.setAllowsInlineMediaPlayback(allowsInlineMediaPlayback);
   }
 
   /// Constructs a [WebKitWebViewControllerCreationParams] using a
@@ -76,9 +78,11 @@ class WebKitWebViewControllerCreationParams
       PlaybackMediaTypes.audio,
       PlaybackMediaTypes.video,
     },
+    bool allowsInlineMediaPlayback = false,
   }) : this(
           webKitProxy: webKitProxy,
           mediaTypesRequiringUserAction: mediaTypesRequiringUserAction,
+          allowsInlineMediaPlayback: allowsInlineMediaPlayback,
         );
 
   final WKWebViewConfiguration _configuration;
@@ -88,6 +92,11 @@ class WebKitWebViewControllerCreationParams
   /// Defaults to include [PlaybackMediaTypes.audio] and
   /// [PlaybackMediaTypes.video].
   final Set<PlaybackMediaTypes> mediaTypesRequiringUserAction;
+
+  /// Whether inline playback of HTML5 videos is allowed.
+  ///
+  /// Defaults to false.
+  final bool allowsInlineMediaPlayback;
 
   /// Handles constructing objects and calling static methods for the WebKit
   /// native library.
@@ -276,11 +285,6 @@ class WebKitWebViewController extends PlatformWebViewController {
       );
     }
     return result.toString();
-  }
-
-  /// Controls whether inline playback of HTML5 videos is allowed.
-  Future<void> setAllowsInlineMediaPlayback(bool allow) {
-    return _webView.configuration.setAllowsInlineMediaPlayback(allow);
   }
 
   @override

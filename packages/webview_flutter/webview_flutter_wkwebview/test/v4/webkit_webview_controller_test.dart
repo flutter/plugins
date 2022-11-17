@@ -98,6 +98,22 @@ void main() {
     }
 
     group('WebKitWebViewControllerCreationParams', () {
+      test('allowsInlineMediaPlayback', () {
+        final MockWKWebViewConfiguration mockConfiguration =
+            MockWKWebViewConfiguration();
+
+        WebKitWebViewControllerCreationParams(
+          webKitProxy: WebKitProxy(
+            createWebViewConfiguration: () => mockConfiguration,
+          ),
+          allowsInlineMediaPlayback: true,
+        );
+
+        verify(
+          mockConfiguration.setAllowsInlineMediaPlayback(true),
+        );
+      });
+
       test('mediaTypesRequiringUserAction', () {
         final MockWKWebViewConfiguration mockConfiguration =
             MockWKWebViewConfiguration();
