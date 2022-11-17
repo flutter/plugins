@@ -178,7 +178,7 @@ abstract class PlatformWebViewController extends PlatformInterface {
   /// The Future completes with an error if a JavaScript error occurred, or if the
   /// type the given expression evaluates to is unsupported. Unsupported values include
   /// certain non-primitive types on iOS, as well as `undefined` or `null` on iOS 14+.
-  Future<String> runJavaScriptReturningResult(String javaScript) {
+  Future<Object> runJavaScriptReturningResult(String javaScript) {
     throw UnimplementedError(
         'runJavaScriptReturningResult is not implemented on the current platform');
   }

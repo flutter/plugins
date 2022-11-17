@@ -215,7 +215,7 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   @override
-  Future<String> runJavaScriptReturningResult(String javaScript) async {
+  Future<Object> runJavaScriptReturningResult(String javaScript) async {
     final Object? result = await _webView.evaluateJavaScript(javaScript);
     if (result == null) {
       throw ArgumentError(
@@ -223,7 +223,7 @@ class WebKitWebViewController extends PlatformWebViewController {
         'Use `runJavascript` when expecting a null return value.',
       );
     }
-    return result.toString();
+    return result;
   }
 
   /// Controls whether inline playback of HTML5 videos is allowed.
