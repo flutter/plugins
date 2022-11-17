@@ -1,5 +1,13 @@
 ## 2.3.7
 
+<<<<<<< HEAD
+=======
+* Adds an integration test for a bug where the aspect ratios of some HLS videos are incorrectly inverted.
+* Removes an unnecessary override in example code.
+
+## 2.3.7
+
+>>>>>>> e500884c758c2d516baf7d5ab30639c81dd6b849
 * Fixes a bug where the aspect ratio of some HLS videos are incorrectly inverted.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
