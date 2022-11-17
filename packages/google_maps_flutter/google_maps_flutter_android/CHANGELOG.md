@@ -1,3 +1,7 @@
+## 2.4.0
+
+* Adds the ability to request a specific map renderer.
+
 ## 2.3.3
 
 * Update android gradle plugin to 7.3.1.
