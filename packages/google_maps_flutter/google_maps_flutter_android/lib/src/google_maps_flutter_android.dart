@@ -502,6 +502,10 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
   /// See https://pub.dev/packages/google_maps_flutter_android#map-renderer
   /// for more information.
   ///
+  /// The renderer must be requested before creating GoogleMap instances as the
+  /// renderer can be initialized only once per application context.
+  /// Throws a [PlatformException] if method is called multiple times.
+  ///
   /// The returned [Future] completes after renderer has been initialized.
   /// Initialized [AndroidMapRenderer] type is returned.
   Future<AndroidMapRenderer> initializeWithRenderer(
@@ -535,7 +539,7 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
         return AndroidMapRenderer.legacy;
       default:
         throw AndroidMapRendererException(
-            'Failed to initialize latest or legacy renderer. Got $initializedRenderer');
+            'Failed to initialize latest or legacy renderer, got $initializedRenderer.');
     }
   }
 
