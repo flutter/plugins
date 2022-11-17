@@ -237,12 +237,6 @@ abstract class PlatformWebViewController extends PlatformInterface {
         'enableDebugging is not implemented on the current platform');
   }
 
-  /// Whether to allow swipe based navigation on supported platforms.
-  Future<void> enableGestureNavigation(bool enabled) {
-    throw UnimplementedError(
-        'enableGestureNavigation is not implemented on the current platform');
-  }
-
   /// Whhether to support zooming using its on-screen zoom controls and gestures.
   Future<void> enableZoom(bool enabled) {
     throw UnimplementedError(

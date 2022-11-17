@@ -256,11 +256,8 @@ class WebKitWebViewController extends PlatformWebViewController {
     return Point<int>(offset.x.round(), offset.y.round());
   }
 
-  // TODO(bparrishMines): This is unique to iOS. Override should be removed if
-  // this is removed from the platform interface before webview_flutter version
-  // 4.0.0.
-  @override
-  Future<void> enableGestureNavigation(bool enabled) {
+  /// Whether horizontal swipe gestures trigger page navigation.
+  Future<void> setAllowsBackForwardNavigationGestures(bool enabled) {
     return _webView.setAllowsBackForwardNavigationGestures(enabled);
   }
 
