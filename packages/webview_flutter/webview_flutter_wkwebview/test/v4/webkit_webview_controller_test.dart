@@ -327,12 +327,13 @@ void main() {
         createMockWebView: (_, {dynamic observeValue}) => mockWebView,
       );
 
+      final Object result = Object();
       when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
-        (_) => Future<String>.value('returnString'),
+        (_) => Future<Object>.value(result),
       );
       expect(
         controller.runJavaScriptReturningResult('runJavaScript'),
-        completion('returnString'),
+        completion(result),
       );
     });
 
