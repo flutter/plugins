@@ -363,10 +363,11 @@ void main() {
         testWidgets(
           'enabling zoom removes script',
           (WidgetTester tester) async {
-            when(mockWebViewWidgetProxy.createScriptMessageHandler())
-                .thenReturn(
-              MockWKScriptMessageHandler(),
-            );
+            when(
+              mockWebViewWidgetProxy.createScriptMessageHandler(
+                didReceiveScriptMessage: anyNamed('didReceiveScriptMessage'),
+              ),
+            ).thenReturn(MockWKScriptMessageHandler());
 
             await buildWidget(
               tester,

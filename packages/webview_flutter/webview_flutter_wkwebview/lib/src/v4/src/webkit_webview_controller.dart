@@ -251,9 +251,9 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   @override
-  Future<Point<int>> getScrollPosition() async {
+  Future<Offset> getScrollPosition() async {
     final Point<double> offset = await _webView.scrollView.getContentOffset();
-    return Point<int>(offset.x.round(), offset.y.round());
+    return Offset(offset.x, offset.y);
   }
 
   // TODO(bparrishMines): This is unique to iOS. Override should be removed if
