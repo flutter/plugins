@@ -73,7 +73,7 @@ class LoadRequestParams {
   const LoadRequestParams({
     required this.uri,
     required this.method,
-    required this.headers,
+    this.headers = const <String, String>{},
     this.body,
   });
 
