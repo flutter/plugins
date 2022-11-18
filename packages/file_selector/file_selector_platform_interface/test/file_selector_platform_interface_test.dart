@@ -19,6 +19,16 @@ void main() {
       FileSelectorPlatform.instance = ExtendsFileSelectorPlatform();
     });
   });
+
+  group('#GetDirectoryPaths', () {
+    test('Should throw unimplemented exception', () async {
+      final FileSelectorPlatform fileSelector = ExtendsFileSelectorPlatform();
+
+      await expectLater(() async {
+        return fileSelector.getDirectoryPaths();
+      }, throwsA(isA<UnimplementedError>()));
+    });
+  });
 }
 
 class ExtendsFileSelectorPlatform extends FileSelectorPlatform {}
