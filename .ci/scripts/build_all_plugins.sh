@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+platform="$1"
+build_mode="$2"
 cd all_packages
-flutter build windows --debug
-flutter build windows --release
+flutter build "$platform" --"$build_mode"
