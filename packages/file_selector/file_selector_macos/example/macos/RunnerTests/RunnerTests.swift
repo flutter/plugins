@@ -241,13 +241,13 @@ class exampleTests: XCTestCase {
       viewProvider: TestViewProvider(),
       panelController: panelController)
 
-    let returnPath = "/foo/bar"
-    panelController.openURLs = [URL(fileURLWithPath: returnPath)]
+    let returnPaths = ["/foo/bar"]
+    panelController.openURLs = returnPaths.map({ path in URL(fileURLWithPath: path) })
 
     let called = XCTestExpectation()
     let call = FlutterMethodCall(methodName: "getDirectoryPath", arguments: [:])
     plugin.handle(call) { result in
-      XCTAssertEqual(result as! String?, returnPath)
+      XCTAssertEqual(result as! [String]?, returnPaths)
       called.fulfill()
     }
 
@@ -285,7 +285,7 @@ class exampleTests: XCTestCase {
         viewProvider: TestViewProvider(),
         panelController: panelController)
 
-    let returnPaths = ["/foo/bar", "/foo/test"]
+      let returnPaths = ["/foo/bar", "/foo/test"]
       panelController.openURLs = returnPaths.map({ path in URL(fileURLWithPath: path) })
 
       let called = XCTestExpectation()
