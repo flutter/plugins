@@ -45,6 +45,7 @@ class GoogleSignInAndroid extends GoogleSignInPlatform {
       'scopes': params.scopes,
       'hostedDomain': params.hostedDomain,
       'clientId': params.clientId,
+      'serverClientId': params.serverClientId,
       'forceCodeForRefreshToken': params.forceCodeForRefreshToken,
     });
   }
