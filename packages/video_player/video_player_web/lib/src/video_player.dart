@@ -45,6 +45,7 @@ class VideoPlayer {
 
   final StreamController<VideoEvent> _eventController;
   final html.VideoElement _videoElement;
+  dynamic Function(html.Event)? _onContextMenu;
 
   bool _isInitialized = false;
   bool _isBuffering = false;
@@ -188,9 +189,40 @@ class VideoPlayer {
     return Duration(milliseconds: (_videoElement.currentTime * 1000).round());
   }
 
+  /// Sets control options
+  Future<void> setControls(VideoPlayerWebOptions controls) async {
+    if (controls.controlsEnabled) {
+      _videoElement.controls = true;
+      final List<String> attributes = <String>[];
+      if (!controls.allowDownload) {
+        attributes.add('nodownload');
+      }
+      if (!controls.allowFullscreen) {
+        attributes.add('nofullscreen');
+      }
+      if (!controls.allowPlaybackRate) {
+        attributes.add('noplaybackrate');
+      }
+      if (attributes.isNotEmpty) {
+        _videoElement.setAttribute(
+          'controlsList',
+          attributes
+              .reduce((String value, String element) => '$value $element'),
+        );
+      }
+    }
+
+    if (!controls.allowContextMenu) {
+      _onContextMenu = (html.Event event) => event.preventDefault();
+      _videoElement.addEventListener('contextmenu', _onContextMenu);
+    }
+  }
+
   /// Disposes of the current [html.VideoElement].
   void dispose() {
     _videoElement.removeAttribute('src');
+    _videoElement.removeEventListener('contextmenu', _onContextMenu);
+    _onContextMenu = null;
     _videoElement.load();
   }
 
