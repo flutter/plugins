@@ -258,9 +258,7 @@ task:
       firebase_test_lab_script:
         - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        # (TODO)cyanglaz: add --device model=starqlteue,version=26 back when the device issue is fixed in FTL.
-        # https://github.com/flutter/flutter/issues/114535
-        -   ./script/tool_runner.sh firebase-test-lab --device model=redfin,version=30 --exclude=script/configs/exclude_integration_android.yaml
+        -   ./script/tool_runner.sh firebase-test-lab --device model=redfin,version=30 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml
         - else
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - fi
