@@ -1,4 +1,4 @@
-gcp_credentials: ENCRYPTED[!f1177d1ddb5330ffaa9ea11c9c9e8e0c542185e895c36071f18cec923dd31c50ece6d18da89c2f6f1cd2d1a98d0c2eea!]
+gcp_credentials: ENCRYPTED[!9e38557f08108136b3625b7e62c64cc9eccc50365ffeaaa55c6be52f1d8fd6225af5badc69983ca08484274f02f34424!]
 
 # Run on PRs and main branch post submit only. Don't run tests when tagging.
 only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
@@ -245,7 +245,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[30e6cf7189e3ff3868edc25d2e638ef2aec70546456427064bbc74b297d36145364f49f9d26b327787a59df149d69262]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[4457646586de940f49e054de7d82e60078b205ac627f11a89d077e63f639c9ba1002541d9209a9ee7777e159e97b43d0]
       build_script:
         - ./script/tool_runner.sh build-examples --apk
       lint_script:

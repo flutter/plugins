@@ -5,7 +5,7 @@ tasks:
     script: .ci/scripts/create_all_plugins_app.sh
   - name: build all_plugins debug
     script: .ci/scripts/build_all_plugins.sh
-    args: ["windows", "debug"]
+    args: ["macos", "debug"]
   - name: build all_plugins release
     script: .ci/scripts/build_all_plugins.sh
-    args: ["windows", "release"]
+    args: ["macos", "release"]
