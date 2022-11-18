@@ -132,11 +132,9 @@ class WebKitWebViewController extends PlatformWebViewController {
         NSObject object,
         Map<NSKeyValueChangeKey, Object?> change,
       ) {
-        if (weakReference.target?._currentNavigationDelegate?._onProgress !=
-            null) {
-          final ProgressCallback progressCallback =
-              weakReference.target!._currentNavigationDelegate!._onProgress!;
-
+        final ProgressCallback? progressCallback =
+            weakReference.target?._currentNavigationDelegate?._onProgress;
+        if (progressCallback != null) {
           final double progress =
               change[NSKeyValueChangeKey.newValue]! as double;
           progressCallback((progress * 100).round());
