@@ -9,9 +9,7 @@ environment:
 dependencies:
   file_selector_linux:
     path: ../
-  # TODO(adpinola): This should be 2.4.0 once it is published.
-  file_selector_platform_interface:
-    path: ../../file_selector_platform_interface/
+  file_selector_platform_interface: ^2.4.0
   flutter:
     sdk: flutter
 
