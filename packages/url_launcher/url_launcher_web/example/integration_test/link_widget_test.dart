@@ -149,7 +149,7 @@ void main() {
 
       await tester.scrollUntilVisible(
         find.text('#${itemCount - 1}'),
-        2500,
+        800,
         maxScrolls: 1000,
       );
     });
