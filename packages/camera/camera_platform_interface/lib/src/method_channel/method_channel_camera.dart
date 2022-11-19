@@ -5,13 +5,13 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:stream_transform/stream_transform.dart';
 
+import '../../camera_platform_interface.dart';
+import '../utils/utils.dart';
 import 'type_conversion.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
@@ -118,10 +118,10 @@ class MethodChannelCamera extends CameraPlatform {
       return channel;
     });
 
-    final Completer<void> _completer = Completer<void>();
+    final Completer<void> completer = Completer<void>();
 
     onCameraInitialized(cameraId).first.then((CameraInitializedEvent value) {
-      _completer.complete();
+      completer.complete();
     });
 
     _channel.invokeMapMethod<String, dynamic>(
@@ -139,14 +139,14 @@ class MethodChannelCamera extends CameraPlatform {
         if (error is! PlatformException) {
           throw error;
         }
-        _completer.completeError(
+        completer.completeError(
           CameraException(error.code, error.message),
           stackTrace,
         );
       },
     );
 
-    return _completer.future;
+    return completer.future;
   }
 
   @override

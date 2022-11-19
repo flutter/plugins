@@ -141,6 +141,21 @@ void main() {
       expect(payment, equals(dummyPayment));
     });
 
+    test('SKPaymentWrapper should have propery values consistent with .toMap()',
+        () {
+      final Map<String, dynamic> mapResult = dummyPaymentWithDiscount.toMap();
+      expect(mapResult['productIdentifier'],
+          dummyPaymentWithDiscount.productIdentifier);
+      expect(mapResult['applicationUsername'],
+          dummyPaymentWithDiscount.applicationUsername);
+      expect(mapResult['requestData'], dummyPaymentWithDiscount.requestData);
+      expect(mapResult['quantity'], dummyPaymentWithDiscount.quantity);
+      expect(mapResult['simulatesAskToBuyInSandbox'],
+          dummyPaymentWithDiscount.simulatesAskToBuyInSandbox);
+      expect(mapResult['paymentDiscount'],
+          equals(dummyPaymentWithDiscount.paymentDiscount?.toMap()));
+    });
+
     test('Should construct correct SKError from json', () {
       final SKError error = SKError.fromJson(buildErrorMap(dummyError));
       expect(error, equals(dummyError));

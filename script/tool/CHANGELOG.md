@@ -1,3 +1,43 @@
+## NEXT
+
+* Pins `package:git` dependency to `2.0.x` until `dart >=2.18.0` becomes our
+  oldest legacy.
+* Updates test mocks.
+
+## 0.13.0
+
+* Renames `all-plugins-app` to `create-all-packages-app` to clarify what it
+  actually does. Also renames the project directory it creates from
+  `all_plugins` to `all_packages`.
+
+## 0.12.1
+
+* Modifies `publish_check_command.dart` to do a `dart pub get` in all examples
+  of the package being checked. Workaround for [dart-lang/pub#3618](https://github.com/dart-lang/pub/issues/3618).
+
+## 0.12.0
+
+* Changes the behavior of `--packages-for-branch` on main/master to run for
+  packages changed in the last commit, rather than running for all packages.
+  This allows CI to test the same filtered set of packages in post-submit as are
+  tested in presubmit.
+* Adds a `fix` command to run `dart fix --apply` in target packages.
+
+## 0.11.0
+
+* Renames `publish-plugin` to `publish`.
+* Renames arguments to `list`:
+    * `--package` now lists top-level packages (previously `--plugin`).
+    * `--package-or-subpackage` now lists top-level packages (previously
+      `--package`).
+
+## 0.10.0+1
+
+* Recognizes `run_test.sh` as a developer-only file in `version-check`.
+* Adds `readme-check` validation that the example/README.md for a federated
+  plugin's implementation packages has a warning about the intended use of the
+  example instead of the template boilerplate.
+
 ## 0.10.0
 
 * Improves the logic in `version-check` to determine what changes don't require

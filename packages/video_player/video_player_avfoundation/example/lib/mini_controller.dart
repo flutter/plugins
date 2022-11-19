@@ -341,11 +341,6 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
   void _updatePosition(Duration position) {
     value = value.copyWith(position: position);
   }
-
-  @override
-  void removeListener(VoidCallback listener) {
-    super.removeListener(listener);
-  }
 }
 
 /// Widget that displays the video controlled by [controller].
