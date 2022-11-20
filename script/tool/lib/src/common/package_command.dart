@@ -34,9 +34,9 @@ class PackageEnumerationEntry {
 
 /// Interface definition for all commands in this tool.
 // TODO(stuartmorgan): Move most of this logic to PackageLoopingCommand.
-abstract class PluginCommand extends Command<void> {
+abstract class PackageCommand extends Command<void> {
   /// Creates a command to operate on [packagesDir] with the given environment.
-  PluginCommand(
+  PackageCommand(
     this.packagesDir, {
     this.processRunner = const ProcessRunner(),
     this.platform = const LocalPlatform(),
@@ -47,7 +47,7 @@ abstract class PluginCommand extends Command<void> {
       help:
           'Specifies which packages the command should run on (before sharding).\n',
       valueHelp: 'package1,package2,...',
-      aliases: <String>[_pluginsArg],
+      aliases: <String>[_pluginsLegacyAliasArg],
     );
     argParser.addOption(
       _shardIndexArg,
@@ -58,7 +58,7 @@ abstract class PluginCommand extends Command<void> {
     );
     argParser.addOption(
       _shardCountArg,
-      help: 'Specifies the number of shards into which plugins are divided.',
+      help: 'Specifies the number of shards into which packages are divided.',
       valueHelp: 'n',
       defaultsTo: '1',
     );
@@ -71,7 +71,7 @@ abstract class PluginCommand extends Command<void> {
       defaultsTo: <String>[],
     );
     argParser.addFlag(_runOnChangedPackagesArg,
-        help: 'Run the command on changed packages/plugins.\n'
+        help: 'Run the command on changed packages.\n'
             'If no packages have changed, or if there have been changes that may\n'
             'affect all packages, the command runs on all packages.\n'
             'Packages excluded with $_excludeArg are excluded even if changed.\n'
@@ -84,9 +84,8 @@ abstract class PluginCommand extends Command<void> {
             'Cannot be combined with $_packagesArg.\n',
         hide: true);
     argParser.addFlag(_packagesForBranchArg,
-        help:
-            'This runs on all packages (equivalent to no package selection flag)\n'
-            'on main (or master), and behaves like --run-on-changed-packages on '
+        help: 'This runs on all packages changed in the last commit on main '
+            '(or master), and behaves like --run-on-changed-packages on '
             'any other branch.\n\n'
             'Cannot be combined with $_packagesArg.\n\n'
             'This is intended for use in CI.\n',
@@ -106,13 +105,13 @@ abstract class PluginCommand extends Command<void> {
   static const String _logTimingArg = 'log-timing';
   static const String _packagesArg = 'packages';
   static const String _packagesForBranchArg = 'packages-for-branch';
-  static const String _pluginsArg = 'plugins';
+  static const String _pluginsLegacyAliasArg = 'plugins';
   static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
   static const String _runOnDirtyPackagesArg = 'run-on-dirty-packages';
   static const String _shardCountArg = 'shardCount';
   static const String _shardIndexArg = 'shardIndex';
 
-  /// The directory containing the plugin packages.
+  /// The directory containing the packages.
   final Directory packagesDir;
 
   /// The process runner.
@@ -221,7 +220,7 @@ abstract class PluginCommand extends Command<void> {
     _shardCount = shardCount;
   }
 
-  /// Returns the set of plugins to exclude based on the `--exclude` argument.
+  /// Returns the set of packages to exclude based on the `--exclude` argument.
   Set<String> getExcludedPackageNames() {
     final Set<String> excludedPackages = _excludedPackages ??
         getStringListArg(_excludeArg).expand<String>((String item) {
@@ -250,22 +249,22 @@ abstract class PluginCommand extends Command<void> {
   Stream<PackageEnumerationEntry> getTargetPackages(
       {bool filterExcluded = true}) async* {
     // To avoid assuming consistency of `Directory.list` across command
-    // invocations, we collect and sort the plugin folders before sharding.
+    // invocations, we collect and sort the package folders before sharding.
     // This is considered an implementation detail which is why the API still
     // uses streams.
-    final List<PackageEnumerationEntry> allPlugins =
+    final List<PackageEnumerationEntry> allPackages =
         await _getAllPackages().toList();
-    allPlugins.sort((PackageEnumerationEntry p1, PackageEnumerationEntry p2) =>
+    allPackages.sort((PackageEnumerationEntry p1, PackageEnumerationEntry p2) =>
         p1.package.path.compareTo(p2.package.path));
-    final int shardSize = allPlugins.length ~/ shardCount +
-        (allPlugins.length % shardCount == 0 ? 0 : 1);
-    final int start = min(shardIndex * shardSize, allPlugins.length);
-    final int end = min(start + shardSize, allPlugins.length);
+    final int shardSize = allPackages.length ~/ shardCount +
+        (allPackages.length % shardCount == 0 ? 0 : 1);
+    final int start = min(shardIndex * shardSize, allPackages.length);
+    final int end = min(start + shardSize, allPackages.length);
 
-    for (final PackageEnumerationEntry plugin
-        in allPlugins.sublist(start, end)) {
-      if (!(filterExcluded && plugin.excluded)) {
-        yield plugin;
+    for (final PackageEnumerationEntry package
+        in allPackages.sublist(start, end)) {
+      if (!(filterExcluded && package.excluded)) {
+        yield package;
       }
     }
   }
@@ -311,9 +310,9 @@ abstract class PluginCommand extends Command<void> {
 
     Set<String> packages = Set<String>.from(getStringListArg(_packagesArg));
 
-    final bool runOnChangedPackages;
+    final GitVersionFinder? changedFileFinder;
     if (getBoolArg(_runOnChangedPackagesArg)) {
-      runOnChangedPackages = true;
+      changedFileFinder = await retrieveVersionFinder();
     } else if (getBoolArg(_packagesForBranchArg)) {
       final String? branch = await _getBranch();
       if (branch == null) {
@@ -321,25 +320,32 @@ abstract class PluginCommand extends Command<void> {
             'only be used in a git repository.');
         throw ToolExit(exitInvalidArguments);
       } else {
-        runOnChangedPackages = branch != 'master' && branch != 'main';
-        // Log the mode for auditing what was intended to run.
-        print('--$_packagesForBranchArg: running on '
-            '${runOnChangedPackages ? 'changed' : 'all'} packages');
+        // Configure the change finder the correct mode for the branch.
+        final bool lastCommitOnly = branch == 'main' || branch == 'master';
+        if (lastCommitOnly) {
+          // Log the mode to make it easier to audit logs to see that the
+          // intended diff was used.
+          print('--$_packagesForBranchArg: running on default branch; '
+              'using parent commit as the diff base.');
+          changedFileFinder = GitVersionFinder(await gitDir, 'HEAD~');
+        } else {
+          changedFileFinder = await retrieveVersionFinder();
+        }
       }
     } else {
-      runOnChangedPackages = false;
+      changedFileFinder = null;
     }
 
-    final Set<String> excludedPluginNames = getExcludedPackageNames();
-
-    if (runOnChangedPackages) {
-      final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
-      final String baseSha = await gitVersionFinder.getBaseSha();
-      print(
-          'Running for all packages that have changed relative to "$baseSha"\n');
+    if (changedFileFinder != null) {
+      final String baseSha = await changedFileFinder.getBaseSha();
       final List<String> changedFiles =
-          await gitVersionFinder.getChangedFiles();
-      if (!_changesRequireFullTest(changedFiles)) {
+          await changedFileFinder.getChangedFiles();
+      if (_changesRequireFullTest(changedFiles)) {
+        print('Running for all packages, since a file has changed that could '
+            'affect the entire repository.');
+      } else {
+        print(
+            'Running for all packages that have diffs relative to "$baseSha"\n');
         packages = _getChangedPackageNames(changedFiles);
       }
     } else if (getBoolArg(_runOnDirtyPackagesArg)) {
@@ -362,21 +368,23 @@ abstract class PluginCommand extends Command<void> {
         .childDirectory('third_party')
         .childDirectory('packages');
 
+    final Set<String> excludedPackageNames = getExcludedPackageNames();
     for (final Directory dir in <Directory>[
       packagesDir,
       if (thirdPartyPackagesDirectory.existsSync()) thirdPartyPackagesDirectory,
     ]) {
       await for (final FileSystemEntity entity
           in dir.list(followLinks: false)) {
-        // A top-level Dart package is a plugin package.
+        // A top-level Dart package is a standard package.
         if (isPackage(entity)) {
           if (packages.isEmpty || packages.contains(p.basename(entity.path))) {
             yield PackageEnumerationEntry(
                 RepositoryPackage(entity as Directory),
-                excluded: excludedPluginNames.contains(entity.basename));
+                excluded: excludedPackageNames.contains(entity.basename));
           }
         } else if (entity is Directory) {
-          // Look for Dart packages under this top-level directory.
+          // Look for Dart packages under this top-level directory; this is the
+          // standard structure for federated plugins.
           await for (final FileSystemEntity subdir
               in entity.list(followLinks: false)) {
             if (isPackage(subdir)) {
@@ -394,7 +402,7 @@ abstract class PluginCommand extends Command<void> {
                   packages.intersection(possibleMatches).isNotEmpty) {
                 yield PackageEnumerationEntry(
                     RepositoryPackage(subdir as Directory),
-                    excluded: excludedPluginNames
+                    excluded: excludedPackageNames
                         .intersection(possibleMatches)
                         .isNotEmpty);
               }
@@ -415,11 +423,12 @@ abstract class PluginCommand extends Command<void> {
   /// stream.
   Stream<PackageEnumerationEntry> getTargetPackagesAndSubpackages(
       {bool filterExcluded = true}) async* {
-    await for (final PackageEnumerationEntry plugin
+    await for (final PackageEnumerationEntry package
         in getTargetPackages(filterExcluded: filterExcluded)) {
-      yield plugin;
-      yield* getSubpackages(plugin.package).map((RepositoryPackage package) =>
-          PackageEnumerationEntry(package, excluded: plugin.excluded));
+      yield package;
+      yield* getSubpackages(package.package).map(
+          (RepositoryPackage subPackage) =>
+              PackageEnumerationEntry(subPackage, excluded: package.excluded));
     }
   }
 
@@ -524,7 +533,7 @@ abstract class PluginCommand extends Command<void> {
   }
 
   // Returns true if one or more files changed that have the potential to affect
-  // any plugin (e.g., CI script changes).
+  // any packages (e.g., CI script changes).
   bool _changesRequireFullTest(List<String> changedFiles) {
     const List<String> specialFiles = <String>[
       '.ci.yaml', // LUCI config.

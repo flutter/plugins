@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Updates implementaion package versions to current versions.
+
 ## 1.0.0
 
 * Updates version to 1.0 to reflect current status.

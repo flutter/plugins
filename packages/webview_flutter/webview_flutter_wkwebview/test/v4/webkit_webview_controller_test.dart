@@ -97,6 +97,86 @@ void main() {
       return controller;
     }
 
+    group('WebKitWebViewControllerCreationParams', () {
+      test('allowsInlineMediaPlayback', () {
+        final MockWKWebViewConfiguration mockConfiguration =
+            MockWKWebViewConfiguration();
+
+        WebKitWebViewControllerCreationParams(
+          webKitProxy: WebKitProxy(
+            createWebViewConfiguration: () => mockConfiguration,
+          ),
+          allowsInlineMediaPlayback: true,
+        );
+
+        verify(
+          mockConfiguration.setAllowsInlineMediaPlayback(true),
+        );
+      });
+
+      test('mediaTypesRequiringUserAction', () {
+        final MockWKWebViewConfiguration mockConfiguration =
+            MockWKWebViewConfiguration();
+
+        WebKitWebViewControllerCreationParams(
+          webKitProxy: WebKitProxy(
+            createWebViewConfiguration: () => mockConfiguration,
+          ),
+          mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{
+            PlaybackMediaTypes.video,
+          },
+        );
+
+        verify(
+          mockConfiguration.setMediaTypesRequiringUserActionForPlayback(
+            <WKAudiovisualMediaType>{
+              WKAudiovisualMediaType.video,
+            },
+          ),
+        );
+      });
+
+      test('mediaTypesRequiringUserAction defaults to include audio and video',
+          () {
+        final MockWKWebViewConfiguration mockConfiguration =
+            MockWKWebViewConfiguration();
+
+        WebKitWebViewControllerCreationParams(
+          webKitProxy: WebKitProxy(
+            createWebViewConfiguration: () => mockConfiguration,
+          ),
+        );
+
+        verify(
+          mockConfiguration.setMediaTypesRequiringUserActionForPlayback(
+            <WKAudiovisualMediaType>{
+              WKAudiovisualMediaType.audio,
+              WKAudiovisualMediaType.video,
+            },
+          ),
+        );
+      });
+
+      test('mediaTypesRequiringUserAction sets value to none if set is empty',
+          () {
+        final MockWKWebViewConfiguration mockConfiguration =
+            MockWKWebViewConfiguration();
+
+        WebKitWebViewControllerCreationParams(
+          webKitProxy: WebKitProxy(
+            createWebViewConfiguration: () => mockConfiguration,
+          ),
+          mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+        );
+
+        verify(
+          mockConfiguration.setMediaTypesRequiringUserActionForPlayback(
+            <WKAudiovisualMediaType>{WKAudiovisualMediaType.none},
+          ),
+        );
+      });
+    });
+
     test('loadFile', () async {
       final MockWKWebView mockWebView = MockWKWebView();
 
