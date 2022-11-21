@@ -442,6 +442,48 @@ void main() {
       );
     });
   });
+
+  group('exports', () {
+    test('CameraDescription is exported', () {
+      const CameraDescription(
+          name: 'abc-123',
+          sensorOrientation: 1,
+          lensDirection: CameraLensDirection.external);
+    });
+
+    test('CameraException is exported', () {
+      CameraException('1', 'error');
+    });
+
+    test('CameraImageData is exported', () {
+      const CameraImageData(
+        width: 1,
+        height: 1,
+        format: CameraImageFormat(ImageFormatGroup.bgra8888, raw: 1),
+        planes: [],
+      );
+    });
+
+    test('ExposureMode is exported', () {
+      ExposureMode.auto;
+    });
+
+    test('FlashMode is exported', () {
+      FlashMode.auto;
+    });
+
+    test('FocusMode is exported', () {
+      FocusMode.auto;
+    });
+
+    test('ResolutionPreset is exported', () {
+      ResolutionPreset.high;
+    });
+
+    test('VideoCaptureOptions is exported', () {
+      const VideoCaptureOptions(123);
+    });
+  });
 }
 
 class ImplementsCameraPlatform implements CameraPlatform {
