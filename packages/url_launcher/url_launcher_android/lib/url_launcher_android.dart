@@ -33,7 +33,7 @@ class UrlLauncherAndroid extends UrlLauncherPlatform {
       // returns true, then there is a browser, which means that there is
       // at least one handler for the original URL.
       if (scheme == 'http' || scheme == 'https') {
-        return await _canLaunchUrl('$scheme://flutter.dev');
+        return _canLaunchUrl('$scheme://flutter.dev');
       }
     }
     return canLaunchSpecificUrl;

@@ -143,7 +143,7 @@ void main() {
     runner = CommandRunner<void>('test_package_looping_command',
         'Test for base package looping functionality');
     runner.addCommand(command);
-    return await runCapturingPrint(
+    return runCapturingPrint(
       runner,
       <String>[command.name, ...arguments],
       errorHandler: errorHandler,

@@ -171,7 +171,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
           'completePurchase unsuccessful. The `purchase.verificationData` is not valid');
     }
 
-    return await billingClient
+    return billingClient
         .acknowledgePurchase(purchase.verificationData.serverVerificationData);
   }
 

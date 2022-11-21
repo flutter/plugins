@@ -369,7 +369,7 @@ abstract class PackageLoopingCommand extends PackageCommand {
       }
     }
 
-    return await runForPackage(package);
+    return runForPackage(package);
   }
 
   void _printSuccess(String message) {

@@ -285,8 +285,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     final String gitPath = path.style == p.Style.windows
         ? p.posix.joinAll(path.split(relativePath))
         : relativePath;
-    return await _gitVersionFinder.getPackageVersion(gitPath,
-        gitRef: _mergeBase);
+    return _gitVersionFinder.getPackageVersion(gitPath, gitRef: _mergeBase);
   }
 
   /// Returns the state of the verison of [package] relative to the comparison
