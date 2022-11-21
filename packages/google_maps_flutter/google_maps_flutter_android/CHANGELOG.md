@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates code for new analysis options.
+
 ## 2.3.3
 
 * Update android gradle plugin to 7.3.1.

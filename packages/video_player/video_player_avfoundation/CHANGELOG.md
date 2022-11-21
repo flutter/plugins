@@ -1,5 +1,6 @@
 ## NEXT
 
+* Updates code for new analysis options.
 * Adds an integration test for a bug where the aspect ratios of some HLS videos are incorrectly inverted.
 * Removes an unnecessary override in example code.
 
