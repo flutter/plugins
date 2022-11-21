@@ -140,6 +140,9 @@ class UpdateReleaseInfoCommand extends PackageLoopingCommand {
       if (!state.hasChanges) {
         return PackageResult.skip('No changes to package');
       }
+      if (!state.needsVersionChange && !state.needsChangelogChange) {
+        return PackageResult.skip('No non-exempt changes to package');
+      }
       if (state.needsVersionChange) {
         versionChange = _VersionIncrementType.bugfix;
       }
