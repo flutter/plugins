@@ -416,7 +416,8 @@ packages/different_package/lib/foo.dart
           createFakePackage('a_package', packagesDir, version: '1.0.1');
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(stdout: '''
-packages/a_package/test/plugin_test.dart
+packages/a_package/test/a_test.dart
+packages/a_package/example/integration_test/another_test.dart
 '''),
       ];
       final String originalChangelog = package.changelogFile.readAsStringSync();
