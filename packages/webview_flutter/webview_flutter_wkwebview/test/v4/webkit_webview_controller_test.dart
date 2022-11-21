@@ -147,7 +147,7 @@ void main() {
         );
 
         expect(
-          () async => await controller.loadRequest(
+          () async => controller.loadRequest(
             LoadRequestParams(
               uri: Uri.parse('www.google.com'),
               method: LoadRequestMethod.get,

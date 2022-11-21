@@ -75,7 +75,7 @@ linter:
     - avoid_field_initializers_in_const_classes
     # - avoid_final_parameters # incompatible with prefer_final_parameters
     - avoid_function_literals_in_foreach_calls
-    # - avoid_implementing_value_types # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - avoid_implementing_value_types
     - avoid_init_to_null
     - avoid_js_rounded_ints
     # - avoid_multiple_declarations_per_line # seems to be a stylistic choice we don't subscribe to
@@ -87,7 +87,7 @@ linter:
     - avoid_relative_lib_imports
     - avoid_renaming_method_parameters
     - avoid_return_types_on_setters
-    # - avoid_returning_null # still violated by some pre-nnbd code that we haven't yet migrated
+    - avoid_returning_null
     - avoid_returning_null_for_future
     - avoid_returning_null_for_void
     # - avoid_returning_this # there are enough valid reasons to return `this` that this lint ends up with too many false positives
@@ -109,15 +109,17 @@ linter:
     # - cascade_invocations # doesn't match the typical style of this repo
     - cast_nullable_to_non_nullable
     # - close_sinks # not reliable enough
+    # - combinators_ordering # DIFFERENT FROM FLUTTER/FLUTTER: This isn't available on stable yet.
     # - comment_references # blocked on https://github.com/dart-lang/linter/issues/1142
-    # - conditional_uri_does_not_exist # not yet tested
+    - conditional_uri_does_not_exist
     # - constant_identifier_names # needs an opt-out https://github.com/dart-lang/linter/issues/204
     - control_flow_in_finally
-    # - curly_braces_in_flow_control_structures # not required by flutter style
+    - curly_braces_in_flow_control_structures
     - depend_on_referenced_packages
     - deprecated_consistency
     # - diagnostic_describe_all_properties # enabled only at the framework level (packages/flutter/lib)
     - directives_ordering
+    # - discarded_futures # not yet tested
     # - do_not_use_environment # there are appropriate times to use the environment, especially in our tests and build logic
     - empty_catches
     - empty_constructor_bodies
@@ -128,7 +130,6 @@ linter:
     - flutter_style_todos
     - hash_and_equals
     - implementation_imports
-    # - invariant_booleans # too many false positives: https://github.com/dart-lang/linter/issues/811
     - iterable_contains_unrelated_type
     # - join_return_with_assignment # not required by flutter style
     - leading_newlines_in_multiline_strings
@@ -203,12 +204,12 @@ linter:
     - recursive_getters
     # - require_trailing_commas # blocked on https://github.com/dart-lang/sdk/issues/47441
     - secure_pubspec_urls
-    # - sized_box_for_whitespace # LOCAL CHANGE - Needs to be enabled and violations fixed.
+     - sized_box_for_whitespace
     # - sized_box_shrink_expand # not yet tested
     - slash_for_doc_comments
     - sort_child_properties_last
     - sort_constructors_first
-    # - sort_pub_dependencies # prevents separating pinned transitive dependencies
+    - sort_pub_dependencies # DIFFERENT FROM FLUTTER/FLUTTER: Flutter's use case for not sorting does not apply to this repository.
     - sort_unnamed_constructors_first
     - test_types_in_equals
     - throw_in_finally
@@ -216,7 +217,7 @@ linter:
     # - type_annotate_public_apis # subset of always_specify_types
     - type_init_formals
     # - unawaited_futures # too many false positives, especially with the way AnimationController works
-    # - unnecessary_await_in_return # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - unnecessary_await_in_return
     - unnecessary_brace_in_string_interps
     - unnecessary_const
     - unnecessary_constructor_name
@@ -226,6 +227,7 @@ linter:
     - unnecessary_late
     - unnecessary_new
     - unnecessary_null_aware_assignments
+    - unnecessary_null_aware_operator_on_extension_on_nullable
     - unnecessary_null_checks
     - unnecessary_null_in_if_null_operators
     - unnecessary_nullable_for_final_variable_declarations
@@ -236,6 +238,7 @@ linter:
     - unnecessary_string_escapes
     - unnecessary_string_interpolations
     - unnecessary_this
+    - unnecessary_to_list_in_spreads
     - unrelated_type_equality_checks
     - unsafe_html
     # - use_build_context_synchronously # LOCAL CHANGE - Needs to be enabled and violations fixed.
@@ -263,6 +266,3 @@ linter:
     # separately when moving to a shared file.
     - no_runtimeType_toString # use objectRuntimeType from package:foundation
     - public_member_api_docs # see https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#documentation-dartdocs-javadocs-etc
-    # Flutter has a specific use case for dependencies that are intentionally
-    # not sorted, which doesn't apply to this repo.
-    - sort_pub_dependencies

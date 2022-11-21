@@ -107,6 +107,7 @@ Future<PackageChangeState> checkPackageChangeState(
 
 bool _isTestChange(List<String> pathComponents) {
   return pathComponents.contains('test') ||
+      pathComponents.contains('integration_test') ||
       pathComponents.contains('androidTest') ||
       pathComponents.contains('RunnerTests') ||
       pathComponents.contains('RunnerUITests');

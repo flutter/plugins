@@ -445,7 +445,7 @@ void main() {
           await buildWidget(tester);
 
           expect(
-              () async => await testController.loadRequest(
+              () async => testController.loadRequest(
                     WebViewRequest(
                       uri: Uri.parse('www.google.com'),
                       method: WebViewRequestMethod.get,

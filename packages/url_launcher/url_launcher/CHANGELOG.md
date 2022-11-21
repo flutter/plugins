@@ -1,3 +1,7 @@
+## 6.1.7
+
+* Updates code for new analysis options.
+
 ## 6.1.6
 
 * Updates imports for `prefer_relative_imports`.
