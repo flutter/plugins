@@ -132,10 +132,12 @@ class WebKitWebViewController extends PlatformWebViewController {
         NSObject object,
         Map<NSKeyValueChangeKey, Object?> change,
       ) {
-        if (weakReference.target?._onProgress != null) {
+        final ProgressCallback? progressCallback =
+            weakReference.target?._currentNavigationDelegate?._onProgress;
+        if (progressCallback != null) {
           final double progress =
               change[NSKeyValueChangeKey.newValue]! as double;
-          weakReference.target!._onProgress!((progress * 100).round());
+          progressCallback((progress * 100).round());
         }
       },
     );
@@ -145,7 +147,7 @@ class WebKitWebViewController extends PlatformWebViewController {
       <String, WebKitJavaScriptChannelParams>{};
 
   bool _zoomEnabled = true;
-  void Function(int progress)? _onProgress;
+  WebKitNavigationDelegate? _currentNavigationDelegate;
 
   WebKitWebViewControllerCreationParams get _webKitParams =>
       params as WebKitWebViewControllerCreationParams;
@@ -362,7 +364,7 @@ class WebKitWebViewController extends PlatformWebViewController {
   Future<void> setPlatformNavigationDelegate(
     covariant WebKitNavigationDelegate handler,
   ) {
-    _onProgress = handler._onProgress;
+    _currentNavigationDelegate = handler;
     return _webView.setNavigationDelegate(handler._navigationDelegate);
   }
 
