@@ -14,8 +14,6 @@ import 'package:flutter/services.dart';
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 
 import '../../android_webview.dart' as android_webview;
-import '../../android_webview.dart';
-import '../../instance_manager.dart';
 import '../../weak_reference_utils.dart';
 import 'android_navigation_delegate.dart';
 import 'android_proxy.dart';
@@ -198,7 +196,17 @@ class AndroidWebViewController extends PlatformWebViewController {
 
   @override
   Future<Object> runJavaScriptReturningResult(String javaScript) async {
-    return await _webView.evaluateJavascript(javaScript) ?? '';
+    final String? result = await _webView.evaluateJavascript(javaScript);
+
+    if (result == null) {
+      return '';
+    } else if (result == 'true') {
+      return true;
+    } else if (result == 'false') {
+      return false;
+    }
+
+    return num.tryParse(result) ?? result;
   }
 
   @override

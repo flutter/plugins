@@ -487,8 +487,8 @@ void main() {
       when(mockWebView.evaluateJavascript('return "Hello" + " World!";'))
           .thenAnswer((_) => Future<String>.value('Hello World!'));
 
-      final String message = await controller
-          .runJavaScriptReturningResult('return "Hello" + " World!";');
+      final String message = await controller.runJavaScriptReturningResult(
+          'return "Hello" + " World!";') as String;
 
       expect(message, 'Hello World!');
     });
@@ -503,9 +503,54 @@ void main() {
           .thenAnswer((_) => Future<String?>.value());
 
       final String message = await controller
-          .runJavaScriptReturningResult('alert("This is a test.");');
+          .runJavaScriptReturningResult('alert("This is a test.");') as String;
 
       expect(message, '');
+    });
+
+    test('runJavaScriptReturningResult parses num', () async {
+      final MockWebView mockWebView = MockWebView();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+      );
+
+      when(mockWebView.evaluateJavascript('alert("This is a test.");'))
+          .thenAnswer((_) => Future<String?>.value('3.14'));
+
+      final num message = await controller
+          .runJavaScriptReturningResult('alert("This is a test.");') as num;
+
+      expect(message, 3.14);
+    });
+
+    test('runJavaScriptReturningResult parses true', () async {
+      final MockWebView mockWebView = MockWebView();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+      );
+
+      when(mockWebView.evaluateJavascript('alert("This is a test.");'))
+          .thenAnswer((_) => Future<String?>.value('true'));
+
+      final bool message = await controller
+          .runJavaScriptReturningResult('alert("This is a test.");') as bool;
+
+      expect(message, true);
+    });
+
+    test('runJavaScriptReturningResult parses false', () async {
+      final MockWebView mockWebView = MockWebView();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+      );
+
+      when(mockWebView.evaluateJavascript('alert("This is a test.");'))
+          .thenAnswer((_) => Future<String?>.value('false'));
+
+      final bool message = await controller
+          .runJavaScriptReturningResult('alert("This is a test.");') as bool;
+
+      expect(message, false);
     });
 
     test('addJavaScriptChannel', () async {
