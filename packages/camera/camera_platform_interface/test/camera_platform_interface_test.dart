@@ -460,23 +460,27 @@ void main() {
         width: 1,
         height: 1,
         format: CameraImageFormat(ImageFormatGroup.bgra8888, raw: 1),
-        planes: [],
+        planes: <CameraImagePlane>[],
       );
     });
 
     test('ExposureMode is exported', () {
+      // ignore: unnecessary_statements
       ExposureMode.auto;
     });
 
     test('FlashMode is exported', () {
+      // ignore: unnecessary_statements
       FlashMode.auto;
     });
 
     test('FocusMode is exported', () {
+      // ignore: unnecessary_statements
       FocusMode.auto;
     });
 
     test('ResolutionPreset is exported', () {
+      // ignore: unnecessary_statements
       ResolutionPreset.high;
     });
 
