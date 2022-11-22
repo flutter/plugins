@@ -1,4 +1,4 @@
-## NEXT
+## 0.2.1+3
 
 * Updates to latest camera platform interface but fails if user attempts to use streaming with recording (since streaming is currently unsupported on Windows).
 

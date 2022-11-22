@@ -1,13 +1,13 @@
+## 0.3.1
+
+* Update to latest camera platform interface, and fail if user attempts to use streaming with recording (since streaming is currently unsupported on web).
+
 ## 0.3.0+1
 
 * Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
-
-## 0.3.1
-
-* Update to latest camera platform interface, and fail if user attempts to use streaming with recording (since streaming is currently unsupported on web).
 
 ## 0.3.0
 
