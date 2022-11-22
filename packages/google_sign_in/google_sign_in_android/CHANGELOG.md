@@ -1,3 +1,7 @@
+## 6.1.3
+
+* Updates play-services-auth version to 20.4.0.
+
 ## 6.1.2
 
 * Fixes passing `serverClientId` via the channelled `init` call
