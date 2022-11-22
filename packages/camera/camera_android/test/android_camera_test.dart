@@ -626,9 +626,8 @@ void main() {
       );
 
       // Act
-      await camera.startVideoRecording(
-        cameraId,
-        streamCallback: (imageData) {},
+      await camera.startVideoCapturing(
+        VideoCaptureOptions(cameraId, streamCallback: (CameraImageData imageData) {}),
       );
 
       // Assert
