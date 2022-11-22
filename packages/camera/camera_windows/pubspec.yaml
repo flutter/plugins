@@ -17,7 +17,7 @@ flutter:
         dartPluginClass: CameraWindows
 
 dependencies:
-  camera_platform_interface: ^2.1.2
+  camera_platform_interface: ^2.3.1
   cross_file: ^0.3.1
   flutter:
     sdk: flutter

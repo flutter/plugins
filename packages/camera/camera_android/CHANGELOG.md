@@ -1,3 +1,7 @@
+## 0.10.1
+
+* Implements option to also stream when recording a video.
+
 ## 0.10.0+4
 
 * Upgrades `androidx.annotation` version to 1.5.0.
