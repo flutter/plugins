@@ -336,7 +336,7 @@ class AndroidWebViewWidgetCreationParams
     super.layoutDirection,
     super.gestureRecognizers,
     @visibleForTesting InstanceManager? instanceManager,
-  }) : _instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Constructs a [WebKitWebViewWidgetCreationParams] using a
   /// [PlatformWebViewWidgetCreationParams].
@@ -351,9 +351,13 @@ class AndroidWebViewWidgetCreationParams
           instanceManager: instanceManager,
         );
 
-  // Maintains instances used to communicate with the native objects they
-  // represent.
-  final InstanceManager _instanceManager;
+  /// Maintains instances used to communicate with the native objects they
+  /// represent.
+  ///
+  /// This field is exposed for testing purposes only and should not be used
+  /// outside of tests.
+  @visibleForTesting
+  final InstanceManager instanceManager;
 }
 
 /// An implementation of [PlatformWebViewWidget] with the Android WebView API.
@@ -377,7 +381,7 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
       onPlatformViewCreated: (_) {},
       gestureRecognizers: _androidParams.gestureRecognizers,
       layoutDirection: _androidParams.layoutDirection,
-      creationParams: _androidParams._instanceManager.getIdentifier(
+      creationParams: _androidParams.instanceManager.getIdentifier(
           (_androidParams.controller as AndroidWebViewController)._webView),
       creationParamsCodec: const StandardMessageCodec(),
     );
