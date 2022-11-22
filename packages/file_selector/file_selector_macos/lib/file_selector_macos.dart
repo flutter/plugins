@@ -35,7 +35,8 @@ class FileSelectorMacOS extends FileSelectorPlatform {
         'multiple': false,
       },
     );
-    return path == null ? null : XFile(path.first);
+    final String? filePath = _firstOrNull(path);
+    return filePath == null ? null : XFile(filePath);
   }
 
   @override
@@ -86,7 +87,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
         'confirmButtonText': confirmButtonText,
       },
     );
-    return pathList?.first;
+    return _firstOrNull(pathList);
   }
 
   @override
@@ -142,5 +143,9 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     }
 
     return allowedTypes;
+  }
+
+  String? _firstOrNull(List<String>? list) {
+    return (list?.isEmpty ?? true) ? null : list?.first;
   }
 }

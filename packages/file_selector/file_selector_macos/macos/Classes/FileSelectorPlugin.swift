@@ -73,7 +73,7 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
       configure(panel: panel, with: arguments)
       configure(openPanel: panel, with: arguments, choosingDirectory: choosingDirectory)
       panelController.display(panel, for: viewProvider.view?.window) { (selection: [URL]?) in
-          result(selection?.map({ item in item.path }))
+        result(selection?.map({ item in item.path }))
       }
     case saveMethod:
       let panel = NSSavePanel()

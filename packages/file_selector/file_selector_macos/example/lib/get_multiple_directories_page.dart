@@ -17,17 +17,14 @@ class GetMultipleDirectoriesPage extends StatelessWidget {
         await FileSelectorPlatform.instance.getDirectoryPaths(
       confirmButtonText: confirmButtonText,
     );
-    if (directoriesPaths == null || directoriesPaths.isEmpty) {
+    if (directoriesPaths.isEmpty) {
       // Operation was canceled by the user.
       return;
     }
-    String paths = '';
-    for (final String? path in directoriesPaths) {
-      paths += '${path!} \n';
-    }
     await showDialog<void>(
       context: context,
-      builder: (BuildContext context) => TextDisplay(paths),
+      builder: (BuildContext context) =>
+          TextDisplay(directoriesPaths.join('\n')),
     );
   }
 
