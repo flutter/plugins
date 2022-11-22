@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
  * If the messenger is non-null then it will be called for each
  * captured frame, allowing streaming concurrently with recording.
  *
- * @param messengerForStreaming Nullable messenger for capturing each frame.
+ * @param messenger Nullable messenger for capturing each frame.
  */
 - (void)startVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result
                 messengerForStreaming:(nullable NSObject<FlutterBinaryMessenger> *)messenger;
