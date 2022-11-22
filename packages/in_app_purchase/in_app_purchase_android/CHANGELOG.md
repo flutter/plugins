@@ -1,3 +1,11 @@
+## 0.2.3+7
+
+* Updates code for new analysis options.
+
+## 0.2.3+6
+
+* Updates android gradle plugin to 7.3.1.
+
 ## 0.2.3+5
 
 * Updates imports for `prefer_relative_imports`.

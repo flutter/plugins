@@ -277,7 +277,7 @@
     return nil;
   }
 
-  if (!timestamp || ![timestamp isKindOfClass:NSNumber.class] || [timestamp intValue] <= 0) {
+  if (!timestamp || ![timestamp isKindOfClass:NSNumber.class] || [timestamp longLongValue] <= 0) {
     if (error) {
       *error = @"When specifying a payment discount the 'timestamp' field is mandatory.";
     }

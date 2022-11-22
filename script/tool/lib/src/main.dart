@@ -11,7 +11,7 @@ import 'package:file/local.dart';
 import 'analyze_command.dart';
 import 'build_examples_command.dart';
 import 'common/core.dart';
-import 'create_all_plugins_app_command.dart';
+import 'create_all_packages_app_command.dart';
 import 'custom_test_command.dart';
 import 'dependabot_check_command.dart';
 import 'drive_examples_command.dart';
@@ -56,7 +56,7 @@ void main(List<String> args) {
       'Productivity utils for hosting multiple plugins within one repository.')
     ..addCommand(AnalyzeCommand(packagesDir))
     ..addCommand(BuildExamplesCommand(packagesDir))
-    ..addCommand(CreateAllPluginsAppCommand(packagesDir))
+    ..addCommand(CreateAllPackagesAppCommand(packagesDir))
     ..addCommand(CustomTestCommand(packagesDir))
     ..addCommand(DependabotCheckCommand(packagesDir))
     ..addCommand(DriveExamplesCommand(packagesDir))

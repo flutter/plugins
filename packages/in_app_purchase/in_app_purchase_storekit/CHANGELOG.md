@@ -1,3 +1,8 @@
+## 0.3.3
+
+* Supports adding discount information to AppStorePurchaseParam. 
+* Fixes iOS Promotional Offers bug which prevents them from working.
+
 ## 0.3.2+2
 
 * Updates imports for `prefer_relative_imports`.

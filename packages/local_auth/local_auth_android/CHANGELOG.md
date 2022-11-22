@@ -1,3 +1,11 @@
+## 1.0.15
+
+* Updates androidx.fragment version to 1.5.4.
+
+## 1.0.14
+
+* Fixes device credential authentication for API versions before R.
+
 ## 1.0.13
 
 * Updates imports for `prefer_relative_imports`.

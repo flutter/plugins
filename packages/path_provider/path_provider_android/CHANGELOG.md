@@ -1,7 +1,9 @@
-## NEXT
+## 2.0.21
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 * Updates minimum Flutter version to 2.10.
+* Upgrades `androidx.annotation` version to 1.5.0.
+* Upgrades Android Gradle plugin version to 7.3.1.
 
 ## 2.0.20
 

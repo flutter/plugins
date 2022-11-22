@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates code for new analysis options.
+
 ## 2.1.12
 
 * Updates imports for `prefer_relative_imports`.
