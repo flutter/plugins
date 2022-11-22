@@ -6,6 +6,18 @@ env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
   PLUGIN_TOOL_COMMAND: "dart ./script/tool/bin/flutter_plugin_tools.dart"
 
+install_chrome_linux_template: &INSTALL_CHROME_LINUX
+  env:
+    CHROME_NO_SANDBOX: true
+    CHROME_DOWNLOAD_DIR: /tmp/chromium
+    CHROME_EXECUTABLE: $CHROME_DOWNLOAD_DIR/chrome-linux/chrome
+    CHROMEDRIVER_EXECUTABLE: $CHROME_DOWNLOAD_DIR/chromedriver/chromedriver
+    PATH: $PATH:$CHROME_DOWNLOAD_DIR/chrome-linux
+  install_chromium_script:
+    # Install a pinned version of Chromium and its corresponding ChromeDriver.
+    # Setting CHROME_EXECUTABLE above causes this version to be used for tests.
+    - ./script/install_chromium.sh
+
 tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
     - .ci/scripts/prepare_tool.sh
@@ -284,16 +296,9 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-        CHROME_NO_SANDBOX: true
-        CHROME_DIR: /tmp/web_chromium/
-        CHROME_EXECUTABLE: $CHROME_DIR/chrome-linux/chrome
-      install_script:
-        # Install a pinned version of Chromium and its corresponding ChromeDriver.
-        # Setting CHROME_EXECUTABLE above causes this version to be used for tests.
-        - ./script/install_chromium.sh "$CHROME_DIR"
+      << : *INSTALL_CHROME_LINUX
       chromedriver_background_script:
-        - cd "$CHROME_DIR"
-        - ./chromedriver/chromedriver --port=4444
+        - $CHROMEDRIVER_EXECUTABLE --port=4444
       build_script:
         - ./script/tool_runner.sh build-examples --web
       drive_script:
