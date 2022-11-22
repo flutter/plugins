@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
-
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
 // ignore: unnecessary_import
 import 'dart:typed_data';
@@ -245,9 +243,8 @@ class AndroidWebViewController extends PlatformWebViewController {
   Future<void> scrollBy(int x, int y) => _webView.scrollBy(x, y);
 
   @override
-  Future<Point<int>> getScrollPosition() async {
-    final Offset position = await _webView.getScrollPosition();
-    return Point<int>(position.dx.round(), position.dy.round());
+  Future<Offset> getScrollPosition() {
+    return _webView.getScrollPosition();
   }
 
   @override
