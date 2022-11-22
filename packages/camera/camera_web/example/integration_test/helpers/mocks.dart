@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: avoid_implementing_value_types
+
 import 'dart:async';
 import 'dart:html';
 import 'dart:ui';

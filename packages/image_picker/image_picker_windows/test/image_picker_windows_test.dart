@@ -53,7 +53,7 @@ void main() {
 
       test('pickImage throws UnimplementedError when source is camera',
           () async {
-        expect(() async => await plugin.pickImage(source: ImageSource.camera),
+        expect(() async => plugin.pickImage(source: ImageSource.camera),
             throwsA(isA<UnimplementedError>()));
       });
 
@@ -71,7 +71,7 @@ void main() {
 
       test('getImage throws UnimplementedError when source is camera',
           () async {
-        expect(() async => await plugin.getImage(source: ImageSource.camera),
+        expect(() async => plugin.getImage(source: ImageSource.camera),
             throwsA(isA<UnimplementedError>()));
       });
 
@@ -102,7 +102,7 @@ void main() {
 
       test('pickVideo throws UnimplementedError when source is camera',
           () async {
-        expect(() async => await plugin.pickVideo(source: ImageSource.camera),
+        expect(() async => plugin.pickVideo(source: ImageSource.camera),
             throwsA(isA<UnimplementedError>()));
       });
 
@@ -120,7 +120,7 @@ void main() {
 
       test('getVideo throws UnimplementedError when source is camera',
           () async {
-        expect(() async => await plugin.getVideo(source: ImageSource.camera),
+        expect(() async => plugin.getVideo(source: ImageSource.camera),
             throwsA(isA<UnimplementedError>()));
       });
     });
