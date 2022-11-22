@@ -21,13 +21,9 @@ class GetMultipleDirectoriesPage extends StatelessWidget {
       // Operation was canceled by the user.
       return;
     }
-    String paths = '';
-    for (final String? path in directoryPaths) {
-      paths += '${path!} \n';
-    }
     await showDialog<void>(
       context: context,
-      builder: (BuildContext context) => TextDisplay(paths),
+      builder: (BuildContext context) => TextDisplay(directoryPaths.join('\n')),
     );
   }
 

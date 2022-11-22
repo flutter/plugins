@@ -1,4 +1,4 @@
-## 0.9.0+2
+## 0.9.1
 
 * Adds `getDirectoryPaths` implementation.
 
