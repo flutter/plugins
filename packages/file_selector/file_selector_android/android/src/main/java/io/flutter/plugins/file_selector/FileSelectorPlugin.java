@@ -42,7 +42,7 @@ public class FileSelectorPlugin implements FlutterPlugin, FileSelectorApi, Activ
     return activityState;
   }
 
-  private void setup(
+  private void setUp(
       BinaryMessenger messenger,
       final Application application,
       final Activity activity,
@@ -68,7 +68,7 @@ public class FileSelectorPlugin implements FlutterPlugin, FileSelectorApi, Activ
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-    setup(
+    setUp(
         pluginBinding.getBinaryMessenger(),
         (Application) pluginBinding.getApplicationContext(),
         binding.getActivity(),

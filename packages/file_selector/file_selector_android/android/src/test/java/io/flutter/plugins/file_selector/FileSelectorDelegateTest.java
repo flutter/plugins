@@ -118,12 +118,12 @@ public class FileSelectorDelegateTest {
   }
 
   @Test
-  public void onActivityResult_WhenOpenFileCanceled_FinishesWithNull() {
+  public void onActivityResult_WhenOpenFileCanceled_FinishesWithEmptyList() {
     FileSelectorDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onActivityResult(
         FileSelectorDelegate.REQUEST_CODE_OPEN_FILE, Activity.RESULT_CANCELED, null);
 
-    verify(mockResult).success(null);
+    verify(mockResult).success(new ArrayList<String>());
     verifyNoMoreInteractions(mockResult);
   }
 
@@ -180,9 +180,8 @@ public class FileSelectorDelegateTest {
 
     try (MockedStatic<PathUtils> mockedPathUtils = Mockito.mockStatic(PathUtils.class)) {
       when(mockIntent.getData()).thenReturn(mockUri);
-      when(spyFileSelectorDelegate.uriHandler(mockIntent)).thenReturn(uris);
 
-      spyFileSelectorDelegate.handleOpenFileResult(Activity.RESULT_OK, mockIntent);
+      delegate.handleOpenFileResult(Activity.RESULT_OK, mockIntent);
 
       mockedPathUtils.verify(
           () -> PathUtils.copyFilesToInternalStorage(uris, mockActivity, fakeFolder), times(1));
@@ -191,13 +190,15 @@ public class FileSelectorDelegateTest {
 
   @Test
   public void
-      handleOpenFileResult_WhenItIsCalledWithMultipleFiles_InvokesCopyFileToInternalStorageFromPathUtilsWithCorrespondingUrisArray() {
+      handleOpenFileResult_WhenItIsCalledWithMultipleFiles_InvokesCopyFileToInternalStorageWithUrisArray() {
+    FileSelectorDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.cacheFolder = fakeFolder;
     ArrayList<Uri> uris = setMockUris(numberOfPickedFiles, mockUri);
 
     try (MockedStatic<PathUtils> mockedPathUtils = Mockito.mockStatic(PathUtils.class)) {
-      when(spyFileSelectorDelegate.uriHandler(mockIntent)).thenReturn(uris);
+      mockClipData(numberOfPickedFiles);
 
-      spyFileSelectorDelegate.handleOpenFileResult(Activity.RESULT_OK, mockIntent);
+      delegate.handleOpenFileResult(Activity.RESULT_OK, mockIntent);
 
       mockedPathUtils.verify(
           () -> PathUtils.copyFilesToInternalStorage(uris, mockActivity, fakeFolder), times(1));
@@ -213,37 +214,6 @@ public class FileSelectorDelegateTest {
     delegate.handleOpenFileResult(Activity.RESULT_CANCELED, mockIntent);
 
     verifyNoMoreInteractions(mockPathUtils);
-  }
-
-  @Test
-  public void handleOpenFileResult_WhenItIsCalled_ShouldInvokeHandleOpenFileActionResults() {
-    ArrayList<Uri> uris = setMockUris(1, mockUri);
-    ArrayList<String> paths = new ArrayList<>();
-
-    try (MockedStatic<PathUtils> mockedPathUtils = Mockito.mockStatic(PathUtils.class)) {
-      when(mockIntent.getData()).thenReturn(mockUri);
-      when(spyFileSelectorDelegate.uriHandler(mockIntent)).thenReturn(uris);
-
-      spyFileSelectorDelegate.handleOpenFileResult(Activity.RESULT_OK, mockIntent);
-
-      mockedPathUtils
-          .when(() -> PathUtils.copyFilesToInternalStorage(uris, mockActivity, fakeFolder))
-          .thenReturn(paths);
-
-      verify(spyFileSelectorDelegate).handleOpenFileActionResults(paths);
-    }
-  }
-
-  @Test
-  public void
-      handleOpenFileActionResults_WhenItIsCalled_ShouldInvokeSuccessAndFinishWithListSuccessMethods() {
-    ArrayList<String> paths = new ArrayList<>();
-    spyFileSelectorDelegate = spy(new FileSelectorDelegate(mockActivity, mockResult));
-
-    spyFileSelectorDelegate.handleOpenFileActionResults(paths);
-
-    verify(mockResult).success(paths);
-    verify(spyFileSelectorDelegate).finishWithListSuccess(paths);
   }
 
   @Test
@@ -336,10 +306,6 @@ public class FileSelectorDelegateTest {
 
     verify(mockIntent, times(1))
         .putExtra(Intent.EXTRA_MIME_TYPES, typesList.toArray(new String[0]));
-  }
-
-  private FileSelectorDelegate createDelegate() {
-    return new FileSelectorDelegate(mockActivity, null);
   }
 
   private FileSelectorDelegate createDelegateWithPendingResultAndMethodCall() {

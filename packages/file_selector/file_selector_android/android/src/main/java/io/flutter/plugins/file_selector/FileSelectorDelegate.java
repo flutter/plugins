@@ -75,21 +75,21 @@ public class FileSelectorDelegate
   }
 
   public void getDirectoryPath(@Nullable String initialDirectory, Messages.Result<String> result) {
-    if (setPendingResult(result)) {
+    if (isPendingResult()) {
       finishWithAlreadyActiveError(result);
       return;
     }
-
+    pendingResult = result;
     launchGetDirectoryPath(initialDirectory);
   }
 
   public void openFile(
       @NonNull Messages.SelectionOptions options, Messages.Result<List<String>> result) {
-    if (setPendingResult(result)) {
+    if (isPendingResult()) {
       finishWithAlreadyActiveError(result);
       return;
     }
-
+    pendingResult = result;
     Boolean multipleFiles = options.getAllowMultiple();
     List<String> acceptedTypeGroups = options.getAllowedTypes();
 
@@ -121,7 +121,6 @@ public class FileSelectorDelegate
       default:
         return false;
     }
-
     return true;
   }
 
@@ -132,7 +131,6 @@ public class FileSelectorDelegate
 
     if (acceptedTypeGroups != null && !acceptedTypeGroups.isEmpty()) {
       openFileIntent.setType(acceptedTypeGroups.get(0));
-
       openFileIntent.putExtra(Intent.EXTRA_MIME_TYPES, acceptedTypeGroups.toArray(new String[0]));
     }
 
@@ -142,7 +140,7 @@ public class FileSelectorDelegate
   private void handleGetDirectoryPathResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
       Uri path = data.getData();
-      handleGetDirectoryPathResult(path.toString());
+      finishWithSuccess(path.toString());
       return;
     }
 
@@ -151,7 +149,7 @@ public class FileSelectorDelegate
 
   void handleOpenFileResult(int resultCode, Intent data) {
     if (resultCode != Activity.RESULT_OK || data == null) {
-      finishWithSuccess(null);
+      finishWithSuccess(new ArrayList<String>());
       return;
     }
 
@@ -159,45 +157,23 @@ public class FileSelectorDelegate
 
     ArrayList<String> srcPaths =
         PathUtils.copyFilesToInternalStorage(uris, this.activity, cacheFolder);
-    handleOpenFileActionResults(srcPaths);
+    finishWithSuccess(srcPaths);
   }
 
-  private void handleGetDirectoryPathResult(String path) {
-    finishWithSuccess(path);
+  private boolean isPendingResult() {
+    return pendingResult != null;
   }
 
-  void handleOpenFileActionResults(ArrayList<String> srcPaths) {
-    finishWithListSuccess(srcPaths);
-  }
-
-  private <T> boolean setPendingResult(Messages.Result<T> result) {
-    if (pendingResult != null) {
-      return true;
-    }
-
-    pendingResult = result;
-
-    return false;
-  }
-
-  private void finishWithSuccess(String srcPath) {
+  private <T> void finishWithSuccess(T srcPath) {
     pendingResult.success(srcPath);
-    clearMethodCallAndResult();
-  }
-
-  void finishWithListSuccess(ArrayList<String> srcPaths) {
-    if (pendingResult == null) {
-      return;
-    }
-    pendingResult.success(srcPaths);
-    clearMethodCallAndResult();
+    clearPendingResult();
   }
 
   private void finishWithAlreadyActiveError(@NonNull Messages.Result result) {
     result.error(new Throwable("File selector is already active", null));
   }
 
-  void clearMethodCallAndResult() {
+  private void clearPendingResult() {
     pendingResult = null;
   }
 
