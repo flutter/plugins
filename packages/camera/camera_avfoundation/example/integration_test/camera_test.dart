@@ -269,17 +269,17 @@ void main() {
 
     await controller.initialize();
     await controller.prepareForVideoRecording();
-    final Completer<CameraImageData> _completer = Completer<CameraImageData>();
+    final Completer<CameraImageData> completer = Completer<CameraImageData>();
     await controller.startVideoRecording(
         streamCallback: (CameraImageData image) {
-      if (!_completer.isCompleted) {
-        _completer.complete(image);
+      if (!completer.isCompleted) {
+        completer.complete(image);
       }
     });
     sleep(const Duration(milliseconds: 500));
     await controller.stopVideoRecording();
     await controller.dispose();
 
-    expect(await _completer.future, isNotNull);
+    expect(await completer.future, isNotNull);
   });
 }
