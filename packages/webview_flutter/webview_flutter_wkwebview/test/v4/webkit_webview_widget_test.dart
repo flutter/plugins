@@ -4,12 +4,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/v4/src/webkit_proxy.dart';
 import 'package:webview_flutter_wkwebview/src/v4/webview_flutter_wkwebview.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 
+import 'webkit_webview_controller_test.mocks.dart';
+
+@GenerateMocks(<Type>[WKWebViewConfiguration])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -37,7 +41,7 @@ void main() {
               instanceManager.addDartCreatedInstance(webView);
               return webView;
             },
-            createWebViewConfiguration: WKWebViewConfiguration.detached,
+            createWebViewConfiguration: () => MockWKWebViewConfiguration(),
           ),
         ),
       );

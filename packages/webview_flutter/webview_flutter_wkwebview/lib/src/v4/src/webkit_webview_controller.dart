@@ -17,6 +17,26 @@ import '../../foundation/foundation.dart';
 import '../../web_kit/web_kit.dart';
 import 'webkit_proxy.dart';
 
+/// Media types that can require a user gesture to begin playing.
+///
+/// See [WebKitWebViewControllerCreationParams.mediaTypesRequiringUserAction].
+enum PlaybackMediaTypes {
+  /// A media type that contains audio.
+  audio,
+
+  /// A media type that contains video.
+  video;
+
+  WKAudiovisualMediaType _toWKAudiovisualMediaType() {
+    switch (this) {
+      case PlaybackMediaTypes.audio:
+        return WKAudiovisualMediaType.audio;
+      case PlaybackMediaTypes.video:
+        return WKAudiovisualMediaType.video;
+    }
+  }
+}
+
 /// Object specifying creation parameters for a [WebKitWebViewController].
 @immutable
 class WebKitWebViewControllerCreationParams
@@ -24,7 +44,27 @@ class WebKitWebViewControllerCreationParams
   /// Constructs a [WebKitWebViewControllerCreationParams].
   WebKitWebViewControllerCreationParams({
     @visibleForTesting this.webKitProxy = const WebKitProxy(),
-  }) : _configuration = webKitProxy.createWebViewConfiguration();
+    this.mediaTypesRequiringUserAction = const <PlaybackMediaTypes>{
+      PlaybackMediaTypes.audio,
+      PlaybackMediaTypes.video,
+    },
+    this.allowsInlineMediaPlayback = false,
+  }) : _configuration = webKitProxy.createWebViewConfiguration() {
+    if (mediaTypesRequiringUserAction.isEmpty) {
+      _configuration.setMediaTypesRequiringUserActionForPlayback(
+        <WKAudiovisualMediaType>{WKAudiovisualMediaType.none},
+      );
+    } else {
+      _configuration.setMediaTypesRequiringUserActionForPlayback(
+        mediaTypesRequiringUserAction
+            .map<WKAudiovisualMediaType>(
+              (PlaybackMediaTypes type) => type._toWKAudiovisualMediaType(),
+            )
+            .toSet(),
+      );
+    }
+    _configuration.setAllowsInlineMediaPlayback(allowsInlineMediaPlayback);
+  }
 
   /// Constructs a [WebKitWebViewControllerCreationParams] using a
   /// [PlatformWebViewControllerCreationParams].
@@ -33,9 +73,30 @@ class WebKitWebViewControllerCreationParams
     // ignore: avoid_unused_constructor_parameters
     PlatformWebViewControllerCreationParams params, {
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  }) : this(webKitProxy: webKitProxy);
+    Set<PlaybackMediaTypes> mediaTypesRequiringUserAction =
+        const <PlaybackMediaTypes>{
+      PlaybackMediaTypes.audio,
+      PlaybackMediaTypes.video,
+    },
+    bool allowsInlineMediaPlayback = false,
+  }) : this(
+          webKitProxy: webKitProxy,
+          mediaTypesRequiringUserAction: mediaTypesRequiringUserAction,
+          allowsInlineMediaPlayback: allowsInlineMediaPlayback,
+        );
 
   final WKWebViewConfiguration _configuration;
+
+  /// Media types that require a user gesture to begin playing.
+  ///
+  /// Defaults to include [PlaybackMediaTypes.audio] and
+  /// [PlaybackMediaTypes.video].
+  final Set<PlaybackMediaTypes> mediaTypesRequiringUserAction;
+
+  /// Whether inline playback of HTML5 videos is allowed.
+  ///
+  /// Defaults to false.
+  final bool allowsInlineMediaPlayback;
 
   /// Handles constructing objects and calling static methods for the WebKit
   /// native library.
@@ -71,10 +132,12 @@ class WebKitWebViewController extends PlatformWebViewController {
         NSObject object,
         Map<NSKeyValueChangeKey, Object?> change,
       ) {
-        if (weakReference.target?._onProgress != null) {
+        final ProgressCallback? progressCallback =
+            weakReference.target?._currentNavigationDelegate?._onProgress;
+        if (progressCallback != null) {
           final double progress =
               change[NSKeyValueChangeKey.newValue]! as double;
-          weakReference.target!._onProgress!((progress * 100).round());
+          progressCallback((progress * 100).round());
         }
       },
     );
@@ -84,7 +147,7 @@ class WebKitWebViewController extends PlatformWebViewController {
       <String, WebKitJavaScriptChannelParams>{};
 
   bool _zoomEnabled = true;
-  void Function(int progress)? _onProgress;
+  WebKitNavigationDelegate? _currentNavigationDelegate;
 
   WebKitWebViewControllerCreationParams get _webKitParams =>
       params as WebKitWebViewControllerCreationParams;
@@ -226,11 +289,6 @@ class WebKitWebViewController extends PlatformWebViewController {
     return result.toString();
   }
 
-  /// Controls whether inline playback of HTML5 videos is allowed.
-  Future<void> setAllowsInlineMediaPlayback(bool allow) {
-    return _webView.configuration.setAllowsInlineMediaPlayback(allow);
-  }
-
   @override
   Future<String?> getTitle() => _webView.getTitle();
 
@@ -303,7 +361,7 @@ class WebKitWebViewController extends PlatformWebViewController {
   Future<void> setPlatformNavigationDelegate(
     covariant WebKitNavigationDelegate handler,
   ) {
-    _onProgress = handler._onProgress;
+    _currentNavigationDelegate = handler;
     return _webView.setNavigationDelegate(handler._navigationDelegate);
   }
 
