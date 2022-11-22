@@ -78,6 +78,10 @@ class JavaObject with Copyable {
 /// When a [WebView] is no longer needed [release] must be called.
 class WebView extends JavaObject {
   /// Constructs a new WebView.
+  ///
+  /// Due to changes in Flutter 3.0 the [useHybridComposition] doesn't have
+  /// any effect and should not be exposed publicly. More info here:
+  /// https://github.com/flutter/flutter/issues/108106
   WebView({this.useHybridComposition = false}) : super.detached() {
     api.createFromInstance(this);
   }
