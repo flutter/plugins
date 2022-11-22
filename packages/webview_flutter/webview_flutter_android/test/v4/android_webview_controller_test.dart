@@ -278,7 +278,6 @@ void main() {
       final LoadRequestParams requestParams = LoadRequestParams(
         uri: Uri.parse('flutter.dev'),
         method: LoadRequestMethod.get,
-        headers: const <String, String>{},
       );
 
       try {
