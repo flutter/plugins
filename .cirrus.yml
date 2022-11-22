@@ -16,7 +16,7 @@ install_chrome_linux_template: &INSTALL_CHROME_LINUX
   install_chromium_script:
     # Install a pinned version of Chromium and its corresponding ChromeDriver.
     # Setting CHROME_EXECUTABLE above causes this version to be used for tests.
-    - ./script/install_chromium.sh "$CHROME_DIR"
+    - ./script/install_chromium.sh
 
 tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
