@@ -57,7 +57,7 @@ void main() {
         android_webview.WebView.detached(),
         android_webview.WebResourceRequest(
           url: 'https://www.google.com',
-          isForMainFrame: true,
+          isForMainFrame: false,
           isRedirect: true,
           hasGesture: true,
           method: 'GET',
@@ -73,6 +73,7 @@ void main() {
           android_webview.WebViewClient.errorFileNotFound);
       expect(callbackError.description, 'Page not found.');
       expect(callbackError.errorType, WebResourceErrorType.fileNotFound);
+      expect(callbackError.isForMainFrame, false);
     });
 
     test('onWebResourceError from onRequestError', () {
@@ -94,6 +95,7 @@ void main() {
           android_webview.WebViewClient.errorFileNotFound);
       expect(callbackError.description, 'Page not found.');
       expect(callbackError.errorType, WebResourceErrorType.fileNotFound);
+      expect(callbackError.isForMainFrame, true);
     });
 
     test(
