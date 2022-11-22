@@ -16,11 +16,13 @@ typedef LoadUrlCallback = Future<void> Function(
     String url, Map<String, String>? headers);
 
 /// Error returned in `WebView.onWebResourceError` when a web resource loading error has occurred.
+@immutable
 class AndroidWebResourceError extends WebResourceError {
   /// Creates a new [AndroidWebResourceError].
   AndroidWebResourceError._({
     required super.errorCode,
     required super.description,
+    super.isForMainFrame,
     this.failingUrl,
   }) : super(
           errorType: _errorCodeToErrorType(errorCode),
@@ -140,12 +142,12 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
         android_webview.WebResourceRequest request,
         android_webview.WebResourceError error,
       ) {
-        if (weakThis.target?._onWebResourceError != null &&
-            request.isForMainFrame) {
+        if (weakThis.target?._onWebResourceError != null) {
           weakThis.target!._onWebResourceError!(AndroidWebResourceError._(
             errorCode: error.errorCode,
             description: error.description,
             failingUrl: request.url,
+            isForMainFrame: request.isForMainFrame,
           ));
         }
       },
@@ -160,6 +162,7 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
             errorCode: errorCode,
             description: description,
             failingUrl: failingUrl,
+            isForMainFrame: true,
           ));
         }
       },
