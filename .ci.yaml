@@ -78,7 +78,6 @@ targets:
   # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
   - name: Mac_x64 ios_platform_tests_1_of_4 master
     recipe: plugins/plugins
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
     timeout: 30
     properties:
       add_recipes_cq: "true"
@@ -88,7 +87,6 @@ targets:
 
   - name: Mac_x64 ios_platform_tests_2_of_4 master
     recipe: plugins/plugins
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
     timeout: 30
     properties:
       add_recipes_cq: "true"
@@ -98,7 +96,6 @@ targets:
 
   - name: Mac_x64 ios_platform_tests_3_of_4 master
     recipe: plugins/plugins
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
     timeout: 30
     properties:
       add_recipes_cq: "true"
@@ -108,7 +105,6 @@ targets:
 
   - name: Mac_x64 ios_platform_tests_4_of_4 master
     recipe: plugins/plugins
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
     timeout: 30
     properties:
       add_recipes_cq: "true"
@@ -120,7 +116,6 @@ targets:
   - name: Mac_x64 ios_platform_tests_1_of_4 stable
     recipe: plugins/plugins
     presubmit: false
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
     timeout: 30
     properties:
       channel: stable
@@ -132,7 +127,6 @@ targets:
   - name: Mac_x64 ios_platform_tests_2_of_4 stable
     recipe: plugins/plugins
     presubmit: false
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
     timeout: 30
     properties:
       channel: stable
@@ -144,7 +138,6 @@ targets:
   - name: Mac_x64 ios_platform_tests_3_of_4 stable
     recipe: plugins/plugins
     presubmit: false
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
     timeout: 30
     properties:
       channel: stable
@@ -156,7 +149,6 @@ targets:
   - name: Mac_x64 ios_platform_tests_4_of_4 stable
     recipe: plugins/plugins
     presubmit: false
-    bringup: true # New target: https://github.com/flutter/plugins/pull/6682
     timeout: 30
     properties:
       channel: stable
