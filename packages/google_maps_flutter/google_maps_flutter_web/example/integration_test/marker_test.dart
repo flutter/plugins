@@ -100,13 +100,16 @@ void main() {
     testWidgets('update', (WidgetTester tester) async {
       final MarkerController controller = MarkerController(marker: marker);
       final gmaps.MarkerOptions options = gmaps.MarkerOptions()
-        ..draggable = true;
+        ..draggable = true
+        ..position = gmaps.LatLng(42, 54);
 
       expect(marker.draggable, isNull);
 
       controller.update(options);
 
       expect(marker.draggable, isTrue);
+      expect(marker.position?.lat, equals(42));
+      expect(marker.position?.lng, equals(54));
     });
 
     testWidgets('infoWindow null, showInfoWindow.',

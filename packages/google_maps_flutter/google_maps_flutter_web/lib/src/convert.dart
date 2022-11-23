@@ -284,17 +284,15 @@ gmaps.Icon? _gmIconFromBitmapDescriptor(BitmapDescriptor bitmapDescriptor) {
 
 // Computes the options for a new [gmaps.Marker] from an incoming set of options
 // [marker], and the existing marker registered with the map: [currentMarker].
-// Preserves the position from the [currentMarker], if set.
 gmaps.MarkerOptions _markerOptionsFromMarker(
   Marker marker,
   gmaps.Marker? currentMarker,
 ) {
   return gmaps.MarkerOptions()
-    ..position = currentMarker?.position ??
-        gmaps.LatLng(
-          marker.position.latitude,
-          marker.position.longitude,
-        )
+    ..position = gmaps.LatLng(
+      marker.position.latitude,
+      marker.position.longitude,
+    )
     ..title = sanitizeHtml(marker.infoWindow.title ?? '')
     ..zIndex = marker.zIndex
     ..visible = marker.visible

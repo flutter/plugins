@@ -1,5 +1,6 @@
-## NEXT
+## 0.4.0+4
 
+* Allows marker position updates. Issue [#83467](https://github.com/flutter/flutter/issues/83467).
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 0.4.0+3

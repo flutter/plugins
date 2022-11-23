@@ -55,15 +55,22 @@ void main() {
       expect(
           controller.markers[const MarkerId('1')]?.marker?.draggable, isFalse);
 
-      // Update the marker with radius 10
+      // Update the marker with draggability and position
       final Set<Marker> updatedMarkers = <Marker>{
-        const Marker(markerId: MarkerId('1'), draggable: true),
+        const Marker(
+          markerId: MarkerId('1'),
+          draggable: true,
+          position: LatLng(42, 54),
+        ),
       };
       controller.changeMarkers(updatedMarkers);
 
       expect(controller.markers.length, 1);
-      expect(
-          controller.markers[const MarkerId('1')]?.marker?.draggable, isTrue);
+      final gmaps.Marker? marker =
+          controller.markers[const MarkerId('1')]?.marker;
+      expect(marker?.draggable, isTrue);
+      expect(marker?.position?.lat, equals(42));
+      expect(marker?.position?.lng, equals(54));
     });
 
     testWidgets('removeMarkers', (WidgetTester tester) async {
