@@ -231,12 +231,6 @@ abstract class PlatformWebViewController extends PlatformInterface {
         'getScrollPosition is not implemented on the current platform');
   }
 
-  /// Whether to enable the platform's webview content debugging tools.
-  Future<void> enableDebugging(bool enabled) {
-    throw UnimplementedError(
-        'enableDebugging is not implemented on the current platform');
-  }
-
   /// Whether to allow swipe based navigation on supported platforms.
   Future<void> enableGestureNavigation(bool enabled) {
     throw UnimplementedError(

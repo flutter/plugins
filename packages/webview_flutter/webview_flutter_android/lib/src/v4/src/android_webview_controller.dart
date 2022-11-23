@@ -259,7 +259,7 @@ class AndroidWebViewController extends PlatformWebViewController {
     return Point<int>(position.dx.round(), position.dy.round());
   }
 
-  @override
+  /// Whether to enable the platform's webview content debugging tools.
   Future<void> enableDebugging(bool enabled) =>
       _androidWebViewParams.androidWebViewProxy
           .setWebContentsDebuggingEnabled(enabled);
