@@ -115,6 +115,26 @@ void main() {
           ));
     }
 
+    test(
+        'AndroidWebViewController should initialize WebView with default settings',
+        () {
+      final MockWebView mockWebView = MockWebView();
+      final MockWebSettings mockWebSettings = MockWebSettings();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+        mockSettings: mockWebSettings,
+      );
+
+      verify(mockWebSettings.setBuiltInZoomControls(true)).called(1);
+      verify(mockWebSettings.setDisplayZoomControls(false)).called(1);
+      verify(mockWebSettings.setDomStorageEnabled(true)).called(1);
+      verify(mockWebSettings.setJavaScriptCanOpenWindowsAutomatically(true))
+          .called(1);
+      verify(mockWebSettings.setLoadWithOverviewMode(true)).called(1);
+      verify(mockWebSettings.setSupportMultipleWindows(true)).called(1);
+      verify(mockWebSettings.setUseWideViewPort(true)).called(1);
+    });
+
     test('loadFile without file prefix', () async {
       final MockWebView mockWebView = MockWebView();
       final MockWebSettings mockWebSettings = MockWebSettings();
