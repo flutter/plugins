@@ -1,5 +1,6 @@
-## NEXT
+## 5.5.1
 
+* Fixes passing `serverClientId` via the channelled `init` call
 * Updates minimum Flutter version to 2.10.
 
 ## 5.5.0

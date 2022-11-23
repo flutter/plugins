@@ -1,3 +1,9 @@
+## NEXT
+
+* Pins `package:git` dependency to `2.0.x` until `dart >=2.18.0` becomes our
+  oldest legacy.
+* Updates test mocks.
+
 ## 0.13.0
 
 * Renames `all-plugins-app` to `create-all-packages-app` to clarify what it

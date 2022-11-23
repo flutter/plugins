@@ -389,7 +389,7 @@ void main() {
       await controller.initialize();
       await controller.dispose();
 
-      expect(() async => await controller.dispose(), returnsNormally);
+      expect(() async => controller.dispose(), returnsNormally);
     });
 
     test('play', () async {
