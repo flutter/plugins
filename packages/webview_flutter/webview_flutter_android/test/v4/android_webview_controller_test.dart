@@ -277,7 +277,6 @@ void main() {
       );
       final LoadRequestParams requestParams = LoadRequestParams(
         uri: Uri.parse('flutter.dev'),
-        method: LoadRequestMethod.get,
       );
 
       try {
@@ -300,7 +299,6 @@ void main() {
       );
       final LoadRequestParams requestParams = LoadRequestParams(
         uri: Uri.parse('https://flutter.dev'),
-        method: LoadRequestMethod.get,
         headers: const <String, String>{'X-Test': 'Testing'},
       );
 
