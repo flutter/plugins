@@ -1,6 +1,7 @@
 ## 2.4.0
 
 * Adds the ability to request a specific map renderer.
+* Updates code for new analysis options.
 
 ## 2.3.3
 

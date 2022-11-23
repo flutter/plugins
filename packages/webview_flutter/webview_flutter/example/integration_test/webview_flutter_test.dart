@@ -1300,7 +1300,7 @@ Future<String> _getUserAgent(WebViewController controller) async {
 Future<String> _runJavascriptReturningResult(
     WebViewController controller, String js) async {
   if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return await controller.runJavascriptReturningResult(js);
+    return controller.runJavascriptReturningResult(js);
   }
   return jsonDecode(await controller.runJavascriptReturningResult(js))
       as String;

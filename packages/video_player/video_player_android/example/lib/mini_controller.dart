@@ -318,7 +318,7 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
 
   /// The position in the current video.
   Future<Duration?> get position async {
-    return await _platform.getPosition(_textureId);
+    return _platform.getPosition(_textureId);
   }
 
   /// Sets the video's current timestamp to be at [position].
