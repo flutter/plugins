@@ -31,6 +31,7 @@ android {
 
     defaultConfig {
         minSdkVersion 20
+        multiDexEnabled true
     }
 
     lintOptions {
@@ -39,10 +40,10 @@ android {
     }
 
     dependencies {
+        implementation "androidx.multidex:multidex:2.0.1"
         testImplementation 'junit:junit:4.13.2'
         testImplementation 'org.mockito:mockito-core:4.8.0'
         testImplementation 'androidx.test:core:1.4.0'
-        testImplementation "org.robolectric:robolectric:4.8.1"
         testImplementation "org.mockito:mockito-inline:2.7.21"
     }
 

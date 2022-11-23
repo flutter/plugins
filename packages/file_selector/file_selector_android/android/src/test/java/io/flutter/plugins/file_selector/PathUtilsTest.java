@@ -17,7 +17,6 @@ import android.provider.OpenableColumns;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.Buffer;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.junit.After;
@@ -25,14 +24,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.shadows.ShadowEnvironment;
 
-@RunWith(RobolectricTestRunner.class)
 public class PathUtilsTest {
   static TemporaryFolder folder;
   static final String fileName = "FileName";
@@ -70,7 +65,6 @@ public class PathUtilsTest {
     when(mockContentResolver.openInputStream(mockUri)).thenReturn(mockInputStream);
     when(mockCursor.moveToFirst()).thenReturn(true);
     when(mockCursor.getString(0)).thenReturn(fileName);
-    ShadowEnvironment.setExternalStorageDirectory(Paths.get(externalDirectoryName));
 
     mockFiles();
   }

@@ -41,6 +41,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -57,6 +58,8 @@ flutter {
 dependencies {
     // Core library
     api 'androidx.test:core:1.2.0'
+
+    implementation "androidx.multidex:multidex:2.0.1"
 
     // Assertions
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
