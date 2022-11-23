@@ -114,14 +114,13 @@ public class FileSelectorDelegate
     switch (requestCode) {
       case REQUEST_CODE_GET_DIRECTORY_PATH:
         handleGetDirectoryPathResult(resultCode, data);
-        break;
+        return true;
       case REQUEST_CODE_OPEN_FILE:
         handleOpenFileResult(resultCode, data);
-        break;
+        return true;
       default:
         return false;
     }
-    return true;
   }
 
   void launchOpenFile(boolean isMultipleSelection, List<String> acceptedTypeGroups) {
