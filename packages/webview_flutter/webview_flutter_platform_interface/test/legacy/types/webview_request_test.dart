@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
 
-
 void main() {
   test('WebViewRequestMethod should serialize correctly', () {
     expect(WebViewRequestMethod.get.serialize(), 'get');
