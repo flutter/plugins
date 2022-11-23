@@ -30,8 +30,7 @@ void main() {
     final GoogleMapsFlutterAndroid instance =
         GoogleMapsFlutterPlatform.instance as GoogleMapsFlutterAndroid;
     expect(
-        () async =>
-            await instance.initializeWithRenderer(AndroidMapRenderer.legacy),
+        () async => instance.initializeWithRenderer(AndroidMapRenderer.legacy),
         throwsA(isA<PlatformException>().having((PlatformException e) => e.code,
             'code', 'Renderer already initialized')));
   });
