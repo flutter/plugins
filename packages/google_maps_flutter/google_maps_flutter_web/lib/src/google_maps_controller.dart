@@ -25,11 +25,16 @@ class GoogleMapController {
         _polygons = mapObjects.polygons,
         _polylines = mapObjects.polylines,
         _circles = mapObjects.circles,
+        _clusterManagers = mapObjects.clusterManagers,
         _lastMapConfiguration = mapConfiguration {
     _circlesController = CirclesController(stream: _streamController);
     _polygonsController = PolygonsController(stream: _streamController);
     _polylinesController = PolylinesController(stream: _streamController);
-    _markersController = MarkersController(stream: _streamController);
+    _clusterManagersController =
+        ClusterManagersController(stream: _streamController);
+    _markersController = MarkersController(
+        stream: _streamController,
+        clusterManagersController: _clusterManagersController!);
 
     // Register the view factory that will hold the `_div` that holds the map in the DOM.
     // The `_div` needs to be created outside of the ViewFactory (and cached!) so we can
@@ -53,6 +58,7 @@ class GoogleMapController {
   final Set<Polygon> _polygons;
   final Set<Polyline> _polylines;
   final Set<Circle> _circles;
+  final Set<ClusterManager> _clusterManagers;
   // The configuraiton passed by the user, before converting to gmaps.
   // Caching this allows us to re-create the map faithfully when needed.
   MapConfiguration _lastMapConfiguration = const MapConfiguration();
@@ -100,6 +106,7 @@ class GoogleMapController {
   PolygonsController? _polygonsController;
   PolylinesController? _polylinesController;
   MarkersController? _markersController;
+  ClusterManagersController? _clusterManagersController;
   // Keeps track if _attachGeometryControllers has been called or not.
   bool _controllersBoundToMap = false;
 
@@ -114,12 +121,14 @@ class GoogleMapController {
     CirclesController? circles,
     PolygonsController? polygons,
     PolylinesController? polylines,
+    ClusterManagersController? clusterManagers,
   }) {
     _overrideCreateMap = createMap;
     _markersController = markers ?? _markersController;
     _circlesController = circles ?? _circlesController;
     _polygonsController = polygons ?? _polygonsController;
     _polylinesController = polylines ?? _polylinesController;
+    _clusterManagersController = clusterManagers ?? _clusterManagersController;
   }
 
   DebugCreateMapFunction? _overrideCreateMap;
@@ -167,6 +176,8 @@ class GoogleMapController {
 
     _attachMapEvents(map);
     _attachGeometryControllers(map);
+
+    _initClustering(_clusterManagers);
 
     // Now attach the geometry, traffic and any other layers...
     _renderInitialGeometry(
@@ -228,13 +239,20 @@ class GoogleMapController {
         'Cannot attach a map to a null PolylinesController instance.');
     assert(_markersController != null,
         'Cannot attach a map to a null MarkersController instance.');
+    assert(_clusterManagersController != null,
+        'Cannot attach a map to a null ClusterManagersController instance.');
 
     _circlesController!.bindToMap(_mapId, map);
     _polygonsController!.bindToMap(_mapId, map);
     _polylinesController!.bindToMap(_mapId, map);
     _markersController!.bindToMap(_mapId, map);
+    _clusterManagersController!.bindToMap(_mapId, map);
 
     _controllersBoundToMap = true;
+  }
+
+  void _initClustering(Set<ClusterManager> clusterManagers) {
+    _clusterManagersController!.addClusterManagers(clusterManagers);
   }
 
   // Renders the initial sets of geometry.
@@ -394,6 +412,16 @@ class GoogleMapController {
     _markersController?.removeMarkers(updates.markerIdsToRemove);
   }
 
+  /// Applies [ClusterManagerUpdates] to the currently managed cluster managers.
+  void updateClusterManagers(ClusterManagerUpdates updates) {
+    assert(_clusterManagersController != null,
+        'Cannot update markers after dispose().');
+    _clusterManagersController
+        ?.addClusterManagers(updates.clusterManagersToAdd);
+    _clusterManagersController
+        ?.removeClusterManagers(updates.clusterManagerIdsToRemove);
+  }
+
   /// Shows the [InfoWindow] of the marker identified by its [MarkerId].
   void showInfoWindow(MarkerId markerId) {
     assert(_markersController != null,
@@ -426,6 +454,7 @@ class GoogleMapController {
     _polygonsController = null;
     _polylinesController = null;
     _markersController = null;
+    _clusterManagersController = null;
     _streamController.close();
   }
 }

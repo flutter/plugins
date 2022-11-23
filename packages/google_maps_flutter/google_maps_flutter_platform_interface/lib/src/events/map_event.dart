@@ -170,3 +170,12 @@ class MapLongPressEvent extends _PositionedMapEvent<void> {
   /// The `position` of this event is the LatLng where the Map was long pressed.
   MapLongPressEvent(int mapId, LatLng position) : super(mapId, position, null);
 }
+
+/// An event fired when a cluster icon managed by [ClusterManager] is tapped.
+class ClusterTapEvent extends MapEvent<Cluster> {
+  /// Build a ClusterTapEvent Event triggered from the map represented by `mapId`.
+  ///
+  /// The `value` of this event is a [Cluster] object that represents the tapped
+  /// cluster icon managed by [ClusterManager].
+  ClusterTapEvent(int mapId, Cluster cluster) : super(mapId, cluster);
+}

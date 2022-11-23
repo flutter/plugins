@@ -90,6 +90,9 @@ class ExampleGoogleMapController {
         .listen((MapTapEvent e) => _googleMapState.onTap(e.position));
     GoogleMapsFlutterPlatform.instance.onLongPress(mapId: mapId).listen(
         (MapLongPressEvent e) => _googleMapState.onLongPress(e.position));
+    GoogleMapsFlutterPlatform.instance
+        .onClusterTap(mapId: mapId)
+        .listen((ClusterTapEvent e) => _googleMapState.onClusterTap(e.value));
   }
 
   /// Updates configuration options of the map user interface.
@@ -102,6 +105,13 @@ class ExampleGoogleMapController {
   Future<void> _updateMarkers(MarkerUpdates markerUpdates) {
     return GoogleMapsFlutterPlatform.instance
         .updateMarkers(markerUpdates, mapId: mapId);
+  }
+
+  /// Updates cluster manager configuration.
+  Future<void> _updateClusterManagers(
+      ClusterManagerUpdates clusterManagerUpdates) {
+    return GoogleMapsFlutterPlatform.instance
+        .updateClusterManagers(clusterManagerUpdates, mapId: mapId);
   }
 
   /// Updates polygon configuration.
@@ -241,6 +251,7 @@ class ExampleGoogleMap extends StatefulWidget {
     this.polygons = const <Polygon>{},
     this.polylines = const <Polyline>{},
     this.circles = const <Circle>{},
+    this.clusterManagers = const <ClusterManager>{},
     this.onCameraMoveStarted,
     this.tileOverlays = const <TileOverlay>{},
     this.onCameraMove,
@@ -314,6 +325,9 @@ class ExampleGoogleMap extends StatefulWidget {
   /// Tile overlays to be placed on the map.
   final Set<TileOverlay> tileOverlays;
 
+  /// Cluster Managers to be placed for the map.
+  final Set<ClusterManager> clusterManagers;
+
   /// Called when the camera starts moving.
   final VoidCallback? onCameraMoveStarted;
 
@@ -364,6 +378,8 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
+  Map<ClusterManagerId, ClusterManager> _clusterManagers =
+      <ClusterManagerId, ClusterManager>{};
   late MapConfiguration _mapConfiguration;
 
   @override
@@ -383,6 +399,7 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
         polygons: widget.polygons,
         polylines: widget.polylines,
         circles: widget.circles,
+        clusterManagers: widget.clusterManagers,
       ),
       mapConfiguration: _mapConfiguration,
     );
@@ -392,6 +409,7 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
   void initState() {
     super.initState();
     _mapConfiguration = _configurationFromMapWidget(widget);
+    _clusterManagers = keyByClusterManagerId(widget.clusterManagers);
     _markers = keyByMarkerId(widget.markers);
     _polygons = keyByPolygonId(widget.polygons);
     _polylines = keyByPolylineId(widget.polylines);
@@ -409,6 +427,7 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
   void didUpdateWidget(ExampleGoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
+    _updateClusterManagers();
     _updateMarkers();
     _updatePolygons();
     _updatePolylines();
@@ -432,6 +451,14 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
     controller._updateMarkers(
         MarkerUpdates.from(_markers.values.toSet(), widget.markers));
     _markers = keyByMarkerId(widget.markers);
+  }
+
+  Future<void> _updateClusterManagers() async {
+    final ExampleGoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
+    controller._updateClusterManagers(ClusterManagerUpdates.from(
+        _clusterManagers.values.toSet(), widget.clusterManagers));
+    _clusterManagers = keyByClusterManagerId(widget.clusterManagers);
   }
 
   Future<void> _updatePolygons() async {
@@ -510,6 +537,12 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
 
   void onLongPress(LatLng position) {
     widget.onLongPress?.call(position);
+  }
+
+  void onClusterTap(Cluster cluster) {
+    final ClusterManager? clusterManager =
+        _clusterManagers[cluster.clusterManagerId];
+    clusterManager?.onClusterTap?.call(cluster);
   }
 }
 

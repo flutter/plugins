@@ -101,6 +101,7 @@ class MockGoogleMapController extends _i1.Mock
     _i4.CirclesController? circles,
     _i4.PolygonsController? polygons,
     _i4.PolylinesController? polylines,
+    _i4.ClusterManagersController? clusterManagers,
   }) =>
       super.noSuchMethod(
         Invocation.method(
@@ -112,6 +113,7 @@ class MockGoogleMapController extends _i1.Mock
             #circles: circles,
             #polygons: polygons,
             #polylines: polylines,
+            #clusterManagers: clusterManagers,
           },
         ),
         returnValueForMissingStub: null,
@@ -256,6 +258,15 @@ class MockGoogleMapController extends _i1.Mock
   void updateMarkers(_i3.MarkerUpdates? updates) => super.noSuchMethod(
         Invocation.method(
           #updateMarkers,
+          [updates],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void updateClusterManagers(_i3.ClusterManagerUpdates? updates) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #updateClusterManagers,
           [updates],
         ),
         returnValueForMissingStub: null,

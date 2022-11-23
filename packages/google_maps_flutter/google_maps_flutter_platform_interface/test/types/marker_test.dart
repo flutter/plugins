@@ -96,7 +96,8 @@ void main() {
       expect(clone, equals(marker));
     });
     test('copyWith', () {
-      const Marker marker = Marker(markerId: MarkerId('ABC123'));
+      const MarkerId markerId = MarkerId('ABC123');
+      const Marker marker = Marker(markerId: markerId);
 
       final BitmapDescriptor testDescriptor =
           BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan);
@@ -111,6 +112,8 @@ void main() {
       const double testRotationParam = 100;
       final bool testVisibleParam = !marker.visible;
       const double testZIndexParam = 100;
+      const ClusterManagerId testClusterManagerIdParam =
+          ClusterManagerId('DEF123');
       final List<String> log = <String>[];
 
       final Marker copy = marker.copyWith(
@@ -125,6 +128,7 @@ void main() {
         rotationParam: testRotationParam,
         visibleParam: testVisibleParam,
         zIndexParam: testZIndexParam,
+        clusterManagerIdParam: testClusterManagerIdParam,
         onTapParam: () {
           log.add('onTapParam');
         },
@@ -139,6 +143,7 @@ void main() {
         },
       );
 
+      expect(copy.markerId, equals(markerId));
       expect(copy.alpha, equals(testAlphaParam));
       expect(copy.anchor, equals(testAnchorParam));
       expect(copy.consumeTapEvents, equals(testConsumeTapEventsParam));
@@ -150,6 +155,7 @@ void main() {
       expect(copy.rotation, equals(testRotationParam));
       expect(copy.visible, equals(testVisibleParam));
       expect(copy.zIndex, equals(testZIndexParam));
+      expect(copy.clusterManagerId, equals(testClusterManagerIdParam));
 
       copy.onTap!();
       expect(log, contains('onTapParam'));
@@ -162,6 +168,103 @@ void main() {
 
       copy.onDragEnd!(const LatLng(0, 1));
       expect(log, contains('onDragEndParam'));
+    });
+
+    test('copyWithDefaults', () {
+      const MarkerId markerId = MarkerId('ABC123');
+      const Marker referenceMarker = Marker(markerId: markerId);
+
+      final BitmapDescriptor testDescriptor =
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan);
+      const double testAlphaParam = 0.12345;
+      const Offset testAnchorParam = Offset(100, 100);
+      final bool testConsumeTapEventsParam = !referenceMarker.consumeTapEvents;
+      final bool testDraggableParam = !referenceMarker.draggable;
+      final bool testFlatParam = !referenceMarker.flat;
+      final BitmapDescriptor testIconParam = testDescriptor;
+      const InfoWindow testInfoWindowParam = InfoWindow(title: 'Test');
+      const LatLng testPositionParam = LatLng(100, 100);
+      const double testRotationParam = 100;
+      final bool testVisibleParam = !referenceMarker.visible;
+      const double testZIndexParam = 100;
+      const ClusterManagerId testClusterManagerIdParam =
+          ClusterManagerId('DEF123');
+      final List<String> log = <String>[];
+
+      final Marker marker = Marker(
+        markerId: markerId,
+        alpha: testAlphaParam,
+        anchor: testAnchorParam,
+        consumeTapEvents: testConsumeTapEventsParam,
+        draggable: testDraggableParam,
+        flat: testFlatParam,
+        icon: testIconParam,
+        infoWindow: testInfoWindowParam,
+        position: testPositionParam,
+        rotation: testRotationParam,
+        visible: testVisibleParam,
+        zIndex: testZIndexParam,
+        clusterManagerId: testClusterManagerIdParam,
+        onTap: () {
+          log.add('onTapParam');
+        },
+        onDragStart: (LatLng latLng) {
+          log.add('onDragStartParam');
+        },
+        onDrag: (LatLng latLng) {
+          log.add('onDragParam');
+        },
+        onDragEnd: (LatLng latLng) {
+          log.add('onDragEndParam');
+        },
+      );
+
+      expect(marker.alpha, equals(testAlphaParam));
+      expect(marker.anchor, equals(testAnchorParam));
+      expect(marker.consumeTapEvents, equals(testConsumeTapEventsParam));
+      expect(marker.draggable, equals(testDraggableParam));
+      expect(marker.flat, equals(testFlatParam));
+      expect(marker.icon, equals(testIconParam));
+      expect(marker.infoWindow, equals(testInfoWindowParam));
+      expect(marker.position, equals(testPositionParam));
+      expect(marker.rotation, equals(testRotationParam));
+      expect(marker.visible, equals(testVisibleParam));
+      expect(marker.zIndex, equals(testZIndexParam));
+      expect(marker.clusterManagerId, equals(testClusterManagerIdParam));
+
+      marker.onTap!();
+      expect(log, contains('onTapParam'));
+
+      marker.onDragStart!(const LatLng(0, 1));
+      expect(log, contains('onDragStartParam'));
+
+      marker.onDrag!(const LatLng(0, 1));
+      expect(log, contains('onDragParam'));
+
+      marker.onDragEnd!(const LatLng(0, 1));
+      expect(log, contains('onDragEndParam'));
+
+      final Marker copy = marker.copyWithDefaults(
+        defaultAlpha: true,
+        defaultAnchor: true,
+        defaultClusterManagerId: true,
+        defaultConsumeTapEvents: true,
+        defaultDraggable: true,
+        defaultFlat: true,
+        defaultIcon: true,
+        defaultInfoWindow: true,
+        defaultOnDrag: true,
+        defaultOnDragEnd: true,
+        defaultOnDragStart: true,
+        defaultOnTap: true,
+        defaultPosition: true,
+        defaultRotation: true,
+        defaultVisible: true,
+        defaultZIndex: true,
+      );
+
+      // Copy should now equal reference marked created with default values.
+      expect(copy == referenceMarker, true);
     });
   });
 }

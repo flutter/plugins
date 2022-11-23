@@ -1161,6 +1161,85 @@ void main() {
       expect(tileOverlayInfo1, isNull);
     },
   );
+
+  testWidgets('marker clustering', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    const int clusterManagersAmount = 2;
+    const int markersPerClusterManager = 5;
+    final Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+    final Set<ClusterManager> clusterManagers = <ClusterManager>{};
+
+    for (int i = 0; i < clusterManagersAmount; i++) {
+      final ClusterManagerId clusterManagerId =
+          ClusterManagerId('cluster_manager_$i');
+      final ClusterManager clusterManager =
+          ClusterManager(clusterManagerId: clusterManagerId);
+      clusterManagers.add(clusterManager);
+    }
+
+    for (final ClusterManager cm in clusterManagers) {
+      for (int i = 0; i < markersPerClusterManager; i++) {
+        final MarkerId markerId =
+            MarkerId('${cm.clusterManagerId.value}_marker_$i');
+        final Marker marker = Marker(
+            markerId: markerId,
+            clusterManagerId: cm.clusterManagerId,
+            position: LatLng(
+                _kInitialMapCenter.latitude + i, _kInitialMapCenter.longitude));
+        markers[markerId] = marker;
+      }
+    }
+
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        clusterManagers: clusterManagers,
+        markers: Set<Marker>.of(markers.values),
+        onMapCreated: (GoogleMapController googleMapController) {
+          controllerCompleter.complete(googleMapController);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+
+    for (final ClusterManager cm in clusterManagers) {
+      final List<Cluster> clusters = await inspector.getClusters(
+          mapId: controller.mapId, clusterManagerId: cm.clusterManagerId);
+      final int markersAmountForClusterManager = clusters
+          .map<int>((Cluster cluster) => cluster.count)
+          .reduce((int value, int element) => value + element);
+      expect(markersAmountForClusterManager, markersPerClusterManager);
+    }
+
+    // Remove markers from clusterManagers and test that clusterManagers are empty.
+    for (final MapEntry<MarkerId, Marker> entry in markers.entries) {
+      markers[entry.key] =
+          entry.value.copyWithDefaults(defaultClusterManagerId: true);
+    }
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+          key: key,
+          initialCameraPosition: _kInitialCameraPosition,
+          clusterManagers: clusterManagers,
+          markers: Set<Marker>.of(markers.values)),
+    ));
+
+    for (final ClusterManager cm in clusterManagers) {
+      final List<Cluster> clusters = await inspector.getClusters(
+          mapId: controller.mapId, clusterManagerId: cm.clusterManagerId);
+      expect(clusters.length, 0);
+    }
+  });
 }
 
 class _DebugTileProvider implements TileProvider {

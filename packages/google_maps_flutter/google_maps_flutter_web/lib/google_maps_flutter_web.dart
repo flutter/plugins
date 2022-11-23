@@ -16,6 +16,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:js/js.dart';
 import 'package:sanitize_html/sanitize_html.dart';
 import 'package:stream_transform/stream_transform.dart';
 
@@ -29,6 +30,7 @@ part 'src/convert.dart';
 part 'src/google_maps_controller.dart';
 part 'src/google_maps_flutter_web.dart';
 part 'src/marker.dart';
+part 'src/marker_clustering.dart';
 part 'src/markers.dart';
 part 'src/polygon.dart';
 part 'src/polygons.dart';

@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 
 import 'animate_camera.dart';
+import 'clustering.dart';
 import 'lite_mode.dart';
 import 'map_click.dart';
 import 'map_coordinates.dart';
@@ -37,6 +38,7 @@ final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
   const SnapshotPage(),
   const LiteModePage(),
   const TileOverlayPage(),
+  const ClusteringPage(),
 ];
 
 /// MapsDemo is the Main Application.

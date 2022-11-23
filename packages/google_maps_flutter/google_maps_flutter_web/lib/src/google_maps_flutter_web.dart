@@ -99,6 +99,15 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   @override
+  Future<void> updateClusterManagers(
+    ClusterManagerUpdates clusterManagerUpdates, {
+    required int mapId,
+  }) async {
+    assert(clusterManagerUpdates != null);
+    _map(mapId).updateClusterManagers(clusterManagerUpdates);
+  }
+
+  @override
   Future<void> clearTileCache(
     TileOverlayId tileOverlayId, {
     required int mapId,
@@ -277,6 +286,11 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Stream<MapLongPressEvent> onLongPress({required int mapId}) {
     return _events(mapId).whereType<MapLongPressEvent>();
+  }
+
+  @override
+  Stream<ClusterTapEvent> onClusterTap({required int mapId}) {
+    return _events(mapId).whereType<ClusterTapEvent>();
   }
 
   /// Disposes of the current map. It can't be used afterwards!

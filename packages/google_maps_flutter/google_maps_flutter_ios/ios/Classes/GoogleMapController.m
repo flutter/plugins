@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "GoogleMapController.h"
+#import <Google-Maps-iOS-Utils/GMUStaticCluster.h>
 #import "FLTGoogleMapJSONConversions.h"
 #import "FLTGoogleMapTileOverlayController.h"
 
@@ -62,6 +63,7 @@
 @property(nonatomic, strong) FlutterMethodChannel *channel;
 @property(nonatomic, assign) BOOL trackCameraPosition;
 @property(nonatomic, weak) NSObject<FlutterPluginRegistrar> *registrar;
+@property(nonatomic, strong) FLTClusterManagersController *clusterManagersController;
 @property(nonatomic, strong) FLTMarkersController *markersController;
 @property(nonatomic, strong) FLTPolygonsController *polygonsController;
 @property(nonatomic, strong) FLTPolylinesController *polylinesController;
@@ -106,9 +108,13 @@
     _mapView.delegate = weakSelf;
     _mapView.paddingAdjustmentBehavior = kGMSMapViewPaddingAdjustmentBehaviorNever;
     _registrar = registrar;
-    _markersController = [[FLTMarkersController alloc] initWithMethodChannel:_channel
-                                                                     mapView:_mapView
-                                                                   registrar:registrar];
+    _clusterManagersController = [[FLTClusterManagersController alloc] init:_channel
+                                                                    mapView:_mapView];
+    _markersController =
+        [[FLTMarkersController alloc] initWithClusterManagersController:_clusterManagersController
+                                                                channel:_channel
+                                                                mapView:_mapView
+                                                              registrar:registrar];
     _polygonsController = [[FLTPolygonsController alloc] init:_channel
                                                       mapView:_mapView
                                                     registrar:registrar];
@@ -121,6 +127,11 @@
     _tileOverlaysController = [[FLTTileOverlaysController alloc] init:_channel
                                                               mapView:_mapView
                                                             registrar:registrar];
+
+    id clusterManagersToAdd = args[@"clusterManagersToAdd"];
+    if ([clusterManagersToAdd isKindOfClass:[NSArray class]]) {
+      [_clusterManagersController addClusterManagers:clusterManagersToAdd];
+    }
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
@@ -259,6 +270,7 @@
     if ([markerIdsToRemove isKindOfClass:[NSArray class]]) {
       [self.markersController removeMarkersWithIdentifiers:markerIdsToRemove];
     }
+    [self.clusterManagersController clusterAll];
     result(nil);
   } else if ([call.method isEqualToString:@"markers#showInfoWindow"]) {
     id markerId = call.arguments[@"markerId"];
@@ -287,6 +299,19 @@
                                  message:@"isInfoWindowShown called with invalid markerId"
                                  details:nil]);
     }
+  } else if ([call.method isEqualToString:@"clusterManagers#update"]) {
+    id clusterManagersToAdd = call.arguments[@"clusterManagersToAdd"];
+    if ([clusterManagersToAdd isKindOfClass:[NSArray class]]) {
+      [self.clusterManagersController addClusterManagers:clusterManagersToAdd];
+    }
+    id clusterManagerIdsToRemove = call.arguments[@"clusterManagerIdsToRemove"];
+    if ([clusterManagerIdsToRemove isKindOfClass:[NSArray class]]) {
+      [self.clusterManagersController removeClusterManagers:clusterManagerIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"clusterManager#getClusters"]) {
+    id clusterManagerId = call.arguments[@"clusterManagerId"];
+    [self.clusterManagersController getClustersWithIdentifier:clusterManagerId result:result];
   } else if ([call.method isEqualToString:@"polygons#update"]) {
     id polygonsToAdd = call.arguments[@"polygonsToAdd"];
     if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
@@ -523,6 +548,10 @@
 }
 
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
+  if ([marker.userData conformsToProtocol:@protocol(GMUCluster)]) {
+    GMUStaticCluster *cluster = marker.userData;
+    return [self.clusterManagersController didTapCluster:cluster];
+  }
   NSString *markerId = marker.userData[0];
   return [self.markersController didTapMarkerWithIdentifier:markerId];
 }

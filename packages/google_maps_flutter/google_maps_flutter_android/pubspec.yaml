@@ -29,3 +29,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   plugin_platform_interface: ^2.0.0
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  google_maps_flutter_platform_interface:
+    path: ../../google_maps_flutter/google_maps_flutter_platform_interface

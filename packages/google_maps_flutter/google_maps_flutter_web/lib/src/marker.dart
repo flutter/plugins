@@ -15,9 +15,11 @@ class MarkerController {
     LatLngCallback? onDrag,
     LatLngCallback? onDragEnd,
     ui.VoidCallback? onTap,
+    ClusterManagerId? clusterManagerId,
   })  : _marker = marker,
         _infoWindow = infoWindow,
-        _consumeTapEvents = consumeTapEvents {
+        _consumeTapEvents = consumeTapEvents,
+        _clusterManagerId = clusterManagerId {
     if (onTap != null) {
       marker.onClick.listen((gmaps.MapMouseEvent event) {
         onTap.call();
@@ -53,6 +55,8 @@ class MarkerController {
 
   final bool _consumeTapEvents;
 
+  final ClusterManagerId? _clusterManagerId;
+
   final gmaps.InfoWindow? _infoWindow;
 
   bool _infoWindowShown = false;
@@ -62,6 +66,9 @@ class MarkerController {
 
   /// Returns `true` if the [gmaps.InfoWindow] associated to this marker is being shown.
   bool get infoWindowShown => _infoWindowShown;
+
+  /// Returns [ClusterManagerId] if marker belongs to cluster.
+  ClusterManagerId? get clusterManagerId => _clusterManagerId;
 
   /// Returns the [gmaps.Marker] associated to this controller.
   gmaps.Marker? get marker => _marker;

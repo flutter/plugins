@@ -4,6 +4,7 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "ClusterManagersController.h"
 #import "GoogleMapController.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -11,9 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 // Defines marker controllable by Flutter.
 @interface FLTGoogleMapMarkerController : NSObject
 @property(assign, nonatomic, readonly) BOOL consumeTapEvents;
-- (instancetype)initMarkerWithPosition:(CLLocationCoordinate2D)position
-                            identifier:(NSString *)identifier
-                               mapView:(GMSMapView *)mapView;
+- (instancetype)initWithMarker:(GMSMarker *)marker
+                    identifier:(NSString *)identifier
+              clusterManagerId:(NSString *)identifier
+                       mapView:(GMSMapView *)mapView;
 - (void)showInfoWindow;
 - (void)hideInfoWindow;
 - (BOOL)isInfoWindowShown;
@@ -21,12 +23,16 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface FLTMarkersController : NSObject
-- (instancetype)initWithMethodChannel:(FlutterMethodChannel *)methodChannel
-                              mapView:(GMSMapView *)mapView
-                            registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
+- (instancetype)initWithClusterManagersController:(FLTClusterManagersController *)clusterManagers
+                                          channel:(FlutterMethodChannel *)channel
+                                          mapView:(GMSMapView *)mapView
+                                        registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)addMarkers:(NSArray *)markersToAdd;
+- (void)addMarker:(NSDictionary *)markerToAdd;
 - (void)changeMarkers:(NSArray *)markersToChange;
+- (void)changeMarker:(NSDictionary *)markerToChange;
 - (void)removeMarkersWithIdentifiers:(NSArray *)identifiers;
+- (void)removeMarker:(NSString *)identifier;
 - (BOOL)didTapMarkerWithIdentifier:(NSString *)identifier;
 - (void)didStartDraggingMarkerWithIdentifier:(NSString *)identifier
                                     location:(CLLocationCoordinate2D)coordinate;

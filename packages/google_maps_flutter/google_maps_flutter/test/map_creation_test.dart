@@ -275,6 +275,11 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
   }
 
   @override
+  Stream<ClusterTapEvent> onClusterTap({required int mapId}) {
+    return mapEventStreamController.stream.whereType<ClusterTapEvent>();
+  }
+
+  @override
   void dispose({required int mapId}) {
     disposed = true;
   }
