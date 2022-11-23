@@ -40,6 +40,7 @@ void main() {
       android_webview.WebView? mockWebView,
       android_webview.WebViewClient? mockWebViewClient,
       android_webview.WebStorage? mockWebStorage,
+      android_webview.WebSettings? mockSettings,
     }) {
       final android_webview.WebView nonNullMockWebView =
           mockWebView ?? MockWebView();
@@ -91,6 +92,9 @@ void main() {
                     mockJavaScriptChannel ?? MockJavaScriptChannel(),
               ));
 
+      when(nonNullMockWebView.settings)
+          .thenReturn(mockSettings ?? MockWebSettings());
+
       return AndroidWebViewController(creationParams);
     }
 
@@ -116,9 +120,8 @@ void main() {
       final MockWebSettings mockWebSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockWebSettings,
       );
-
-      when(mockWebView.settings).thenReturn(mockWebSettings);
 
       await controller.loadFile('/path/to/file.html');
 
@@ -134,9 +137,8 @@ void main() {
       final MockWebSettings mockWebSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockWebSettings,
       );
-
-      when(mockWebView.settings).thenReturn(mockWebSettings);
 
       await controller.loadFile('/path/to/?_<_>_.html');
 
@@ -152,9 +154,8 @@ void main() {
       final MockWebSettings mockWebSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockWebSettings,
       );
-
-      when(mockWebView.settings).thenReturn(mockWebSettings);
 
       await controller.loadFile('file:///path/to/file.html');
 
@@ -623,33 +624,23 @@ void main() {
     });
 
     test('enableDebugging', () async {
+      final MockWebView mockWebView = MockWebView();
       final MockAndroidWebViewProxy mockProxy = MockAndroidWebViewProxy();
       final AndroidWebViewControllerCreationParams creationParams =
           AndroidWebViewControllerCreationParams(
         androidWebViewProxy: mockProxy,
         androidWebStorage: MockWebStorage(),
       );
+      when(mockProxy.createAndroidWebView).thenReturn(
+        ({required bool useHybridComposition}) => mockWebView,
+      );
+      when(mockWebView.settings).thenReturn(MockWebSettings());
+
       final AndroidWebViewController controller =
           AndroidWebViewController(creationParams);
-
       await controller.enableDebugging(true);
 
       verify(mockProxy.setWebContentsDebuggingEnabled(true)).called(1);
-    });
-
-    test('enableDomStorage', () async {
-      final MockWebView mockWebView = MockWebView();
-      final MockWebSettings mockSettings = MockWebSettings();
-      final AndroidWebViewController controller = createControllerWithMocks(
-        mockWebView: mockWebView,
-      );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
-
-      await controller.enableDomStorage(true);
-
-      verify(mockWebView.settings).called(1);
-      verify(mockSettings.setDomStorageEnabled(true)).called(1);
     });
 
     test('enableFileAccess', () async {
@@ -657,13 +648,10 @@ void main() {
       final MockWebSettings mockSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockSettings,
       );
 
-      when(mockWebView.settings).thenReturn(mockSettings);
-
       await controller.enableFileAccess(true);
-
-      verify(mockWebView.settings).called(1);
       verify(mockSettings.setAllowFileAccess(true)).called(1);
     });
 
@@ -672,13 +660,11 @@ void main() {
       final MockWebSettings mockSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockSettings,
       );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
 
       await controller.enableZoom(true);
 
-      verify(mockWebView.settings).called(1);
       verify(mockSettings.setSupportZoom(true)).called(1);
     });
 
@@ -693,131 +679,30 @@ void main() {
       verify(mockWebView.setBackgroundColor(Colors.blue)).called(1);
     });
 
-    test('setBuiltInZoomControls', () async {
-      final MockWebView mockWebView = MockWebView();
-      final MockWebSettings mockSettings = MockWebSettings();
-      final AndroidWebViewController controller = createControllerWithMocks(
-        mockWebView: mockWebView,
-      );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
-
-      await controller.setBuiltInZoomControls(true);
-
-      verify(mockWebView.settings).called(1);
-      verify(mockSettings.setBuiltInZoomControls(true)).called(1);
-    });
-
-    test('setDisplayZoomControls', () async {
-      final MockWebView mockWebView = MockWebView();
-      final MockWebSettings mockSettings = MockWebSettings();
-      final AndroidWebViewController controller = createControllerWithMocks(
-        mockWebView: mockWebView,
-      );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
-
-      await controller.setDisplayZoomControls(true);
-
-      verify(mockWebView.settings).called(1);
-      verify(mockSettings.setDisplayZoomControls(true)).called(1);
-    });
-
-    test('setJavaScriptCanOpenWindowsAutomatically', () async {
-      final MockWebView mockWebView = MockWebView();
-      final MockWebSettings mockSettings = MockWebSettings();
-      final AndroidWebViewController controller = createControllerWithMocks(
-        mockWebView: mockWebView,
-      );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
-
-      await controller.setJavaScriptCanOpenWindowsAutomatically(true);
-
-      verify(mockWebView.settings).called(1);
-      verify(mockSettings.setJavaScriptCanOpenWindowsAutomatically(true))
-          .called(1);
-    });
-
     test('setJavaScriptMode', () async {
       final MockWebView mockWebView = MockWebView();
       final MockWebSettings mockSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockSettings,
       );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
 
       await controller.setJavaScriptMode(JavaScriptMode.disabled);
 
-      verify(mockWebView.settings).called(1);
       verify(mockSettings.setJavaScriptEnabled(false)).called(1);
     });
 
-    test(
-        'setAutoMediaPlaybackPolicy should set Media Playback Requires User Gesture to false when policy is set to always_allow.',
-        () async {
+    test('setMediaPlaybackRequiresUserGesture', () async {
       final MockWebView mockWebView = MockWebView();
       final MockWebSettings mockSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockSettings,
       );
 
-      when(mockWebView.settings).thenReturn(mockSettings);
+      await controller.setMediaPlaybackRequiresUserGesture(true);
 
-      await controller
-          .setAutoMediaPlaybackPolicy(AutoMediaPlaybackPolicy.always_allow);
-
-      verify(mockWebView.settings).called(1);
-      verify(mockSettings.setMediaPlaybackRequiresUserGesture(false)).called(1);
-    });
-
-    test(
-        'setAutoMediaPlaybackPolicy should set Media Playback Requires User Gesture to true when policy is anything but always_allow.',
-        () async {
-      final MockWebView mockWebView = MockWebView();
-      final MockWebSettings mockSettings = MockWebSettings();
-      final AndroidWebViewController controller = createControllerWithMocks(
-        mockWebView: mockWebView,
-      );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
-
-      await controller.setAutoMediaPlaybackPolicy(
-          AutoMediaPlaybackPolicy.require_user_action_for_all_media_types);
-
-      verify(mockWebView.settings).called(1);
       verify(mockSettings.setMediaPlaybackRequiresUserGesture(true)).called(1);
-    });
-
-    test('setLoadWithOverviewMode', () async {
-      final MockWebView mockWebView = MockWebView();
-      final MockWebSettings mockSettings = MockWebSettings();
-      final AndroidWebViewController controller = createControllerWithMocks(
-        mockWebView: mockWebView,
-      );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
-
-      await controller.setLoadWithOverviewMode(true);
-
-      verify(mockWebView.settings).called(1);
-      verify(mockSettings.setLoadWithOverviewMode(true)).called(1);
-    });
-
-    test('setSupportMultipleWindows', () async {
-      final MockWebView mockWebView = MockWebView();
-      final MockWebSettings mockSettings = MockWebSettings();
-      final AndroidWebViewController controller = createControllerWithMocks(
-        mockWebView: mockWebView,
-      );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
-
-      await controller.setSupportMultipleWindows(true);
-
-      verify(mockWebView.settings).called(1);
-      verify(mockSettings.setSupportMultipleWindows(true)).called(1);
     });
 
     test('setUserAgent', () async {
@@ -825,29 +710,12 @@ void main() {
       final MockWebSettings mockSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockSettings,
       );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
 
       await controller.setUserAgent('Test Framework');
 
-      verify(mockWebView.settings).called(1);
       verify(mockSettings.setUserAgentString('Test Framework')).called(1);
-    });
-
-    test('setUseWideViewPort', () async {
-      final MockWebView mockWebView = MockWebView();
-      final MockWebSettings mockSettings = MockWebSettings();
-      final AndroidWebViewController controller = createControllerWithMocks(
-        mockWebView: mockWebView,
-      );
-
-      when(mockWebView.settings).thenReturn(mockSettings);
-
-      await controller.setUseWideViewPort(true);
-
-      verify(mockWebView.settings).called(1);
-      verify(mockSettings.setUseWideViewPort(true)).called(1);
     });
   });
 }
