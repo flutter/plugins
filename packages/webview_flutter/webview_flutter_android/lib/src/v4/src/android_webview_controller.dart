@@ -197,8 +197,18 @@ class AndroidWebViewController extends PlatformWebViewController {
   }
 
   @override
-  Future<String> runJavaScriptReturningResult(String javaScript) async {
-    return await _webView.evaluateJavascript(javaScript) ?? '';
+  Future<Object> runJavaScriptReturningResult(String javaScript) async {
+    final String? result = await _webView.evaluateJavascript(javaScript);
+
+    if (result == null) {
+      return '';
+    } else if (result == 'true') {
+      return true;
+    } else if (result == 'false') {
+      return false;
+    }
+
+    return num.tryParse(result) ?? result;
   }
 
   @override
