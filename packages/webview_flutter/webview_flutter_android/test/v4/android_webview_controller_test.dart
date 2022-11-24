@@ -709,6 +709,7 @@ void main() {
       final AndroidWebViewController controller =
           createControllerWithMocks(mockWebView: mockWebView);
 
+      when(mockParams.key).thenReturn(const Key('test_web_view'));
       when(mockParams.instanceManager).thenReturn(mockInstanceManager);
       when(mockParams.controller).thenReturn(controller);
       when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
@@ -721,6 +722,7 @@ void main() {
       ));
 
       expect(find.byType(PlatformViewLink), findsOneWidget);
+      expect(find.byKey(const Key('test_web_view')), findsOneWidget);
     });
   });
 }

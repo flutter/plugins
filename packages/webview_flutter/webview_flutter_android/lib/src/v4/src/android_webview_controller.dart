@@ -8,8 +8,6 @@ import 'dart:math';
 // ignore: unnecessary_import
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -379,6 +377,7 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformViewLink(
+        key: _androidParams.key,
         viewType: 'plugins.flutter.io/webview',
         surfaceFactory: (
           BuildContext context,
