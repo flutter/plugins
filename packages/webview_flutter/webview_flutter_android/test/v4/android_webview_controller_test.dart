@@ -700,30 +700,27 @@ void main() {
   });
 
   group('AndroidWebViewWidget', () {
-    test('Builds AndroidView using supplied parameters', () async {
-      final MockBuildContext mockContext = MockBuildContext();
+    testWidgets('Builds AndroidView using supplied parameters',
+        (WidgetTester tester) async {
       final MockAndroidWebViewWidgetCreationParams mockParams =
           MockAndroidWebViewWidgetCreationParams();
       final MockInstanceManager mockInstanceManager = MockInstanceManager();
       final MockWebView mockWebView = MockWebView();
       final AndroidWebViewController controller =
           createControllerWithMocks(mockWebView: mockWebView);
-      final AndroidWebViewWidget webViewWidget =
-          AndroidWebViewWidget(mockParams);
 
       when(mockParams.instanceManager).thenReturn(mockInstanceManager);
       when(mockParams.controller).thenReturn(controller);
       when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
 
-      final AndroidView androidView =
-          webViewWidget.build(mockContext) as AndroidView;
+      final AndroidWebViewWidget webViewWidget =
+          AndroidWebViewWidget(mockParams);
 
-      expect(androidView.viewType, 'plugins.flutter.io/webview');
-      expect(androidView.creationParamsCodec, const StandardMessageCodec());
-      expect(androidView.creationParams, 42);
-      verify(mockParams.gestureRecognizers).called(1);
-      verify(mockParams.layoutDirection).called(1);
-      verify(mockParams.instanceManager).called(1);
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) => webViewWidget.build(context),
+      ));
+
+      expect(find.byType(PlatformViewLink), findsOneWidget);
     });
   });
 }

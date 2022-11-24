@@ -9,7 +9,9 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
 
@@ -376,14 +378,30 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AndroidView(
-      viewType: 'plugins.flutter.io/webview',
-      onPlatformViewCreated: (_) {},
-      gestureRecognizers: _androidParams.gestureRecognizers,
-      layoutDirection: _androidParams.layoutDirection,
-      creationParams: _androidParams.instanceManager.getIdentifier(
-          (_androidParams.controller as AndroidWebViewController)._webView),
-      creationParamsCodec: const StandardMessageCodec(),
-    );
+    return PlatformViewLink(
+        viewType: 'plugins.flutter.io/webview',
+        surfaceFactory: (
+          BuildContext context,
+          PlatformViewController controller,
+        ) {
+          return AndroidViewSurface(
+            controller: controller as AndroidViewController,
+            gestureRecognizers: _androidParams.gestureRecognizers,
+            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+          );
+        },
+        onCreatePlatformView: (PlatformViewCreationParams params) {
+          return PlatformViewsService.initSurfaceAndroidView(
+            id: params.id,
+            viewType: 'plugins.flutter.io/webview',
+            layoutDirection: _androidParams.layoutDirection,
+            creationParams: _androidParams.instanceManager.getIdentifier(
+                (_androidParams.controller as AndroidWebViewController)
+                    ._webView),
+            creationParamsCodec: const StandardMessageCodec(),
+          )
+            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+            ..create();
+        });
   }
 }
