@@ -48,6 +48,7 @@ void main() {
 
       final WebKitWebViewWidget widget = WebKitWebViewWidget(
         WebKitWebViewWidgetCreationParams(
+          key: const Key('keyValue'),
           controller: controller,
           instanceManager: instanceManager,
         ),
@@ -58,6 +59,7 @@ void main() {
       );
 
       expect(find.byType(UiKitView), findsOneWidget);
+      expect(find.byKey(const Key('keyValue')), findsOneWidget);
     });
   });
 }
