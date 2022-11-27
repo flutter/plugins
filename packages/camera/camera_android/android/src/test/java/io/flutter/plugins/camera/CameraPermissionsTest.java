@@ -75,7 +75,7 @@ public class CameraPermissionsTest {
 
   @Test
   public void callback_respondsWithCameraAccessDeniedWhenEmptyResult() {
-    // Handles the case where the grantReults array is empty
+    // Handles the case where the grantResults array is empty
     
     ResultCallback fakeResultCallback = mock(ResultCallback.class);
     CameraRequestPermissionsListener permissionsListener =
