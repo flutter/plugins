@@ -28,17 +28,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-  IconData currButtonIcon = Icons.pause_circle; // THIS NEEDS TO BE A STATEFUL WIDGET FOR THIS TO WORK
   bool buttonPressed = false;
 
   @override
   Widget build(BuildContext context) {
-    // String availableCameraNames = 'Available cameras:';
-    // for (final CameraDescription cameraDescription in _cameras) {
-    //   availableCameraNames = '$availableCameraNames ${cameraDescription.name},';
-    // }
-
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -64,23 +57,18 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(currButtonIcon),
+                  icon: Icon(Icons.pause_circle), // TODO: change to stateful widget to change this
                   onPressed: () {
                     buttonPressed = !buttonPressed;
                     if (buttonPressed) {
                       CameraPlatform.instance.pausePreview(_cameraId);
-                      currButtonIcon = Icons.play_circle;
                     } else {
                       CameraPlatform.instance.resumePreview(_cameraId);
-                      currButtonIcon = Icons.pause_circle;
                     }
                   }
                 ),
               ],
             ),
-            // child: CameraPlatform.instance.buildPreview(_cameraId),
-          // child: Text(availableCameraNames.substring(
-          //     0, availableCameraNames.length - 1)),
         ),
     );
   }
