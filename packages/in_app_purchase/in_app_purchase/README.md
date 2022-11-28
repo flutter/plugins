@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    final Stream purchaseUpdated =
+    final Stream<List<PurchaseDetails>> purchaseUpdated =
         InAppPurchase.instance.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
