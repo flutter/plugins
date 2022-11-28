@@ -337,20 +337,16 @@ class Camera
           public void onOpened(@NonNull CameraDevice device) {
             cameraDevice = new DefaultCameraDeviceWrapper(device);
             try {
-              // Since we are already recording, we are flipping the camera and must
-              // send it through the VideoRenderer to keep correct orientation.
-              if (recordingVideo) {
-                startPreviewWithVideoRendererStream();
-              } else {
-                startPreview();
-                dartMessenger.sendCameraInitializedEvent(
+              startPreview();
+              if (!recordingVideo) // only send initialization if we werent already recording and switching cameras
+              dartMessenger.sendCameraInitializedEvent(
                     resolutionFeature.getPreviewSize().getWidth(),
                     resolutionFeature.getPreviewSize().getHeight(),
                     cameraFeatures.getExposureLock().getValue(),
                     cameraFeatures.getAutoFocus().getValue(),
                     cameraFeatures.getExposurePoint().checkIsSupported(),
                     cameraFeatures.getFocusPoint().checkIsSupported());
-              }
+
             } catch (CameraAccessException | InterruptedException e) {
               dartMessenger.sendCameraErrorEvent(e.getMessage());
               close();
@@ -1098,7 +1094,17 @@ class Camera
         null, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
   }
 
-  public void startPreview() throws CameraAccessException {
+  public void startPreview() throws CameraAccessException, InterruptedException {
+    // if we are already recording, we are flipping the camera and must
+    // send it through the VideoRenderer to keep correct orientation.
+    if (recordingVideo) {
+      startPreviewWithVideoRendererStream();
+    } else {
+      startRegularPreview();
+    }
+  }
+
+  private void startRegularPreview() throws CameraAccessException {
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
     Log.i(TAG, "startPreview");
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
@@ -1112,23 +1118,21 @@ class Camera
     final PlatformChannel.DeviceOrientation lockedOrientation =
         ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
             .getLockedCaptureOrientation();
-    int rotation =
-        lockedOrientation == null
-            ? cameraFeatures
-                .getSensorOrientation()
-                .getDeviceOrientationManager()
-                .getVideoOrientation()
-            : cameraFeatures
-                .getSensorOrientation()
-                .getDeviceOrientationManager()
-                .getVideoOrientation(lockedOrientation);
+    DeviceOrientationManager orientationManager =
+        cameraFeatures.getSensorOrientation().getDeviceOrientationManager();
+    if (orientationManager != null) {
+      int rotation =
+          lockedOrientation == null
+              ? orientationManager.getVideoOrientation()
+              : orientationManager.getVideoOrientation(lockedOrientation);
 
-    if (cameraProperties.getLensFacing() != initialCameraFacing) {
-      // If we are facing the opposite way than the initial recording,
-      // we need to flip 180 degrees.
-      rotation = (rotation + 180) % 360;
+      if (cameraProperties.getLensFacing() != initialCameraFacing) {
+        // If we are facing the opposite way than the initial recording,
+        // we need to flip 180 degrees.
+        rotation = (rotation + 180) % 360;
+      }
+      videoRenderer.setRotation(rotation);
     }
-    videoRenderer.setRotation(rotation);
 
     createCaptureSession(CameraDevice.TEMPLATE_RECORD, videoRenderer.getInputSurface());
   }
