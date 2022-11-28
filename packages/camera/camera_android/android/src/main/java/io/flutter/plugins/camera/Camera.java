@@ -810,7 +810,7 @@ class Camera
     mediaRecorder.reset();
     try {
       startPreview();
-    } catch (CameraAccessException | IllegalStateException e) {
+    } catch (CameraAccessException | IllegalStateException | InterruptedException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
       return;
     }
