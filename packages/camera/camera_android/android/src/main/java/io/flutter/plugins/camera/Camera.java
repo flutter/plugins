@@ -1120,19 +1120,22 @@ class Camera
             .getLockedCaptureOrientation();
     DeviceOrientationManager orientationManager =
         cameraFeatures.getSensorOrientation().getDeviceOrientationManager();
+
+    int rotation = 0;
     if (orientationManager != null) {
-      int rotation =
+      rotation =
           lockedOrientation == null
               ? orientationManager.getVideoOrientation()
               : orientationManager.getVideoOrientation(lockedOrientation);
-
-      if (cameraProperties.getLensFacing() != initialCameraFacing) {
-        // If we are facing the opposite way than the initial recording,
-        // we need to flip 180 degrees.
-        rotation = (rotation + 180) % 360;
-      }
-      videoRenderer.setRotation(rotation);
     }
+
+    if (cameraProperties.getLensFacing() != initialCameraFacing) {
+
+      // If we are facing the opposite way than the initial recording,
+      // we need to flip 180 degrees.
+      rotation = (rotation + 180) % 360;
+    }
+    videoRenderer.setRotation(rotation);
 
     createCaptureSession(CameraDevice.TEMPLATE_RECORD, videoRenderer.getInputSurface());
   }

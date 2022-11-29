@@ -673,6 +673,33 @@ public class CameraTest {
   }
 
   @Test
+  public void startPreview_shouldFlipRotation() throws InterruptedException, CameraAccessException {
+    VideoRenderer mockVideoRenderer = mock(VideoRenderer.class);
+    ArrayList<CaptureRequest.Builder> mockRequestBuilders = new ArrayList<>();
+    mockRequestBuilders.add(mock(CaptureRequest.Builder.class));
+    SurfaceTexture mockSurfaceTexture = mock(SurfaceTexture.class);
+    Size mockSize = mock(Size.class);
+    TestUtils.setPrivateField(camera, "recordingVideo", true);
+    TestUtils.setPrivateField(camera, "videoRenderer", mockVideoRenderer);
+    TestUtils.setPrivateField(camera, "initialCameraFacing", CameraMetadata.LENS_FACING_BACK);
+    CameraDeviceWrapper fakeCamera = new FakeCameraDeviceWrapper(mockRequestBuilders);
+    TestUtils.setPrivateField(camera, "cameraDevice", fakeCamera);
+
+    TextureRegistry.SurfaceTextureEntry cameraFlutterTexture =
+        (TextureRegistry.SurfaceTextureEntry) TestUtils.getPrivateField(camera, "flutterTexture");
+    ResolutionFeature resolutionFeature =
+        (ResolutionFeature)
+            TestUtils.getPrivateField(mockCameraFeatureFactory, "mockResolutionFeature");
+
+    when(cameraFlutterTexture.surfaceTexture()).thenReturn(mockSurfaceTexture);
+    when(resolutionFeature.getPreviewSize()).thenReturn(mockSize);
+    when(mockCameraProperties.getLensFacing()).thenReturn(CameraMetadata.LENS_FACING_FRONT);
+
+    camera.startPreview();
+    verify(mockVideoRenderer, times(1)).setRotation(180);
+  }
+
+  @Test
   public void setDescriptionWhileRecording_shouldErrorWhenNotRecording() {
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     TestUtils.setPrivateField(camera, "recordingVideo", false);
