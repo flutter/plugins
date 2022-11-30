@@ -425,6 +425,15 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class GetEmbeddedSubtitlesMessage {
+    private @NonNull Long textureId;
+    public @NonNull Long getTextureId() { return textureId; }
+    public void setTextureId(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"textureId\" is null.");
+      }
+      this.textureId = setterArg;
+    }
+
     private @NonNull List<String> languages;
     public @NonNull List<String> getLanguages() { return languages; }
     public void setLanguages(@NonNull List<String> setterArg) {
@@ -437,6 +446,11 @@ public class Messages {
     /** Constructor is private to enforce null safety; use Builder. */
     private GetEmbeddedSubtitlesMessage() {}
     public static class Builder {
+      private @Nullable Long textureId;
+      public @NonNull Builder setTextureId(@NonNull Long setterArg) {
+        this.textureId = setterArg;
+        return this;
+      }
       private @Nullable List<String> languages;
       public @NonNull Builder setLanguages(@NonNull List<String> setterArg) {
         this.languages = setterArg;
@@ -444,17 +458,21 @@ public class Messages {
       }
       public @NonNull GetEmbeddedSubtitlesMessage build() {
         GetEmbeddedSubtitlesMessage pigeonReturn = new GetEmbeddedSubtitlesMessage();
+        pigeonReturn.setTextureId(textureId);
         pigeonReturn.setLanguages(languages);
         return pigeonReturn;
       }
     }
     @NonNull Map<String, Object> toMap() {
       Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
       toMapResult.put("languages", languages);
       return toMapResult;
     }
     static @NonNull GetEmbeddedSubtitlesMessage fromMap(@NonNull Map<String, Object> map) {
       GetEmbeddedSubtitlesMessage pigeonResult = new GetEmbeddedSubtitlesMessage();
+      Object textureId = map.get("textureId");
+      pigeonResult.setTextureId((textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId));
       Object languages = map.get("languages");
       pigeonResult.setLanguages((List<String>)languages);
       return pigeonResult;
@@ -548,7 +566,7 @@ public class Messages {
     void seekTo(@NonNull PositionMessage msg);
     void pause(@NonNull TextureMessage msg);
     void setMixWithOthers(@NonNull MixWithOthersMessage msg);
-    @NonNull GetEmbeddedSubtitlesMessage getEmbeddedSubtitles();
+    @NonNull GetEmbeddedSubtitlesMessage getEmbeddedSubtitles(@NonNull TextureMessage msg);
 
     /** The codec used by AndroidVideoPlayerApi. */
     static MessageCodec<Object> getCodec() {
@@ -823,7 +841,12 @@ public class Messages {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
             try {
-              GetEmbeddedSubtitlesMessage output = api.getEmbeddedSubtitles();
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              TextureMessage msgArg = (TextureMessage)args.get(0);
+              if (msgArg == null) {
+                throw new NullPointerException("msgArg unexpectedly null.");
+              }
+              GetEmbeddedSubtitlesMessage output = api.getEmbeddedSubtitles(msgArg);
               wrapped.put("result", output);
             }
             catch (Error | RuntimeException exception) {

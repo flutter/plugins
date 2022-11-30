@@ -101,7 +101,7 @@ abstract class TestHostVideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
-  GetEmbeddedSubtitlesMessage getEmbeddedSubtitles();
+  GetEmbeddedSubtitlesMessage getEmbeddedSubtitles(TextureMessage msg);
   static void setup(TestHostVideoPlayerApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -283,8 +283,11 @@ abstract class TestHostVideoPlayerApi {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
-          // ignore message
-          final GetEmbeddedSubtitlesMessage output = api.getEmbeddedSubtitles();
+          assert(message != null, 'Argument for dev.flutter.pigeon.AndroidVideoPlayerApi.getEmbeddedSubtitles was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final TextureMessage? arg_msg = (args[0] as TextureMessage?);
+          assert(arg_msg != null, 'Argument for dev.flutter.pigeon.AndroidVideoPlayerApi.getEmbeddedSubtitles was null, expected non-null TextureMessage.');
+          final GetEmbeddedSubtitlesMessage output = api.getEmbeddedSubtitles(arg_msg!);
           return <Object?, Object?>{'result': output};
         });
       }

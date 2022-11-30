@@ -193,13 +193,16 @@ class MixWithOthersMessage {
 
 class GetEmbeddedSubtitlesMessage {
   GetEmbeddedSubtitlesMessage({
+    required this.textureId,
     required this.languages,
   });
 
+  int textureId;
   List<String?> languages;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['textureId'] = textureId;
     pigeonMap['languages'] = languages;
     return pigeonMap;
   }
@@ -207,6 +210,7 @@ class GetEmbeddedSubtitlesMessage {
   static GetEmbeddedSubtitlesMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return GetEmbeddedSubtitlesMessage(
+      textureId: pigeonMap['textureId']! as int,
       languages: (pigeonMap['languages'] as List<Object?>?)!.cast<String?>(),
     );
   }
@@ -564,12 +568,13 @@ class AndroidVideoPlayerApi {
     }
   }
 
-  Future<GetEmbeddedSubtitlesMessage> getEmbeddedSubtitles() async {
+  Future<GetEmbeddedSubtitlesMessage> getEmbeddedSubtitles(
+      TextureMessage arg_msg) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.AndroidVideoPlayerApi.getEmbeddedSubtitles', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(null) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_msg]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

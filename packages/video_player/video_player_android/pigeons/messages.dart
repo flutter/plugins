@@ -57,8 +57,9 @@ class MixWithOthersMessage {
 }
 
 class GetEmbeddedSubtitlesMessage{
-  const GetEmbeddedSubtitlesMessage(this.languages);
+  const GetEmbeddedSubtitlesMessage(this.textureId, this.languages);
 
+  final int textureId;
   final List<String?> languages;
 }
 
@@ -75,5 +76,5 @@ abstract class AndroidVideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
-  GetEmbeddedSubtitlesMessage getEmbeddedSubtitles();
+  GetEmbeddedSubtitlesMessage getEmbeddedSubtitles(TextureMessage msg);
 }

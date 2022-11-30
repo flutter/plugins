@@ -104,8 +104,9 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   }
 
   ///
-  Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles() async {
-    throw UnimplementedError('getEmbeddedSubtitles() has not been implemented.');
+  Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles(int textureId) async {
+    throw UnimplementedError(
+        'getEmbeddedSubtitles() has not been implemented.');
   }
 }
 
@@ -387,11 +388,11 @@ class VideoPlayerOptions {
   final bool mixWithOthers;
 }
 
-
 ///
 class EmbeddedSubtitle {
   ///
   const EmbeddedSubtitle(this.language);
+
   ///
   final String language;
 }
