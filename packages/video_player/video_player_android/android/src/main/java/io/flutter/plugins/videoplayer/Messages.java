@@ -425,56 +425,110 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class GetEmbeddedSubtitlesMessage {
-    private @NonNull Long textureId;
-    public @NonNull Long getTextureId() { return textureId; }
-    public void setTextureId(@NonNull Long setterArg) {
+    private @NonNull String language;
+    public @NonNull String getLanguage() { return language; }
+    public void setLanguage(@NonNull String setterArg) {
       if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"textureId\" is null.");
+        throw new IllegalStateException("Nonnull field \"language\" is null.");
       }
-      this.textureId = setterArg;
+      this.language = setterArg;
     }
 
-    private @NonNull List<String> languages;
-    public @NonNull List<String> getLanguages() { return languages; }
-    public void setLanguages(@NonNull List<String> setterArg) {
+    private @NonNull String label;
+    public @NonNull String getLabel() { return label; }
+    public void setLabel(@NonNull String setterArg) {
       if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"languages\" is null.");
+        throw new IllegalStateException("Nonnull field \"label\" is null.");
       }
-      this.languages = setterArg;
+      this.label = setterArg;
+    }
+
+    private @NonNull Long trackIndex;
+    public @NonNull Long getTrackIndex() { return trackIndex; }
+    public void setTrackIndex(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"trackIndex\" is null.");
+      }
+      this.trackIndex = setterArg;
+    }
+
+    private @NonNull Long groupIndex;
+    public @NonNull Long getGroupIndex() { return groupIndex; }
+    public void setGroupIndex(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"groupIndex\" is null.");
+      }
+      this.groupIndex = setterArg;
+    }
+
+    private @NonNull Long renderIndex;
+    public @NonNull Long getRenderIndex() { return renderIndex; }
+    public void setRenderIndex(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"renderIndex\" is null.");
+      }
+      this.renderIndex = setterArg;
     }
 
     /** Constructor is private to enforce null safety; use Builder. */
     private GetEmbeddedSubtitlesMessage() {}
     public static class Builder {
-      private @Nullable Long textureId;
-      public @NonNull Builder setTextureId(@NonNull Long setterArg) {
-        this.textureId = setterArg;
+      private @Nullable String language;
+      public @NonNull Builder setLanguage(@NonNull String setterArg) {
+        this.language = setterArg;
         return this;
       }
-      private @Nullable List<String> languages;
-      public @NonNull Builder setLanguages(@NonNull List<String> setterArg) {
-        this.languages = setterArg;
+      private @Nullable String label;
+      public @NonNull Builder setLabel(@NonNull String setterArg) {
+        this.label = setterArg;
+        return this;
+      }
+      private @Nullable Long trackIndex;
+      public @NonNull Builder setTrackIndex(@NonNull Long setterArg) {
+        this.trackIndex = setterArg;
+        return this;
+      }
+      private @Nullable Long groupIndex;
+      public @NonNull Builder setGroupIndex(@NonNull Long setterArg) {
+        this.groupIndex = setterArg;
+        return this;
+      }
+      private @Nullable Long renderIndex;
+      public @NonNull Builder setRenderIndex(@NonNull Long setterArg) {
+        this.renderIndex = setterArg;
         return this;
       }
       public @NonNull GetEmbeddedSubtitlesMessage build() {
         GetEmbeddedSubtitlesMessage pigeonReturn = new GetEmbeddedSubtitlesMessage();
-        pigeonReturn.setTextureId(textureId);
-        pigeonReturn.setLanguages(languages);
+        pigeonReturn.setLanguage(language);
+        pigeonReturn.setLabel(label);
+        pigeonReturn.setTrackIndex(trackIndex);
+        pigeonReturn.setGroupIndex(groupIndex);
+        pigeonReturn.setRenderIndex(renderIndex);
         return pigeonReturn;
       }
     }
     @NonNull Map<String, Object> toMap() {
       Map<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("textureId", textureId);
-      toMapResult.put("languages", languages);
+      toMapResult.put("language", language);
+      toMapResult.put("label", label);
+      toMapResult.put("trackIndex", trackIndex);
+      toMapResult.put("groupIndex", groupIndex);
+      toMapResult.put("renderIndex", renderIndex);
       return toMapResult;
     }
     static @NonNull GetEmbeddedSubtitlesMessage fromMap(@NonNull Map<String, Object> map) {
       GetEmbeddedSubtitlesMessage pigeonResult = new GetEmbeddedSubtitlesMessage();
-      Object textureId = map.get("textureId");
-      pigeonResult.setTextureId((textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId));
-      Object languages = map.get("languages");
-      pigeonResult.setLanguages((List<String>)languages);
+      Object language = map.get("language");
+      pigeonResult.setLanguage((String)language);
+      Object label = map.get("label");
+      pigeonResult.setLabel((String)label);
+      Object trackIndex = map.get("trackIndex");
+      pigeonResult.setTrackIndex((trackIndex == null) ? null : ((trackIndex instanceof Integer) ? (Integer)trackIndex : (Long)trackIndex));
+      Object groupIndex = map.get("groupIndex");
+      pigeonResult.setGroupIndex((groupIndex == null) ? null : ((groupIndex instanceof Integer) ? (Integer)groupIndex : (Long)groupIndex));
+      Object renderIndex = map.get("renderIndex");
+      pigeonResult.setRenderIndex((renderIndex == null) ? null : ((renderIndex instanceof Integer) ? (Integer)renderIndex : (Long)renderIndex));
       return pigeonResult;
     }
   }
@@ -566,7 +620,7 @@ public class Messages {
     void seekTo(@NonNull PositionMessage msg);
     void pause(@NonNull TextureMessage msg);
     void setMixWithOthers(@NonNull MixWithOthersMessage msg);
-    @NonNull GetEmbeddedSubtitlesMessage getEmbeddedSubtitles(@NonNull TextureMessage msg);
+    @NonNull List<GetEmbeddedSubtitlesMessage> getEmbeddedSubtitles(@NonNull TextureMessage msg);
 
     /** The codec used by AndroidVideoPlayerApi. */
     static MessageCodec<Object> getCodec() {
@@ -846,7 +900,7 @@ public class Messages {
               if (msgArg == null) {
                 throw new NullPointerException("msgArg unexpectedly null.");
               }
-              GetEmbeddedSubtitlesMessage output = api.getEmbeddedSubtitles(msgArg);
+              List<GetEmbeddedSubtitlesMessage> output = api.getEmbeddedSubtitles(msgArg);
               wrapped.put("result", output);
             }
             catch (Error | RuntimeException exception) {

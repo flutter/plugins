@@ -57,10 +57,13 @@ class MixWithOthersMessage {
 }
 
 class GetEmbeddedSubtitlesMessage{
-  const GetEmbeddedSubtitlesMessage(this.textureId, this.languages);
+  GetEmbeddedSubtitlesMessage(this.language, this.label, this.trackIndex, this.groupIndex, this.renderIndex);
 
-  final int textureId;
-  final List<String?> languages;
+  final String language;
+  final String label;
+  final int trackIndex;
+  final int groupIndex;
+  final int renderIndex;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
@@ -76,5 +79,5 @@ abstract class AndroidVideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
-  GetEmbeddedSubtitlesMessage getEmbeddedSubtitles(TextureMessage msg);
+  List<GetEmbeddedSubtitlesMessage?> getEmbeddedSubtitles(TextureMessage msg);
 }

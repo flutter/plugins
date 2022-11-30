@@ -23,6 +23,7 @@ import io.flutter.plugins.videoplayer.Messages.VolumeMessage;
 import io.flutter.view.TextureRegistry;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
@@ -212,8 +213,9 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
   }
 
   @Override
-  public Messages.GetEmbeddedSubtitlesMessage getEmbeddedSubtitles() {
-    return null;
+  public List<Messages.GetEmbeddedSubtitlesMessage> getEmbeddedSubtitles(TextureMessage arg) {
+    VideoPlayer player = videoPlayers.get(arg.getTextureId());
+    return player.getEmbeddedSubtitles();
   }
 
   private interface KeyForAssetFn {

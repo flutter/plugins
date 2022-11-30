@@ -23,6 +23,8 @@ import com.google.android.exoplayer2.Player.Listener;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.TrackGroup;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -30,12 +32,15 @@ import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.text.CueGroup;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +54,8 @@ final class VideoPlayer {
   private static final String FORMAT_OTHER = "other";
 
   private ExoPlayer exoPlayer;
+
+  private DefaultTrackSelector trackSelector;
 
   private Surface surface;
 
@@ -75,7 +82,7 @@ final class VideoPlayer {
     this.options = options;
 
 
-    DefaultTrackSelector  trackSelector = new DefaultTrackSelector(context);
+    this.trackSelector = new DefaultTrackSelector(context);
     trackSelector.setParameters(new DefaultTrackSelector.Parameters.Builder(context)
           .setRendererDisabled(C.TRACK_TYPE_VIDEO, false)
           .build());
@@ -341,6 +348,42 @@ final class VideoPlayer {
 
       eventSink.success(event);
     }
+  }
+
+
+  List<Messages.GetEmbeddedSubtitlesMessage> getEmbeddedSubtitles() {
+    List<Messages.GetEmbeddedSubtitlesMessage> subtitleItems = new ArrayList<>();
+    TrackGroupArray trackGroups;
+    int rendererIndex = 2;
+
+    MappingTrackSelector.MappedTrackInfo trackInfo = trackSelector.getCurrentMappedTrackInfo();
+    if (trackInfo == null) {
+      // TrackSelector not initialized
+      return subtitleItems;
+    }
+
+    trackGroups = trackInfo.getTrackGroups(rendererIndex);
+
+    for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
+      TrackGroup group = trackGroups.get(groupIndex);
+      for (int trackIndex = 0; trackIndex < group.length; trackIndex++) {
+
+        if (group.getFormat(trackIndex).language != null && group.getFormat(trackIndex).label != null) {
+          subtitleItems.add(
+                  new Messages.GetEmbeddedSubtitlesMessage.Builder()
+                          .setLanguage(group.getFormat(trackIndex).language)
+                          .setLabel(group.getFormat(trackIndex).label)
+                          .setTrackIndex((long) trackIndex)
+                          .setGroupIndex((long) groupIndex)
+                          .setRenderIndex((long) rendererIndex)
+                          .build()
+          );
+        }
+
+      }
+    }
+
+    return subtitleItems;
   }
 
   void dispose() {

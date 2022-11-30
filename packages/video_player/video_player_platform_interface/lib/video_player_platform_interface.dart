@@ -391,8 +391,26 @@ class VideoPlayerOptions {
 ///
 class EmbeddedSubtitle {
   ///
-  const EmbeddedSubtitle(this.language);
+  const EmbeddedSubtitle({
+    required this.language,
+    required this.label,
+    required this.trackIndex,
+    required this.groupIndex,
+    required this.renderIndex,
+  });
 
   ///
   final String language;
+
+  ///
+  final String label;
+
+  ///
+  final int trackIndex;
+
+  ///
+  final int groupIndex;
+
+  ///
+  final int renderIndex;
 }

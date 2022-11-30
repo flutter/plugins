@@ -193,25 +193,37 @@ class MixWithOthersMessage {
 
 class GetEmbeddedSubtitlesMessage {
   GetEmbeddedSubtitlesMessage({
-    required this.textureId,
-    required this.languages,
+    required this.language,
+    required this.label,
+    required this.trackIndex,
+    required this.groupIndex,
+    required this.renderIndex,
   });
 
-  int textureId;
-  List<String?> languages;
+  String language;
+  String label;
+  int trackIndex;
+  int groupIndex;
+  int renderIndex;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['textureId'] = textureId;
-    pigeonMap['languages'] = languages;
+    pigeonMap['language'] = language;
+    pigeonMap['label'] = label;
+    pigeonMap['trackIndex'] = trackIndex;
+    pigeonMap['groupIndex'] = groupIndex;
+    pigeonMap['renderIndex'] = renderIndex;
     return pigeonMap;
   }
 
   static GetEmbeddedSubtitlesMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return GetEmbeddedSubtitlesMessage(
-      textureId: pigeonMap['textureId']! as int,
-      languages: (pigeonMap['languages'] as List<Object?>?)!.cast<String?>(),
+      language: pigeonMap['language']! as String,
+      label: pigeonMap['label']! as String,
+      trackIndex: pigeonMap['trackIndex']! as int,
+      groupIndex: pigeonMap['groupIndex']! as int,
+      renderIndex: pigeonMap['renderIndex']! as int,
     );
   }
 }
@@ -568,7 +580,7 @@ class AndroidVideoPlayerApi {
     }
   }
 
-  Future<GetEmbeddedSubtitlesMessage> getEmbeddedSubtitles(
+  Future<List<GetEmbeddedSubtitlesMessage?>> getEmbeddedSubtitles(
       TextureMessage arg_msg) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.AndroidVideoPlayerApi.getEmbeddedSubtitles', codec,
@@ -594,7 +606,8 @@ class AndroidVideoPlayerApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyMap['result'] as GetEmbeddedSubtitlesMessage?)!;
+      return (replyMap['result'] as List<Object?>?)!
+          .cast<GetEmbeddedSubtitlesMessage?>();
     }
   }
 }
