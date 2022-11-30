@@ -14,7 +14,12 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 import 'src/closed_caption_file.dart';
 
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
+    show
+        DurationRange,
+        DataSourceType,
+        VideoFormat,
+        VideoPlayerOptions,
+        EmbeddedSubtitle;
 
 export 'src/closed_caption_file.dart';
 
@@ -628,6 +633,19 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     value = value.copyWith(
       captionOffset: offset,
       caption: _getCaptionAt(value.position),
+    );
+  }
+
+  ///
+  Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles() async {
+    return _videoPlayerPlatform.getEmbeddedSubtitles(_textureId);
+  }
+
+  ///
+  Future<void> setEmbeddedSubtitles(EmbeddedSubtitle? embeddedSubtitle) async {
+    return _videoPlayerPlatform.setEmbeddedSubtitles(
+      _textureId,
+      embeddedSubtitle,
     );
   }
 

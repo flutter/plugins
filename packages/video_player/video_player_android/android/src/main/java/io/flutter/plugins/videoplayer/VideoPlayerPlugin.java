@@ -220,7 +220,8 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
 
   @Override
   public void setEmbeddedSubtitles(Messages.SetEmbeddedSubtitlesMessage arg) {
-
+    VideoPlayer player = videoPlayers.get(arg.getTextureId());
+    player.setEmbeddedSubtitles(arg.getTrackIndex(), arg.getGroupIndex(), arg.getRenderIndex());
   }
 
   private interface KeyForAssetFn {

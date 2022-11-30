@@ -409,17 +409,25 @@ class EmbeddedSubtitle {
   });
 
   ///
-  final String language;
+  const EmbeddedSubtitle.none()
+      : language = null,
+        label = null,
+        trackIndex = null,
+        groupIndex = null,
+        renderIndex = null;
 
   ///
-  final String label;
+  final String? language;
 
   ///
-  final int trackIndex;
+  final String? label;
 
   ///
-  final int groupIndex;
+  final int? trackIndex;
 
   ///
-  final int renderIndex;
+  final int? groupIndex;
+
+  ///
+  final int? renderIndex;
 }
