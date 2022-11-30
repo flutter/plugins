@@ -51,6 +51,7 @@ class VideoPlayerValue {
     this.playbackSpeed = 1.0,
     this.rotationCorrection = 0,
     this.errorDescription,
+    this.subtitle,
   });
 
   /// Returns an instance for a video that hasn't been loaded.
@@ -119,6 +120,9 @@ class VideoPlayerValue {
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
 
+  /// Current snippet of subtitle.
+  final String? subtitle;
+
   /// Indicates whether or not the video is in an error state. If this is true
   /// [errorDescription] should have information about the problem.
   bool get hasError => errorDescription != null;
@@ -157,6 +161,7 @@ class VideoPlayerValue {
     double? playbackSpeed,
     int? rotationCorrection,
     String? errorDescription = _defaultErrorDescription,
+    String? subtitle,
   }) {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -172,6 +177,7 @@ class VideoPlayerValue {
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       rotationCorrection: rotationCorrection ?? this.rotationCorrection,
+      subtitle: subtitle ?? this.subtitle,
       errorDescription: errorDescription != _defaultErrorDescription
           ? errorDescription
           : this.errorDescription,
@@ -399,6 +405,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           break;
         case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
+          break;
+        case VideoEventType.subtitleUpdate:
+          value = value.copyWith(subtitle: event.bufferedData);
           break;
         case VideoEventType.unknown:
           break;
