@@ -4,8 +4,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i7;
-import 'dart:math' as _i3;
-import 'dart:ui' as _i9;
+import 'dart:ui' as _i3;
 
 import 'package:flutter/foundation.dart' as _i5;
 import 'package:flutter/widgets.dart' as _i4;
@@ -15,7 +14,7 @@ import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_de
 import 'package:webview_flutter_platform_interface/v4/src/platform_webview_controller.dart'
     as _i6;
 import 'package:webview_flutter_platform_interface/v4/src/platform_webview_widget.dart'
-    as _i10;
+    as _i9;
 import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart'
     as _i2;
 
@@ -51,9 +50,8 @@ class _FakeObject_1 extends _i1.SmartFake implements Object {
         );
 }
 
-class _FakePoint_2<T extends num> extends _i1.SmartFake
-    implements _i3.Point<T> {
-  _FakePoint_2(
+class _FakeOffset_2 extends _i1.SmartFake implements _i3.Offset {
+  _FakeOffset_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -312,33 +310,23 @@ class MockPlatformWebViewController extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
   @override
-  _i7.Future<_i3.Point<int>> getScrollPosition() => (super.noSuchMethod(
+  _i7.Future<_i3.Offset> getScrollPosition() => (super.noSuchMethod(
         Invocation.method(
           #getScrollPosition,
           [],
         ),
-        returnValue: _i7.Future<_i3.Point<int>>.value(_FakePoint_2<int>(
+        returnValue: _i7.Future<_i3.Offset>.value(_FakeOffset_2(
           this,
           Invocation.method(
             #getScrollPosition,
             [],
           ),
         )),
-      ) as _i7.Future<_i3.Point<int>>);
+      ) as _i7.Future<_i3.Offset>);
   @override
   _i7.Future<void> enableDebugging(bool? enabled) => (super.noSuchMethod(
         Invocation.method(
           #enableDebugging,
-          [enabled],
-        ),
-        returnValue: _i7.Future<void>.value(),
-        returnValueForMissingStub: _i7.Future<void>.value(),
-      ) as _i7.Future<void>);
-  @override
-  _i7.Future<void> enableGestureNavigation(bool? enabled) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #enableGestureNavigation,
           [enabled],
         ),
         returnValue: _i7.Future<void>.value(),
@@ -354,7 +342,7 @@ class MockPlatformWebViewController extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
   @override
-  _i7.Future<void> setBackgroundColor(_i9.Color? color) => (super.noSuchMethod(
+  _i7.Future<void> setBackgroundColor(_i3.Color? color) => (super.noSuchMethod(
         Invocation.method(
           #setBackgroundColor,
           [color],
@@ -387,7 +375,7 @@ class MockPlatformWebViewController extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockPlatformWebViewWidget extends _i1.Mock
-    implements _i10.PlatformWebViewWidget {
+    implements _i9.PlatformWebViewWidget {
   MockPlatformWebViewWidget() {
     _i1.throwOnMissingStub(this);
   }

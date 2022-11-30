@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -286,9 +285,7 @@ void main() {
     final MockPlatformWebViewController mockPlatformWebViewController =
         MockPlatformWebViewController();
     when(mockPlatformWebViewController.getScrollPosition()).thenAnswer(
-      (_) => Future<Point<int>>.value(
-        const Point<int>(2, 3),
-      ),
+      (_) => Future<Offset>.value(const Offset(2, 3)),
     );
 
     final WebViewController webViewController = WebViewController.fromPlatform(

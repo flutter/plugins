@@ -389,14 +389,14 @@ void main() {
       verify(mockWebView.reload());
     });
 
-    test('enableGestureNavigation', () async {
+    test('setAllowsBackForwardNavigationGestures', () async {
       final MockWKWebView mockWebView = MockWKWebView();
 
       final WebKitWebViewController controller = createControllerWithMocks(
         createMockWebView: (_, {dynamic observeValue}) => mockWebView,
       );
 
-      await controller.enableGestureNavigation(true);
+      await controller.setAllowsBackForwardNavigationGestures(true);
       verify(mockWebView.setAllowsBackForwardNavigationGestures(true));
     });
 
@@ -530,7 +530,7 @@ void main() {
       );
       expect(
         controller.getScrollPosition(),
-        completion(const Point<double>(8.0, 16.0)),
+        completion(const Offset(8.0, 16.0)),
       );
     });
 

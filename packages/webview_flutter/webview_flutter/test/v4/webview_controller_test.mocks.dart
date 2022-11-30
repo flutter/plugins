@@ -4,8 +4,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
-import 'dart:math' as _i3;
-import 'dart:ui' as _i7;
+import 'dart:ui' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_delegate.dart'
@@ -47,9 +46,8 @@ class _FakeObject_1 extends _i1.SmartFake implements Object {
         );
 }
 
-class _FakePoint_2<T extends num> extends _i1.SmartFake
-    implements _i3.Point<T> {
-  _FakePoint_2(
+class _FakeOffset_2 extends _i1.SmartFake implements _i3.Offset {
+  _FakeOffset_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -294,33 +292,23 @@ class MockPlatformWebViewController extends _i1.Mock
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
   @override
-  _i5.Future<_i3.Point<int>> getScrollPosition() => (super.noSuchMethod(
+  _i5.Future<_i3.Offset> getScrollPosition() => (super.noSuchMethod(
         Invocation.method(
           #getScrollPosition,
           [],
         ),
-        returnValue: _i5.Future<_i3.Point<int>>.value(_FakePoint_2<int>(
+        returnValue: _i5.Future<_i3.Offset>.value(_FakeOffset_2(
           this,
           Invocation.method(
             #getScrollPosition,
             [],
           ),
         )),
-      ) as _i5.Future<_i3.Point<int>>);
+      ) as _i5.Future<_i3.Offset>);
   @override
   _i5.Future<void> enableDebugging(bool? enabled) => (super.noSuchMethod(
         Invocation.method(
           #enableDebugging,
-          [enabled],
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
-  @override
-  _i5.Future<void> enableGestureNavigation(bool? enabled) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #enableGestureNavigation,
           [enabled],
         ),
         returnValue: _i5.Future<void>.value(),
@@ -336,7 +324,7 @@ class MockPlatformWebViewController extends _i1.Mock
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
   @override
-  _i5.Future<void> setBackgroundColor(_i7.Color? color) => (super.noSuchMethod(
+  _i5.Future<void> setBackgroundColor(_i3.Color? color) => (super.noSuchMethod(
         Invocation.method(
           #setBackgroundColor,
           [color],
