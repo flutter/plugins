@@ -530,7 +530,7 @@ void main() {
       );
       expect(
         controller.getScrollPosition(),
-        completion(const Point<double>(8.0, 16.0)),
+        completion(const Offset(8.0, 16.0)),
       );
     });
 

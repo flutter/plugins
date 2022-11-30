@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'platform_navigation_delegate.dart';
@@ -226,7 +224,7 @@ abstract class PlatformWebViewController extends PlatformInterface {
   /// Return the current scroll position of this view.
   ///
   /// Scroll position is measured from the top left.
-  Future<Point<int>> getScrollPosition() {
+  Future<Offset> getScrollPosition() {
     throw UnimplementedError(
         'getScrollPosition is not implemented on the current platform');
   }
