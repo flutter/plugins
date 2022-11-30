@@ -13,7 +13,7 @@ import 'package:webview_flutter_android/src/android_webview.dart'
 import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/webview_android_widget.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
 
 import 'android_webview_test.mocks.dart' show MockTestWebViewHostApi;
 import 'test_android_webview.pigeon.dart';

@@ -10,7 +10,7 @@ import 'dart:ui' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
 import 'package:webview_flutter_android/webview_android_widget.dart' as _i7;
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart'
     as _i4;
 
 // ignore_for_file: type=lint

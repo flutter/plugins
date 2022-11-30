@@ -25,7 +25,7 @@ import 'package:webview_flutter_android/webview_surface_android.dart';
 import 'package:webview_flutter_android_example/navigation_decision.dart';
 import 'package:webview_flutter_android_example/navigation_request.dart';
 import 'package:webview_flutter_android_example/web_view.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
 
 Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
