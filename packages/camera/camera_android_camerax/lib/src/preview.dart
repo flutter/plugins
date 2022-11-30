@@ -28,7 +28,7 @@ class Preview extends UseCase {
     _api.createFromInstance(this, targetRotation);
   }
 
-  /// Constructs a [CameraInfo] that is not automatically attached to a native object. 
+  /// Constructs a [CameraInfo] that is not automatically attached to a native object.
   Preview.detached(
       {BinaryMessenger? binaryMessenger,
       InstanceManager? instanceManager,
@@ -63,8 +63,7 @@ class Preview extends UseCase {
 /// Host API implementation of [Preview].
 class PreviewHostApiImpl extends PreviewHostApi {
   /// Constructs a [PreviewHostApiImpl].
-  PreviewHostApiImpl(
-      {this.binaryMessenger, InstanceManager? instanceManager}) {
+  PreviewHostApiImpl({this.binaryMessenger, InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
   }
 
@@ -119,7 +118,6 @@ class PreviewHostApiImpl extends PreviewHostApi {
 
     setTargetRotation(identifier, targetRotation);
   }
-
 }
 
 /// Flutter API implementation of [Preview].
@@ -143,11 +141,15 @@ class PreviewFlutterApiImpl extends PreviewFlutterApi {
   void create(int identifier, int? targetRotation) {
     instanceManager.addHostCreatedInstance(
       Preview.detached(
-          binaryMessenger: binaryMessenger, instanceManager: instanceManager, targetRotation: targetRotation),
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+          targetRotation: targetRotation),
       identifier,
       onCopy: (Preview original) {
         return Preview.detached(
-            binaryMessenger: binaryMessenger, instanceManager: instanceManager, targetRotation: targetRotation);
+            binaryMessenger: binaryMessenger,
+            instanceManager: instanceManager,
+            targetRotation: targetRotation);
       },
     );
   }

@@ -49,7 +49,7 @@ class ProcessCameraProvider extends JavaObject {
   /// Binds the specified [UseCase]s to the lifecycle of the camera that it
   /// returns.
   Future<Camera> bindToLifecycle(
-    CameraSelector cameraSelector, List<UseCase> useCases) {
+      CameraSelector cameraSelector, List<UseCase> useCases) {
     return _api.bindToLifecycleFromInstances(this, cameraSelector, useCases);
   }
 
@@ -119,14 +119,15 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
           binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     });
     final List<int> useCaseIds = (useCases.map<int>(
-      (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
+        (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
 
     final int cameraIdentifier = await bindToLifecycle(
       identifier,
       instanceManager.getIdentifier(cameraSelector)!,
       useCaseIds,
     );
-    return instanceManager.getInstanceWithWeakReference(cameraIdentifier)! as Camera;
+    return instanceManager.getInstanceWithWeakReference(cameraIdentifier)!
+        as Camera;
   }
 
   void unbindFromInstances(
@@ -140,7 +141,7 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
           binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     });
     final List<int> useCaseIds = (useCases.map<int>(
-      (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
+        (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
 
     unbind(identifier, useCaseIds);
   }

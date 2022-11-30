@@ -11,8 +11,7 @@ import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraFlutterApi;
 public class CameraFlutterApiImpl extends CameraFlutterApi {
   private final InstanceManager instanceManager;
 
-  public CameraFlutterApiImpl(
-      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+  public CameraFlutterApiImpl(BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     super(binaryMessenger);
     this.instanceManager = instanceManager;
   }

@@ -31,12 +31,10 @@ class AndroidCameraXCameraFlutterApis {
         cameraSelectorFlutterApi ?? CameraSelectorFlutterApiImpl();
     this.processCameraProviderFlutterApi = processCameraProviderFlutterApi ??
         ProcessCameraProviderFlutterApiImpl();
-    this.previewFlutterApi = previewFlutterApi ??
-        PreviewFlutterApiImpl();
-    this.cameraFlutterApi = cameraFlutterApi ??
-        CameraFlutterApiImpl();
-    this.cameraControlFlutterApi = cameraControlFlutterApi ??
-        CameraControlFlutterApiImpl();
+    this.previewFlutterApi = previewFlutterApi ?? PreviewFlutterApiImpl();
+    this.cameraFlutterApi = cameraFlutterApi ?? CameraFlutterApiImpl();
+    this.cameraControlFlutterApi =
+        cameraControlFlutterApi ?? CameraControlFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;

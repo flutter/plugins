@@ -10,17 +10,16 @@ import 'instance_manager.dart';
 import 'java_object.dart';
 
 class CameraControl extends JavaObject {
-  /// Constructs a [Camera] that is not automatically attached to a native object. 
-    CameraControl.detached(
-      {BinaryMessenger? binaryMessenger,
-      InstanceManager? instanceManager})
-    : super.detached(
-        binaryMessenger: binaryMessenger,
-        instanceManager: instanceManager) {
+  /// Constructs a [Camera] that is not automatically attached to a native object.
+  CameraControl.detached(
+      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
+      : super.detached(
+            binaryMessenger: binaryMessenger,
+            instanceManager: instanceManager) {
     _api = CameraControlHostApiImpl(
-      binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+        binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
-   }
+  }
 
   late final CameraControlHostApiImpl _api;
 
@@ -54,8 +53,7 @@ class CameraControlHostApiImpl extends CameraControlHostApi {
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (CameraControl original) {
       return CameraControl.detached(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager);
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     });
 
     setZoomRatio(identifier, ratio);
@@ -83,13 +81,11 @@ class CameraControlFlutterApiImpl implements CameraControlFlutterApi {
   void create(int identifier) {
     instanceManager.addHostCreatedInstance(
       CameraControl.detached(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager),
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager),
       identifier,
       onCopy: (CameraControl original) {
         return CameraControl.detached(
-            binaryMessenger: binaryMessenger,
-            instanceManager: instanceManager);
+            binaryMessenger: binaryMessenger, instanceManager: instanceManager);
       },
     );
   }

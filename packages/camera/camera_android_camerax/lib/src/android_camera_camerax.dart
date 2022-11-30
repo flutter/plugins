@@ -15,7 +15,6 @@ import 'use_case.dart';
 
 /// The Android implementation of [CameraPlatform] that uses the CameraX library.
 class AndroidCameraCameraX extends CameraPlatform {
-  
   Preview? preview;
   CameraSelector? cameraSelector;
   ProcessCameraProvider? processCameraProvider;
@@ -32,8 +31,7 @@ class AndroidCameraCameraX extends CameraPlatform {
     throw UnimplementedError('availableCameras() is not implemented.');
   }
 
-  /// Creates an unititialized camera instance adn returns the cameraId
-  /// in theory! [?]
+  /// Creates an unititialized camera instance and returns the cameraId.
   @override
   Future<int> createCamera(
     CameraDescription cameraDescription,
@@ -42,14 +40,15 @@ class AndroidCameraCameraX extends CameraPlatform {
   }) async {
     processCameraProvider = await ProcessCameraProvider.getInstance();
     preview = Preview();
-    cameraSelector = CameraSelector(lensFacing: CameraSelector.LENS_FACING_FRONT);
-    
-    // Will save as a field since more operations will need this camera
-    Camera camera = await processCameraProvider!.bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
+    // TODO(camsim99): Use cameraDescription to determine this.
+    cameraSelector =
+        CameraSelector(lensFacing: CameraSelector.LENS_FACING_FRONT);
 
-    // cameraId = await 
+    // Will save as a field since more operations will need this camera
+    Camera camera = await processCameraProvider!
+        .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
+
     return preview!.setSurfaceProvider();
-    // return cameraId;
   }
 
   /// Pause the active preview on the current frame for the selected camera.
@@ -58,10 +57,11 @@ class AndroidCameraCameraX extends CameraPlatform {
     processCameraProvider!.unbind(<UseCase>[preview!]);
   }
 
-   /// Resume the paused preview for the selected camera.
+  /// Resume the paused preview for the selected camera.
   @override
   Future<void> resumePreview(int cameraId) async {
-    Camera camera = await processCameraProvider!.bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
+    Camera camera = await processCameraProvider!
+        .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
   }
 
   /// Returns a widget showing a live camera preview.

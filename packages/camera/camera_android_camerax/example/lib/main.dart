@@ -11,11 +11,12 @@ late int _cameraId;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // _cameras = await CameraPlatform.instance.availableCameras();
-  _cameraId = await CameraPlatform.instance.createCamera(const CameraDescription(
-            name: 'cam',
-            lensDirection: CameraLensDirection.back,
-            sensorOrientation: 90), ResolutionPreset.medium);
-  print("CAMILLE, camera id : $_cameraId");
+  _cameraId = await CameraPlatform.instance.createCamera(
+      const CameraDescription(
+          name: 'cam',
+          lensDirection: CameraLensDirection.back,
+          sensorOrientation: 90),
+      ResolutionPreset.medium);
   runApp(const MyApp());
 }
 
@@ -38,38 +39,36 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Camera Example'),
         ),
         body: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      border: Border.all(
-                        color: Colors.redAccent,
-                        width: 3.0,
-                      ),
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(
+                      color: Colors.redAccent,
+                      width: 3.0,
                     ),
-                    child: Padding(
+                  ),
+                  child: Padding(
                       padding: const EdgeInsets.all(1.0),
                       child: Center(
                         child: CameraPlatform.instance.buildPreview(_cameraId),
-                      )
-                    )
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.pause_circle), // TODO: change to stateful widget to change this
-                  onPressed: () {
-                    buttonPressed = !buttonPressed;
-                    if (buttonPressed) {
-                      CameraPlatform.instance.pausePreview(_cameraId);
-                    } else {
-                      CameraPlatform.instance.resumePreview(_cameraId);
-                    }
-                  }
-                ),
-              ],
+                      ))),
             ),
+            IconButton(
+                // TODO(camsim99): change to stateful widget to change this
+                icon: Icon(Icons.pause_circle),
+                onPressed: () {
+                  buttonPressed = !buttonPressed;
+                  if (buttonPressed) {
+                    CameraPlatform.instance.pausePreview(_cameraId);
+                  } else {
+                    CameraPlatform.instance.resumePreview(_cameraId);
+                  }
+                }),
+          ],
         ),
+      ),
     );
   }
 }

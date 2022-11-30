@@ -6,23 +6,22 @@ package io.flutter.plugins.camerax;
 
 import androidx.annotation.NonNull;
 import androidx.camera.core.CameraControl;
-import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraControlHostApi;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraControlHostApi;
 
 public class CameraControlHostApiImpl implements CameraControlHostApi {
-    private final BinaryMessenger binaryMessenger;
-    private final InstanceManager instanceManager;
+  private final BinaryMessenger binaryMessenger;
+  private final InstanceManager instanceManager;
 
+  public CameraControlHostApiImpl(
+      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+    this.binaryMessenger = binaryMessenger;
+    this.instanceManager = instanceManager;
+  }
 
-    public CameraControlHostApiImpl(
-        BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
-            this.binaryMessenger = binaryMessenger;
-            this.instanceManager = instanceManager;
-        }
-
-    @Override
-    public void setZoomRatio(@NonNull Long identifier, @NonNull Long ratio) {
-        CameraControl cameraControl = (CameraControl) instanceManager.getInstance(identifier);
-        cameraControl.setZoomRatio(ratio);
-    }
+  @Override
+  public void setZoomRatio(@NonNull Long identifier, @NonNull Long ratio) {
+    CameraControl cameraControl = (CameraControl) instanceManager.getInstance(identifier);
+    cameraControl.setZoomRatio(ratio);
+  }
 }

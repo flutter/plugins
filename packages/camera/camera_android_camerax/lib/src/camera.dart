@@ -11,17 +11,16 @@ import 'instance_manager.dart';
 import 'java_object.dart';
 
 class Camera extends JavaObject {
-  /// Constructs a [Camera] that is not automatically attached to a native object. 
-    Camera.detached(
-      {BinaryMessenger? binaryMessenger,
-      InstanceManager? instanceManager})
-    : super.detached(
-        binaryMessenger: binaryMessenger,
-        instanceManager: instanceManager) {
+  /// Constructs a [Camera] that is not automatically attached to a native object.
+  Camera.detached(
+      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
+      : super.detached(
+            binaryMessenger: binaryMessenger,
+            instanceManager: instanceManager) {
     _api = CameraHostApiImpl(
-      binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+        binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
-   }
+  }
 
   late final CameraHostApiImpl _api;
 
@@ -34,8 +33,7 @@ class Camera extends JavaObject {
 /// Host API implementation of [Camera].
 class CameraHostApiImpl extends CameraHostApi {
   /// Constructs a [CameraHostApiImpl].
-  CameraHostApiImpl(
-      {this.binaryMessenger, InstanceManager? instanceManager})
+  CameraHostApiImpl({this.binaryMessenger, InstanceManager? instanceManager})
       : super(binaryMessenger: binaryMessenger) {
     this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
   }
@@ -56,12 +54,12 @@ class CameraHostApiImpl extends CameraHostApi {
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (Camera original) {
       return Camera.detached(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager);
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     });
 
     int cameraControlId = await getCameraControl(identifier);
-    return instanceManager.getInstanceWithWeakReference(cameraControlId)! as CameraControl;
+    return instanceManager.getInstanceWithWeakReference(cameraControlId)!
+        as CameraControl;
   }
 }
 
@@ -86,13 +84,11 @@ class CameraFlutterApiImpl implements CameraFlutterApi {
   void create(int identifier) {
     instanceManager.addHostCreatedInstance(
       Camera.detached(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager),
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager),
       identifier,
       onCopy: (Camera original) {
         return Camera.detached(
-            binaryMessenger: binaryMessenger,
-            instanceManager: instanceManager);
+            binaryMessenger: binaryMessenger, instanceManager: instanceManager);
       },
     );
   }

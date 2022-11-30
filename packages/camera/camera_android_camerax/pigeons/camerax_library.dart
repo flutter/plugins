@@ -65,7 +65,8 @@ abstract class ProcessCameraProviderHostApi {
 
   List<int> getAvailableCameraInfos(int identifier);
 
-  int bindToLifecycle(int identifier, int cameraSelectorIdentifier, List<int> useCaseIds);
+  int bindToLifecycle(
+      int identifier, int cameraSelectorIdentifier, List<int> useCaseIds);
 
   void unbind(int identifier, List<int> useCaseIds);
 
@@ -98,7 +99,7 @@ abstract class CameraHostApi {
 
 @FlutterApi()
 abstract class CameraFlutterApi {
-  void create(int identifier); // [?] may need more parameters
+  void create(int identifier);
 }
 
 @HostApi(dartHostTestHandler: 'TestCameraControlHostApi')
@@ -108,5 +109,5 @@ abstract class CameraControlHostApi {
 
 @FlutterApi()
 abstract class CameraControlFlutterApi {
-  void create(int identifier); // [?] may need more parameters
+  void create(int identifier);
 }

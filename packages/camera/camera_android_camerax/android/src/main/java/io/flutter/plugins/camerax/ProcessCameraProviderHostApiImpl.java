@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.camerax;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.camera.core.Camera;
@@ -16,13 +17,10 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugins.camerax.CameraPermissions.PermissionsRegistry;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderHostApi;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.app.Activity;
-import androidx.camera.core.UseCaseGroup;
-import io.flutter.plugins.camerax.CameraPermissions.PermissionsRegistry;
 
 public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHostApi {
   private final BinaryMessenger binaryMessenger;
@@ -104,11 +102,15 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
     return availableCamerasIds;
   }
 
-  /** Binds specified @code UseCase}s to the lifecycle of the @code LifecycleOwner}
-   * that corresponds to this instance.
+  /**
+   * Binds specified @code UseCase}s to the lifecycle of the @code LifecycleOwner} that corresponds
+   * to this instance.
    */
   @Override
-  public Long bindToLifecycle(@NonNull Long identifier, @NonNull Long cameraSelectorIdentifier, @NonNull List<Long> useCaseIds) {
+  public Long bindToLifecycle(
+      @NonNull Long identifier,
+      @NonNull Long cameraSelectorIdentifier,
+      @NonNull List<Long> useCaseIds) {
     ProcessCameraProvider processCameraProvider =
         (ProcessCameraProvider) instanceManager.getInstance(identifier);
     CameraSelector cameraSelector =
@@ -124,22 +126,23 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
     if (lifecycleOwner != null) {
       CameraPermissions cameraPermissions = new CameraPermissions();
       cameraPermissions.requestPermissions(
-        (Activity) lifecycleOwner,
-        permissionsRegistry,
-        true,
-        (String errCode, String errDesc) -> {});
+          (Activity) lifecycleOwner,
+          permissionsRegistry,
+          true,
+          (String errCode, String errDesc) -> {});
 
-      Camera camera = processCameraProvider.bindToLifecycle((LifecycleOwner) lifecycleOwner, cameraSelector, useCases); // the problem is that I'm casting them to use cases and then things are getting confused...
+      Camera camera =
+          processCameraProvider.bindToLifecycle(
+              (LifecycleOwner) lifecycleOwner, cameraSelector, useCases);
 
       final CameraFlutterApiImpl camraFlutterApi =
           new CameraFlutterApiImpl(binaryMessenger, instanceManager);
       camraFlutterApi.create(camera, result -> {});
-      
+
       return instanceManager.getIdentifierForStrongReference(camera);
     } else {
-      return null; // error
+      return null;
     }
-
   }
 
   @Override
@@ -150,14 +153,14 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
     for (int i = 0; i < useCaseIds.size(); i++) {
       useCases[i] = (Preview) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
     }
-    
+
     processCameraProvider.unbind(useCases);
   }
 
   @Override
   public void unbindAll(@NonNull Long identifier) {
     ProcessCameraProvider processCameraProvider =
-      (ProcessCameraProvider) instanceManager.getInstance(identifier);
-    processCameraProvider.unbindAll(); 
+        (ProcessCameraProvider) instanceManager.getInstance(identifier);
+    processCameraProvider.unbindAll();
   }
 }
