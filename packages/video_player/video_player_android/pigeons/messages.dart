@@ -56,6 +56,12 @@ class MixWithOthersMessage {
   bool mixWithOthers;
 }
 
+class GetEmbeddedSubtitlesMessage{
+  const GetEmbeddedSubtitlesMessage(this.languages);
+
+  final List<String?> languages;
+}
+
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class AndroidVideoPlayerApi {
   void initialize();
@@ -69,4 +75,5 @@ abstract class AndroidVideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
+  GetEmbeddedSubtitlesMessage getEmbeddedSubtitles();
 }

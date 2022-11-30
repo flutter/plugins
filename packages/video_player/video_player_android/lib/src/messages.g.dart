@@ -191,30 +191,55 @@ class MixWithOthersMessage {
   }
 }
 
+class GetEmbeddedSubtitlesMessage {
+  GetEmbeddedSubtitlesMessage({
+    required this.languages,
+  });
+
+  List<String?> languages;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['languages'] = languages;
+    return pigeonMap;
+  }
+
+  static GetEmbeddedSubtitlesMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return GetEmbeddedSubtitlesMessage(
+      languages: (pigeonMap['languages'] as List<Object?>?)!.cast<String?>(),
+    );
+  }
+}
+
 class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
   const _AndroidVideoPlayerApiCodec();
+
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
     if (value is CreateMessage) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is LoopingMessage) {
+    } else if (value is GetEmbeddedSubtitlesMessage) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is MixWithOthersMessage) {
+    } else if (value is LoopingMessage) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is PlaybackSpeedMessage) {
+    } else if (value is MixWithOthersMessage) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PositionMessage) {
+    } else if (value is PlaybackSpeedMessage) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else if (value is TextureMessage) {
+    } else if (value is PositionMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is VolumeMessage) {
+    } else if (value is TextureMessage) {
       buffer.putUint8(134);
+      writeValue(buffer, value.encode());
+    } else if (value is VolumeMessage) {
+      buffer.putUint8(135);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -228,21 +253,24 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
         return CreateMessage.decode(readValue(buffer)!);
 
       case 129:
-        return LoopingMessage.decode(readValue(buffer)!);
+        return GetEmbeddedSubtitlesMessage.decode(readValue(buffer)!);
 
       case 130:
-        return MixWithOthersMessage.decode(readValue(buffer)!);
+        return LoopingMessage.decode(readValue(buffer)!);
 
       case 131:
-        return PlaybackSpeedMessage.decode(readValue(buffer)!);
+        return MixWithOthersMessage.decode(readValue(buffer)!);
 
       case 132:
-        return PositionMessage.decode(readValue(buffer)!);
+        return PlaybackSpeedMessage.decode(readValue(buffer)!);
 
       case 133:
-        return TextureMessage.decode(readValue(buffer)!);
+        return PositionMessage.decode(readValue(buffer)!);
 
       case 134:
+        return TextureMessage.decode(readValue(buffer)!);
+
+      case 135:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:
@@ -533,6 +561,35 @@ class AndroidVideoPlayerApi {
       );
     } else {
       return;
+    }
+  }
+
+  Future<GetEmbeddedSubtitlesMessage> getEmbeddedSubtitles() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.AndroidVideoPlayerApi.getEmbeddedSubtitles', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(null) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as GetEmbeddedSubtitlesMessage?)!;
     }
   }
 }

@@ -118,6 +118,18 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles() async {
+    final GetEmbeddedSubtitlesMessage response =
+        await _api.getEmbeddedSubtitles();
+    return response.languages
+        .map<EmbeddedSubtitle>(
+            (String? language) => EmbeddedSubtitle(language ?? ''))
+        .where((EmbeddedSubtitle embeddedSubtitle) =>
+            embeddedSubtitle.language.isNotEmpty)
+        .toList();
+  }
+
+  @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
     return _eventChannelFor(textureId)
         .receiveBroadcastStream()
