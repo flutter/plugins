@@ -146,6 +146,11 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
           return VideoEvent(eventType: VideoEventType.bufferingStart);
         case 'bufferingEnd':
           return VideoEvent(eventType: VideoEventType.bufferingEnd);
+        case 'subtitle':
+          return VideoEvent(
+            eventType: VideoEventType.subtitleUpdate,
+            bufferedData: map['value'] as String?,
+          );
         default:
           return VideoEvent(eventType: VideoEventType.unknown);
       }

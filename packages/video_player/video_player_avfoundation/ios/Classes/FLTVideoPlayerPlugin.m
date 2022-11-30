@@ -5,7 +5,9 @@
 #import "FLTVideoPlayerPlugin.h"
 
 #import <AVFoundation/AVFoundation.h>
+#import <AVFoundation/AVPlayerItemOutput.h>
 #import <GLKit/GLKit.h>
+#import <dispatch/queue.h>
 
 #import "AVAssetTrackUtils.h"
 #import "messages.g.h"
@@ -33,7 +35,7 @@
 }
 @end
 
-@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler>
+@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler,AVPlayerItemLegibleOutputPushDelegate>
 @property(readonly, nonatomic) AVPlayer *player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput *videoOutput;
 // This is to fix 2 bugs: 1. blank video for encrypted video streams on iOS 16
@@ -289,6 +291,32 @@ NS_INLINE UIViewController *rootViewController() {
         break;
       case AVPlayerItemStatusReadyToPlay:
         [item addOutput:_videoOutput];
+            
+        AVPlayerItemLegibleOutput *captionOutput = [[AVPlayerItemLegibleOutput alloc] init];
+        [captionOutput setDelegate:self queue:dispatch_get_main_queue()];
+        [_player.currentItem addOutput: captionOutput];
+            
+        NSArray<AVMediaCharacteristic> *characteristics= _player.currentItem.asset.availableMediaCharacteristicsWithMediaSelectionOptions;
+            for(int i=0;i<[characteristics count];i++){
+                AVMediaCharacteristic characteristic = characteristics[i];
+                if([characteristic.description isEqual: @"AVMediaCharacteristicLegible"]){
+            
+                    AVMediaSelectionGroup *group = [
+                        _player.currentItem.asset mediaSelectionGroupForMediaCharacteristic:characteristic
+                    ];
+                    NSArray<AVMediaSelectionOption *> *options = [group options];
+                    
+                    NSString *d=options[0].displayName;
+                    
+                    [
+                        _player.currentItem selectMediaOption:options[0]
+                                inMediaSelectionGroup:group
+                    ];
+                        
+                }
+            }
+            
+            
         [self setupEventSinkIfReadyToPlay];
         [self updatePlayingState];
         break;
@@ -495,6 +523,26 @@ NS_INLINE UIViewController *rootViewController() {
   [self.player replaceCurrentItemWithPlayerItem:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+
+- (void)         legibleOutput:(AVPlayerItemLegibleOutput *)output
+    didOutputAttributedStrings:(NSArray<NSAttributedString *> *)strings
+           nativeSampleBuffers:(NSArray *)nativeSamples
+                   forItemTime:(CMTime)itemTime{
+    NSString *value = @"";
+    NSAttributedString *string = [strings firstObject];
+    
+    if(string != nil){
+        NSAttributedString *string = [strings firstObject];
+        value = [string string];
+    }
+    
+    _eventSink(@{
+      @"event" : @"subtitle",
+      @"value" : value
+    });
+}
+
 
 - (void)dispose {
   [self disposeSansEventChannel];
