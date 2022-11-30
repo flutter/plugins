@@ -11,9 +11,9 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
 
-import 'common/weak_reference_utils.dart';
-import 'foundation/foundation.dart';
-import 'web_kit/web_kit.dart';
+import '../common/weak_reference_utils.dart';
+import '../foundation/foundation.dart';
+import '../web_kit/web_kit.dart';
 
 /// A [Widget] that displays a [WKWebView].
 class WebKitWebViewWidget extends StatefulWidget {
