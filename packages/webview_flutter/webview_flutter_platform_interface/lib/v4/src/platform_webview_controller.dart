@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'platform_navigation_delegate.dart';
@@ -226,18 +224,12 @@ abstract class PlatformWebViewController extends PlatformInterface {
   /// Return the current scroll position of this view.
   ///
   /// Scroll position is measured from the top left.
-  Future<Point<int>> getScrollPosition() {
+  Future<Offset> getScrollPosition() {
     throw UnimplementedError(
         'getScrollPosition is not implemented on the current platform');
   }
 
-  /// Whether to allow swipe based navigation on supported platforms.
-  Future<void> enableGestureNavigation(bool enabled) {
-    throw UnimplementedError(
-        'enableGestureNavigation is not implemented on the current platform');
-  }
-
-  /// Whhether to support zooming using its on-screen zoom controls and gestures.
+  /// Whether to support zooming using its on-screen zoom controls and gestures.
   Future<void> enableZoom(bool enabled) {
     throw UnimplementedError(
         'enableZoom is not implemented on the current platform');
@@ -263,9 +255,10 @@ abstract class PlatformWebViewController extends PlatformInterface {
 }
 
 /// Describes the parameters necessary for registering a JavaScript channel.
+@immutable
 class JavaScriptChannelParams {
   /// Creates a new [JavaScriptChannelParams] object.
-  JavaScriptChannelParams({
+  const JavaScriptChannelParams({
     required this.name,
     required this.onMessageReceived,
   });
