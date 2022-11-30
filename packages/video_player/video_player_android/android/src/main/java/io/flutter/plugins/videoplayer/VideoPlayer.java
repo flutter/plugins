@@ -28,6 +28,8 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.text.CueGroup;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
@@ -72,7 +74,15 @@ final class VideoPlayer {
     this.textureEntry = textureEntry;
     this.options = options;
 
-    ExoPlayer exoPlayer = new ExoPlayer.Builder(context).build();
+
+    DefaultTrackSelector  trackSelector = new DefaultTrackSelector(context);
+    trackSelector.setParameters(new DefaultTrackSelector.Parameters.Builder(context)
+          .setRendererDisabled(C.TRACK_TYPE_VIDEO, false)
+          .build());
+
+    ExoPlayer exoPlayer = new ExoPlayer.Builder(context)
+          .setTrackSelector(trackSelector)
+          .build();
 
     Uri uri = Uri.parse(dataSource);
     DataSource.Factory dataSourceFactory;
@@ -232,6 +242,22 @@ final class VideoPlayer {
               eventSink.error("VideoError", "Video player had error " + error, null);
             }
           }
+
+            @Override
+            public void onCues(CueGroup cueGroup) {
+                Listener.super.onCues(cueGroup);
+
+                Map<String, Object> event = new HashMap<>();
+                event.put("event", "subtitle");
+                if (!cueGroup.cues.isEmpty()) {
+                  if (cueGroup.cues.get(0).text != null) {
+                    event.put("value", cueGroup.cues.get(0).text.toString());
+                  }
+                }else{
+                  event.put("value", "");
+                }
+                eventSink.success(event);
+            }
         });
   }
 
