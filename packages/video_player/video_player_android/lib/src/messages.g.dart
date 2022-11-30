@@ -228,6 +228,47 @@ class GetEmbeddedSubtitlesMessage {
   }
 }
 
+class SetEmbeddedSubtitlesMessage {
+  SetEmbeddedSubtitlesMessage({
+    required this.textureId,
+    this.language,
+    this.label,
+    this.trackIndex,
+    this.groupIndex,
+    this.renderIndex,
+  });
+
+  int textureId;
+  String? language;
+  String? label;
+  int? trackIndex;
+  int? groupIndex;
+  int? renderIndex;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['language'] = language;
+    pigeonMap['label'] = label;
+    pigeonMap['trackIndex'] = trackIndex;
+    pigeonMap['groupIndex'] = groupIndex;
+    pigeonMap['renderIndex'] = renderIndex;
+    return pigeonMap;
+  }
+
+  static SetEmbeddedSubtitlesMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return SetEmbeddedSubtitlesMessage(
+      textureId: pigeonMap['textureId']! as int,
+      language: pigeonMap['language'] as String?,
+      label: pigeonMap['label'] as String?,
+      trackIndex: pigeonMap['trackIndex'] as int?,
+      groupIndex: pigeonMap['groupIndex'] as int?,
+      renderIndex: pigeonMap['renderIndex'] as int?,
+    );
+  }
+}
+
 class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
   const _AndroidVideoPlayerApiCodec();
 
@@ -251,11 +292,14 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is PositionMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is TextureMessage) {
+    } else if (value is SetEmbeddedSubtitlesMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is VolumeMessage) {
+    } else if (value is TextureMessage) {
       buffer.putUint8(135);
+      writeValue(buffer, value.encode());
+    } else if (value is VolumeMessage) {
+      buffer.putUint8(136);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -284,9 +328,12 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
         return PositionMessage.decode(readValue(buffer)!);
 
       case 134:
-        return TextureMessage.decode(readValue(buffer)!);
+        return SetEmbeddedSubtitlesMessage.decode(readValue(buffer)!);
 
       case 135:
+        return TextureMessage.decode(readValue(buffer)!);
+
+      case 136:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:
@@ -608,6 +655,30 @@ class AndroidVideoPlayerApi {
     } else {
       return (replyMap['result'] as List<Object?>?)!
           .cast<GetEmbeddedSubtitlesMessage?>();
+    }
+  }
+
+  Future<void> setEmbeddedSubtitles(SetEmbeddedSubtitlesMessage arg_msg) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.AndroidVideoPlayerApi.setEmbeddedSubtitles', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_msg]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
     }
   }
 }

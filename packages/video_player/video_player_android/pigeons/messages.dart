@@ -66,6 +66,24 @@ class GetEmbeddedSubtitlesMessage{
   final int renderIndex;
 }
 
+class SetEmbeddedSubtitlesMessage {
+  SetEmbeddedSubtitlesMessage(
+    this.textureId,
+    this.language,
+    this.label,
+    this.trackIndex,
+    this.groupIndex,
+    this.renderIndex,
+  );
+
+  final int textureId;
+  final String? language;
+  final String? label;
+  final int? trackIndex;
+  final int? groupIndex;
+  final int? renderIndex;
+}
+
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class AndroidVideoPlayerApi {
   void initialize();
@@ -80,4 +98,5 @@ abstract class AndroidVideoPlayerApi {
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
   List<GetEmbeddedSubtitlesMessage?> getEmbeddedSubtitles(TextureMessage msg);
+  void setEmbeddedSubtitles(SetEmbeddedSubtitlesMessage msg);
 }

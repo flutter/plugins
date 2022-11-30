@@ -110,7 +110,10 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   }
 
   ///
-  Future<void> setEmbeddedSubtitles(EmbeddedSubtitle embeddedSubtitle) async {
+  Future<void> setEmbeddedSubtitles(
+    int textureId,
+    EmbeddedSubtitle? embeddedSubtitle,
+  ) async {
     throw UnimplementedError(
         'setEmbeddedSubtitles() has not been implemented.');
   }

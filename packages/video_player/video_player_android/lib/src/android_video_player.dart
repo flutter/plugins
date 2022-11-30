@@ -135,6 +135,23 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setEmbeddedSubtitles(
+    int textureId,
+    EmbeddedSubtitle? embeddedSubtitle,
+  ) {
+    return _api.setEmbeddedSubtitles(
+      SetEmbeddedSubtitlesMessage(
+        textureId: textureId,
+        language: embeddedSubtitle?.language,
+        label: embeddedSubtitle?.label,
+        trackIndex: embeddedSubtitle?.trackIndex,
+        groupIndex: embeddedSubtitle?.groupIndex,
+        renderIndex: embeddedSubtitle?.renderIndex,
+      ),
+    );
+  }
+
+  @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
     return _eventChannelFor(textureId)
         .receiveBroadcastStream()
