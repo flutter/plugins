@@ -108,6 +108,12 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError(
         'getEmbeddedSubtitles() has not been implemented.');
   }
+
+  ///
+  Future<void> setEmbeddedSubtitles(EmbeddedSubtitle embeddedSubtitle) async {
+    throw UnimplementedError(
+        'setEmbeddedSubtitles() has not been implemented.');
+  }
 }
 
 class _PlaceholderImplementation extends VideoPlayerPlatform {}
