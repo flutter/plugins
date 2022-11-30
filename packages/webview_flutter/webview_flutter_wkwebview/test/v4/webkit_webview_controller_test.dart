@@ -389,14 +389,14 @@ void main() {
       verify(mockWebView.reload());
     });
 
-    test('enableGestureNavigation', () async {
+    test('setAllowsBackForwardNavigationGestures', () async {
       final MockWKWebView mockWebView = MockWKWebView();
 
       final WebKitWebViewController controller = createControllerWithMocks(
         createMockWebView: (_, {dynamic observeValue}) => mockWebView,
       );
 
-      await controller.enableGestureNavigation(true);
+      await controller.setAllowsBackForwardNavigationGestures(true);
       verify(mockWebView.setAllowsBackForwardNavigationGestures(true));
     });
 
