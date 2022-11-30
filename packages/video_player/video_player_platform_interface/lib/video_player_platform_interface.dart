@@ -212,6 +212,7 @@ class VideoEvent {
     this.size,
     this.rotationCorrection,
     this.buffered,
+    this.bufferedData,
   });
 
   /// The type of the event.
@@ -237,6 +238,9 @@ class VideoEvent {
   /// Only used if [eventType] is [VideoEventType.bufferingUpdate].
   final List<DurationRange>? buffered;
 
+  /// Data which will be use in current buffer.
+  final String? bufferedData;
+
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
@@ -246,6 +250,7 @@ class VideoEvent {
             duration == other.duration &&
             size == other.size &&
             rotationCorrection == other.rotationCorrection &&
+            bufferedData == bufferedData &&
             listEquals(buffered, other.buffered);
   }
 
@@ -256,6 +261,7 @@ class VideoEvent {
         size,
         rotationCorrection,
         buffered,
+        bufferedData,
       );
 }
 
@@ -278,6 +284,9 @@ enum VideoEventType {
 
   /// The video stopped to buffer.
   bufferingEnd,
+
+  /// Updated information on the subtitle.
+  subtitleUpdate,
 
   /// An unknown event has been received.
   unknown,
