@@ -4,7 +4,7 @@
 
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
 
-import 'src/android_webview.dart' as android_webview;
+import '../android_webview.dart' as android_webview;
 
 /// Handles all cookie operations for the current platform.
 class WebViewAndroidCookieManager extends WebViewCookieManagerPlatform {
