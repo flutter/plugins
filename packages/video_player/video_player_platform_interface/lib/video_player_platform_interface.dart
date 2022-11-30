@@ -102,6 +102,11 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
+
+  ///
+  Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles() async {
+    throw UnimplementedError('getEmbeddedSubtitles() has not been implemented.');
+  }
 }
 
 class _PlaceholderImplementation extends VideoPlayerPlatform {}
@@ -380,4 +385,13 @@ class VideoPlayerOptions {
   /// Note: This option will be silently ignored in the web platform (there is
   /// currently no way to implement this feature in this platform).
   final bool mixWithOthers;
+}
+
+
+///
+class EmbeddedSubtitle {
+  ///
+  const EmbeddedSubtitle(this.language);
+  ///
+  final String language;
 }
