@@ -36,8 +36,8 @@ class _FakePlatformWebViewControllerCreationParams_0 extends _i1.SmartFake
         );
 }
 
-class _FakeOffset_1 extends _i1.SmartFake implements _i3.Offset {
-  _FakeOffset_1(
+class _FakeObject_1 extends _i1.SmartFake implements Object {
+  _FakeObject_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -46,9 +46,19 @@ class _FakeOffset_1 extends _i1.SmartFake implements _i3.Offset {
         );
 }
 
-class _FakePlatformNavigationDelegateCreationParams_2 extends _i1.SmartFake
+class _FakeOffset_2 extends _i1.SmartFake implements _i3.Offset {
+  _FakeOffset_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakePlatformNavigationDelegateCreationParams_3 extends _i1.SmartFake
     implements _i2.PlatformNavigationDelegateCreationParams {
-  _FakePlatformNavigationDelegateCreationParams_2(
+  _FakePlatformNavigationDelegateCreationParams_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -206,14 +216,20 @@ class MockPlatformWebViewController extends _i1.Mock
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
   @override
-  _i5.Future<String> runJavaScriptReturningResult(String? javaScript) =>
+  _i5.Future<Object> runJavaScriptReturningResult(String? javaScript) =>
       (super.noSuchMethod(
         Invocation.method(
           #runJavaScriptReturningResult,
           [javaScript],
         ),
-        returnValue: _i5.Future<String>.value(''),
-      ) as _i5.Future<String>);
+        returnValue: _i5.Future<Object>.value(_FakeObject_1(
+          this,
+          Invocation.method(
+            #runJavaScriptReturningResult,
+            [javaScript],
+          ),
+        )),
+      ) as _i5.Future<Object>);
   @override
   _i5.Future<void> addJavaScriptChannel(
           _i4.JavaScriptChannelParams? javaScriptChannelParams) =>
@@ -281,7 +297,7 @@ class MockPlatformWebViewController extends _i1.Mock
           #getScrollPosition,
           [],
         ),
-        returnValue: _i5.Future<_i3.Offset>.value(_FakeOffset_1(
+        returnValue: _i5.Future<_i3.Offset>.value(_FakeOffset_2(
           this,
           Invocation.method(
             #getScrollPosition,
@@ -293,16 +309,6 @@ class MockPlatformWebViewController extends _i1.Mock
   _i5.Future<void> enableDebugging(bool? enabled) => (super.noSuchMethod(
         Invocation.method(
           #enableDebugging,
-          [enabled],
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
-  @override
-  _i5.Future<void> enableGestureNavigation(bool? enabled) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #enableGestureNavigation,
           [enabled],
         ),
         returnValue: _i5.Future<void>.value(),
@@ -360,7 +366,7 @@ class MockPlatformNavigationDelegate extends _i1.Mock
   _i2.PlatformNavigationDelegateCreationParams get params =>
       (super.noSuchMethod(
         Invocation.getter(#params),
-        returnValue: _FakePlatformNavigationDelegateCreationParams_2(
+        returnValue: _FakePlatformNavigationDelegateCreationParams_3(
           this,
           Invocation.getter(#params),
         ),
