@@ -250,22 +250,22 @@ final class VideoPlayer {
           }
 
             @Override
-            public void onCues(CueGroup cueGroup) {
-                Listener.super.onCues(cueGroup);
-                if(textTrackIndex != null) {
+          public void onCues(CueGroup cueGroup) {
+              Listener.super.onCues(cueGroup);
+              if(textTrackIndex != null) {
 
-                  Map<String, Object> event = new HashMap<>();
-                  event.put("event", "subtitle");
-                  if (!cueGroup.cues.isEmpty()) {
-                    if (cueGroup.cues.get(0).text != null) {
-                      event.put("value", cueGroup.cues.get(0).text.toString());
-                    }
-                  } else {
-                    event.put("value", "");
+                Map<String, Object> event = new HashMap<>();
+                event.put("event", "subtitle");
+                if (!cueGroup.cues.isEmpty()) {
+                  if (cueGroup.cues.get(0).text != null) {
+                    event.put("value", cueGroup.cues.get(0).text.toString());
                   }
-                  eventSink.success(event);
+                } else {
+                  event.put("value", "");
                 }
-            }
+                eventSink.success(event);
+              }
+          }
         });
   }
 

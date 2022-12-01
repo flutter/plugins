@@ -639,12 +639,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
+  /// Get all available embedded subtitle of video.
   ///
+  /// This is useful for case video contains embedded subtitle like Hls. Items
+  /// of response can use by [setEmbeddedSubtitles] to select prepare subtitle.
   Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles() async {
     return _videoPlayerPlatform.getEmbeddedSubtitles(_textureId);
   }
 
+  /// Select one of embedded subtitle of video.
   ///
+  /// * It's recommended to get [EmbeddedSubtitle] instance from [getEmbeddedSubtitles].
+  /// * After setting subtitle [value.caption] will get update by stream subtitle. Updated
+  ///   caption will only include [value.caption.text].
+  /// * Use [EmbeddedSubtitle.none] to prevent [value.caption] updating by subtitle and
+  ///   remove subtitle
   Future<void> setEmbeddedSubtitles(EmbeddedSubtitle embeddedSubtitle) async {
     await _videoPlayerPlatform.setEmbeddedSubtitles(
       _textureId,

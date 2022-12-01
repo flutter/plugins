@@ -103,13 +103,13 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
 
-  ///
+  /// Get all available embedded subtitle of video.
   Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles(int textureId) async {
     throw UnimplementedError(
         'getEmbeddedSubtitles() has not been implemented.');
   }
 
-  ///
+  /// Select one of embedded subtitle of video.
   Future<void> setEmbeddedSubtitles(
     int textureId,
     EmbeddedSubtitle? embeddedSubtitle,
@@ -397,9 +397,12 @@ class VideoPlayerOptions {
   final bool mixWithOthers;
 }
 
-///
+/// Subtitle option which embedded into video.
 class EmbeddedSubtitle {
+  /// Subtitle option which embedded into video.
   ///
+  /// * It's recommended to not create direct instance by this constructor. Try to
+  ///   get from video player controller.
   const EmbeddedSubtitle({
     required this.language,
     required this.label,
@@ -408,7 +411,7 @@ class EmbeddedSubtitle {
     required this.renderIndex,
   });
 
-  ///
+  /// An instance of embedded subtitle which use to disable subtitle stream.
   const EmbeddedSubtitle.none()
       : language = null,
         label = null,
@@ -416,18 +419,18 @@ class EmbeddedSubtitle {
         groupIndex = null,
         renderIndex = null;
 
-  ///
+  /// Language of embedded subtitle
   final String? language;
 
-  ///
+  /// Label associated for each option by embedded subtitle
   final String? label;
 
-  ///
+  /// Subtitle track index between list of subtitle in embedded subtitle
   final int? trackIndex;
 
-  ///
+  /// Subtitle group track index between available track for video.
   final int? groupIndex;
 
-  ///
+  /// Subtitle group track render index
   final int? renderIndex;
 }

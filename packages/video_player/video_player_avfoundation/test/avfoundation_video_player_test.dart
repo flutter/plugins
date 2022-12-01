@@ -23,6 +23,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
   MixWithOthersMessage? mixWithOthersMessage;
+  SetEmbeddedSubtitlesMessage? setEmbeddedSubtitlesMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
@@ -89,6 +90,27 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setPlaybackSpeed(PlaybackSpeedMessage arg) {
     log.add('setPlaybackSpeed');
     playbackSpeedMessage = arg;
+  }
+
+  @override
+  List<GetEmbeddedSubtitlesMessage?> getEmbeddedSubtitles(TextureMessage msg) {
+    log.add('getEmbeddedSubtitles');
+    textureMessage = msg;
+    return <GetEmbeddedSubtitlesMessage?>[
+      GetEmbeddedSubtitlesMessage(
+        language: 'en',
+        label: 'English',
+        trackIndex: 0,
+        groupIndex: 0,
+        renderIndex: 2,
+      )
+    ];
+  }
+
+  @override
+  void setEmbeddedSubtitles(SetEmbeddedSubtitlesMessage msg) {
+    log.add('SetEmbeddedSubtitlesMessage');
+    setEmbeddedSubtitlesMessage = msg;
   }
 }
 
