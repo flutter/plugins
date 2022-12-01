@@ -359,20 +359,6 @@ void main() {
 
   test(
       // ignore: lines_longer_than_80_chars
-      'Default implementation of enableDebugging should throw unimplemented error',
-      () {
-    final PlatformWebViewController controller =
-        ExtendsPlatformWebViewController(
-            const PlatformWebViewControllerCreationParams());
-
-    expect(
-      () => controller.enableDebugging(true),
-      throwsUnimplementedError,
-    );
-  });
-
-  test(
-      // ignore: lines_longer_than_80_chars
       'Default implementation of enableZoom should throw unimplemented error',
       () {
     final PlatformWebViewController controller =

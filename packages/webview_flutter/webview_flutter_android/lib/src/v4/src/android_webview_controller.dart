@@ -85,6 +85,17 @@ class AndroidWebViewController extends PlatformWebViewController {
   final Map<String, AndroidJavaScriptChannelParams> _javaScriptChannelParams =
       <String, AndroidJavaScriptChannelParams>{};
 
+  /// Whether to enable the platform's webview content debugging tools.
+  ///
+  /// Defaults to false.
+  static Future<void> enableDebugging(
+    bool enabled, {
+    @visibleForTesting
+        AndroidWebViewProxy webViewProxy = const AndroidWebViewProxy(),
+  }) {
+    return webViewProxy.setWebContentsDebuggingEnabled(enabled);
+  }
+
   @override
   Future<void> loadFile(
     String absoluteFilePath,
@@ -255,11 +266,6 @@ class AndroidWebViewController extends PlatformWebViewController {
   Future<Offset> getScrollPosition() {
     return _webView.getScrollPosition();
   }
-
-  @override
-  Future<void> enableDebugging(bool enabled) =>
-      _androidWebViewParams.androidWebViewProxy
-          .setWebContentsDebuggingEnabled(enabled);
 
   @override
   Future<void> enableZoom(bool enabled) =>

@@ -664,16 +664,11 @@ void main() {
 
     test('enableDebugging', () async {
       final MockAndroidWebViewProxy mockProxy = MockAndroidWebViewProxy();
-      final AndroidWebViewControllerCreationParams creationParams =
-          AndroidWebViewControllerCreationParams(
-        androidWebViewProxy: mockProxy,
-        androidWebStorage: MockWebStorage(),
+
+      await AndroidWebViewController.enableDebugging(
+        true,
+        webViewProxy: mockProxy,
       );
-      final AndroidWebViewController controller =
-          AndroidWebViewController(creationParams);
-
-      await controller.enableDebugging(true);
-
       verify(mockProxy.setWebContentsDebuggingEnabled(true)).called(1);
     });
 
