@@ -12,7 +12,7 @@ import 'package:webview_flutter_android/src/android_webview.dart'
 import 'package:webview_flutter_android/src/v4/src/android_navigation_delegate.dart';
 import 'package:webview_flutter_android/src/v4/src/android_proxy.dart';
 import 'package:webview_flutter_android/src/v4/src/android_webview_controller.dart';
-import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart';
+import 'package:webview_flutter_platform_interface/src/webview_platform.dart';
 
 import 'android_webview_controller_test.mocks.dart';
 
