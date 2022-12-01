@@ -56,7 +56,7 @@ class VideoPlayerValue {
     this.playbackSpeed = 1.0,
     this.rotationCorrection = 0,
     this.errorDescription,
-    this.subtitle,
+    this.embeddedSubtitle = const EmbeddedSubtitle.none(),
   });
 
   /// Returns an instance for a video that hasn't been loaded.
@@ -125,8 +125,8 @@ class VideoPlayerValue {
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
 
-  /// Current snippet of subtitle.
-  final String? subtitle;
+  /// Current selected embedded subtitle form available subtitles of video
+  final EmbeddedSubtitle embeddedSubtitle;
 
   /// Indicates whether or not the video is in an error state. If this is true
   /// [errorDescription] should have information about the problem.
@@ -166,7 +166,7 @@ class VideoPlayerValue {
     double? playbackSpeed,
     int? rotationCorrection,
     String? errorDescription = _defaultErrorDescription,
-    String? subtitle,
+    EmbeddedSubtitle? embeddedSubtitle,
   }) {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -182,7 +182,7 @@ class VideoPlayerValue {
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       rotationCorrection: rotationCorrection ?? this.rotationCorrection,
-      subtitle: subtitle ?? this.subtitle,
+      embeddedSubtitle: embeddedSubtitle ?? this.embeddedSubtitle,
       errorDescription: errorDescription != _defaultErrorDescription
           ? errorDescription
           : this.errorDescription,
@@ -412,7 +412,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(isBuffering: false);
           break;
         case VideoEventType.subtitleUpdate:
-          value = value.copyWith(subtitle: event.bufferedData);
+          value = value.copyWith(
+            caption:
+                Caption.fromEmbeddedSubtitle(text: event.bufferedData ?? ''),
+          );
           break;
         case VideoEventType.unknown:
           break;
@@ -642,11 +645,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   ///
-  Future<void> setEmbeddedSubtitles(EmbeddedSubtitle? embeddedSubtitle) async {
-    return _videoPlayerPlatform.setEmbeddedSubtitles(
+  Future<void> setEmbeddedSubtitles(EmbeddedSubtitle embeddedSubtitle) async {
+    await _videoPlayerPlatform.setEmbeddedSubtitles(
       _textureId,
       embeddedSubtitle,
     );
+    value = value.copyWith(embeddedSubtitle: embeddedSubtitle);
   }
 
   /// The closed caption based on the current [position] in the video.

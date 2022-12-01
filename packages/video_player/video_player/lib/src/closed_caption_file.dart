@@ -44,6 +44,16 @@ class Caption {
     required this.text,
   });
 
+  /// Creates a new [Caption] object from embedded subtitle.
+  ///
+  /// This is not recommended for direct use unless you are writing a parser for
+  /// a new closed captioning file type.
+  const Caption.fromEmbeddedSubtitle({
+    required this.text,
+  })  : number = -1,
+        start = Duration.zero,
+        end = Duration.zero;
+
   /// The number that this caption was assigned.
   final int number;
 

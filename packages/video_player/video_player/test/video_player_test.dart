@@ -79,6 +79,14 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> setClosedCaptionFile(
     Future<ClosedCaptionFile>? closedCaptionFile,
   ) async {}
+
+  @override
+  Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles() async {
+    return const <EmbeddedSubtitle>[];
+  }
+
+  @override
+  Future<void> setEmbeddedSubtitles(EmbeddedSubtitle embeddedSubtitle) async {}
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
