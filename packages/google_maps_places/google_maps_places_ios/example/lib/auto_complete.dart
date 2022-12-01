@@ -258,10 +258,8 @@ class _MyAutoCompleteBodyState extends State<AutoCompleteBody> {
   }
 
   Widget _buildErrorWidget() {
-    final ThemeData theme = Theme.of(context);
     final String errorText = _error == null ? '' : _error.toString();
-    return Text(errorText,
-        style: theme.textTheme.caption?.copyWith(color: theme.errorColor));
+    return Text(errorText, style: const TextStyle(color: Colors.red));
   }
 
   List<Widget> _buildResultWidgets() {
