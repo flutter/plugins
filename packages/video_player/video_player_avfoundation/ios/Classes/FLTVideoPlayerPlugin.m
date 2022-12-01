@@ -52,6 +52,7 @@
 @property(nonatomic, readonly) BOOL isPlaying;
 @property(nonatomic) BOOL isLooping;
 @property(nonatomic, readonly) BOOL isInitialized;
+@property(nonatomic, readonly) NSNumber* textTrackIndex;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
                 httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers;
@@ -485,7 +486,7 @@ NS_INLINE UIViewController *rootViewController() {
 
 - (NSArray<FLTGetEmbeddedSubtitlesMessage *> *) getEmbeddedSubtitles {
     NSArray<AVMediaCharacteristic> *characteristics= _player.currentItem.asset.availableMediaCharacteristicsWithMediaSelectionOptions;
-    NSMutableArray<FLTGetEmbeddedSubtitlesMessage *> *subtitles = [[NSMutableArray alloc]init];
+    
     
     for(int i=0;i<[characteristics count];i++){
         AVMediaCharacteristic characteristic = characteristics[i];
@@ -496,6 +497,8 @@ NS_INLINE UIViewController *rootViewController() {
                 _player.currentItem.asset mediaSelectionGroupForMediaCharacteristic:characteristic
             ];
             NSArray<AVMediaSelectionOption *> *options = [group options];
+            
+            NSMutableArray<FLTGetEmbeddedSubtitlesMessage *> *subtitles = [[NSMutableArray alloc]initWithCapacity:[options count]];
             
             for(int j=0;j<[options count];j++){
                 AVMediaSelectionOption *option = options[j];
@@ -509,11 +512,36 @@ NS_INLINE UIViewController *rootViewController() {
                 
                 [subtitles addObject: subtitle];
             }
+            
             return subtitles;
         }
     }
     
+    NSMutableArray<FLTGetEmbeddedSubtitlesMessage *> *subtitles = [[NSMutableArray alloc]initWithCapacity:0];
     return subtitles;
+}
+
+- (void) setEmbeddedSubtitles:(NSNumber *)trackIndex
+               withGroupIndex:(NSNumber *)groupIndex {
+    _textTrackIndex = trackIndex;
+    if(trackIndex != nil && groupIndex != nil){
+        NSArray<AVMediaCharacteristic> *characteristics= _player.currentItem.asset.availableMediaCharacteristicsWithMediaSelectionOptions;
+        AVMediaCharacteristic characteristic = characteristics[[groupIndex intValue]];
+        AVMediaSelectionGroup *group = [
+            _player.currentItem.asset mediaSelectionGroupForMediaCharacteristic:characteristic
+        ];
+        NSArray<AVMediaSelectionOption *> *options = [group options];
+        AVMediaSelectionOption *option = options[[trackIndex intValue]];
+        [
+            _player.currentItem selectMediaOption:option
+            inMediaSelectionGroup:group
+        ];
+    }else{
+        _eventSink(@{
+            @"event" : @"subtitle",
+            @"value" : @"",
+        });
+    }
 }
 
 /// This method allows you to dispose without touching the event channel.  This
@@ -541,18 +569,21 @@ NS_INLINE UIViewController *rootViewController() {
     didOutputAttributedStrings:(NSArray<NSAttributedString *> *)strings
            nativeSampleBuffers:(NSArray *)nativeSamples
                    forItemTime:(CMTime)itemTime{
-    NSString *value = @"";
-    NSAttributedString *string = [strings firstObject];
-    
-    if(string != nil){
+    if(_textTrackIndex != nil){
+        NSString *value = @"";
         NSAttributedString *string = [strings firstObject];
-        value = [string string];
+        
+        if(string != nil){
+            NSAttributedString *string = [strings firstObject];
+            value = [string string];
+        }
+        
+        
+        _eventSink(@{
+            @"event" : @"subtitle",
+            @"value" : value
+        });
     }
-    
-    _eventSink(@{
-      @"event" : @"subtitle",
-      @"value" : value
-    });
 }
 
 
@@ -726,9 +757,8 @@ NS_INLINE UIViewController *rootViewController() {
 
 - (void) setEmbeddedSubtitles:(FLTSetEmbeddedSubtitlesMessage *)input
                         error:(FlutterError *_Nullable  *_Nonnull)error{
-    
+    FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+    [player setEmbeddedSubtitles:input.trackIndex withGroupIndex:input.groupIndex];
 }
-
-
 
 @end
