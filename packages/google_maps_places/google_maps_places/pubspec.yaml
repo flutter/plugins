@@ -1,0 +1,33 @@
+name: google_maps_places
+description: A Flutter plugin for integrating Google Maps Places in Flutter applications
+version: 0.0.1
+homepage:
+publish_to: none
+
+environment:
+  sdk: ">=2.18.4 <3.0.0"
+  flutter: ">=2.5.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_maps_places_android:
+    path: ../google_maps_places_android
+  google_maps_places_ios:
+    path: ../google_maps_places_ios
+  google_maps_places_platform_interface:
+    path: ../google_maps_places_platform_interface
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        default_package: google_maps_places_android
+      ios:
+        default_package: google_maps_places_ios

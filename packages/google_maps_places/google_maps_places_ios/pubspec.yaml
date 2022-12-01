@@ -1,0 +1,31 @@
+name: google_maps_places_ios
+description: iOS implementation of the google_maps_places plugin.
+version: 0.0.1
+homepage:
+publish_to: none
+
+environment:
+  sdk: ">=2.18.4 <3.0.0"
+  flutter: ">=2.5.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_maps_places_platform_interface:
+    path: ../google_maps_places_platform_interface
+
+dev_dependencies:
+  build_runner: 2.1.11
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.1.0
+  pigeon: ^4.2.5
+  plugin_platform_interface: ^2.0.2
+
+flutter:
+  plugin:
+    platforms:
+      ios:
+        pluginClass: GoogleMapsPlacesIosPlugin
+        dartPluginClass: GoogleMapsPlacesIOS

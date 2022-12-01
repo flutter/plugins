@@ -1,0 +1,32 @@
+name: google_maps_places_ios_example
+description: Demonstrates how to use the google_maps_places_ios plugin.
+publish_to: "none"
+
+environment:
+  sdk: ">=2.18.4 <3.0.0"
+
+dependencies:
+  cupertino_icons: ^1.0.2
+  flutter:
+    sdk: flutter
+  google_maps_places_ios:
+    # When depending on this package from a real application you should use:
+    #   google_maps_places_ios: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
+    path: ../
+  google_maps_places_platform_interface:
+    path: ../../google_maps_places_platform_interface
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
