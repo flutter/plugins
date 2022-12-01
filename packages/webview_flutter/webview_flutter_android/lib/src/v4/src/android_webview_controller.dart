@@ -90,7 +90,8 @@ class AndroidWebViewController extends PlatformWebViewController {
   /// Defaults to false.
   static Future<void> enableDebugging(
     bool enabled, {
-    AndroidWebViewProxy webViewProxy = const AndroidWebViewProxy(),
+    @visibleForTesting
+        AndroidWebViewProxy webViewProxy = const AndroidWebViewProxy(),
   }) {
     return webViewProxy.setWebContentsDebuggingEnabled(enabled);
   }
