@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/v4/src/webkit_proxy.dart';
 import 'package:webview_flutter_wkwebview/src/v4/webview_flutter_wkwebview.dart';
