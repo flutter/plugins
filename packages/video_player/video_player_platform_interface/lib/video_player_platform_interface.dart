@@ -433,4 +433,7 @@ class EmbeddedSubtitle {
 
   /// Subtitle group track render index
   final int? renderIndex;
+
+  /// Checks either embedded subtitle is selected or is for remove subtitle
+  bool get embeddedSubtitleSelected => trackIndex != null;
 }
