@@ -295,28 +295,6 @@ NS_INLINE UIViewController *rootViewController() {
         AVPlayerItemLegibleOutput *captionOutput = [[AVPlayerItemLegibleOutput alloc] init];
         [captionOutput setDelegate:self queue:dispatch_get_main_queue()];
         [_player.currentItem addOutput: captionOutput];
-            
-        NSArray<AVMediaCharacteristic> *characteristics= _player.currentItem.asset.availableMediaCharacteristicsWithMediaSelectionOptions;
-            for(int i=0;i<[characteristics count];i++){
-                AVMediaCharacteristic characteristic = characteristics[i];
-                if([characteristic.description isEqual: @"AVMediaCharacteristicLegible"]){
-            
-                    AVMediaSelectionGroup *group = [
-                        _player.currentItem.asset mediaSelectionGroupForMediaCharacteristic:characteristic
-                    ];
-                    NSArray<AVMediaSelectionOption *> *options = [group options];
-                    
-                    NSString *d=options[0].displayName;
-                    
-                    [
-                        _player.currentItem selectMediaOption:options[0]
-                                inMediaSelectionGroup:group
-                    ];
-                        
-                }
-            }
-            
-            
         [self setupEventSinkIfReadyToPlay];
         [self updatePlayingState];
         break;
@@ -502,6 +480,40 @@ NS_INLINE UIViewController *rootViewController() {
   // onListenWithArguments is called)
   [self setupEventSinkIfReadyToPlay];
   return nil;
+}
+
+
+- (NSArray<FLTGetEmbeddedSubtitlesMessage *> *) getEmbeddedSubtitles {
+    NSArray<AVMediaCharacteristic> *characteristics= _player.currentItem.asset.availableMediaCharacteristicsWithMediaSelectionOptions;
+    NSMutableArray<FLTGetEmbeddedSubtitlesMessage *> *subtitles = [[NSMutableArray alloc]init];
+    
+    for(int i=0;i<[characteristics count];i++){
+        AVMediaCharacteristic characteristic = characteristics[i];
+        if([characteristic.description isEqual: @"AVMediaCharacteristicLegible"]){
+            
+            
+            AVMediaSelectionGroup *group = [
+                _player.currentItem.asset mediaSelectionGroupForMediaCharacteristic:characteristic
+            ];
+            NSArray<AVMediaSelectionOption *> *options = [group options];
+            
+            for(int j=0;j<[options count];j++){
+                AVMediaSelectionOption *option = options[j];
+                
+                FLTGetEmbeddedSubtitlesMessage *subtitle =
+                    [FLTGetEmbeddedSubtitlesMessage makeWithLanguage:option.locale.localeIdentifier
+                                                               label:option.displayName
+                                                          trackIndex:@(j)
+                                                          groupIndex:@(i)
+                                                         renderIndex:@(2)];
+                
+                [subtitles addObject: subtitle];
+            }
+            return subtitles;
+        }
+    }
+    
+    return subtitles;
 }
 
 /// This method allows you to dispose without touching the event channel.  This
@@ -705,5 +717,18 @@ NS_INLINE UIViewController *rootViewController() {
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
   }
 }
+
+- (NSArray<FLTGetEmbeddedSubtitlesMessage *> *) getEmbeddedSubtitles:(FLTTextureMessage *)input
+                                                           error:(FlutterError *_Nullable __autoreleasing *)error {
+    FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+    return [player getEmbeddedSubtitles];
+}
+
+- (void) setEmbeddedSubtitles:(FLTSetEmbeddedSubtitlesMessage *)input
+                        error:(FlutterError *_Nullable  *_Nonnull)error{
+    
+}
+
+
 
 @end

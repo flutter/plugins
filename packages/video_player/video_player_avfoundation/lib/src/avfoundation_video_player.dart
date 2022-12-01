@@ -117,6 +117,42 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
     return Duration(milliseconds: response.position);
   }
 
+
+
+  @override
+  Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles(int textureId) async {
+    final List<GetEmbeddedSubtitlesMessage?> response =
+    await _api.getEmbeddedSubtitles(TextureMessage(textureId: textureId));
+    return response
+        .whereType<GetEmbeddedSubtitlesMessage>()
+        .map<EmbeddedSubtitle>(
+            (GetEmbeddedSubtitlesMessage item) => EmbeddedSubtitle(
+          language: item.language,
+          label: item.label,
+          trackIndex: item.trackIndex,
+          groupIndex: item.groupIndex,
+          renderIndex: item.renderIndex,
+        ))
+        .toList();
+  }
+
+  @override
+  Future<void> setEmbeddedSubtitles(
+      int textureId,
+      EmbeddedSubtitle? embeddedSubtitle,
+      ) {
+    return _api.setEmbeddedSubtitles(
+      SetEmbeddedSubtitlesMessage(
+        textureId: textureId,
+        language: embeddedSubtitle?.language,
+        label: embeddedSubtitle?.label,
+        trackIndex: embeddedSubtitle?.trackIndex,
+        groupIndex: embeddedSubtitle?.groupIndex,
+        renderIndex: embeddedSubtitle?.renderIndex,
+      ),
+    );
+  }
+
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
     return _eventChannelFor(textureId)
