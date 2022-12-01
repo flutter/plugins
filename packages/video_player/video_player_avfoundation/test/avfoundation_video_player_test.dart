@@ -109,7 +109,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
 
   @override
   void setEmbeddedSubtitles(SetEmbeddedSubtitlesMessage msg) {
-    log.add('SetEmbeddedSubtitlesMessage');
+    log.add('setEmbeddedSubtitles');
     setEmbeddedSubtitlesMessage = msg;
   }
 }
@@ -353,6 +353,37 @@ void main() {
             VideoEvent(eventType: VideoEventType.bufferingStart),
             VideoEvent(eventType: VideoEventType.bufferingEnd),
           ]));
+    });
+
+    test('getEmbeddedSubtitles', () async {
+      final List<EmbeddedSubtitle> subtitles =
+      await player.getEmbeddedSubtitles(1);
+      expect(log.log.last, 'getEmbeddedSubtitles');
+      expect(log.textureMessage?.textureId, 1);
+      expect(subtitles.length, 1);
+      expect(subtitles.first.language, 'en');
+      expect(subtitles.first.label, 'English');
+      expect(subtitles.first.trackIndex, 0);
+      expect(subtitles.first.groupIndex, 0);
+      expect(subtitles.first.renderIndex, 2);
+    });
+
+    test('setEmbeddedSubtitles', () async {
+      const EmbeddedSubtitle embeddedSubtitle = EmbeddedSubtitle(
+        language: 'en',
+        label: 'English',
+        trackIndex: 0,
+        groupIndex: 0,
+        renderIndex: 2,
+      );
+      await player.setEmbeddedSubtitles(1, embeddedSubtitle);
+      expect(log.log.last, 'setEmbeddedSubtitles');
+      expect(log.setEmbeddedSubtitlesMessage?.textureId, 1);
+      expect(log.setEmbeddedSubtitlesMessage?.language, 'en');
+      expect(log.setEmbeddedSubtitlesMessage?.label, 'English');
+      expect(log.setEmbeddedSubtitlesMessage?.trackIndex, 0);
+      expect(log.setEmbeddedSubtitlesMessage?.groupIndex, 0);
+      expect(log.setEmbeddedSubtitlesMessage?.renderIndex, 2);
     });
   });
 }
