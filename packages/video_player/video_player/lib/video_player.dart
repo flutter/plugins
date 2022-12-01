@@ -664,12 +664,18 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// The closed caption based on the current [position] in the video.
   ///
+  /// If any embedded subtitle is selected this will return caption for all
+  /// [position].
+  ///
   /// If there are no closed captions at the current [position], this will
   /// return an empty [Caption].
   ///
   /// If no [closedCaptionFile] was specified, this will always return an empty
   /// [Caption].
   Caption _getCaptionAt(Duration position) {
+    if (value.embeddedSubtitle.embeddedSubtitleSelected) {
+      return value.caption;
+    }
     if (_closedCaptionFile == null) {
       return Caption.none;
     }
