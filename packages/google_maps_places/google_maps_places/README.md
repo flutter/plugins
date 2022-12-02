@@ -1,5 +1,7 @@
 # Google Maps Places for Flutter
 
+<?code-excerpt path-base="excerpts/packages/google_maps_places_example"?>
+
 [![pub package](https://img.shields.io/pub/v/google_maps_places.svg)](https://pub.dev/packages/google_maps_places)
 
 A Flutter plugin that provides a [Google Maps Places](https://developers.google.com/maps/documentation/places/android-sdk) widget.
@@ -92,16 +94,18 @@ import GooglePlaces
 
 ### Sample Usage
 
+<?code-excerpt "readme_excerpts.dart (SampleUsage)"?>
 ```dart
 import 'package:flutter/material.dart';
 import 'package:google_maps_places/google_maps_places.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Flutter Google Maps Places Demo',
       home: PlacesSample(),
     );
@@ -109,14 +113,15 @@ class MyApp extends StatelessWidget {
 }
 
 class PlacesSample extends StatefulWidget {
+  const PlacesSample({super.key});
   @override
   State<PlacesSample> createState() => PlacesSampleState();
 }
 
 class PlacesSampleState extends State<PlacesSample> {
-  String _query = 'Hospital';
-  List<String> _countries = <String>['fi'];
-  TypeFilter _typeFilter = TypeFilter.address;
+  final String _query = 'Hospital';
+  final List<String> _countries = <String>['fi'];
+  final TypeFilter _typeFilter = TypeFilter.address;
 
   final LatLng _origin = const LatLng(65.0121, 25.4651);
 
@@ -127,7 +132,7 @@ class PlacesSampleState extends State<PlacesSample> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       body: Center(
         child: ElevatedButton(
           onPressed: _findPlaces,
