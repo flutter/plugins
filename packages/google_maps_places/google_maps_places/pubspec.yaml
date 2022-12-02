@@ -8,6 +8,14 @@ environment:
   sdk: ">=2.18.4 <3.0.0"
   flutter: ">=2.5.0"
 
+flutter:
+  plugin:
+    platforms:
+      android:
+        default_package: google_maps_places_android
+      ios:
+        default_package: google_maps_places_ios
+
 dependencies:
   flutter:
     sdk: flutter
@@ -22,12 +30,4 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
-  plugin_platform_interface: ^2.0.0
-
-flutter:
-  plugin:
-    platforms:
-      android:
-        default_package: google_maps_places_android
-      ios:
-        default_package: google_maps_places_ios
+  plugin_platform_interface: ^2.1.3
