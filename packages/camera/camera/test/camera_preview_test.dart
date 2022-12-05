@@ -120,6 +120,9 @@ class FakeController extends ValueNotifier<CameraValue>
   @override
   Future<void> setDescriptionWhileRecording(
       CameraDescription description) async {}
+
+  @override
+  CameraDescription get description => value.description;
 }
 
 void main() {
