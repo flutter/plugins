@@ -631,7 +631,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
-    // if we are currently recording then switch the camera description of the controller to flip the camera
+    // if we are currently recording then switch the cameraDescription of the controller to flip the camera
     final bool isRecording =
         controller != null && controller!.value.isRecordingVideo;
     if (isRecording) {
