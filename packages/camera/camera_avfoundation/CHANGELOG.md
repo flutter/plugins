@@ -1,4 +1,4 @@
-## 0.10.0
+## 0.9.9
 
 * Implements option to also stream when recording a video.
 

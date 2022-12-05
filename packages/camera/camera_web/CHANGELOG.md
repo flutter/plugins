@@ -1,6 +1,6 @@
 ## 0.3.1
 
-* Update to latest camera platform interface, and fail if user attempts to use streaming with recording (since streaming is currently unsupported on web).
+* Updates to latest camera platform interface, and fails if user attempts to use streaming with recording (since streaming is currently unsupported on web).
 
 ## 0.3.0+1
 
