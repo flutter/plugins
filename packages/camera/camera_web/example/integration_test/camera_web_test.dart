@@ -1209,7 +1209,7 @@ void main() {
 
         expect(
           () => CameraPlatform.instance.startVideoCapturing(
-              VideoCaptureOptions(cameraId, streamCallback: (imageData) => {})),
+              VideoCaptureOptions(cameraId, streamCallback: (CameraImageData imageData) {})),
           throwsA(
             isA<UnimplementedError>(),
           ),
