@@ -124,7 +124,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (state == AppLifecycleState.inactive) {
       cameraController.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      onNewCameraSelected(cameraController.value.description);
+      onNewCameraSelected(cameraController.description);
     }
   }
 
@@ -602,7 +602,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             width: 90.0,
             child: RadioListTile<CameraDescription>(
               title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
-              groupValue: controller?.value.description,
+              groupValue: controller?.description,
               value: cameraDescription,
               onChanged: onChanged,
             ),
@@ -781,7 +781,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   void onAudioModeButtonPressed() {
     enableAudio = !enableAudio;
     if (controller != null) {
-      onNewCameraSelected(controller!.value.description);
+      onNewCameraSelected(controller!.description);
     }
   }
 

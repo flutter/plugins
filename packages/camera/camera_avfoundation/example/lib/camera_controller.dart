@@ -178,6 +178,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.imageFormatGroup,
   }) : super(CameraValue.uninitialized(cameraDescription));
 
+  /// The properties of the camera device controlled by this controller.
+  CameraDescription get description => value.description;
+
   /// The resolution this controller is targeting.
   ///
   /// This resolution preset is not guaranteed to be available on the device,
@@ -219,7 +222,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     });
 
     _cameraId = await CameraPlatform.instance.createCamera(
-      value.description,
+      description,
       resolutionPreset,
       enableAudio: enableAudio,
     );
