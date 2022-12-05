@@ -2,6 +2,10 @@
 
 * Allows camera to be switched while video recording.
 
+## 0.10.0+5
+
+* Fixes `ArrayIndexOutOfBoundsException` when the permission request is interrupted.
+
 ## 0.10.0+4
 
 * Upgrades `androidx.annotation` version to 1.5.0.
