@@ -569,7 +569,6 @@ void main() {
           isMethodCall('startVideoRecording', arguments: <String, Object?>{
             'cameraId': cameraId,
             'maxVideoDuration': null,
-            'enableStream': false,
           }),
         ]);
       });
@@ -592,8 +591,7 @@ void main() {
         expect(channel.log, <Matcher>[
           isMethodCall('startVideoRecording', arguments: <String, Object?>{
             'cameraId': cameraId,
-            'maxVideoDuration': 10000,
-            'enableStream': false,
+            'maxVideoDuration': 10000
           }),
         ]);
       });

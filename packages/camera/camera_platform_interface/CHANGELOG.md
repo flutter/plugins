@@ -1,7 +1,3 @@
-## 2.3.2
-
-* Updates MethodChannelCamera to have startVideoRecording call the newer startVideoCapturing.
-
 ## 2.3.1
 
 * Exports VideoCaptureOptions to allow dependencies to implement concurrent stream and record.

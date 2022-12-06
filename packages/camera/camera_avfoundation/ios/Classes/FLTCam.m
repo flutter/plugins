@@ -623,16 +623,7 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)startVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result {
-  [self startVideoRecordingWithResult:result messengerForStreaming:nil];
-}
-
-- (void)startVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result
-                messengerForStreaming:(nullable NSObject<FlutterBinaryMessenger> *)messenger {
   if (!_isRecording) {
-    if (messenger != nil) {
-      [self startImageStreamWithMessenger:messenger];
-    }
-
     NSError *error;
     _videoRecordingPath = [self getTemporaryFilePathWithExtension:@"mp4"
                                                         subfolder:@"videos"
