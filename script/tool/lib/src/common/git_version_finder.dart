@@ -99,6 +99,18 @@ class GitVersionFinder {
       return baseSha;
     }
 
+    print('%%% Finding base sha');
+    print('%%% FETCH_HEAD:');
+    final io.ProcessResult fetchHeadResult = await baseGitDir.runCommand(
+        <String>['log', '--pretty=oneline', '-1', 'FETCH_HEAD'],
+        throwOnError: false);
+    print(fetchHeadResult.stdout);
+    print('%%% HEAD:');
+    final io.ProcessResult headResult = await baseGitDir.runCommand(
+        <String>['log', '--pretty=oneline', '-1', 'HEAD'],
+        throwOnError: false);
+    print(headResult.stdout);
+
     io.ProcessResult baseShaFromMergeBase = await baseGitDir.runCommand(
         <String>['merge-base', '--fork-point', 'FETCH_HEAD', 'HEAD'],
         throwOnError: false);
@@ -109,6 +121,8 @@ class GitVersionFinder {
           .runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);
     }
     baseSha = (baseShaFromMergeBase.stdout as String).trim();
+    print('%%% merge-base:');
+    print(baseSha);
     _baseSha = baseSha;
     return baseSha;
   }
