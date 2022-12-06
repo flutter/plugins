@@ -11,10 +11,10 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import '../../common/instance_manager.dart';
-import '../../common/weak_reference_utils.dart';
-import '../../foundation/foundation.dart';
-import '../../web_kit/web_kit.dart';
+import 'common/instance_manager.dart';
+import 'common/weak_reference_utils.dart';
+import 'foundation/foundation.dart';
+import 'web_kit/web_kit.dart';
 import 'webkit_proxy.dart';
 
 /// Media types that can require a user gesture to begin playing.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../foundation/foundation.dart';
-import '../../web_kit/web_kit.dart';
+import 'foundation/foundation.dart';
+import 'web_kit/web_kit.dart';
 
 // This convenience method was added because Dart doesn't support constant
 // function literals: https://github.com/dart-lang/language/issues/1048.
