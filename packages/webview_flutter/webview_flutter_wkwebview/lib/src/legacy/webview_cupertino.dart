@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
 
-import 'foundation/foundation.dart';
+import '../foundation/foundation.dart';
 import 'web_kit_webview_widget.dart';
 
 /// Builds an iOS webview.

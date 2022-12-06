@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 export 'package:webview_flutter_android/webview_flutter_android_legacy.dart';
-export 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+export 'package:webview_flutter_wkwebview/webview_flutter_wkwebview_legacy.dart';
 
 export 'platform_interface.dart';
 export 'src/webview.dart';
