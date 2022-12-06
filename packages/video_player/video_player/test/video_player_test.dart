@@ -341,7 +341,20 @@ void main() {
             VideoPlayerController.file(File('a.avi'));
         await controller.initialize();
 
-        expect(fakeVideoPlayerPlatform.dataSources[0].uri, 'file://a.avi');
+        final String uri = fakeVideoPlayerPlatform.dataSources[0].uri!;
+        expect(uri.startsWith('file:///'), true, reason: 'Actual string: $uri');
+        expect(uri.endsWith('/a.avi'), true, reason: 'Actual string: $uri');
+      });
+
+      test('file with special characters', () async {
+        final VideoPlayerController controller =
+            VideoPlayerController.file(File('A #1 Hit?.avi'));
+        await controller.initialize();
+
+        final String uri = fakeVideoPlayerPlatform.dataSources[0].uri!;
+        expect(uri.startsWith('file:///'), true, reason: 'Actual string: $uri');
+        expect(uri.endsWith('/A%20%231%20Hit%3F.avi'), true,
+            reason: 'Actual string: $uri');
       });
 
       test('successful initialize on controller with error clears error',
