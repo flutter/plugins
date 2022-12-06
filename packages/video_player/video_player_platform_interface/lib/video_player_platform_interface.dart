@@ -103,13 +103,13 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
 
-  /// Get all available embedded subtitle of video.
+  /// Get all available embedded subtitles of the video.
   Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles(int textureId) async {
     throw UnimplementedError(
         'getEmbeddedSubtitles() has not been implemented.');
   }
 
-  /// Select one of embedded subtitle of video.
+  /// Select one of the embedded subtitles of the video.
   Future<void> setEmbeddedSubtitles(
     int textureId,
     EmbeddedSubtitle? embeddedSubtitle,
@@ -253,7 +253,7 @@ class VideoEvent {
   /// Only used if [eventType] is [VideoEventType.bufferingUpdate].
   final List<DurationRange>? buffered;
 
-  /// Data which will be use in current buffer.
+  /// Data that will be used in the current buffer.
   final String? bufferedData;
 
   @override
@@ -397,12 +397,12 @@ class VideoPlayerOptions {
   final bool mixWithOthers;
 }
 
-/// Subtitle option which embedded into video.
+/// Subtitle option, which is embedded into the video.
 class EmbeddedSubtitle {
   /// Subtitle option which embedded into video.
   ///
-  /// * It's recommended to not create direct instance by this constructor. Try to
-  ///   get from video player controller.
+  /// * It's recommended not to create a direct instance with this constructor.
+  ///   Try to get it from the video player controller.
   const EmbeddedSubtitle({
     required this.language,
     required this.label,
@@ -411,7 +411,7 @@ class EmbeddedSubtitle {
     required this.renderIndex,
   });
 
-  /// An instance of embedded subtitle which use to disable subtitle stream.
+  /// An instance of the embedded subtitle that is used to disable the subtitle stream.
   const EmbeddedSubtitle.none()
       : language = null,
         label = null,
@@ -422,18 +422,18 @@ class EmbeddedSubtitle {
   /// Language of embedded subtitle
   final String? language;
 
-  /// Label associated for each option by embedded subtitle
+  /// Label, associated with each option of the embedded subtitle
   final String? label;
 
-  /// Subtitle track index between list of subtitle in embedded subtitle
+  /// Subtitle track index, in the list of subtitles in the embedded subtitle
   final int? trackIndex;
 
-  /// Subtitle group track index between available track for video.
+  /// Subtitle group track index in the available tracks for the video.
   final int? groupIndex;
 
   /// Subtitle group track render index
   final int? renderIndex;
 
-  /// Checks either embedded subtitle is selected or is for remove subtitle
+  /// Checks whether the embedded subtitle is selected or is for removing the subtitle.
   bool get embeddedSubtitleSelected => trackIndex != null;
 }

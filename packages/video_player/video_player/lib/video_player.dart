@@ -125,7 +125,7 @@ class VideoPlayerValue {
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
 
-  /// Current selected embedded subtitle form available subtitles of video
+  /// The currently selected embedded subtitle from the available subtitles of the video
   final EmbeddedSubtitle embeddedSubtitle;
 
   /// Indicates whether or not the video is in an error state. If this is true
@@ -639,21 +639,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
-  /// Get all available embedded subtitle of video.
+  /// Get all available embedded subtitles of the video.
   ///
-  /// This is useful for case video contains embedded subtitle like Hls. Items
-  /// of response can use by [setEmbeddedSubtitles] to select prepare subtitle.
+  /// This is useful for video formats containing embedded subtitles like Hls.
+  /// The response items can be used with [setEmbeddedSubtitles] to select and prepare a subtitle.
   Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles() async {
     return _videoPlayerPlatform.getEmbeddedSubtitles(_textureId);
   }
 
-  /// Select one of embedded subtitle of video.
+  /// Select one of the embedded subtitles of the video.
   ///
-  /// * It's recommended to get [EmbeddedSubtitle] instance from [getEmbeddedSubtitles].
-  /// * After setting subtitle [value.caption] will get update by stream subtitle. Updated
-  ///   caption will only include [value.caption.text].
-  /// * Use [EmbeddedSubtitle.none] to prevent [value.caption] updating by subtitle and
-  ///   remove subtitle
+  /// * It's recommended to get the [EmbeddedSubtitle] instance from [getEmbeddedSubtitles].
+  /// * After setting a subtitle, the [value.caption] will get updated by the subtitle stream.
+  ///   The updated caption will only include [value.caption.text].
+  /// * Use [EmbeddedSubtitle.none] to prevent [value.caption] from being updated
+  ///   and to remove the subtitle
   Future<void> setEmbeddedSubtitles(EmbeddedSubtitle embeddedSubtitle) async {
     await _videoPlayerPlatform.setEmbeddedSubtitles(
       _textureId,
@@ -664,7 +664,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// The closed caption based on the current [position] in the video.
   ///
-  /// If any embedded subtitle is selected this will return caption for all
+  /// If an embedded subtitle is selected, this will return a caption for all
   /// [position].
   ///
   /// If there are no closed captions at the current [position], this will
