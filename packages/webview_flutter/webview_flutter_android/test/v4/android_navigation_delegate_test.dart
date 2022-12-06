@@ -9,7 +9,7 @@ import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
 import 'package:webview_flutter_android/src/v4/src/android_navigation_delegate.dart';
 import 'package:webview_flutter_android/src/v4/src/android_proxy.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 void main() {
   group('AndroidNavigationDelegate', () {

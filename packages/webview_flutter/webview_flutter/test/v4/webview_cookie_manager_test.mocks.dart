@@ -6,9 +6,9 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_platform_interface/v4/src/platform_webview_cookie_manager.dart'
+import 'package:webview_flutter_platform_interface/src/platform_webview_cookie_manager.dart'
     as _i3;
-import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart'
+import 'package:webview_flutter_platform_interface/src/webview_platform.dart'
     as _i2;
 
 // ignore_for_file: type=lint
