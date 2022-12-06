@@ -1,4 +1,4 @@
-## 2.4
+## 2.3.3
 
 * Allows camera to be switched while video recording.
 ## 2.3.2
