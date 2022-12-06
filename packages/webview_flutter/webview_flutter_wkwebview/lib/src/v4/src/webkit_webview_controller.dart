@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import '../../common/instance_manager.dart';
 import '../../common/weak_reference_utils.dart';
@@ -510,11 +510,12 @@ class WebKitWebViewWidget extends PlatformWebViewWidget {
 
 /// An implementation of [WebResourceError] with the WebKit API.
 class WebKitWebResourceError extends WebResourceError {
-  WebKitWebResourceError._(this._nsError)
+  WebKitWebResourceError._(this._nsError, {required bool isForMainFrame})
       : super(
           errorCode: _nsError.code,
           description: _nsError.localizedDescription,
           errorType: _toWebResourceErrorType(_nsError.code),
+          isForMainFrame: isForMainFrame,
         );
 
   static WebResourceErrorType? _toWebResourceErrorType(int code) {
@@ -609,14 +610,14 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
       didFailNavigation: (WKWebView webView, NSError error) {
         if (weakThis.target?._onWebResourceError != null) {
           weakThis.target!._onWebResourceError!(
-            WebKitWebResourceError._(error),
+            WebKitWebResourceError._(error, isForMainFrame: true),
           );
         }
       },
       didFailProvisionalNavigation: (WKWebView webView, NSError error) {
         if (weakThis.target?._onWebResourceError != null) {
           weakThis.target!._onWebResourceError!(
-            WebKitWebResourceError._(error),
+            WebKitWebResourceError._(error, isForMainFrame: true),
           );
         }
       },
@@ -630,6 +631,7 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
                 domain: 'WKErrorDomain',
                 localizedDescription: '',
               ),
+              isForMainFrame: true,
             ),
           );
         }

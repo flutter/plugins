@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/v4/src/webkit_proxy.dart';
 import 'package:webview_flutter_wkwebview/src/v4/webview_flutter_wkwebview.dart';
@@ -86,6 +86,7 @@ void main() {
       expect(callbackError.errorCode, WKErrorCode.webViewInvalidated);
       expect(callbackError.domain, 'domain');
       expect(callbackError.errorType, WebResourceErrorType.webViewInvalidated);
+      expect(callbackError.isForMainFrame, true);
     });
 
     test('onWebResourceError from didFailProvisionalNavigation', () {
@@ -118,6 +119,7 @@ void main() {
       expect(callbackError.errorCode, WKErrorCode.webViewInvalidated);
       expect(callbackError.domain, 'domain');
       expect(callbackError.errorType, WebResourceErrorType.webViewInvalidated);
+      expect(callbackError.isForMainFrame, true);
     });
 
     test('onWebResourceError from webViewWebContentProcessDidTerminate', () {
@@ -148,6 +150,7 @@ void main() {
         callbackError.errorType,
         WebResourceErrorType.webContentProcessTerminated,
       );
+      expect(callbackError.isForMainFrame, true);
     });
 
     test('onNavigationRequest from decidePolicyForNavigationAction', () {

@@ -7,7 +7,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'navigation_delegate.dart';
 

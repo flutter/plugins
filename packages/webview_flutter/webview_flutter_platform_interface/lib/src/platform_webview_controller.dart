@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'platform_navigation_delegate.dart';
+import '../../src/platform_navigation_delegate.dart';
 import 'webview_platform.dart';
 
 /// Interface for a platform implementation of a web view controller.
@@ -229,13 +229,7 @@ abstract class PlatformWebViewController extends PlatformInterface {
         'getScrollPosition is not implemented on the current platform');
   }
 
-  /// Whether to enable the platform's webview content debugging tools.
-  Future<void> enableDebugging(bool enabled) {
-    throw UnimplementedError(
-        'enableDebugging is not implemented on the current platform');
-  }
-
-  /// Whhether to support zooming using its on-screen zoom controls and gestures.
+  /// Whether to support zooming using its on-screen zoom controls and gestures.
   Future<void> enableZoom(bool enabled) {
     throw UnimplementedError(
         'enableZoom is not implemented on the current platform');

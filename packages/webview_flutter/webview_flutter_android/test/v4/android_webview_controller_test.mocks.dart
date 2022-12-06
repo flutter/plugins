@@ -12,7 +12,7 @@ import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
 import 'package:webview_flutter_android/src/v4/src/android_navigation_delegate.dart'
     as _i5;
 import 'package:webview_flutter_android/src/v4/src/android_proxy.dart' as _i7;
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart'
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
     as _i3;
 
 // ignore_for_file: type=lint

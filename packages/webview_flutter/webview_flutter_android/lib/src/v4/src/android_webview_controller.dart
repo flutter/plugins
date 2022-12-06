@@ -7,7 +7,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import '../../android_webview.dart' as android_webview;
 import '../../weak_reference_utils.dart';
@@ -84,6 +84,17 @@ class AndroidWebViewController extends PlatformWebViewController {
 
   final Map<String, AndroidJavaScriptChannelParams> _javaScriptChannelParams =
       <String, AndroidJavaScriptChannelParams>{};
+
+  /// Whether to enable the platform's webview content debugging tools.
+  ///
+  /// Defaults to false.
+  static Future<void> enableDebugging(
+    bool enabled, {
+    @visibleForTesting
+        AndroidWebViewProxy webViewProxy = const AndroidWebViewProxy(),
+  }) {
+    return webViewProxy.setWebContentsDebuggingEnabled(enabled);
+  }
 
   @override
   Future<void> loadFile(
@@ -255,11 +266,6 @@ class AndroidWebViewController extends PlatformWebViewController {
   Future<Offset> getScrollPosition() {
     return _webView.getScrollPosition();
   }
-
-  @override
-  Future<void> enableDebugging(bool enabled) =>
-      _androidWebViewParams.androidWebViewProxy
-          .setWebContentsDebuggingEnabled(enabled);
 
   @override
   Future<void> enableZoom(bool enabled) =>

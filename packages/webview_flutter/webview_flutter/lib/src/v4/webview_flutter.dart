@@ -4,7 +4,7 @@
 
 library webview_flutter;
 
-export 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart'
+export 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
     show
         JavaScriptMessage,
         LoadRequestMethod,

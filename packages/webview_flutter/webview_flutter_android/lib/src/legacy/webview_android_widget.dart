@@ -8,8 +8,8 @@ import 'dart:typed_data';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
 
-import 'src/android_webview.dart' as android_webview;
-import 'src/weak_reference_utils.dart';
+import '../android_webview.dart' as android_webview;
+import '../weak_reference_utils.dart';
 import 'webview_android_cookie_manager.dart';
 
 /// Creates a [Widget] with a [android_webview.WebView].
