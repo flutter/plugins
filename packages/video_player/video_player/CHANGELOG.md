@@ -1,3 +1,7 @@
+## 2.4.9
+
+* Fixes file URI construction.
+
 ## 2.4.8
 
 * Updates code for new analysis options.
