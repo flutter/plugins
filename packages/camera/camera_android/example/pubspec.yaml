@@ -14,7 +14,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  camera_platform_interface: ^2.3.1
+  camera_platform_interface: ^2.2.0
   flutter:
     sdk: flutter
   path_provider: ^2.0.0

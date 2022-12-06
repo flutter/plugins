@@ -1,7 +1,3 @@
-## 0.9.9
-
-* Implements option to also stream when recording a video.
-
 ## 0.9.8+6
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
