@@ -451,33 +451,23 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
-    return startVideoCapturing(
-        VideoCaptureOptions(cameraId, maxDuration: maxVideoDuration));
-  }
-
-  @override
-  Future<void> startVideoCapturing(VideoCaptureOptions options) {
-    if (options.streamCallback != null || options.streamOptions != null) {
-      throw UnimplementedError('Streaming is not currently supported on web');
-    }
-
     try {
-      final Camera camera = getCamera(options.cameraId);
+      final Camera camera = getCamera(cameraId);
 
       // Add camera's video recording errors to the camera events stream.
       // The error event fires when the video recording is not allowed or an unsupported
       // codec is used.
-      _cameraVideoRecordingErrorSubscriptions[options.cameraId] =
+      _cameraVideoRecordingErrorSubscriptions[cameraId] =
           camera.onVideoRecordingError.listen((html.ErrorEvent errorEvent) {
         cameraEventStreamController.add(
           CameraErrorEvent(
-            options.cameraId,
+            cameraId,
             'Error code: ${errorEvent.type}, error message: ${errorEvent.message}.',
           ),
         );
       });
 
-      return camera.startVideoRecording(maxVideoDuration: options.maxDuration);
+      return camera.startVideoRecording(maxVideoDuration: maxVideoDuration);
     } on html.DomException catch (e) {
       throw PlatformException(code: e.name, message: e.message);
     } on CameraWebException catch (e) {

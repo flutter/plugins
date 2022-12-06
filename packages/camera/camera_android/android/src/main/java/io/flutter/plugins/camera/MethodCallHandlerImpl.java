@@ -26,7 +26,6 @@ import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
 import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private final Activity activity;
@@ -119,9 +118,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         }
       case "startVideoRecording":
         {
-          camera.startVideoRecording(
-              result,
-              Objects.equals(call.argument("enableStream"), true) ? imageStreamChannel : null);
+          camera.startVideoRecording(result);
           break;
         }
       case "stopVideoRecording":

@@ -1,9 +1,6 @@
-## 2.3.3
-
-* Allows camera to be switched while video recording.
 ## 2.3.2
 
-* Updates MethodChannelCamera to have startVideoRecording call the newer startVideoCapturing.
+* Allows camera to be switched while video recording.
 
 ## 2.3.1
 

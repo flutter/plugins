@@ -1,7 +1,3 @@
-## 0.3.1
-
-* Updates to latest camera platform interface, and fails if user attempts to use streaming with recording (since streaming is currently unsupported on web).
-
 ## 0.3.0+1
 
 * Updates imports for `prefer_relative_imports`.

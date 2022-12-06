@@ -201,12 +201,7 @@
       [self.camera setUpCaptureSessionForAudio];
       [result sendSuccess];
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
-      BOOL enableStream = [call.arguments[@"enableStream"] boolValue];
-      if (enableStream) {
-        [_camera startVideoRecordingWithResult:result messengerForStreaming:_messenger];
-      } else {
-        [_camera startVideoRecordingWithResult:result];
-      }
+      [_camera startVideoRecordingWithResult:result];
     } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
       [_camera stopVideoRecordingWithResult:result];
     } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {

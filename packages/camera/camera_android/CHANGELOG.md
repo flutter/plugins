@@ -1,10 +1,6 @@
-## 0.10.2
-
-* Allows camera to be switched while video recording.
-
 ## 0.10.1
 
-* Implements option to also stream when recording a video.
+* Allows camera to be switched while video recording.
 
 ## 0.10.0+5
 

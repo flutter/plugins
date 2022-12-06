@@ -248,26 +248,13 @@ class AVFoundationCamera extends CameraPlatform {
   @override
   Future<void> startVideoRecording(int cameraId,
       {Duration? maxVideoDuration}) async {
-    return startVideoCapturing(
-        VideoCaptureOptions(cameraId, maxDuration: maxVideoDuration));
-  }
-
-  @override
-  Future<void> startVideoCapturing(VideoCaptureOptions options) async {
     await _channel.invokeMethod<void>(
       'startVideoRecording',
       <String, dynamic>{
-        'cameraId': options.cameraId,
-        'maxVideoDuration': options.maxDuration?.inMilliseconds,
-        'enableStream': options.streamCallback != null,
+        'cameraId': cameraId,
+        'maxVideoDuration': maxVideoDuration?.inMilliseconds,
       },
     );
-
-    if (options.streamCallback != null) {
-      _frameStreamController = _createStreamController();
-      _frameStreamController!.stream.listen(options.streamCallback);
-      _startStreamListener();
-    }
   }
 
   @override
@@ -303,19 +290,13 @@ class AVFoundationCamera extends CameraPlatform {
   @override
   Stream<CameraImageData> onStreamedFrameAvailable(int cameraId,
       {CameraImageStreamOptions? options}) {
-    _frameStreamController =
-        _createStreamController(onListen: _onFrameStreamListen);
-    return _frameStreamController!.stream;
-  }
-
-  StreamController<CameraImageData> _createStreamController(
-      {Function()? onListen}) {
-    return StreamController<CameraImageData>(
-      onListen: onListen ?? () {},
+    _frameStreamController = StreamController<CameraImageData>(
+      onListen: _onFrameStreamListen,
       onPause: _onFrameStreamPauseResume,
       onResume: _onFrameStreamPauseResume,
       onCancel: _onFrameStreamCancel,
     );
+    return _frameStreamController!.stream;
   }
 
   void _onFrameStreamListen() {
@@ -324,10 +305,6 @@ class AVFoundationCamera extends CameraPlatform {
 
   Future<void> _startPlatformStream() async {
     await _channel.invokeMethod<void>('startImageStream');
-    _startStreamListener();
-  }
-
-  void _startStreamListener() {
     const EventChannel cameraEventChannel =
         EventChannel('plugins.flutter.io/camera_avfoundation/imageStream');
     _platformImageStreamSubscription =

@@ -248,25 +248,13 @@ class AndroidCamera extends CameraPlatform {
   @override
   Future<void> startVideoRecording(int cameraId,
       {Duration? maxVideoDuration}) async {
-    return startVideoCapturing(
-        VideoCaptureOptions(cameraId, maxDuration: maxVideoDuration));
-  }
-
-  @override
-  Future<void> startVideoCapturing(VideoCaptureOptions options) async {
     await _channel.invokeMethod<void>(
       'startVideoRecording',
       <String, dynamic>{
-        'cameraId': options.cameraId,
-        'maxVideoDuration': options.maxDuration?.inMilliseconds,
-        'enableStream': options.streamCallback != null,
+        'cameraId': cameraId,
+        'maxVideoDuration': maxVideoDuration?.inMilliseconds,
       },
     );
-
-    if (options.streamCallback != null) {
-      _installStreamController().stream.listen(options.streamCallback);
-      _startStreamListener();
-    }
   }
 
   @override
@@ -302,19 +290,13 @@ class AndroidCamera extends CameraPlatform {
   @override
   Stream<CameraImageData> onStreamedFrameAvailable(int cameraId,
       {CameraImageStreamOptions? options}) {
-    _installStreamController(onListen: _onFrameStreamListen);
-    return _frameStreamController!.stream;
-  }
-
-  StreamController<CameraImageData> _installStreamController(
-      {Function()? onListen}) {
     _frameStreamController = StreamController<CameraImageData>(
-      onListen: onListen ?? () {},
+      onListen: _onFrameStreamListen,
       onPause: _onFrameStreamPauseResume,
       onResume: _onFrameStreamPauseResume,
       onCancel: _onFrameStreamCancel,
     );
-    return _frameStreamController!;
+    return _frameStreamController!.stream;
   }
 
   void _onFrameStreamListen() {
@@ -323,10 +305,6 @@ class AndroidCamera extends CameraPlatform {
 
   Future<void> _startPlatformStream() async {
     await _channel.invokeMethod<void>('startImageStream');
-    _startStreamListener();
-  }
-
-  void _startStreamListener() {
     const EventChannel cameraEventChannel =
         EventChannel('plugins.flutter.io/camera_android/imageStream');
     _platformImageStreamSubscription =

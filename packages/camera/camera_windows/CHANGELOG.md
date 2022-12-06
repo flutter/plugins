@@ -1,7 +1,3 @@
-## 0.2.1+3
-
-* Updates to latest camera platform interface but fails if user attempts to use streaming with recording (since streaming is currently unsupported on Windows).
-
 ## 0.2.1+2
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
