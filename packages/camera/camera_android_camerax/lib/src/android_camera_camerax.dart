@@ -41,6 +41,8 @@ class AndroidCameraCameraX extends CameraPlatform {
     processCameraProvider = await ProcessCameraProvider.getInstance();
     preview = Preview();
     // TODO(camsim99): Use cameraDescription to determine this.
+    // TODO(camsim99): Use resolutionPreset to set target resolution. Maybe save and can use it when building preview.
+    // TODO(camsim99): Figure out how to refactor this.
     cameraSelector =
         CameraSelector(lensFacing: CameraSelector.LENS_FACING_FRONT);
 

@@ -45,12 +45,13 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   public Long setSurfaceProvider(@NonNull Long identifier) {
     Preview preview = (Preview) instanceManager.getInstance(identifier);
     TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
-        textureRegistry.createSurfaceTexture(); // get this from the plugin
+        textureRegistry.createSurfaceTexture();
     SurfaceTexture surfaceTexture = flutterSurfaceTexture.surfaceTexture();
     Preview.SurfaceProvider surfaceProvider =
         new Preview.SurfaceProvider() {
           @Override
           public void onSurfaceRequested(SurfaceRequest request) {
+            // request.setTransformationInfoListener(...) // can set this listener to get transformation info and can use to fix rotation
             Surface flutterSurface = new Surface(surfaceTexture);
             request.provideSurface(
                 flutterSurface, Executors.newSingleThreadExecutor(), (result) -> {});

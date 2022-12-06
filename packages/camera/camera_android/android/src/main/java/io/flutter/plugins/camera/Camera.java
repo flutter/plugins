@@ -108,7 +108,7 @@ class Camera
   static {
     supportedImageFormats = new HashMap<>();
     supportedImageFormats.put("yuv420", ImageFormat.YUV_420_888);
-    supportedImageFormats.put("jpeg", ImageFormat.JPEG);
+    supportedImageFormats.put("jpeg", ImageFormat.JPEG); // may not be supported by image streaming
   }
 
   /**
@@ -399,6 +399,7 @@ class Camera
     // Build Flutter surface to render to.
     ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
     SurfaceTexture surfaceTexture = flutterTexture.surfaceTexture();
+    // you shouldn't be able to set arbitrary size
     surfaceTexture.setDefaultBufferSize(
         resolutionFeature.getPreviewSize().getWidth(),
         resolutionFeature.getPreviewSize().getHeight());
