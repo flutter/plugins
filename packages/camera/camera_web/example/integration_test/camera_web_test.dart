@@ -1208,8 +1208,9 @@ void main() {
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
 
         expect(
-          () => CameraPlatform.instance.startVideoCapturing(
-              VideoCaptureOptions(cameraId, streamCallback: (CameraImageData imageData) {})),
+          () => CameraPlatform.instance.startVideoCapturing(VideoCaptureOptions(
+              cameraId,
+              streamCallback: (CameraImageData imageData) {})),
           throwsA(
             isA<UnimplementedError>(),
           ),
