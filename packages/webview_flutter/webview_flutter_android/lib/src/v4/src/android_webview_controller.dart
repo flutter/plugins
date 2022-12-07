@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
-
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
 // ignore: unnecessary_import
 import 'dart:typed_data';
@@ -11,7 +9,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import '../../android_webview.dart' as android_webview;
 import '../../android_webview.dart';
@@ -90,6 +88,17 @@ class AndroidWebViewController extends PlatformWebViewController {
 
   final Map<String, AndroidJavaScriptChannelParams> _javaScriptChannelParams =
       <String, AndroidJavaScriptChannelParams>{};
+
+  /// Whether to enable the platform's webview content debugging tools.
+  ///
+  /// Defaults to false.
+  static Future<void> enableDebugging(
+    bool enabled, {
+    @visibleForTesting
+        AndroidWebViewProxy webViewProxy = const AndroidWebViewProxy(),
+  }) {
+    return webViewProxy.setWebContentsDebuggingEnabled(enabled);
+  }
 
   @override
   Future<void> loadFile(
@@ -258,15 +267,9 @@ class AndroidWebViewController extends PlatformWebViewController {
   Future<void> scrollBy(int x, int y) => _webView.scrollBy(x, y);
 
   @override
-  Future<Point<int>> getScrollPosition() async {
-    final Offset position = await _webView.getScrollPosition();
-    return Point<int>(position.dx.round(), position.dy.round());
+  Future<Offset> getScrollPosition() {
+    return _webView.getScrollPosition();
   }
-
-  @override
-  Future<void> enableDebugging(bool enabled) =>
-      _androidWebViewParams.androidWebViewProxy
-          .setWebContentsDebuggingEnabled(enabled);
 
   @override
   Future<void> enableZoom(bool enabled) =>

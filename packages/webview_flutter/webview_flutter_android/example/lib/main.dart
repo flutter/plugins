@@ -11,8 +11,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:webview_flutter_android/webview_surface_android.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_android/webview_flutter_android_legacy.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
 
 import 'navigation_decision.dart';
 import 'navigation_request.dart';
