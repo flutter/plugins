@@ -7,9 +7,13 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import '../../android_webview.dart' as android_webview;
+import '../../android_webview.dart';
+import '../../instance_manager.dart';
 import '../../weak_reference_utils.dart';
 import 'android_navigation_delegate.dart';
 import 'android_proxy.dart';
@@ -328,4 +332,88 @@ class AndroidJavaScriptChannelParams extends JavaScriptChannelParams {
         );
 
   final android_webview.JavaScriptChannel _javaScriptChannel;
+}
+
+/// Object specifying creation parameters for creating a [AndroidWebViewWidget].
+///
+/// When adding additional fields make sure they can be null or have a default
+/// value to avoid breaking changes. See [PlatformWebViewWidgetCreationParams] for
+/// more information.
+@immutable
+class AndroidWebViewWidgetCreationParams
+    extends PlatformWebViewWidgetCreationParams {
+  /// Creates [AndroidWebWidgetCreationParams].
+  AndroidWebViewWidgetCreationParams({
+    super.key,
+    required super.controller,
+    super.layoutDirection,
+    super.gestureRecognizers,
+    @visibleForTesting InstanceManager? instanceManager,
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+
+  /// Constructs a [WebKitWebViewWidgetCreationParams] using a
+  /// [PlatformWebViewWidgetCreationParams].
+  AndroidWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
+    PlatformWebViewWidgetCreationParams params, {
+    InstanceManager? instanceManager,
+  }) : this(
+          key: params.key,
+          controller: params.controller,
+          layoutDirection: params.layoutDirection,
+          gestureRecognizers: params.gestureRecognizers,
+          instanceManager: instanceManager,
+        );
+
+  /// Maintains instances used to communicate with the native objects they
+  /// represent.
+  ///
+  /// This field is exposed for testing purposes only and should not be used
+  /// outside of tests.
+  @visibleForTesting
+  final InstanceManager instanceManager;
+}
+
+/// An implementation of [PlatformWebViewWidget] with the Android WebView API.
+class AndroidWebViewWidget extends PlatformWebViewWidget {
+  /// Constructs a [WebKitWebViewWidget].
+  AndroidWebViewWidget(PlatformWebViewWidgetCreationParams params)
+      : super.implementation(
+          params is AndroidWebViewWidgetCreationParams
+              ? params
+              : AndroidWebViewWidgetCreationParams
+                  .fromPlatformWebViewWidgetCreationParams(params),
+        );
+
+  AndroidWebViewWidgetCreationParams get _androidParams =>
+      params as AndroidWebViewWidgetCreationParams;
+
+  @override
+  Widget build(BuildContext context) {
+    return PlatformViewLink(
+        key: _androidParams.key,
+        viewType: 'plugins.flutter.io/webview',
+        surfaceFactory: (
+          BuildContext context,
+          PlatformViewController controller,
+        ) {
+          return AndroidViewSurface(
+            controller: controller as AndroidViewController,
+            gestureRecognizers: _androidParams.gestureRecognizers,
+            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+          );
+        },
+        onCreatePlatformView: (PlatformViewCreationParams params) {
+          return PlatformViewsService.initSurfaceAndroidView(
+            id: params.id,
+            viewType: 'plugins.flutter.io/webview',
+            layoutDirection: _androidParams.layoutDirection,
+            creationParams: _androidParams.instanceManager.getIdentifier(
+                (_androidParams.controller as AndroidWebViewController)
+                    ._webView),
+            creationParamsCodec: const StandardMessageCodec(),
+          )
+            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+            ..create();
+        });
+  }
 }

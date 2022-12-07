@@ -4,11 +4,13 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
+import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/src/v4/src/android_navigation_delegate.dart';
 import 'package:webview_flutter_android/src/v4/src/android_proxy.dart';
 import 'package:webview_flutter_android/src/v4/src/android_webview_controller.dart';
@@ -18,7 +20,9 @@ import 'android_webview_controller_test.mocks.dart';
 
 @GenerateNiceMocks(<MockSpec<Object>>[
   MockSpec<AndroidNavigationDelegate>(),
+  MockSpec<AndroidWebViewController>(),
   MockSpec<AndroidWebViewProxy>(),
+  MockSpec<AndroidWebViewWidgetCreationParams>(),
   MockSpec<android_webview.FlutterAssetManager>(),
   MockSpec<android_webview.JavaScriptChannel>(),
   MockSpec<android_webview.WebChromeClient>(),
@@ -26,72 +30,74 @@ import 'android_webview_controller_test.mocks.dart';
   MockSpec<android_webview.WebView>(),
   MockSpec<android_webview.WebViewClient>(),
   MockSpec<android_webview.WebStorage>(),
+  MockSpec<BuildContext>(),
+  MockSpec<InstanceManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  AndroidWebViewController createControllerWithMocks({
+    android_webview.FlutterAssetManager? mockFlutterAssetManager,
+    android_webview.JavaScriptChannel? mockJavaScriptChannel,
+    android_webview.WebChromeClient? mockWebChromeClient,
+    android_webview.WebView? mockWebView,
+    android_webview.WebViewClient? mockWebViewClient,
+    android_webview.WebStorage? mockWebStorage,
+  }) {
+    final android_webview.WebView nonNullMockWebView =
+        mockWebView ?? MockWebView();
+
+    final AndroidWebViewControllerCreationParams creationParams =
+        AndroidWebViewControllerCreationParams(
+            androidWebStorage: mockWebStorage ?? MockWebStorage(),
+            androidWebViewProxy: AndroidWebViewProxy(
+              createAndroidWebChromeClient: (
+                      {void Function(android_webview.WebView, int)?
+                          onProgressChanged}) =>
+                  mockWebChromeClient ?? MockWebChromeClient(),
+              createAndroidWebView: ({required bool useHybridComposition}) =>
+                  nonNullMockWebView,
+              createAndroidWebViewClient: ({
+                void Function(android_webview.WebView webView, String url)?
+                    onPageFinished,
+                void Function(android_webview.WebView webView, String url)?
+                    onPageStarted,
+                @Deprecated('Only called on Android version < 23.')
+                    void Function(
+                  android_webview.WebView webView,
+                  int errorCode,
+                  String description,
+                  String failingUrl,
+                )?
+                        onReceivedError,
+                void Function(
+                  android_webview.WebView webView,
+                  android_webview.WebResourceRequest request,
+                  android_webview.WebResourceError error,
+                )?
+                    onReceivedRequestError,
+                void Function(
+                  android_webview.WebView webView,
+                  android_webview.WebResourceRequest request,
+                )?
+                    requestLoading,
+                void Function(android_webview.WebView webView, String url)?
+                    urlLoading,
+              }) =>
+                  mockWebViewClient ?? MockWebViewClient(),
+              createFlutterAssetManager: () =>
+                  mockFlutterAssetManager ?? MockFlutterAssetManager(),
+              createJavaScriptChannel: (
+                String channelName, {
+                required void Function(String) postMessage,
+              }) =>
+                  mockJavaScriptChannel ?? MockJavaScriptChannel(),
+            ));
+
+    return AndroidWebViewController(creationParams);
+  }
+
   group('AndroidWebViewController', () {
-    AndroidWebViewController createControllerWithMocks({
-      android_webview.FlutterAssetManager? mockFlutterAssetManager,
-      android_webview.JavaScriptChannel? mockJavaScriptChannel,
-      android_webview.WebChromeClient? mockWebChromeClient,
-      android_webview.WebView? mockWebView,
-      android_webview.WebViewClient? mockWebViewClient,
-      android_webview.WebStorage? mockWebStorage,
-    }) {
-      final android_webview.WebView nonNullMockWebView =
-          mockWebView ?? MockWebView();
-
-      final AndroidWebViewControllerCreationParams creationParams =
-          AndroidWebViewControllerCreationParams(
-              androidWebStorage: mockWebStorage ?? MockWebStorage(),
-              androidWebViewProxy: AndroidWebViewProxy(
-                createAndroidWebChromeClient: (
-                        {void Function(android_webview.WebView, int)?
-                            onProgressChanged}) =>
-                    mockWebChromeClient ?? MockWebChromeClient(),
-                createAndroidWebView: ({required bool useHybridComposition}) =>
-                    nonNullMockWebView,
-                createAndroidWebViewClient: ({
-                  void Function(android_webview.WebView webView, String url)?
-                      onPageFinished,
-                  void Function(android_webview.WebView webView, String url)?
-                      onPageStarted,
-                  @Deprecated('Only called on Android version < 23.')
-                      void Function(
-                    android_webview.WebView webView,
-                    int errorCode,
-                    String description,
-                    String failingUrl,
-                  )?
-                          onReceivedError,
-                  void Function(
-                    android_webview.WebView webView,
-                    android_webview.WebResourceRequest request,
-                    android_webview.WebResourceError error,
-                  )?
-                      onReceivedRequestError,
-                  void Function(
-                    android_webview.WebView webView,
-                    android_webview.WebResourceRequest request,
-                  )?
-                      requestLoading,
-                  void Function(android_webview.WebView webView, String url)?
-                      urlLoading,
-                }) =>
-                    mockWebViewClient ?? MockWebViewClient(),
-                createFlutterAssetManager: () =>
-                    mockFlutterAssetManager ?? MockFlutterAssetManager(),
-                createJavaScriptChannel: (
-                  String channelName, {
-                  required void Function(String) postMessage,
-                }) =>
-                    mockJavaScriptChannel ?? MockJavaScriptChannel(),
-              ));
-
-      return AndroidWebViewController(creationParams);
-    }
-
     AndroidJavaScriptChannelParams
         createAndroidJavaScriptChannelParamsWithMocks({
       String? name,
@@ -726,6 +732,33 @@ void main() {
 
       verify(mockWebView.settings).called(1);
       verify(mockSettings.setUserAgentString('Test Framework')).called(1);
+    });
+  });
+
+  group('AndroidWebViewWidget', () {
+    testWidgets('Builds AndroidView using supplied parameters',
+        (WidgetTester tester) async {
+      final MockAndroidWebViewWidgetCreationParams mockParams =
+          MockAndroidWebViewWidgetCreationParams();
+      final MockInstanceManager mockInstanceManager = MockInstanceManager();
+      final MockWebView mockWebView = MockWebView();
+      final AndroidWebViewController controller =
+          createControllerWithMocks(mockWebView: mockWebView);
+
+      when(mockParams.key).thenReturn(const Key('test_web_view'));
+      when(mockParams.instanceManager).thenReturn(mockInstanceManager);
+      when(mockParams.controller).thenReturn(controller);
+      when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
+
+      final AndroidWebViewWidget webViewWidget =
+          AndroidWebViewWidget(mockParams);
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) => webViewWidget.build(context),
+      ));
+
+      expect(find.byType(PlatformViewLink), findsOneWidget);
+      expect(find.byKey(const Key('test_web_view')), findsOneWidget);
     });
   });
 }
