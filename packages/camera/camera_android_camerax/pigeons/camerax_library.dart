@@ -80,7 +80,8 @@ abstract class ProcessCameraProviderFlutterApi {
 
 @HostApi(dartHostTestHandler: 'TestPreviewHostApi')
 abstract class PreviewHostApi {
-  void create(int identifier, int? rotation);
+  void create(
+      int identifier, int? rotation, int? targetWidth, int? targetHeight);
 
   int setSurfaceProvider(int identifier);
 

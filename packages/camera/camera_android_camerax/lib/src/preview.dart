@@ -18,21 +18,25 @@ class Preview extends UseCase {
   Preview(
       {BinaryMessenger? binaryMessenger,
       InstanceManager? instanceManager,
-      this.targetRotation})
+      this.targetRotation,
+      this.targetWidth,
+      this.targetHeight})
       : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
     _api = PreviewHostApiImpl(
         binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
-    _api.createFromInstance(this, targetRotation);
+    _api.createFromInstance(this, targetRotation, targetWidth, targetHeight);
   }
 
   /// Constructs a [CameraInfo] that is not automatically attached to a native object.
   Preview.detached(
       {BinaryMessenger? binaryMessenger,
       InstanceManager? instanceManager,
-      this.targetRotation})
+      this.targetRotation,
+      this.targetWidth,
+      this.targetHeight})
       : super.detached(
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
@@ -46,6 +50,10 @@ class Preview extends UseCase {
   /// Target rotation of the camera used for the preview stream.
   final int? targetRotation;
 
+  final int? targetHeight;
+
+  final int? targetWidth;
+
   /// Sets surface provider for the preview stream.
   ///
   /// Returns the ID of the FlutterSurfaceTextureEntry used on the back end
@@ -56,6 +64,7 @@ class Preview extends UseCase {
 
   /// Reconfigures the preview stream to have the specified target rotation.
   void setTargetRotation(int targetRotation) {
+    // TODO(camsim99): should this change targetRotation?
     _api.setTargetRotationFromInstance(this, targetRotation);
   }
 }
@@ -77,7 +86,8 @@ class PreviewHostApiImpl extends PreviewHostApi {
   late final InstanceManager instanceManager;
 
   /// Creates a [Preview] with the target rotation provided if specified.
-  void createFromInstance(Preview instance, int? targetRotation) {
+  void createFromInstance(Preview instance, int? targetRotation,
+      int? targetWidth, int? targetHeight) {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (Preview original) {
@@ -86,7 +96,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
           instanceManager: instanceManager,
           targetRotation: original.targetRotation);
     });
-    create(identifier, targetRotation);
+    create(identifier, targetRotation, targetWidth, targetHeight);
   }
 
   /// Sets the surface provider of the provided [Preview] instance and returns

@@ -11,6 +11,7 @@ import 'camera.dart';
 import 'camera_selector.dart';
 import 'preview.dart';
 import 'process_camera_provider.dart';
+import 'surface.dart';
 import 'use_case.dart';
 
 /// The Android implementation of [CameraPlatform] that uses the CameraX library.
@@ -19,6 +20,9 @@ class AndroidCameraCameraX extends CameraPlatform {
   CameraSelector? cameraSelector;
   ProcessCameraProvider? processCameraProvider;
   int? cameraId;
+  ResolutionPreset? targetResolutionPreset;
+  Future<Camera>? camera;
+  CameraDescription? cameraDescription;
 
   /// Registers this class as the default instance of [CameraPlatform].
   static void registerWith() {
@@ -39,18 +43,52 @@ class AndroidCameraCameraX extends CameraPlatform {
     bool enableAudio = false,
   }) async {
     processCameraProvider = await ProcessCameraProvider.getInstance();
-    preview = Preview();
-    // TODO(camsim99): Use cameraDescription to determine this.
-    // TODO(camsim99): Use resolutionPreset to set target resolution. Maybe save and can use it when building preview.
-    // TODO(camsim99): Figure out how to refactor this.
-    cameraSelector =
-        CameraSelector(lensFacing: CameraSelector.LENS_FACING_FRONT);
 
-    // Will save as a field since more operations will need this camera
-    Camera camera = await processCameraProvider!
-        .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
+    // Set target resolution.
+    List<int>? targetResolution;
+    if (targetResolutionPreset != null) {
+      targetResolution = getTargetResolution(targetResolutionPreset!);
+
+      if (targetResolution[0] > 1920 && targetResolution[1] > 1080) {
+        preview = Preview();
+      } else {
+        preview = Preview(
+            targetWidth: targetResolution[0],
+            targetHeight: targetResolution[1]);
+      }
+    } else {
+      preview = Preview();
+    }
+
+    targetResolutionPreset = resolutionPreset;
+    cameraDescription = cameraDescription;
+
+    // Determine lens direction.
+    int? lensFacing = getCameraSelectorLens(cameraDescription!.lensDirection);
+    // TODO(camsim99): Throw error if external camera is attempted to be used.
+    cameraSelector = CameraSelector(lensFacing: lensFacing!);
+
+    // Set target rotation.
+    // TODO(camsim99): can actually do this in constructor
+    int targetRotation =
+        getTargetRotation(cameraDescription!.sensorOrientation);
+    preview!.setTargetRotation(targetRotation);
+
+    // camera = await processCameraProvider!
+    //     .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
 
     return preview!.setSurfaceProvider();
+  }
+
+  int? getCameraSelectorLens(CameraLensDirection lensDirection) {
+    switch (lensDirection) {
+      case CameraLensDirection.front:
+        return CameraSelector.LENS_FACING_FRONT;
+      case CameraLensDirection.back:
+        return CameraSelector.LENS_FACING_BACK;
+      case CameraLensDirection.external:
+        return null;
+    }
   }
 
   /// Pause the active preview on the current frame for the selected camera.
@@ -69,6 +107,42 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// Returns a widget showing a live camera preview.
   @override
   Widget buildPreview(int cameraId) {
+    camera = processCameraProvider!
+        .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
     return Texture(textureId: cameraId);
+  }
+
+  int getTargetRotation(int sensorOrientation) {
+    switch (sensorOrientation) {
+      case 90:
+        return Surface.ROTATION_90;
+      case 180:
+        return Surface.ROTATION_180;
+      case 270:
+        return Surface.ROTATION_270;
+      case 0:
+      default:
+        return Surface.ROTATION_0;
+    }
+  }
+
+  List<int> getTargetResolution(ResolutionPreset resolution) {
+    switch (resolution) {
+      case ResolutionPreset.low:
+        return <int>[320, 240];
+      case ResolutionPreset.medium:
+        return <int>[720, 480]; // can depend on device orientation?
+      case ResolutionPreset.high:
+        return <int>[1280, 720];
+      case ResolutionPreset.veryHigh:
+        return <int>[1920, 1080];
+      case ResolutionPreset.ultraHigh:
+        return <int>[3840, 2160];
+      case ResolutionPreset.max:
+        return <int>[
+          1920,
+          1080
+        ]; // the highest resolution CameraX supports for Preview. TODO(camsim99): Will actually need to retrieve this with https://developer.android.com/reference/android/hardware/camera2/params/StreamConfigurationMap#getOutputSizes(int)
+    }
   }
 }

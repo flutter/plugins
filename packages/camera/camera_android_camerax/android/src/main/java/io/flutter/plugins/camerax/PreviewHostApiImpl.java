@@ -5,8 +5,10 @@
 package io.flutter.plugins.camerax;
 
 import android.graphics.SurfaceTexture;
+import android.util.Size;
 import android.view.Surface;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.camera.core.Preview;
 import androidx.camera.core.SurfaceRequest;
@@ -32,10 +34,17 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   }
 
   @Override
-  public void create(@NonNull Long identifier, @NonNull Long targetRotation) {
+  public void create(
+      @NonNull Long identifier,
+      @Nullable Long rotation,
+      @Nullable Long targetWidth,
+      @Nullable Long targetHeight) {
     Preview.Builder previewBuilder = cameraXProxy.createPreviewBuilder();
-    if (targetRotation != null) {
-      previewBuilder.setTargetRotation(targetRotation.intValue());
+    if (rotation != null) {
+      previewBuilder.setTargetRotation(rotation.intValue());
+    }
+    if (targetWidth != null && targetHeight != null) {
+      previewBuilder.setTargetResolution(new Size(targetWidth.intValue(), targetHeight.intValue()));
     }
     Preview preview = previewBuilder.build();
     instanceManager.addDartCreatedInstance(preview, identifier);

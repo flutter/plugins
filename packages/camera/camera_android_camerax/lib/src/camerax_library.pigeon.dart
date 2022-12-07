@@ -471,13 +471,17 @@ class PreviewHostApi {
 
   static const MessageCodec<Object?> codec = _PreviewHostApiCodec();
 
-  Future<void> create(int arg_identifier, int? arg_rotation) async {
+  Future<void> create(int arg_identifier, int? arg_rotation,
+      int? arg_targetWidth, int? arg_targeHeight) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.PreviewHostApi.create', codec,
         binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_identifier, arg_rotation])
-            as Map<Object?, Object?>?;
+    final Map<Object?, Object?>? replyMap = await channel.send(<Object?>[
+      arg_identifier,
+      arg_rotation,
+      arg_targetWidth,
+      arg_targeHeight
+    ]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
