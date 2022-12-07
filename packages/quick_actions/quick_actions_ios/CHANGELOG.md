@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Fix receiving the shortcut type after lunching ios app from shortcut.
+
 ## 1.0.2
 
 * Migrates remaining components to Swift and removes all Objective-C settings.
