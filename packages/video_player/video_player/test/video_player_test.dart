@@ -7,6 +7,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -344,7 +345,7 @@ void main() {
         final String uri = fakeVideoPlayerPlatform.dataSources[0].uri!;
         expect(uri.startsWith('file:///'), true, reason: 'Actual string: $uri');
         expect(uri.endsWith('/a.avi'), true, reason: 'Actual string: $uri');
-      });
+      }, skip: kIsWeb /* Web does not support file assets. */);
 
       test('file with special characters', () async {
         final VideoPlayerController controller =
@@ -355,7 +356,7 @@ void main() {
         expect(uri.startsWith('file:///'), true, reason: 'Actual string: $uri');
         expect(uri.endsWith('/A%20%231%20Hit%3F.avi'), true,
             reason: 'Actual string: $uri');
-      });
+      }, skip: kIsWeb /* Web does not support file assets. */);
 
       test('successful initialize on controller with error clears error',
           () async {
