@@ -74,8 +74,8 @@ class AndroidCameraCameraX extends CameraPlatform {
         getTargetRotation(cameraDescription!.sensorOrientation);
     preview!.setTargetRotation(targetRotation);
 
-    // camera = await processCameraProvider!
-    //     .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
+    camera = await processCameraProvider!
+        .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
 
     return preview!.setSurfaceProvider();
   }
@@ -107,8 +107,6 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// Returns a widget showing a live camera preview.
   @override
   Widget buildPreview(int cameraId) {
-    camera = processCameraProvider!
-        .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
     return Texture(textureId: cameraId);
   }
 
