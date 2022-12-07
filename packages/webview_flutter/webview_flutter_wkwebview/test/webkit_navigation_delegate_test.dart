@@ -8,14 +8,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
-import 'package:webview_flutter_wkwebview/src/v4/src/webkit_proxy.dart';
-import 'package:webview_flutter_wkwebview/src/v4/webview_flutter_wkwebview.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
+import 'package:webview_flutter_wkwebview/src/webkit_proxy.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   group('WebKitNavigationDelegate', () {
+    test('WebKitNavigationDelegate uses params field in constructor', () async {
+      await runZonedGuarded(
+        () async => WebKitNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        ),
+        (Object error, __) {
+          expect(error, isNot(isA<TypeError>()));
+        },
+      );
+    });
+
     test('setOnPageFinished', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
         const WebKitNavigationDelegateCreationParams(
