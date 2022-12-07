@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Fix receiving the shortcut type after lunching ios app from shortcut.
+
 ## 1.0.1
 
 * Updates implementaion package versions to current versions.
