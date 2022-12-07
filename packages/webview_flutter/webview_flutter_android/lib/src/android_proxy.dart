@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../android_webview.dart' as android_webview;
+import 'android_webview.dart' as android_webview;
 
 /// Handles constructing objects and calling static methods for the Android
 /// WebView native library.

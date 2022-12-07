@@ -575,9 +575,10 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
                 .fromPlatformNavigationDelegateCreationParams(params)) {
     final WeakReference<WebKitNavigationDelegate> weakThis =
         WeakReference<WebKitNavigationDelegate>(this);
-    _navigationDelegate = (this.params as WebKitNavigationDelegateCreationParams)
-        .webKitProxy
-        .createNavigationDelegate(
+    _navigationDelegate =
+        (this.params as WebKitNavigationDelegateCreationParams)
+            .webKitProxy
+            .createNavigationDelegate(
       didFinishNavigation: (WKWebView webView, String? url) {
         if (weakThis.target?._onPageFinished != null) {
           weakThis.target!._onPageFinished!(url ?? '');

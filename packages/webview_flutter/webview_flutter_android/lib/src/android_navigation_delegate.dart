@@ -7,8 +7,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import '../../android_webview.dart' as android_webview;
 import 'android_proxy.dart';
+import 'android_webview.dart' as android_webview;
 
 /// Signature for the `loadUrl` callback responsible for loading the [url]
 /// after a navigation request has been approved.
