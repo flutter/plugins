@@ -1023,16 +1023,16 @@ void main() {
     });
 
     test('setMixWithOthers', () async {
-      final VideoPlayerController controller = VideoPlayerController.file(
-          File(''),
+      final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
           videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
       await controller.initialize();
       expect(controller.videoPlayerOptions!.mixWithOthers, true);
     });
 
     test('true allowBackgroundPlayback continues playback', () async {
-      final VideoPlayerController controller = VideoPlayerController.file(
-        File(''),
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
         videoPlayerOptions: VideoPlayerOptions(
           allowBackgroundPlayback: true,
         ),
@@ -1046,8 +1046,8 @@ void main() {
     });
 
     test('false allowBackgroundPlayback pauses playback', () async {
-      final VideoPlayerController controller = VideoPlayerController.file(
-        File(''),
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
         videoPlayerOptions: VideoPlayerOptions(),
       );
       await controller.initialize();
