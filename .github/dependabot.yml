@@ -1,4 +1,4 @@
-version: 2
+version: 3
 updates:
   - package-ecosystem: "gradle"
     directory: "/packages/camera/camera_android/android"
@@ -165,6 +165,47 @@ updates:
     directory: "/packages/google_maps_flutter/google_maps_flutter_android/example/android/app"
     commit-message:
       prefix: "[google_maps]"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+  
+  - package-ecosystem: "gradle"
+    directory: "/packages/google_maps_places/google_maps_places/example/android/app"
+    commit-message:
+      prefix: "[google_maps_places]"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/google_maps_places/google_maps_places_android/android"
+    commit-message:
+      prefix: "[google_maps_places]"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "com.android.tools.build:gradle"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "junit:junit"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "org.mockito:*"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "androidx.test:*"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "org.robolectric:*"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/google_maps_places/google_maps_places_android/example/android/app"
+    commit-message:
+      prefix: "[google_maps_places]"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
