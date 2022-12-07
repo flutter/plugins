@@ -1,2 +1,5 @@
 # No integration tests to run:
 - espresso
+# Can't use Flutter integration tests due to native modal UI.
+- file_selector
+- file_selector_android

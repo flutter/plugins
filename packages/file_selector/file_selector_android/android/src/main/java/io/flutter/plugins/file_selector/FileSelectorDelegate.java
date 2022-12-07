@@ -119,7 +119,7 @@ public class FileSelectorDelegate
         handleOpenFileResult(resultCode, data);
         return true;
       default:
-        return false;
+        throw new IllegalArgumentException("Invalid request Code for Activity");
     }
   }
 

@@ -31,12 +31,14 @@ void main() {
       when(mockApi.openFiles(any))
           .thenAnswer((_) async => <String>['/path/example/final']);
     });
+
     test('simple call works', () async {
       final XFile? file =
           await plugin.openFile(acceptedTypeGroups: acceptedTypeGroups);
 
       expect(file?.path, '/path/example/final');
     });
+
     test('passes acceptedTypeGroups and allowMultiple arguments correctly',
         () async {
       await plugin.openFile(acceptedTypeGroups: acceptedTypeGroups);
@@ -48,6 +50,7 @@ void main() {
       expect(selectionOptions.allowedTypes, typeGroup.mimeTypes);
     });
   });
+
   group('#openFiles', () {
     const XTypeGroup typeGroup =
         XTypeGroup(mimeTypes: <String>['text/plain', 'application/json']);
@@ -57,12 +60,14 @@ void main() {
       when(mockApi.openFiles(any)).thenAnswer(
           (_) async => <String>['/path/example', '/path2/example2']);
     });
+
     test('simple call works', () async {
       final List<XFile> files =
           await plugin.openFiles(acceptedTypeGroups: acceptedTypeGroups);
       expect(files[0].path, '/path/example');
       expect(files[1].path, '/path2/example2');
     });
+
     test('passes acceptedTypeGroups and allowMultiple arguments correctly',
         () async {
       await plugin.openFiles(acceptedTypeGroups: acceptedTypeGroups);
@@ -74,16 +79,19 @@ void main() {
       expect(selectionOptions.allowedTypes, typeGroup.mimeTypes);
     });
   });
+
   group('#getDirectoryPath', () {
     setUp(() {
       when(mockApi.getDirectoryPath(any))
           .thenAnswer((_) async => '/path/example/final');
     });
+
     test('simple call works', () async {
       final String? path =
           await plugin.getDirectoryPath(initialDirectory: '/path/example');
       expect(path, '/path/example/final');
     });
+
     test('passes initialDirectory correctly', () async {
       await plugin.getDirectoryPath(initialDirectory: '/path/example');
 

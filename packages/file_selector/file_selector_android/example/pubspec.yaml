@@ -18,10 +18,8 @@ dependencies:
   flutter_driver:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
-  permission_handler: ^10.0.1
 
 dev_dependencies:
-  flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
 
