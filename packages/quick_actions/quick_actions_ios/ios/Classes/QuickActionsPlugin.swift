@@ -42,6 +42,7 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
       shortcutItemProvider.shortcutItems = []
       result(nil)
     case "getLaunchAction":
+      /// return the selected "launchingShortcutType" 
       result(launchingShortcutType)
     case _:
       result(FlutterMethodNotImplemented)
