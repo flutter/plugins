@@ -8,10 +8,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
-import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
-import 'package:webview_flutter_android/webview_surface_android.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:webview_flutter_android/webview_flutter_android_legacy.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview_legacy.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.

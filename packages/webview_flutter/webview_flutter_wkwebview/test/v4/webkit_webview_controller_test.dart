@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit.dart';
 import 'package:webview_flutter_wkwebview/src/v4/src/webkit_proxy.dart';
@@ -228,11 +228,7 @@ void main() {
 
         expect(
           () async => await controller.loadRequest(
-            LoadRequestParams(
-              uri: Uri.parse('www.google.com'),
-              method: LoadRequestMethod.get,
-              headers: const <String, String>{},
-            ),
+            LoadRequestParams(uri: Uri.parse('www.google.com')),
           ),
           throwsA(isA<ArgumentError>()),
         );
@@ -246,11 +242,7 @@ void main() {
         );
 
         await controller.loadRequest(
-          LoadRequestParams(
-            uri: Uri.parse('https://www.google.com'),
-            method: LoadRequestMethod.get,
-            headers: const <String, String>{},
-          ),
+          LoadRequestParams(uri: Uri.parse('https://www.google.com')),
         );
 
         final NSUrlRequest request = verify(mockWebView.loadRequest(captureAny))
@@ -271,7 +263,6 @@ void main() {
         await controller.loadRequest(
           LoadRequestParams(
             uri: Uri.parse('https://www.google.com'),
-            method: LoadRequestMethod.get,
             headers: const <String, String>{'a': 'header'},
           ),
         );
@@ -294,7 +285,6 @@ void main() {
         await controller.loadRequest(LoadRequestParams(
           uri: Uri.parse('https://www.google.com'),
           method: LoadRequestMethod.post,
-          headers: const <String, String>{},
         ));
 
         final NSUrlRequest request = verify(mockWebView.loadRequest(captureAny))
@@ -315,7 +305,6 @@ void main() {
           uri: Uri.parse('https://www.google.com'),
           method: LoadRequestMethod.post,
           body: Uint8List.fromList('Test Body'.codeUnits),
-          headers: const <String, String>{},
         ));
 
         final NSUrlRequest request = verify(mockWebView.loadRequest(captureAny))
@@ -389,14 +378,14 @@ void main() {
       verify(mockWebView.reload());
     });
 
-    test('enableGestureNavigation', () async {
+    test('setAllowsBackForwardNavigationGestures', () async {
       final MockWKWebView mockWebView = MockWKWebView();
 
       final WebKitWebViewController controller = createControllerWithMocks(
         createMockWebView: (_, {dynamic observeValue}) => mockWebView,
       );
 
-      await controller.enableGestureNavigation(true);
+      await controller.setAllowsBackForwardNavigationGestures(true);
       verify(mockWebView.setAllowsBackForwardNavigationGestures(true));
     });
 
@@ -530,7 +519,7 @@ void main() {
       );
       expect(
         controller.getScrollPosition(),
-        completion(const Point<double>(8.0, 16.0)),
+        completion(const Offset(8.0, 16.0)),
       );
     });
 

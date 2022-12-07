@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +12,7 @@ import 'package:webview_flutter_android/src/android_webview.dart'
 import 'package:webview_flutter_android/src/v4/src/android_navigation_delegate.dart';
 import 'package:webview_flutter_android/src/v4/src/android_proxy.dart';
 import 'package:webview_flutter_android/src/v4/src/android_webview_controller.dart';
-import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart';
+import 'package:webview_flutter_platform_interface/src/webview_platform.dart';
 
 import 'android_webview_controller_test.mocks.dart';
 
@@ -277,8 +275,6 @@ void main() {
       );
       final LoadRequestParams requestParams = LoadRequestParams(
         uri: Uri.parse('flutter.dev'),
-        method: LoadRequestMethod.get,
-        headers: const <String, String>{},
       );
 
       try {
@@ -301,7 +297,6 @@ void main() {
       );
       final LoadRequestParams requestParams = LoadRequestParams(
         uri: Uri.parse('https://flutter.dev'),
-        method: LoadRequestMethod.get,
         headers: const <String, String>{'X-Test': 'Testing'},
       );
 
@@ -660,25 +655,20 @@ void main() {
       when(mockWebView.getScrollPosition())
           .thenAnswer((_) => Future<Offset>.value(const Offset(4, 2)));
 
-      final Point<int> position = await controller.getScrollPosition();
+      final Offset position = await controller.getScrollPosition();
 
       verify(mockWebView.getScrollPosition()).called(1);
-      expect(position.x, 4);
-      expect(position.y, 2);
+      expect(position.dx, 4);
+      expect(position.dy, 2);
     });
 
     test('enableDebugging', () async {
       final MockAndroidWebViewProxy mockProxy = MockAndroidWebViewProxy();
-      final AndroidWebViewControllerCreationParams creationParams =
-          AndroidWebViewControllerCreationParams(
-        androidWebViewProxy: mockProxy,
-        androidWebStorage: MockWebStorage(),
+
+      await AndroidWebViewController.enableDebugging(
+        true,
+        webViewProxy: mockProxy,
       );
-      final AndroidWebViewController controller =
-          AndroidWebViewController(creationParams);
-
-      await controller.enableDebugging(true);
-
       verify(mockProxy.setWebContentsDebuggingEnabled(true)).called(1);
     });
 

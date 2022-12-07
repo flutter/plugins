@@ -11,13 +11,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-//import 'package:webview_flutter/platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 // ignore: implementation_imports
 import 'package:webview_flutter_wkwebview/src/v4/webview_flutter_wkwebview.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+
 
 void main() {
-  WebViewPlatform.instance = WebKitWebViewPlatform();
   runApp(const MaterialApp(home: WebViewExample()));
 }
 
@@ -137,8 +136,6 @@ class _WebViewExampleState extends State<WebViewExample> {
       ))
       ..loadRequest(LoadRequestParams(
         uri: Uri.parse('https://flutter.dev'),
-        method: LoadRequestMethod.get,
-        headers: const <String, String>{},
       ));
   }
 
@@ -377,8 +374,6 @@ class SampleMenu extends StatelessWidget {
     return webViewController.loadRequest(
       LoadRequestParams(
         uri: Uri.parse('data:text/html;base64,$contentBase64'),
-        method: LoadRequestMethod.get,
-        headers: const <String, String>{},
       ),
     );
   }
@@ -394,8 +389,6 @@ class SampleMenu extends StatelessWidget {
     );
     await webViewController.loadRequest(LoadRequestParams(
       uri: Uri.parse('https://httpbin.org/anything'),
-      method: LoadRequestMethod.get,
-      headers: const <String, String>{},
     ));
   }
 
