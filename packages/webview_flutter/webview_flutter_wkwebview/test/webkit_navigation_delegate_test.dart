@@ -16,6 +16,17 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   group('WebKitNavigationDelegate', () {
+    test('WebKitNavigationDelegate uses params field in constructor', () async {
+      await runZonedGuarded(
+        () async => WebKitNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        ),
+        (Object error, __) {
+          expect(error, isNot(isA<TypeError>()));
+        },
+      );
+    });
+
     test('setOnPageFinished', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
         const WebKitNavigationDelegateCreationParams(
