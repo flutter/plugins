@@ -32,22 +32,16 @@ class AndroidWebViewCookieManagerCreationParams
 /// Handles all cookie operations for the Android platform.
 class AndroidWebViewCookieManager extends PlatformWebViewCookieManager {
   /// Creates a new [AndroidWebViewCookieManager].
-  AndroidWebViewCookieManager(AndroidWebViewCookieManagerCreationParams params)
-      : this.fromNativeApi(
-          params,
-          cookieManager: CookieManager.instance,
+  AndroidWebViewCookieManager(
+    PlatformWebViewCookieManagerCreationParams params, {
+    CookieManager? cookieManager,
+  })  : _cookieManager = cookieManager ?? CookieManager.instance,
+        super.implementation(
+          params is AndroidWebViewCookieManagerCreationParams
+              ? params
+              : AndroidWebViewCookieManagerCreationParams
+                  .fromPlatformWebViewCookieManagerCreationParams(params),
         );
-
-  /// Creates a new [AndroidWebViewCookieManager] using the Android native [CookieManager] implementation.
-  ///
-  /// This constructor is only used for testing. An instance should be obtained
-  /// with the default [AndroidWebViewCookieManager] constructor.
-  @visibleForTesting
-  AndroidWebViewCookieManager.fromNativeApi(
-    AndroidWebViewCookieManagerCreationParams super.params, {
-    required CookieManager cookieManager,
-  })  : _cookieManager = cookieManager,
-        super.implementation();
 
   final CookieManager _cookieManager;
 

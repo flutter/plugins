@@ -27,10 +27,9 @@ void main() {
             .fromPlatformWebViewCookieManagerCreationParams(
                 const PlatformWebViewCookieManagerCreationParams());
 
-    final bool hasClearedCookies =
-        await AndroidWebViewCookieManager.fromNativeApi(params,
-                cookieManager: mockCookieManager)
-            .clearCookies();
+    final bool hasClearedCookies = await AndroidWebViewCookieManager(params,
+            cookieManager: mockCookieManager)
+        .clearCookies();
 
     expect(hasClearedCookies, true);
     verify(mockCookieManager.clearCookies());
@@ -43,8 +42,7 @@ void main() {
                 const PlatformWebViewCookieManagerCreationParams());
 
     final AndroidWebViewCookieManager androidCookieManager =
-        AndroidWebViewCookieManager.fromNativeApi(params,
-            cookieManager: MockCookieManager());
+        AndroidWebViewCookieManager(params, cookieManager: MockCookieManager());
 
     expect(
       () => androidCookieManager.setCookie(const WebViewCookie(
@@ -66,8 +64,7 @@ void main() {
             .fromPlatformWebViewCookieManagerCreationParams(
                 const PlatformWebViewCookieManagerCreationParams());
 
-    AndroidWebViewCookieManager.fromNativeApi(params,
-            cookieManager: mockCookieManager)
+    AndroidWebViewCookieManager(params, cookieManager: mockCookieManager)
         .setCookie(const WebViewCookie(
       name: 'foo&',
       value: 'bar@',
