@@ -12,9 +12,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-// ignore: implementation_imports
-import 'package:webview_flutter_wkwebview/src/v4/webview_flutter_wkwebview.dart';
-
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 void main() {
   runApp(const MaterialApp(home: WebViewExample()));
@@ -115,14 +113,15 @@ class _WebViewExampleState extends State<WebViewExample> {
             code: ${error.errorCode}
             description: ${error.description}
             errorType: ${error.errorType}
+            isForMainFrame: ${error.isForMainFrame}
           ''');
           })
           ..setOnNavigationRequest((NavigationRequest request) {
             if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request');
+              print('blocking navigation to ${request.url}');
               return NavigationDecision.prevent;
             }
-            print('allowing navigation to $request');
+            print('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           }),
       )
