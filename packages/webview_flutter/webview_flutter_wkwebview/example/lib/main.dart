@@ -109,11 +109,11 @@ class _WebViewExampleState extends State<WebViewExample> {
           })
           ..setOnWebResourceError((WebResourceError error) {
             print('''
-          Page resource error:
-            code: ${error.errorCode}
-            description: ${error.description}
-            errorType: ${error.errorType}
-            isForMainFrame: ${error.isForMainFrame}
+Page resource error:
+  code: ${error.errorCode}
+  description: ${error.description}
+  errorType: ${error.errorType}
+  isForMainFrame: ${error.isForMainFrame}
           ''');
           })
           ..setOnNavigationRequest((NavigationRequest request) {
