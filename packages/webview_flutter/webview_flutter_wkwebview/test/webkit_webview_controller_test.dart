@@ -786,6 +786,7 @@ void main() {
         const WebKitNavigationDelegateCreationParams(
           webKitProxy: WebKitProxy(
             createNavigationDelegate: CapturingNavigationDelegate.new,
+            createUIDelegate: CapturingUIDelegate.new,
           ),
         ),
       );
@@ -795,6 +796,11 @@ void main() {
       verify(
         mockWebView.setNavigationDelegate(
           CapturingNavigationDelegate.lastCreatedDelegate,
+        ),
+      );
+      verify(
+        mockWebView.setUIDelegate(
+          CapturingUIDelegate.lastCreatedDelegate,
         ),
       );
     });
@@ -838,6 +844,7 @@ void main() {
         const WebKitNavigationDelegateCreationParams(
           webKitProxy: WebKitProxy(
             createNavigationDelegate: CapturingNavigationDelegate.new,
+            createUIDelegate: WKUIDelegate.detached,
           ),
         ),
       );
@@ -889,6 +896,7 @@ void main() {
         const WebKitNavigationDelegateCreationParams(
           webKitProxy: WebKitProxy(
             createNavigationDelegate: CapturingNavigationDelegate.new,
+            createUIDelegate: WKUIDelegate.detached,
           ),
         ),
       );
@@ -965,4 +973,12 @@ class CapturingNavigationDelegate extends WKNavigationDelegate {
   }
   static CapturingNavigationDelegate lastCreatedDelegate =
       CapturingNavigationDelegate();
+}
+
+// Records the last created instance of itself.
+class CapturingUIDelegate extends WKUIDelegate {
+  CapturingUIDelegate({super.onCreateWebView}) : super.detached() {
+    lastCreatedDelegate = this;
+  }
+  static CapturingUIDelegate lastCreatedDelegate = CapturingUIDelegate();
 }
