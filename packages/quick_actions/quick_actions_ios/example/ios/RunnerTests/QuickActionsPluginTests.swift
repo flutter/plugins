@@ -314,12 +314,9 @@ class QuickActionsPluginTests: XCTestCase {
       UIApplication.shared,
       didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
     
-    let resultExpectation = expectation(description: "result block must be called.")
+    plugin.applicationDidBecomeActive(UIApplication.shared)
     plugin.handle(call) { result in
       XCTAssertEqual(result, "SearchTheThing")
-      resultExpectation.fulfill()
     }
-
-    waitForExpectations(timeout: 1)
   }
 }
