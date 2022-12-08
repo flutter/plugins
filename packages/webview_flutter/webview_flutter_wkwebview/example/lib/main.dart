@@ -52,6 +52,7 @@ const String kLocalExamplePage = '''
 </html>
 ''';
 
+// NOTE: This is used by the transparency test in `example/ios/RunnerUITests/FLTWebViewUITests.m`.
 const String kTransparentBackgroundPage = '''
 <!DOCTYPE html>
 <html>
