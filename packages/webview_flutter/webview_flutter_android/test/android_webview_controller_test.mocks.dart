@@ -53,9 +53,20 @@ class _FakeWebViewClient_1 extends _i1.SmartFake implements _i2.WebViewClient {
         );
 }
 
-class _FakePlatformNavigationDelegateCreationParams_2 extends _i1.SmartFake
+class _FakeDownloadListener_2 extends _i1.SmartFake
+    implements _i2.DownloadListener {
+  _FakeDownloadListener_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakePlatformNavigationDelegateCreationParams_3 extends _i1.SmartFake
     implements _i3.PlatformNavigationDelegateCreationParams {
-  _FakePlatformNavigationDelegateCreationParams_2(
+  _FakePlatformNavigationDelegateCreationParams_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -64,9 +75,9 @@ class _FakePlatformNavigationDelegateCreationParams_2 extends _i1.SmartFake
         );
 }
 
-class _FakePlatformWebViewControllerCreationParams_3 extends _i1.SmartFake
+class _FakePlatformWebViewControllerCreationParams_4 extends _i1.SmartFake
     implements _i3.PlatformWebViewControllerCreationParams {
-  _FakePlatformWebViewControllerCreationParams_3(
+  _FakePlatformWebViewControllerCreationParams_4(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -75,8 +86,8 @@ class _FakePlatformWebViewControllerCreationParams_3 extends _i1.SmartFake
         );
 }
 
-class _FakeObject_4 extends _i1.SmartFake implements Object {
-  _FakeObject_4(
+class _FakeObject_5 extends _i1.SmartFake implements Object {
+  _FakeObject_5(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -85,8 +96,8 @@ class _FakeObject_4 extends _i1.SmartFake implements Object {
         );
 }
 
-class _FakeOffset_5 extends _i1.SmartFake implements _i4.Offset {
-  _FakeOffset_5(
+class _FakeOffset_6 extends _i1.SmartFake implements _i4.Offset {
+  _FakeOffset_6(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -95,8 +106,8 @@ class _FakeOffset_5 extends _i1.SmartFake implements _i4.Offset {
         );
 }
 
-class _FakeWebView_6 extends _i1.SmartFake implements _i2.WebView {
-  _FakeWebView_6(
+class _FakeWebView_7 extends _i1.SmartFake implements _i2.WebView {
+  _FakeWebView_7(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -105,9 +116,9 @@ class _FakeWebView_6 extends _i1.SmartFake implements _i2.WebView {
         );
 }
 
-class _FakeFlutterAssetManager_7 extends _i1.SmartFake
+class _FakeFlutterAssetManager_8 extends _i1.SmartFake
     implements _i2.FlutterAssetManager {
-  _FakeFlutterAssetManager_7(
+  _FakeFlutterAssetManager_8(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -116,9 +127,9 @@ class _FakeFlutterAssetManager_7 extends _i1.SmartFake
         );
 }
 
-class _FakeJavaScriptChannel_8 extends _i1.SmartFake
+class _FakeJavaScriptChannel_9 extends _i1.SmartFake
     implements _i2.JavaScriptChannel {
-  _FakeJavaScriptChannel_8(
+  _FakeJavaScriptChannel_9(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -127,9 +138,9 @@ class _FakeJavaScriptChannel_8 extends _i1.SmartFake
         );
 }
 
-class _FakeInstanceManager_9 extends _i1.SmartFake
+class _FakeInstanceManager_10 extends _i1.SmartFake
     implements _i5.InstanceManager {
-  _FakeInstanceManager_9(
+  _FakeInstanceManager_10(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -138,9 +149,9 @@ class _FakeInstanceManager_9 extends _i1.SmartFake
         );
 }
 
-class _FakePlatformWebViewController_10 extends _i1.SmartFake
+class _FakePlatformWebViewController_11 extends _i1.SmartFake
     implements _i3.PlatformWebViewController {
-  _FakePlatformWebViewController_10(
+  _FakePlatformWebViewController_11(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -149,8 +160,8 @@ class _FakePlatformWebViewController_10 extends _i1.SmartFake
         );
 }
 
-class _FakeWebSettings_11 extends _i1.SmartFake implements _i2.WebSettings {
-  _FakeWebSettings_11(
+class _FakeWebSettings_12 extends _i1.SmartFake implements _i2.WebSettings {
+  _FakeWebSettings_12(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -159,8 +170,8 @@ class _FakeWebSettings_11 extends _i1.SmartFake implements _i2.WebSettings {
         );
 }
 
-class _FakeWebStorage_12 extends _i1.SmartFake implements _i2.WebStorage {
-  _FakeWebStorage_12(
+class _FakeWebStorage_13 extends _i1.SmartFake implements _i2.WebStorage {
+  _FakeWebStorage_13(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -169,8 +180,8 @@ class _FakeWebStorage_12 extends _i1.SmartFake implements _i2.WebStorage {
         );
 }
 
-class _FakeWidget_13 extends _i1.SmartFake implements _i6.Widget {
-  _FakeWidget_13(
+class _FakeWidget_14 extends _i1.SmartFake implements _i6.Widget {
+  _FakeWidget_14(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -183,9 +194,9 @@ class _FakeWidget_13 extends _i1.SmartFake implements _i6.Widget {
       super.toString();
 }
 
-class _FakeInheritedWidget_14 extends _i1.SmartFake
+class _FakeInheritedWidget_15 extends _i1.SmartFake
     implements _i6.InheritedWidget {
-  _FakeInheritedWidget_14(
+  _FakeInheritedWidget_15(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -198,9 +209,9 @@ class _FakeInheritedWidget_14 extends _i1.SmartFake
       super.toString();
 }
 
-class _FakeDiagnosticsNode_15 extends _i1.SmartFake
+class _FakeDiagnosticsNode_16 extends _i1.SmartFake
     implements _i7.DiagnosticsNode {
-  _FakeDiagnosticsNode_15(
+  _FakeDiagnosticsNode_16(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -246,25 +257,37 @@ class MockAndroidNavigationDelegate extends _i1.Mock
         ),
       ) as _i2.WebViewClient);
   @override
+  _i2.DownloadListener get androidDownloadListener => (super.noSuchMethod(
+        Invocation.getter(#androidDownloadListener),
+        returnValue: _FakeDownloadListener_2(
+          this,
+          Invocation.getter(#androidDownloadListener),
+        ),
+        returnValueForMissingStub: _FakeDownloadListener_2(
+          this,
+          Invocation.getter(#androidDownloadListener),
+        ),
+      ) as _i2.DownloadListener);
+  @override
   _i3.PlatformNavigationDelegateCreationParams get params =>
       (super.noSuchMethod(
         Invocation.getter(#params),
-        returnValue: _FakePlatformNavigationDelegateCreationParams_2(
+        returnValue: _FakePlatformNavigationDelegateCreationParams_3(
           this,
           Invocation.getter(#params),
         ),
         returnValueForMissingStub:
-            _FakePlatformNavigationDelegateCreationParams_2(
+            _FakePlatformNavigationDelegateCreationParams_3(
           this,
           Invocation.getter(#params),
         ),
       ) as _i3.PlatformNavigationDelegateCreationParams);
   @override
-  _i9.Future<void> setOnLoadUrl(_i8.LoadUrlCallback? onLoadUrl) =>
+  _i9.Future<void> setOnLoadRequest(_i8.LoadRequestCallback? onLoadRequest) =>
       (super.noSuchMethod(
         Invocation.method(
-          #setOnLoadUrl,
-          [onLoadUrl],
+          #setOnLoadRequest,
+          [onLoadRequest],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
@@ -331,12 +354,12 @@ class MockAndroidWebViewController extends _i1.Mock
   @override
   _i3.PlatformWebViewControllerCreationParams get params => (super.noSuchMethod(
         Invocation.getter(#params),
-        returnValue: _FakePlatformWebViewControllerCreationParams_3(
+        returnValue: _FakePlatformWebViewControllerCreationParams_4(
           this,
           Invocation.getter(#params),
         ),
         returnValueForMissingStub:
-            _FakePlatformWebViewControllerCreationParams_3(
+            _FakePlatformWebViewControllerCreationParams_4(
           this,
           Invocation.getter(#params),
         ),
@@ -482,14 +505,14 @@ class MockAndroidWebViewController extends _i1.Mock
           #runJavaScriptReturningResult,
           [javaScript],
         ),
-        returnValue: _i9.Future<Object>.value(_FakeObject_4(
+        returnValue: _i9.Future<Object>.value(_FakeObject_5(
           this,
           Invocation.method(
             #runJavaScriptReturningResult,
             [javaScript],
           ),
         )),
-        returnValueForMissingStub: _i9.Future<Object>.value(_FakeObject_4(
+        returnValueForMissingStub: _i9.Future<Object>.value(_FakeObject_5(
           this,
           Invocation.method(
             #runJavaScriptReturningResult,
@@ -565,14 +588,14 @@ class MockAndroidWebViewController extends _i1.Mock
           #getScrollPosition,
           [],
         ),
-        returnValue: _i9.Future<_i4.Offset>.value(_FakeOffset_5(
+        returnValue: _i9.Future<_i4.Offset>.value(_FakeOffset_6(
           this,
           Invocation.method(
             #getScrollPosition,
             [],
           ),
         )),
-        returnValueForMissingStub: _i9.Future<_i4.Offset>.value(_FakeOffset_5(
+        returnValueForMissingStub: _i9.Future<_i4.Offset>.value(_FakeOffset_6(
           this,
           Invocation.method(
             #getScrollPosition,
@@ -629,12 +652,12 @@ class MockAndroidWebViewProxy extends _i1.Mock
       get createAndroidWebView => (super.noSuchMethod(
             Invocation.getter(#createAndroidWebView),
             returnValue: ({required bool useHybridComposition}) =>
-                _FakeWebView_6(
+                _FakeWebView_7(
               this,
               Invocation.getter(#createAndroidWebView),
             ),
             returnValueForMissingStub: ({required bool useHybridComposition}) =>
-                _FakeWebView_6(
+                _FakeWebView_7(
               this,
               Invocation.getter(#createAndroidWebView),
             ),
@@ -828,11 +851,11 @@ class MockAndroidWebViewProxy extends _i1.Mock
   _i2.FlutterAssetManager Function() get createFlutterAssetManager =>
       (super.noSuchMethod(
         Invocation.getter(#createFlutterAssetManager),
-        returnValue: () => _FakeFlutterAssetManager_7(
+        returnValue: () => _FakeFlutterAssetManager_8(
           this,
           Invocation.getter(#createFlutterAssetManager),
         ),
-        returnValueForMissingStub: () => _FakeFlutterAssetManager_7(
+        returnValueForMissingStub: () => _FakeFlutterAssetManager_8(
           this,
           Invocation.getter(#createFlutterAssetManager),
         ),
@@ -847,7 +870,7 @@ class MockAndroidWebViewProxy extends _i1.Mock
           String channelName, {
           required void Function(String) postMessage,
         }) =>
-            _FakeJavaScriptChannel_8(
+            _FakeJavaScriptChannel_9(
           this,
           Invocation.getter(#createJavaScriptChannel),
         ),
@@ -855,7 +878,7 @@ class MockAndroidWebViewProxy extends _i1.Mock
           String channelName, {
           required void Function(String) postMessage,
         }) =>
-            _FakeJavaScriptChannel_8(
+            _FakeJavaScriptChannel_9(
           this,
           Invocation.getter(#createJavaScriptChannel),
         ),
@@ -863,6 +886,52 @@ class MockAndroidWebViewProxy extends _i1.Mock
         String, {
         required void Function(String) postMessage,
       }));
+  @override
+  _i2.DownloadListener Function(
+      {required void Function(
+        String,
+        String,
+        String,
+        String,
+        int,
+      )
+          onDownloadStart}) get createDownloadListener => (super.noSuchMethod(
+        Invocation.getter(#createDownloadListener),
+        returnValue: (
+                {required void Function(
+                  String,
+                  String,
+                  String,
+                  String,
+                  int,
+                )
+                    onDownloadStart}) =>
+            _FakeDownloadListener_2(
+          this,
+          Invocation.getter(#createDownloadListener),
+        ),
+        returnValueForMissingStub: (
+                {required void Function(
+                  String,
+                  String,
+                  String,
+                  String,
+                  int,
+                )
+                    onDownloadStart}) =>
+            _FakeDownloadListener_2(
+          this,
+          Invocation.getter(#createDownloadListener),
+        ),
+      ) as _i2.DownloadListener Function(
+          {required void Function(
+            String,
+            String,
+            String,
+            String,
+            int,
+          )
+              onDownloadStart}));
   @override
   _i9.Future<void> setWebContentsDebuggingEnabled(bool? enabled) =>
       (super.noSuchMethod(
@@ -884,11 +953,11 @@ class MockAndroidWebViewWidgetCreationParams extends _i1.Mock
   @override
   _i5.InstanceManager get instanceManager => (super.noSuchMethod(
         Invocation.getter(#instanceManager),
-        returnValue: _FakeInstanceManager_9(
+        returnValue: _FakeInstanceManager_10(
           this,
           Invocation.getter(#instanceManager),
         ),
-        returnValueForMissingStub: _FakeInstanceManager_9(
+        returnValueForMissingStub: _FakeInstanceManager_10(
           this,
           Invocation.getter(#instanceManager),
         ),
@@ -896,11 +965,11 @@ class MockAndroidWebViewWidgetCreationParams extends _i1.Mock
   @override
   _i3.PlatformWebViewController get controller => (super.noSuchMethod(
         Invocation.getter(#controller),
-        returnValue: _FakePlatformWebViewController_10(
+        returnValue: _FakePlatformWebViewController_11(
           this,
           Invocation.getter(#controller),
         ),
-        returnValueForMissingStub: _FakePlatformWebViewController_10(
+        returnValueForMissingStub: _FakePlatformWebViewController_11(
           this,
           Invocation.getter(#controller),
         ),
@@ -969,14 +1038,14 @@ class MockJavaScriptChannel extends _i1.Mock implements _i2.JavaScriptChannel {
           #copy,
           [],
         ),
-        returnValue: _FakeJavaScriptChannel_8(
+        returnValue: _FakeJavaScriptChannel_9(
           this,
           Invocation.method(
             #copy,
             [],
           ),
         ),
-        returnValueForMissingStub: _FakeJavaScriptChannel_8(
+        returnValueForMissingStub: _FakeJavaScriptChannel_9(
           this,
           Invocation.method(
             #copy,
@@ -1136,14 +1205,14 @@ class MockWebSettings extends _i1.Mock implements _i2.WebSettings {
           #copy,
           [],
         ),
-        returnValue: _FakeWebSettings_11(
+        returnValue: _FakeWebSettings_12(
           this,
           Invocation.method(
             #copy,
             [],
           ),
         ),
-        returnValueForMissingStub: _FakeWebSettings_11(
+        returnValueForMissingStub: _FakeWebSettings_12(
           this,
           Invocation.method(
             #copy,
@@ -1166,11 +1235,11 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
   @override
   _i2.WebSettings get settings => (super.noSuchMethod(
         Invocation.getter(#settings),
-        returnValue: _FakeWebSettings_11(
+        returnValue: _FakeWebSettings_12(
           this,
           Invocation.getter(#settings),
         ),
-        returnValueForMissingStub: _FakeWebSettings_11(
+        returnValueForMissingStub: _FakeWebSettings_12(
           this,
           Invocation.getter(#settings),
         ),
@@ -1387,14 +1456,14 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           #getScrollPosition,
           [],
         ),
-        returnValue: _i9.Future<_i4.Offset>.value(_FakeOffset_5(
+        returnValue: _i9.Future<_i4.Offset>.value(_FakeOffset_6(
           this,
           Invocation.method(
             #getScrollPosition,
             [],
           ),
         )),
-        returnValueForMissingStub: _i9.Future<_i4.Offset>.value(_FakeOffset_5(
+        returnValueForMissingStub: _i9.Future<_i4.Offset>.value(_FakeOffset_6(
           this,
           Invocation.method(
             #getScrollPosition,
@@ -1469,14 +1538,14 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           #copy,
           [],
         ),
-        returnValue: _FakeWebView_6(
+        returnValue: _FakeWebView_7(
           this,
           Invocation.method(
             #copy,
             [],
           ),
         ),
-        returnValueForMissingStub: _FakeWebView_6(
+        returnValueForMissingStub: _FakeWebView_7(
           this,
           Invocation.method(
             #copy,
@@ -1543,14 +1612,14 @@ class MockWebStorage extends _i1.Mock implements _i2.WebStorage {
           #copy,
           [],
         ),
-        returnValue: _FakeWebStorage_12(
+        returnValue: _FakeWebStorage_13(
           this,
           Invocation.method(
             #copy,
             [],
           ),
         ),
-        returnValueForMissingStub: _FakeWebStorage_12(
+        returnValueForMissingStub: _FakeWebStorage_13(
           this,
           Invocation.method(
             #copy,
@@ -1567,11 +1636,11 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
   @override
   _i6.Widget get widget => (super.noSuchMethod(
         Invocation.getter(#widget),
-        returnValue: _FakeWidget_13(
+        returnValue: _FakeWidget_14(
           this,
           Invocation.getter(#widget),
         ),
-        returnValueForMissingStub: _FakeWidget_13(
+        returnValueForMissingStub: _FakeWidget_14(
           this,
           Invocation.getter(#widget),
         ),
@@ -1599,7 +1668,7 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
           [ancestor],
           {#aspect: aspect},
         ),
-        returnValue: _FakeInheritedWidget_14(
+        returnValue: _FakeInheritedWidget_15(
           this,
           Invocation.method(
             #dependOnInheritedElement,
@@ -1607,7 +1676,7 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
             {#aspect: aspect},
           ),
         ),
-        returnValueForMissingStub: _FakeInheritedWidget_14(
+        returnValueForMissingStub: _FakeInheritedWidget_15(
           this,
           Invocation.method(
             #dependOnInheritedElement,
@@ -1653,7 +1722,7 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
           [name],
           {#style: style},
         ),
-        returnValue: _FakeDiagnosticsNode_15(
+        returnValue: _FakeDiagnosticsNode_16(
           this,
           Invocation.method(
             #describeElement,
@@ -1661,7 +1730,7 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
             {#style: style},
           ),
         ),
-        returnValueForMissingStub: _FakeDiagnosticsNode_15(
+        returnValueForMissingStub: _FakeDiagnosticsNode_16(
           this,
           Invocation.method(
             #describeElement,
@@ -1681,7 +1750,7 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
           [name],
           {#style: style},
         ),
-        returnValue: _FakeDiagnosticsNode_15(
+        returnValue: _FakeDiagnosticsNode_16(
           this,
           Invocation.method(
             #describeWidget,
@@ -1689,7 +1758,7 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
             {#style: style},
           ),
         ),
-        returnValueForMissingStub: _FakeDiagnosticsNode_15(
+        returnValueForMissingStub: _FakeDiagnosticsNode_16(
           this,
           Invocation.method(
             #describeWidget,
@@ -1717,14 +1786,14 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
           #describeOwnershipChain,
           [name],
         ),
-        returnValue: _FakeDiagnosticsNode_15(
+        returnValue: _FakeDiagnosticsNode_16(
           this,
           Invocation.method(
             #describeOwnershipChain,
             [name],
           ),
         ),
-        returnValueForMissingStub: _FakeDiagnosticsNode_15(
+        returnValueForMissingStub: _FakeDiagnosticsNode_16(
           this,
           Invocation.method(
             #describeOwnershipChain,

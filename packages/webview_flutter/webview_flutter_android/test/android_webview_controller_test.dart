@@ -42,6 +42,7 @@ void main() {
     android_webview.WebView? mockWebView,
     android_webview.WebViewClient? mockWebViewClient,
     android_webview.WebStorage? mockWebStorage,
+    android_webview.WebSettings? mockSettings,
   }) {
     final android_webview.WebView nonNullMockWebView =
         mockWebView ?? MockWebView();
@@ -93,6 +94,9 @@ void main() {
                   mockJavaScriptChannel ?? MockJavaScriptChannel(),
             ));
 
+    when(nonNullMockWebView.settings)
+        .thenReturn(mockSettings ?? MockWebSettings());
+
     return AndroidWebViewController(creationParams);
   }
 
@@ -117,11 +121,28 @@ void main() {
     test('loadFile without file prefix', () async {
       final MockWebView mockWebView = MockWebView();
       final MockWebSettings mockWebSettings = MockWebSettings();
-      final AndroidWebViewController controller = createControllerWithMocks(
+      createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockWebSettings,
       );
 
-      when(mockWebView.settings).thenReturn(mockWebSettings);
+      verify(mockWebSettings.setBuiltInZoomControls(true)).called(1);
+      verify(mockWebSettings.setDisplayZoomControls(false)).called(1);
+      verify(mockWebSettings.setDomStorageEnabled(true)).called(1);
+      verify(mockWebSettings.setJavaScriptCanOpenWindowsAutomatically(true))
+          .called(1);
+      verify(mockWebSettings.setLoadWithOverviewMode(true)).called(1);
+      verify(mockWebSettings.setSupportMultipleWindows(true)).called(1);
+      verify(mockWebSettings.setUseWideViewPort(true)).called(1);
+    });
+
+    test('loadFile without file prefix', () async {
+      final MockWebView mockWebView = MockWebView();
+      final MockWebSettings mockWebSettings = MockWebSettings();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+        mockSettings: mockWebSettings,
+      );
 
       await controller.loadFile('/path/to/file.html');
 
@@ -137,9 +158,8 @@ void main() {
       final MockWebSettings mockWebSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockWebSettings,
       );
-
-      when(mockWebView.settings).thenReturn(mockWebSettings);
 
       await controller.loadFile('/path/to/?_<_>_.html');
 
@@ -682,9 +702,10 @@ void main() {
       final MockWebSettings mockSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockSettings,
       );
 
-      when(mockWebView.settings).thenReturn(mockSettings);
+      clearInteractions(mockWebView);
 
       await controller.enableZoom(true);
 
@@ -708,9 +729,10 @@ void main() {
       final MockWebSettings mockSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockSettings,
       );
 
-      when(mockWebView.settings).thenReturn(mockSettings);
+      clearInteractions(mockWebView);
 
       await controller.setJavaScriptMode(JavaScriptMode.disabled);
 
@@ -723,9 +745,10 @@ void main() {
       final MockWebSettings mockSettings = MockWebSettings();
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
+        mockSettings: mockSettings,
       );
 
-      when(mockWebView.settings).thenReturn(mockSettings);
+      clearInteractions(mockWebView);
 
       await controller.setUserAgent('Test Framework');
 
