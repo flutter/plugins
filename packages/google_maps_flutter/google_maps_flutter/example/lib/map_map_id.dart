@@ -4,13 +4,12 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'main.dart';
 import 'page.dart';
 
 class MapIdPage extends GoogleMapExampleAppPage {
@@ -42,7 +41,7 @@ class MapIdBodyState extends State<MapIdBody> {
 
   @override
   void initState() {
-    _initializeMapRenderer()
+    initializeMapRenderer()
         .then<void>((AndroidMapRenderer? initializedRenderer) => setState(() {
               _initializedRenderer = initializedRenderer;
             }));
@@ -56,7 +55,7 @@ class MapIdBodyState extends State<MapIdBody> {
       case AndroidMapRenderer.legacy:
         return 'legacy';
       default:
-        return 'initializing';
+        return 'unknown';
     }
   }
 
@@ -141,24 +140,4 @@ class MapIdBodyState extends State<MapIdBody> {
       controller = controllerParam;
     });
   }
-}
-
-Completer<AndroidMapRenderer?>? _initializedRendererCompleter;
-Future<AndroidMapRenderer?> _initializeMapRenderer() async {
-  if (_initializedRendererCompleter != null) {
-    return _initializedRendererCompleter!.future;
-  }
-
-  _initializedRendererCompleter = Completer<AndroidMapRenderer?>();
-  final GoogleMapsFlutterPlatform mapsImplementation =
-      GoogleMapsFlutterPlatform.instance;
-  if (mapsImplementation is GoogleMapsFlutterAndroid) {
-    mapsImplementation.initializeWithRenderer(AndroidMapRenderer.latest).then(
-        (AndroidMapRenderer initializedRenderer) =>
-            _initializedRendererCompleter!.complete(initializedRenderer));
-  } else {
-    _initializedRendererCompleter!.complete(null);
-  }
-
-  return _initializedRendererCompleter!.future;
 }

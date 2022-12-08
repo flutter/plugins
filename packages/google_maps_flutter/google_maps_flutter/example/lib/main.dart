@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
@@ -77,6 +79,34 @@ void main() {
       GoogleMapsFlutterPlatform.instance;
   if (mapsImplementation is GoogleMapsFlutterAndroid) {
     mapsImplementation.useAndroidViewSurface = true;
+    initializeMapRenderer();
   }
   runApp(const MaterialApp(home: MapsDemo()));
+}
+
+Completer<AndroidMapRenderer?>? _initializedRendererCompleter;
+
+/// Initializes map renderer to with `latest` renderer type for Android platform.
+/// The renderer must be requested before creating GoogleMap instances,
+/// as the renderer can be initialized only once per application context.
+Future<AndroidMapRenderer?> initializeMapRenderer() async {
+  if (_initializedRendererCompleter != null) {
+    return _initializedRendererCompleter!.future;
+  }
+
+  _initializedRendererCompleter = Completer<AndroidMapRenderer?>();
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final GoogleMapsFlutterPlatform mapsImplementation =
+      GoogleMapsFlutterPlatform.instance;
+  if (mapsImplementation is GoogleMapsFlutterAndroid) {
+    mapsImplementation.initializeWithRenderer(AndroidMapRenderer.latest).then(
+        (AndroidMapRenderer initializedRenderer) =>
+            _initializedRendererCompleter!.complete(initializedRenderer));
+  } else {
+    _initializedRendererCompleter!.complete(null);
+  }
+
+  return _initializedRendererCompleter!.future;
 }
