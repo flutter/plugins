@@ -88,25 +88,20 @@ typedef void (^GetSavedPath)(NSString *);
   if (@available(iOS 14, *)) {
     [self setExecuting:YES];
 
-    if ([self.result.itemProvider hasItemConformingToTypeIdentifier:UTTypeWebP.identifier]) {
+    // This supports uniform types that conform to UTTypeImage.
+    // This includes UTTypeHEIC, UTTypeHEIF, UTTypeLivePhoto, UTTypeICO, UTTypeICNS, UTTypePNG
+    // UTTypeGIF, UTTypeJPEG, UTTypeWebP, UTTypeTIFF, UTTypeBMP, UTTypeSVG, UTTypeRAWImage
+    if ([self.result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
       [self.result.itemProvider
-          loadDataRepresentationForTypeIdentifier:UTTypeWebP.identifier
+          loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
                                 completionHandler:^(NSData *_Nullable data,
                                                     NSError *_Nullable error) {
-                                  UIImage *image = [[UIImage alloc] initWithData:data];
-                                  [self processImage:image];
+                                  if (error == nil && data != nil) {
+                                    UIImage *image = [[UIImage alloc] initWithData:data];
+                                    [self processImage:image];
+                                  }
                                 }];
-      return;
     }
-
-    [self.result.itemProvider
-        loadObjectOfClass:[UIImage class]
-        completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
-                            NSError *_Nullable error) {
-          if ([image isKindOfClass:[UIImage class]]) {
-            [self processImage:image];
-          }
-        }];
   } else {
     [self setFinished:YES];
   }
