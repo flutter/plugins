@@ -136,3 +136,17 @@ and so on.
 To learn about playback speed limitations, see the [`setPlaybackSpeed` method documentation](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setPlaybackSpeed.html).
 
 Furthermore, see the example app for an example playback speed implementation.
+
+### Embedded Close caption
+
+You can use video player to get close caption embedded to video (videos like hls). 
+
+#### Get CC options
+
+Use [`getEmbeddedSubtitles`](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/getEmbeddedSubtitles.html) got get list of available options for embedded close caption. The list would be empty if there is not any option for close caption.
+
+#### Set CC options
+
+Use [`setEmbeddedSubtitles`](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setEmbeddedSubtitles.html) got set one of possible option for close caption. Video player will start send values from native player to controller then you can access subtitle of each frame in [`value.caption`](https://pub.dev/documentation/video_player/latest/video_player/Caption-class.html) then you can show any why you want in flutter.
+
+To remove embedded subtitle stream from native to flutter use [`setEmbeddedSubtitles`](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setEmbeddedSubtitles.html) with `EmbeddedSubtitle.none()`
