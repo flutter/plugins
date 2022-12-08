@@ -11,7 +11,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter/webview_flutter_legacy.dart';
 
 void main() => runApp(const MaterialApp(home: WebViewExample()));
 
