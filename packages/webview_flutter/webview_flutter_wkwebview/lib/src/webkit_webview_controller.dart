@@ -362,7 +362,10 @@ class WebKitWebViewController extends PlatformWebViewController {
     covariant WebKitNavigationDelegate handler,
   ) {
     _currentNavigationDelegate = handler;
-    return _webView.setNavigationDelegate(handler._navigationDelegate);
+    return Future.wait(<Future<void>>[
+      _webView.setUIDelegate(handler._uiDelegate),
+      _webView.setNavigationDelegate(handler._navigationDelegate)
+    ]);
   }
 
   Future<void> _disableZoom() {
@@ -638,10 +641,27 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
         }
       },
     );
+
+    _uiDelegate = (this.params as WebKitNavigationDelegateCreationParams)
+        .webKitProxy
+        .createUIDelegate(
+      onCreateWebView: (
+        WKWebView webView,
+        WKWebViewConfiguration configuration,
+        WKNavigationAction navigationAction,
+      ) {
+        if (!navigationAction.targetFrame.isMainFrame) {
+          webView.loadRequest(navigationAction.request);
+        }
+      },
+    );
   }
 
   // Used to set `WKWebView.setNavigationDelegate` in `WebKitWebViewController`.
   late final WKNavigationDelegate _navigationDelegate;
+
+  // Used to set `WKWebView.setUIDelegate` in `WebKitWebViewController`.
+  late final WKUIDelegate _uiDelegate;
 
   PageEventCallback? _onPageFinished;
   PageEventCallback? _onPageStarted;

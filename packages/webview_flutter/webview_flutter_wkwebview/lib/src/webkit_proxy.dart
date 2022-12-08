@@ -27,6 +27,7 @@ class WebKitProxy {
     this.createScriptMessageHandler = WKScriptMessageHandler.new,
     this.defaultWebsiteDataStore = _defaultWebsiteDataStore,
     this.createNavigationDelegate = WKNavigationDelegate.new,
+    this.createUIDelegate = WKUIDelegate.new,
   });
 
   /// Constructs a [WKWebView].
@@ -70,4 +71,14 @@ class WebKitProxy {
         didFailProvisionalNavigation,
     void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
   }) createNavigationDelegate;
+
+  /// Contructs a [WKUIDelegate].
+  final WKUIDelegate Function({
+    void Function(
+      WKWebView webView,
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    )?
+        onCreateWebView,
+  }) createUIDelegate;
 }
