@@ -160,6 +160,7 @@ class GoogleMapController {
         _lastMapConfiguration, _lastStyles);
     // Initial position can only to be set here!
     options = _applyInitialPosition(_initialCameraPosition, options);
+    options = _applyMapId(_lastMapConfiguration.cloudMapId, options);
 
     // Create the map...
     final gmaps.GMap map = _createMap(_div, options);

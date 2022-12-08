@@ -1,5 +1,6 @@
-## NEXT
+## 2.3.0
 
+* Adds a `cloudMapId` parameter to support cloud-based map styling.
 * Updates minimum Flutter version to 3.0.
 
 ## 2.2.5

@@ -122,6 +122,14 @@ gmaps.MapOptions _applyInitialPosition(
   return options;
 }
 
+gmaps.MapOptions _applyMapId(
+  String? mapId,
+  gmaps.MapOptions options,
+) {
+  options.mapId = mapId;
+  return options;
+}
+
 // The keys we'd expect to see in a serialized MapTypeStyle JSON object.
 final Set<String> _mapStyleKeys = <String>{
   'elementType',

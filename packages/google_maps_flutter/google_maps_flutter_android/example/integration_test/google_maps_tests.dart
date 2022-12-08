@@ -17,6 +17,7 @@ const LatLng _kInitialMapCenter = LatLng(0, 0);
 const double _kInitialZoomLevel = 5;
 const CameraPosition _kInitialCameraPosition =
     CameraPosition(target: _kInitialMapCenter, zoom: _kInitialZoomLevel);
+const String _kCloudMapId = '8e0a97af9386fef';
 
 void googleMapsTests() {
   GoogleMapsFlutterPlatform.instance.enableDebugInspection();
@@ -1176,6 +1177,32 @@ void googleMapsTests() {
           await inspector.getTileOverlayInfo(tileOverlay1.mapsId, mapId: mapId);
 
       expect(tileOverlayInfo1, isNull);
+    },
+  );
+
+  testWidgets(
+    'testCloudMapId',
+    (WidgetTester tester) async {
+      final Completer<int> mapIdCompleter = Completer<int>();
+      final Key key = GlobalKey();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: ExampleGoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            onMapCreated: (ExampleGoogleMapController controller) {
+              mapIdCompleter.complete(controller.mapId);
+            },
+            cloudMapId: _kCloudMapId,
+          ),
+        ),
+      );
+
+      // Await mapIdCompleter to finish to make sure map can be created with styledMapId
+      // Styled map
+      await mapIdCompleter.future;
     },
   );
 }

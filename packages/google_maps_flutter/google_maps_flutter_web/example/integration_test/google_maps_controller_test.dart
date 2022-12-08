@@ -19,6 +19,7 @@ import 'google_maps_controller_test.mocks.dart';
 // This value is used when comparing long~num, like
 // LatLng values.
 const double _acceptableDelta = 0.0000000001;
+const String _kCloudMapId = '8e0a97af9386fef';
 
 @GenerateMocks(<Type>[], customMocks: <MockSpec<dynamic>>[
   MockSpec<CirclesController>(onMissingStub: OnMissingStub.returnDefault),
@@ -387,6 +388,7 @@ void main() {
               mapConfiguration: const MapConfiguration(
             mapType: MapType.satellite,
             zoomControlsEnabled: true,
+            cloudMapId: _kCloudMapId,
           ));
           controller.debugSetOverrides(
               createMap: (_, gmaps.MapOptions options) {
@@ -399,6 +401,7 @@ void main() {
           expect(capturedOptions, isNotNull);
           expect(capturedOptions!.mapTypeId, gmaps.MapTypeId.SATELLITE);
           expect(capturedOptions!.zoomControl, true);
+          expect(capturedOptions!.mapId, _kCloudMapId);
           expect(capturedOptions!.gestureHandling, 'auto',
               reason:
                   'by default the map handles zoom/pan gestures internally');

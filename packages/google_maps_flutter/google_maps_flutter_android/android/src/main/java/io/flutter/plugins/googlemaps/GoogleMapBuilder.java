@@ -174,4 +174,9 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   public void setInitialTileOverlays(List<Map<String, ?>> initialTileOverlays) {
     this.initialTileOverlays = initialTileOverlays;
   }
+
+  @Override
+  public void setMapId(String mapId) {
+    options.mapId(mapId);
+  }
 }

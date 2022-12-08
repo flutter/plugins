@@ -78,7 +78,19 @@
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   GMSCameraPosition *camera =
       [FLTGoogleMapJSONConversions cameraPostionFromDictionary:args[@"initialCameraPosition"]];
-  GMSMapView *mapView = [GMSMapView mapWithFrame:frame camera:camera];
+  GMSMapView *mapView;
+
+#if defined(__IPHONE_12_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_12_0
+  if (args[@"options"][@"cloudMapId"]) {
+    GMSMapID *mapID = [GMSMapID mapIDWithIdentifier:args[@"options"][@"cloudMapId"]];
+    mapView = [GMSMapView mapWithFrame:frame mapID:mapID camera:camera];
+  } else {
+    mapView = [GMSMapView mapWithFrame:frame camera:camera];
+  }
+#else
+  mapView = [GMSMapView mapWithFrame:frame camera:camera];
+#endif
+
   return [self initWithMapView:mapView viewIdentifier:viewId arguments:args registrar:registrar];
 }
 

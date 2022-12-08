@@ -8,6 +8,7 @@ import 'animate_camera.dart';
 import 'lite_mode.dart';
 import 'map_click.dart';
 import 'map_coordinates.dart';
+import 'map_map_id.dart';
 import 'map_ui.dart';
 import 'marker_icons.dart';
 import 'move_camera.dart';
@@ -37,6 +38,7 @@ final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
   const SnapshotPage(),
   const LiteModePage(),
   const TileOverlayPage(),
+  const MapIdPage(),
 ];
 
 /// MapsDemo is the Main Application.
