@@ -11,12 +11,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import '../../android_webview.dart' as android_webview;
-import '../../android_webview.dart';
-import '../../instance_manager.dart';
-import '../../weak_reference_utils.dart';
 import 'android_navigation_delegate.dart';
 import 'android_proxy.dart';
+import 'android_webview.dart' as android_webview;
+import 'android_webview.dart';
+import 'instance_manager.dart';
+import 'weak_reference_utils.dart';
 
 /// Object specifying creation parameters for creating a [AndroidWebViewController].
 ///
@@ -67,7 +67,15 @@ class AndroidWebViewController extends PlatformWebViewController {
       : super.implementation(params is AndroidWebViewControllerCreationParams
             ? params
             : AndroidWebViewControllerCreationParams
-                .fromPlatformWebViewControllerCreationParams(params));
+                .fromPlatformWebViewControllerCreationParams(params)) {
+    _webView.settings.setDomStorageEnabled(true);
+    _webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);
+    _webView.settings.setSupportMultipleWindows(true);
+    _webView.settings.setLoadWithOverviewMode(true);
+    _webView.settings.setUseWideViewPort(true);
+    _webView.settings.setDisplayZoomControls(false);
+    _webView.settings.setBuiltInZoomControls(true);
+  }
 
   AndroidWebViewControllerCreationParams get _androidWebViewParams =>
       params as AndroidWebViewControllerCreationParams;
@@ -88,6 +96,11 @@ class AndroidWebViewController extends PlatformWebViewController {
 
   final Map<String, AndroidJavaScriptChannelParams> _javaScriptChannelParams =
       <String, AndroidJavaScriptChannelParams>{};
+
+  // The keeps a reference to the current NavigationDelegate so that the
+  // callback methods remain reachable.
+  // ignore: unused_field
+  late AndroidNavigationDelegate _currentNavigationDelegate;
 
   /// Whether to enable the platform's webview content debugging tools.
   ///
@@ -196,8 +209,11 @@ class AndroidWebViewController extends PlatformWebViewController {
   @override
   Future<void> setPlatformNavigationDelegate(
       covariant AndroidNavigationDelegate handler) async {
+    _currentNavigationDelegate = handler;
+    handler.setOnLoadRequest(loadRequest);
     _webView.setWebViewClient(handler.androidWebViewClient);
     _webView.setWebChromeClient(handler.androidWebChromeClient);
+    _webView.setDownloadListener(handler.androidDownloadListener);
   }
 
   @override

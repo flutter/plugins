@@ -5,7 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import '../../android_webview.dart';
+import 'android_webview.dart';
 
 /// Object specifying creation parameters for creating a [AndroidWebViewCookieManager].
 ///

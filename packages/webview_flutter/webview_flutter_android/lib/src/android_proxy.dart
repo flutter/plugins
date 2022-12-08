@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../android_webview.dart' as android_webview;
+import 'android_webview.dart' as android_webview;
 
 /// Handles constructing objects and calling static methods for the Android
 /// WebView native library.
@@ -21,6 +21,7 @@ class AndroidWebViewProxy {
     this.createAndroidWebViewClient = android_webview.WebViewClient.new,
     this.createFlutterAssetManager = android_webview.FlutterAssetManager.new,
     this.createJavaScriptChannel = android_webview.JavaScriptChannel.new,
+    this.createDownloadListener = android_webview.DownloadListener.new,
   });
 
   /// Constructs a [android_webview.WebView].
@@ -73,6 +74,18 @@ class AndroidWebViewProxy {
     String channelName, {
     required void Function(String) postMessage,
   }) createJavaScriptChannel;
+
+  /// Constructs a [android_webview.DownloadListener].
+  final android_webview.DownloadListener Function({
+    required void Function(
+      String url,
+      String userAgent,
+      String contentDisposition,
+      String mimetype,
+      int contentLength,
+    )
+        onDownloadStart,
+  }) createDownloadListener;
 
   /// Enables debugging of web contents (HTML / CSS / JavaScript) loaded into any WebViews of this application.
   ///

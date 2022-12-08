@@ -7,13 +7,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import '../../android_webview.dart' as android_webview;
 import 'android_proxy.dart';
+import 'android_webview.dart' as android_webview;
 
-/// Signature for the `loadUrl` callback responsible for loading the [url]
+/// Signature for the `loadRequest` callback responsible for loading the [url]
 /// after a navigation request has been approved.
-typedef LoadUrlCallback = Future<void> Function(
-    String url, Map<String, String>? headers);
+typedef LoadRequestCallback = Future<void> Function(LoadRequestParams params);
 
 /// Error returned in `WebView.onWebResourceError` when a web resource loading error has occurred.
 @immutable
@@ -117,7 +116,7 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
     final WeakReference<AndroidNavigationDelegate> weakThis =
         WeakReference<AndroidNavigationDelegate>(this);
 
-    _webChromeClient = (params as AndroidNavigationDelegateCreationParams)
+    _webChromeClient = (this.params as AndroidNavigationDelegateCreationParams)
         .androidWebViewProxy
         .createAndroidWebChromeClient(
             onProgressChanged: (android_webview.WebView webView, int progress) {
@@ -126,7 +125,9 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
       }
     });
 
-    _webViewClient = params.androidWebViewProxy.createAndroidWebViewClient(
+    _webViewClient = (this.params as AndroidNavigationDelegateCreationParams)
+        .androidWebViewProxy
+        .createAndroidWebViewClient(
       onPageFinished: (android_webview.WebView webView, String url) {
         if (weakThis.target?._onPageFinished != null) {
           weakThis.target!._onPageFinished!(url);
@@ -173,7 +174,8 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
         if (weakThis.target != null) {
           weakThis.target!._handleNavigation(
             request.url,
-            request.requestHeaders,
+            headers: request.requestHeaders,
+            isForMainFrame: request.isForMainFrame,
           );
         }
       },
@@ -182,7 +184,23 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
         String url,
       ) {
         if (weakThis.target != null) {
-          weakThis.target!._handleNavigation(url, <String, String>{});
+          weakThis.target!._handleNavigation(url, isForMainFrame: true);
+        }
+      },
+    );
+
+    _downloadListener = (this.params as AndroidNavigationDelegateCreationParams)
+        .androidWebViewProxy
+        .createDownloadListener(
+      onDownloadStart: (
+        String url,
+        String userAgent,
+        String contentDisposition,
+        String mimetype,
+        int contentLength,
+      ) {
+        if (weakThis.target != null) {
+          weakThis.target?._handleNavigation(url, isForMainFrame: true);
         }
       },
     );
@@ -203,45 +221,63 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
   /// Used by the [AndroidWebViewController] to set the `android_webview.WebView.setWebViewClient`.
   android_webview.WebViewClient get androidWebViewClient => _webViewClient;
 
+  late final android_webview.DownloadListener _downloadListener;
+
+  /// Gets the native [android_webview.DownloadListener] that is bridged by this [AndroidNavigationDelegate].
+  ///
+  /// Used by the [AndroidWebViewController] to set the `android_webview.WebView.setDownloadListener`.
+  android_webview.DownloadListener get androidDownloadListener =>
+      _downloadListener;
+
   PageEventCallback? _onPageFinished;
   PageEventCallback? _onPageStarted;
   ProgressCallback? _onProgress;
   WebResourceErrorCallback? _onWebResourceError;
   NavigationRequestCallback? _onNavigationRequest;
-  LoadUrlCallback? _onLoadUrl;
+  LoadRequestCallback? _onLoadRequest;
 
-  void _handleNavigation(String url, Map<String, String> headers) {
-    final LoadUrlCallback? onLoadUrl = _onLoadUrl;
+  void _handleNavigation(
+    String url, {
+    required bool isForMainFrame,
+    Map<String, String> headers = const <String, String>{},
+  }) {
+    final LoadRequestCallback? onLoadRequest = _onLoadRequest;
     final NavigationRequestCallback? onNavigationRequest = _onNavigationRequest;
 
-    if (onNavigationRequest == null || onLoadUrl == null) {
+    if (onNavigationRequest == null || onLoadRequest == null) {
       return;
     }
 
     final FutureOr<NavigationDecision> returnValue = onNavigationRequest(
       NavigationRequest(
-        isMainFrame: true,
         url: url,
+        isMainFrame: isForMainFrame,
       ),
     );
 
     if (returnValue is NavigationDecision &&
         returnValue == NavigationDecision.navigate) {
-      onLoadUrl(url, headers);
+      onLoadRequest(LoadRequestParams(
+        uri: Uri.parse(url),
+        headers: headers,
+      ));
     } else if (returnValue is Future<NavigationDecision>) {
       returnValue.then((NavigationDecision shouldLoadUrl) {
         if (shouldLoadUrl == NavigationDecision.navigate) {
-          onLoadUrl(url, headers);
+          onLoadRequest(LoadRequestParams(
+            uri: Uri.parse(url),
+            headers: headers,
+          ));
         }
       });
     }
   }
 
-  /// Invoked when loading the [url] after a navigation request is approved.
-  Future<void> setOnLoadUrl(
-    LoadUrlCallback onLoadUrl,
+  /// Invoked when loading the url after a navigation request is approved.
+  Future<void> setOnLoadRequest(
+    LoadRequestCallback onLoadRequest,
   ) async {
-    _onLoadUrl = onLoadUrl;
+    _onLoadRequest = onLoadRequest;
   }
 
   @override
