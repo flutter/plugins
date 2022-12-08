@@ -28,8 +28,6 @@
 		7865C5EB294137960010E17F /* icoImage.ico in Resources */ = {isa = PBXBuildFile; fileRef = 7865C5E9294137960010E17F /* icoImage.ico */; };
 		7865C5ED294137AB0010E17F /* tiffImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7865C5EC294137AB0010E17F /* tiffImage.tiff */; };
 		7865C5EE294137AB0010E17F /* tiffImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7865C5EC294137AB0010E17F /* tiffImage.tiff */; };
-		7865C5F0294137EB0010E17F /* rawImage.raw in Resources */ = {isa = PBXBuildFile; fileRef = 7865C5EF294137EB0010E17F /* rawImage.raw */; };
-		7865C5F1294137EB0010E17F /* rawImage.raw in Resources */ = {isa = PBXBuildFile; fileRef = 7865C5EF294137EB0010E17F /* rawImage.raw */; };
 		7865C5F929414FF90010E17F /* proRawImage.dng in Resources */ = {isa = PBXBuildFile; fileRef = 7865C5F829414FF90010E17F /* proRawImage.dng */; };
 		7865C5FA29414FF90010E17F /* proRawImage.dng in Resources */ = {isa = PBXBuildFile; fileRef = 7865C5F829414FF90010E17F /* proRawImage.dng */; };
 		7865C5FC294157BC0010E17F /* icnsImage.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7865C5FB294157BB0010E17F /* icnsImage.icns */; };
@@ -102,7 +100,6 @@
 		7865C5E62941374F0010E17F /* heicImage.heic */ = {isa = PBXFileReference; lastKnownFileType = file; path = heicImage.heic; sourceTree = "<group>"; };
 		7865C5E9294137960010E17F /* icoImage.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = icoImage.ico; sourceTree = "<group>"; };
 		7865C5EC294137AB0010E17F /* tiffImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = tiffImage.tiff; sourceTree = "<group>"; };
-		7865C5EF294137EB0010E17F /* rawImage.raw */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rawImage.raw; sourceTree = "<group>"; };
 		7865C5F829414FF90010E17F /* proRawImage.dng */ = {isa = PBXFileReference; lastKnownFileType = file; path = proRawImage.dng; sourceTree = "<group>"; };
 		7865C5FB294157BB0010E17F /* icnsImage.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icnsImage.icns; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -181,7 +178,6 @@
 				7865C5FB294157BB0010E17F /* icnsImage.icns */,
 				7865C5E9294137960010E17F /* icoImage.ico */,
 				7865C5F829414FF90010E17F /* proRawImage.dng */,
-				7865C5EF294137EB0010E17F /* rawImage.raw */,
 				7865C5E3294132D50010E17F /* svgImage.svg */,
 				7865C5EC294137AB0010E17F /* tiffImage.tiff */,
 			);
@@ -399,7 +395,6 @@
 				7865C5F929414FF90010E17F /* proRawImage.dng in Resources */,
 				7865C5EA294137960010E17F /* icoImage.ico in Resources */,
 				7865C5E72941374F0010E17F /* heicImage.heic in Resources */,
-				7865C5F0294137EB0010E17F /* rawImage.raw in Resources */,
 				86E9A894272754A30017E6E0 /* webpImage.webp in Resources */,
 				86E9A895272769130017E6E0 /* pngImage.png in Resources */,
 				7865C5FC294157BC0010E17F /* icnsImage.icns in Resources */,
@@ -419,7 +414,6 @@
 				680049382280F2B9006DD6AB /* pngImage.png in Resources */,
 				680049392280F2B9006DD6AB /* jpgImage.jpg in Resources */,
 				7865C5EB294137960010E17F /* icoImage.ico in Resources */,
-				7865C5F1294137EB0010E17F /* rawImage.raw in Resources */,
 				7865C5E22941326F0010E17F /* bmpImage.bmp in Resources */,
 				7865C5FA29414FF90010E17F /* proRawImage.dng in Resources */,
 				7865C5E5294132D50010E17F /* svgImage.svg in Resources */,
