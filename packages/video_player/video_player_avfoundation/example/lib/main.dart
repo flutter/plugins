@@ -152,15 +152,10 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                   VideoPlayer(_controller),
                   _ControlsOverlay(controller: _controller),
                   VideoProgressIndicator(_controller),
-                  ValueListenableBuilder<VideoPlayerValue>(
-                    valueListenable: _controller,
-                    builder: (_, VideoPlayerValue value, __) {
-                      return Text(
-                        value.caption.text,
-                        style: const TextStyle(color: Colors.white),
-                      );
-                    },
-                  )
+                  Text(
+                    _controller.value.caption.text,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ],
               ),
             ),
@@ -172,7 +167,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
 
   Future<void> setupSubtitle() async {
     final List<EmbeddedSubtitle> subtitles =
-    await _controller.getEmbeddedSubtitles();
+        await _controller.getEmbeddedSubtitles();
     await _controller.setEmbeddedSubtitles(subtitles.first);
   }
 }

@@ -55,7 +55,24 @@ class _App extends StatelessWidget {
         ),
         body: TabBarView(
           children: <Widget>[
-            _BumbleBeeRemoteVideo(),
+            SingleChildScrollView(
+              child: Column(
+                children: const <_BumbleBeeRemoteVideo>[
+                  _BumbleBeeRemoteVideo(
+                    title: 'With remote mp4 and asset close caption',
+                    videoUrl:
+                        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+                    useAssetCC: true,
+                  ),
+                  _BumbleBeeRemoteVideo(
+                    title: 'With remote mp4 and embedded close caption',
+                    videoUrl:
+                        'https://mtoczko.github.io/hls-test-streams/test-vtt-fmp4-segments/playlist.m3u8',
+                    useAssetCC: false,
+                  ),
+                ],
+              ),
+            ),
             _ButterFlyAssetVideo(),
             _ButterFlyAssetVideoInList(),
           ],
@@ -200,6 +217,17 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
 }
 
 class _BumbleBeeRemoteVideo extends StatefulWidget {
+  const _BumbleBeeRemoteVideo({
+    Key? key,
+    required this.title,
+    required this.videoUrl,
+    required this.useAssetCC,
+  }) : super(key: key);
+
+  final String title;
+  final String videoUrl;
+  final bool useAssetCC;
+
   @override
   _BumbleBeeRemoteVideoState createState() => _BumbleBeeRemoteVideoState();
 }
@@ -218,8 +246,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-      closedCaptionFile: _loadCaptions(),
+      widget.videoUrl,
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
     );
 
@@ -227,7 +254,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
       setState(() {});
     });
     _controller.setLooping(true);
-    _controller.initialize();
+    _controller.initialize().then((_) => setupSubtitle());
   }
 
   @override
@@ -242,7 +269,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
       child: Column(
         children: <Widget>[
           Container(padding: const EdgeInsets.only(top: 20.0)),
-          const Text('With remote mp4'),
+          Text(widget.title),
           Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(
@@ -261,6 +288,16 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
         ],
       ),
     );
+  }
+
+  Future<void> setupSubtitle() async {
+    if (widget.useAssetCC) {
+      _controller.setClosedCaptionFile(_loadCaptions());
+    } else {
+      final List<EmbeddedSubtitle> subtitles =
+          await _controller.getEmbeddedSubtitles();
+      await _controller.setEmbeddedSubtitles(subtitles.first);
+    }
   }
 }
 
