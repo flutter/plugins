@@ -193,15 +193,15 @@ class MixWithOthersMessage {
 
 class GetEmbeddedSubtitlesMessage {
   GetEmbeddedSubtitlesMessage({
-    required this.language,
-    required this.label,
+    this.language,
+    this.label,
     required this.trackIndex,
     required this.groupIndex,
     required this.renderIndex,
   });
 
-  String language;
-  String label;
+  String? language;
+  String? label;
   int trackIndex;
   int groupIndex;
   int renderIndex;
@@ -219,8 +219,8 @@ class GetEmbeddedSubtitlesMessage {
   static GetEmbeddedSubtitlesMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return GetEmbeddedSubtitlesMessage(
-      language: pigeonMap['language']! as String,
-      label: pigeonMap['label']! as String,
+      language: pigeonMap['language'] as String?,
+      label: pigeonMap['label'] as String?,
       trackIndex: pigeonMap['trackIndex']! as int,
       groupIndex: pigeonMap['groupIndex']! as int,
       renderIndex: pigeonMap['renderIndex']! as int,

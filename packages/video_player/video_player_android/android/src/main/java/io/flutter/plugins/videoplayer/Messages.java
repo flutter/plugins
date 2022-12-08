@@ -561,21 +561,15 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class GetEmbeddedSubtitlesMessage {
-    private @NonNull String language;
-    public @NonNull String getLanguage() { return language; }
-    public void setLanguage(@NonNull String setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"language\" is null.");
-      }
+    private @Nullable String language;
+    public @Nullable String getLanguage() { return language; }
+    public void setLanguage(@Nullable String setterArg) {
       this.language = setterArg;
     }
 
-    private @NonNull String label;
-    public @NonNull String getLabel() { return label; }
-    public void setLabel(@NonNull String setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"label\" is null.");
-      }
+    private @Nullable String label;
+    public @Nullable String getLabel() { return label; }
+    public void setLabel(@Nullable String setterArg) {
       this.label = setterArg;
     }
 
@@ -610,12 +604,12 @@ public class Messages {
     private GetEmbeddedSubtitlesMessage() {}
     public static class Builder {
       private @Nullable String language;
-      public @NonNull Builder setLanguage(@NonNull String setterArg) {
+      public @NonNull Builder setLanguage(@Nullable String setterArg) {
         this.language = setterArg;
         return this;
       }
       private @Nullable String label;
-      public @NonNull Builder setLabel(@NonNull String setterArg) {
+      public @NonNull Builder setLabel(@Nullable String setterArg) {
         this.label = setterArg;
         return this;
       }

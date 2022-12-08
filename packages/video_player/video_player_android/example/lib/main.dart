@@ -5,6 +5,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
+import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 import 'mini_controller.dart';
 
@@ -114,13 +115,13 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   void initState() {
     super.initState();
     _controller = MiniController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      'https://mtoczko.github.io/hls-test-streams/test-vtt-fmp4-segments/playlist.m3u8',
     );
 
     _controller.addListener(() {
       setState(() {});
     });
-    _controller.initialize();
+    _controller.initialize().then((_) => setupSubtitle());
   }
 
   @override
@@ -146,6 +147,15 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                   VideoPlayer(_controller),
                   _ControlsOverlay(controller: _controller),
                   VideoProgressIndicator(_controller),
+                  ValueListenableBuilder<VideoPlayerValue>(
+                    valueListenable: _controller,
+                    builder: (_, VideoPlayerValue value, __) {
+                      return Text(
+                        value.caption.text,
+                        style: const TextStyle(color: Colors.white),
+                      );
+                    },
+                  )
                 ],
               ),
             ),
@@ -153,6 +163,12 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
         ],
       ),
     );
+  }
+
+  Future<void> setupSubtitle() async {
+    final List<EmbeddedSubtitle> subtitles =
+        await _controller.getEmbeddedSubtitles();
+    await _controller.setEmbeddedSubtitles(subtitles.first);
   }
 }
 

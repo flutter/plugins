@@ -369,18 +369,15 @@ final class VideoPlayer {
       TrackGroup group = trackGroups.get(groupIndex);
       for (int trackIndex = 0; trackIndex < group.length; trackIndex++) {
 
-        if (group.getFormat(trackIndex).language != null && group.getFormat(trackIndex).label != null) {
-          subtitleItems.add(
-                  new Messages.GetEmbeddedSubtitlesMessage.Builder()
-                          .setLanguage(group.getFormat(trackIndex).language)
-                          .setLabel(group.getFormat(trackIndex).label)
-                          .setTrackIndex((long) trackIndex)
-                          .setGroupIndex((long) groupIndex)
-                          .setRenderIndex((long) rendererIndex)
-                          .build()
-          );
-        }
-
+        subtitleItems.add(
+                new Messages.GetEmbeddedSubtitlesMessage.Builder()
+                        .setLanguage(group.getFormat(trackIndex).language)
+                        .setLabel(group.getFormat(trackIndex).label)
+                        .setTrackIndex((long) trackIndex)
+                        .setGroupIndex((long) groupIndex)
+                        .setRenderIndex((long) rendererIndex)
+                        .build()
+        );
       }
     }
 
