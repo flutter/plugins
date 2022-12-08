@@ -53,24 +53,24 @@ const String kLocalExamplePage = '''
 ''';
 
 const String kTransparentBackgroundPage = '''
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Transparent background test</title>
-  </head>
-  <style type="text/css">
-    body { background: transparent; margin: 0; padding: 0; }
-    #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
-    #shape { background: red; width: 200px; height: 200px; margin: 0; padding: 0; position: absolute; top: calc(50% - 100px); left: calc(50% - 100px); }
-    p { text-align: center; }
-  </style>
-  <body>
-    <div id="container">
-      <p>Transparent background test</p>
-      <div id="shape"></div>
-    </div>
-  </body>
-  </html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Transparent background test</title>
+</head>
+<style type="text/css">
+  body { background: transparent; margin: 0; padding: 0; }
+  #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+  #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
+  p { text-align: center; }
+</style>
+<body>
+  <div id="container">
+    <p>Transparent background test</p>
+    <div id="shape"></div>
+  </div>
+</body>
+</html>
 ''';
 
 class WebViewExample extends StatefulWidget {
@@ -252,11 +252,6 @@ class SampleMenu extends StatelessWidget {
       },
       itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
         const PopupMenuItem<MenuOptions>(
-          key: ValueKey<String>('ShowTransparentBackgroundExample'),
-          value: MenuOptions.transparentBackground,
-          child: Text('Transparent background example'),
-        ),
-        const PopupMenuItem<MenuOptions>(
           value: MenuOptions.showUserAgent,
           child: Text('Show user agent'),
         ),
@@ -303,6 +298,11 @@ class SampleMenu extends StatelessWidget {
         const PopupMenuItem<MenuOptions>(
           value: MenuOptions.setCookie,
           child: Text('Set cookie'),
+        ),
+        const PopupMenuItem<MenuOptions>(
+          key: ValueKey<String>('ShowTransparentBackgroundExample'),
+          value: MenuOptions.transparentBackground,
+          child: Text('Transparent background example'),
         ),
       ],
     );
