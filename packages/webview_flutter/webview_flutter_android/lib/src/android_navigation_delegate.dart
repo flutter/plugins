@@ -188,6 +188,22 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
         }
       },
     );
+
+    _downloadListener = (this.params as AndroidNavigationDelegateCreationParams)
+        .androidWebViewProxy
+        .createDownloadListener(
+      onDownloadStart: (
+        String url,
+        String userAgent,
+        String contentDisposition,
+        String mimetype,
+        int contentLength,
+      ) {
+        if (weakThis.target != null) {
+          weakThis.target?._handleNavigation(url, isForMainFrame: true);
+        }
+      },
+    );
   }
 
   late final android_webview.WebChromeClient _webChromeClient;
@@ -204,6 +220,14 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
   ///
   /// Used by the [AndroidWebViewController] to set the `android_webview.WebView.setWebViewClient`.
   android_webview.WebViewClient get androidWebViewClient => _webViewClient;
+
+  late final android_webview.DownloadListener _downloadListener;
+
+  /// Gets the native [android_webview.DownloadListener] that is bridged by this [AndroidNavigationDelegate].
+  ///
+  /// Used by the [AndroidWebViewController] to set the `android_webview.WebView.setDownloadListener`.
+  android_webview.DownloadListener get androidDownloadListener =>
+      _downloadListener;
 
   PageEventCallback? _onPageFinished;
   PageEventCallback? _onPageStarted;

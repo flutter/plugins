@@ -213,6 +213,7 @@ class AndroidWebViewController extends PlatformWebViewController {
     handler.setOnLoadRequest(loadRequest);
     _webView.setWebViewClient(handler.androidWebViewClient);
     _webView.setWebChromeClient(handler.androidWebChromeClient);
+    _webView.setDownloadListener(handler.androidDownloadListener);
   }
 
   @override
