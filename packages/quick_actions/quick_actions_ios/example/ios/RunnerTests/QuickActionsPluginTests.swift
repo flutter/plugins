@@ -314,9 +314,12 @@ class QuickActionsPluginTests: XCTestCase {
       UIApplication.shared,
       didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
     
+    let invokeMethodExpectation = expectation(description: "handle must be called.")
     plugin.applicationDidBecomeActive(UIApplication.shared)
     plugin.handle(call) { result in
       XCTAssertEqual(result as? String, "SearchTheThing")
+      invokeMethodExpectation.fulfill()
     }
+    waitForExpectations(timeout: 1)
   }
 }
