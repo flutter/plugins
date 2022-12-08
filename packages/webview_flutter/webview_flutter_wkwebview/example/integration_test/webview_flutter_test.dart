@@ -46,8 +46,6 @@ Future<void> main() async {
   final String secondaryUrl = '$prefixUrl/secondary.txt';
   final String headersUrl = '$prefixUrl/headers';
 
-  WebViewPlatform.instance = WebKitWebViewPlatform();
-
   testWidgets(
       'withWeakRefenceTo allows encapsulating class to be garbage collected',
       (WidgetTester tester) async {
