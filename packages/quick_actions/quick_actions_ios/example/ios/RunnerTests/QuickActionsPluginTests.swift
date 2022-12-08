@@ -316,7 +316,7 @@ class QuickActionsPluginTests: XCTestCase {
     
     plugin.applicationDidBecomeActive(UIApplication.shared)
     plugin.handle(call) { result in
-      XCTAssertEqual(result, "SearchTheThing")
+      XCTAssertEqual(result as? String, "SearchTheThing")
     }
   }
 }
