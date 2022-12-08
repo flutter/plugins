@@ -560,9 +560,12 @@ void main() {
 
       controller.setBackgroundColor(Colors.red);
 
-      verify(mockWebView.setOpaque(false));
-      verify(mockWebView.setBackgroundColor(Colors.transparent));
-      verify(mockScrollView.setBackgroundColor(Colors.red));
+      // UIScrollView.setBackgroundColor must be called last.
+      verifyInOrder(<Object>[
+        mockWebView.setOpaque(false),
+        mockWebView.setBackgroundColor(Colors.transparent),
+        mockScrollView.setBackgroundColor(Colors.red),
+      ]);
     });
 
     test('userAgent', () async {

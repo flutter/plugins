@@ -322,9 +322,10 @@ class WebKitWebViewController extends PlatformWebViewController {
   @override
   Future<void> setBackgroundColor(Color color) {
     return Future.wait(<Future<void>>[
-      _webView.scrollView.setBackgroundColor(color),
       _webView.setOpaque(false),
       _webView.setBackgroundColor(Colors.transparent),
+      // This method must be called last.
+      _webView.scrollView.setBackgroundColor(color),
     ]);
   }
 
