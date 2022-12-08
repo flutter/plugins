@@ -252,6 +252,11 @@ class SampleMenu extends StatelessWidget {
       },
       itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
         const PopupMenuItem<MenuOptions>(
+          key: ValueKey<String>('ShowTransparentBackgroundExample'),
+          value: MenuOptions.transparentBackground,
+          child: Text('Transparent background example'),
+        ),
+        const PopupMenuItem<MenuOptions>(
           value: MenuOptions.showUserAgent,
           child: Text('Show user agent'),
         ),
@@ -294,11 +299,6 @@ class SampleMenu extends StatelessWidget {
         const PopupMenuItem<MenuOptions>(
           value: MenuOptions.loadFlutterAsset,
           child: Text('Load Flutter Asset'),
-        ),
-        const PopupMenuItem<MenuOptions>(
-          key: ValueKey<String>('ShowTransparentBackgroundExample'),
-          value: MenuOptions.transparentBackground,
-          child: Text('Transparent background example'),
         ),
         const PopupMenuItem<MenuOptions>(
           value: MenuOptions.setCookie,
