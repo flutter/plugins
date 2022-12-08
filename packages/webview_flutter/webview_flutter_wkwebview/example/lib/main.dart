@@ -93,7 +93,7 @@ class _WebViewExampleState extends State<WebViewExample> {
       WebKitWebViewControllerCreationParams(allowsInlineMediaPlayback: true),
     )
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
+      ..setBackgroundColor(const Color(0x80000000))
       ..setPlatformNavigationDelegate(
         PlatformNavigationDelegate(
           const PlatformNavigationDelegateCreationParams(),
