@@ -290,5 +290,36 @@ class QuickActionsPluginTests: XCTestCase {
 
     XCTAssertEqual(invokeMehtodCount, 1, "shortcut should only be handled once per launch.")
   }
+    
+  func testHandleMethodCall_getLaunchActionWithType() {
+    let call = FlutterMethodCall(methodName: "getLaunchAction", arguments: nil)
 
+    let mockChannel = MockMethodChannel()
+    let mockShortcutItemProvider = MockShortcutItemProvider()
+    let mockShortcutItemParser = MockShortcutItemParser()
+
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel,
+      shortcutItemProvider: mockShortcutItemProvider,
+      shortcutItemParser: mockShortcutItemParser)
+
+    let item = UIApplicationShortcutItem(
+      type: "SearchTheThing",
+      localizedTitle: "Search the thing",
+      localizedSubtitle: nil,
+      icon: UIApplicationShortcutIcon(templateImageName: "search_the_thing.png"),
+      userInfo: nil)
+
+    plugin.application(
+      UIApplication.shared,
+      didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.shortcutItem: item])
+    
+    let resultExpectation = expectation(description: "result block must be called.")
+    plugin.handle(call) { result in
+      XCTAssertEqual(result, "SearchTheThing")
+      resultExpectation.fulfill()
+    }
+
+    waitForExpectations(timeout: 1)
+  }
 }
