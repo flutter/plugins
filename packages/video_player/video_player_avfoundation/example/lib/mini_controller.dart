@@ -8,6 +8,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
@@ -37,6 +38,8 @@ class VideoPlayerValue {
     this.isBuffering = false,
     this.playbackSpeed = 1.0,
     this.errorDescription,
+    this.embeddedSubtitle = const EmbeddedSubtitle.none(),
+    this.caption = Caption.none,
   });
 
   /// Returns an instance for a video that hasn't been loaded.
@@ -81,6 +84,15 @@ class VideoPlayerValue {
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
 
+  /// The currently selected embedded subtitle from the available subtitles of the video
+  final EmbeddedSubtitle embeddedSubtitle;
+
+  /// The [Caption] that should be displayed based on the current [position].
+  ///
+  /// This field will never be null. If there is no caption for the current
+  /// [position], this will be a [Caption.none] object.
+  final Caption caption;
+
   /// Indicates whether or not the video is in an error state. If this is true
   /// [errorDescription] should have information about the problem.
   bool get hasError => errorDescription != null;
@@ -114,6 +126,8 @@ class VideoPlayerValue {
     bool? isBuffering,
     double? playbackSpeed,
     String? errorDescription,
+    EmbeddedSubtitle? embeddedSubtitle,
+    Caption? caption,
   }) {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -125,6 +139,8 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       errorDescription: errorDescription ?? this.errorDescription,
+      embeddedSubtitle: embeddedSubtitle ?? this.embeddedSubtitle,
+      caption: caption ?? this.caption,
     );
   }
 }
@@ -243,6 +259,12 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
         case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
           break;
+        case VideoEventType.subtitleUpdate:
+          value = value.copyWith(
+            caption:
+                Caption.fromEmbeddedSubtitle(text: event.bufferedData ?? ''),
+          );
+          break;
         case VideoEventType.unknown:
           break;
       }
@@ -336,6 +358,29 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setPlaybackSpeed(double speed) async {
     value = value.copyWith(playbackSpeed: speed);
     await _applyPlaybackSpeed();
+  }
+
+  /// Get all available embedded subtitles of the video.
+  ///
+  /// This is useful for video formats containing embedded subtitles like Hls.
+  /// The response items can be used with [setEmbeddedSubtitles] to select and prepare a subtitle.
+  Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles() async {
+    return _platform.getEmbeddedSubtitles(textureId);
+  }
+
+  /// Select one of the embedded subtitles of the video.
+  ///
+  /// * It's recommended to get the [EmbeddedSubtitle] instance from [getEmbeddedSubtitles].
+  /// * After setting a subtitle, the [value.caption] will get updated by the subtitle stream.
+  ///   The updated caption will only include [value.caption.text].
+  /// * Use [EmbeddedSubtitle.none] to prevent [value.caption] from being updated
+  ///   and to remove the subtitle
+  Future<void> setEmbeddedSubtitles(EmbeddedSubtitle embeddedSubtitle) async {
+    await _platform.setEmbeddedSubtitles(
+      _textureId,
+      embeddedSubtitle,
+    );
+    value = value.copyWith(embeddedSubtitle: embeddedSubtitle);
   }
 
   void _updatePosition(Duration position) {
@@ -527,5 +572,63 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
         child: progressIndicator,
       ),
     );
+  }
+}
+
+/// A representation of a single caption.
+///
+/// A typical closed captioning file will include several [Caption]s, each
+/// linked to a start and end time.
+class Caption {
+  /// Creates a new [Caption] object.
+  ///
+  /// This is not recommended for direct use unless you are writing a parser for
+  /// a new closed captioning file type.
+  const Caption({
+    required this.number,
+    required this.start,
+    required this.end,
+    required this.text,
+  });
+
+  /// Creates a new [Caption] object from embedded subtitle.
+  ///
+  /// This is not recommended for direct use unless you are writing a parser for
+  /// a new closed captioning file type.
+  const Caption.fromEmbeddedSubtitle({
+    required this.text,
+  })  : number = -1,
+        start = Duration.zero,
+        end = Duration.zero;
+
+  /// The number that this caption was assigned.
+  final int number;
+
+  /// When in the given video should this [Caption] begin displaying.
+  final Duration start;
+
+  /// When in the given video should this [Caption] be dismissed.
+  final Duration end;
+
+  /// The actual text that should appear on screen to be read between [start]
+  /// and [end].
+  final String text;
+
+  /// A no caption object. This is a caption with [start] and [end] durations of zero,
+  /// and an empty [text] string.
+  static const Caption none = Caption(
+    number: 0,
+    start: Duration.zero,
+    end: Duration.zero,
+    text: '',
+  );
+
+  @override
+  String toString() {
+    return '${objectRuntimeType(this, 'Caption')}('
+        'number: $number, '
+        'start: $start, '
+        'end: $end, '
+        'text: $text)';
   }
 }

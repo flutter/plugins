@@ -234,8 +234,8 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @end
 
 @implementation FLTGetEmbeddedSubtitlesMessage
-+ (instancetype)makeWithLanguage:(NSString *)language
-    label:(NSString *)label
++ (instancetype)makeWithLanguage:(nullable NSString *)language
+    label:(nullable NSString *)label
     trackIndex:(NSNumber *)trackIndex
     groupIndex:(NSNumber *)groupIndex
     renderIndex:(NSNumber *)renderIndex {
@@ -250,9 +250,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 + (FLTGetEmbeddedSubtitlesMessage *)fromMap:(NSDictionary *)dict {
   FLTGetEmbeddedSubtitlesMessage *pigeonResult = [[FLTGetEmbeddedSubtitlesMessage alloc] init];
   pigeonResult.language = GetNullableObject(dict, @"language");
-  NSAssert(pigeonResult.language != nil, @"");
   pigeonResult.label = GetNullableObject(dict, @"label");
-  NSAssert(pigeonResult.label != nil, @"");
   pigeonResult.trackIndex = GetNullableObject(dict, @"trackIndex");
   NSAssert(pigeonResult.trackIndex != nil, @"");
   pigeonResult.groupIndex = GetNullableObject(dict, @"groupIndex");

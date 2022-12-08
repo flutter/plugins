@@ -60,8 +60,8 @@ class MixWithOthersMessage {
 class GetEmbeddedSubtitlesMessage{
   GetEmbeddedSubtitlesMessage(this.language, this.label, this.trackIndex, this.groupIndex, this.renderIndex);
 
-  final String language;
-  final String label;
+  final String? language;
+  final String? label;
   final int trackIndex;
   final int groupIndex;
   final int renderIndex;
