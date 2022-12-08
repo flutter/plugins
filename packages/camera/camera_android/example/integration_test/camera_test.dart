@@ -272,7 +272,7 @@ void main() {
 
         isDetecting = true;
 
-        expectLater(image, isNotNull).whenComplete(() => isDetecting = false);
+        expectLater(image, isNotNull);
       });
 
       expect(controller.value.isStreamingImages, true);
