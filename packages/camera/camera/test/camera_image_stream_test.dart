@@ -177,7 +177,9 @@ void main() {
     cameraController.startVideoRecording(
         onAvailable: (CameraImage image) => null);
 
-    expect(mockPlatform.streamCallLog.contains('startVideoCapturing with stream'), isTrue);
+    expect(
+        mockPlatform.streamCallLog.contains('startVideoCapturing with stream'),
+        isTrue);
   });
 
   test('startVideoRecording() by default does not stream', () async {
@@ -224,8 +226,7 @@ class MockStreamingCameraPlatform extends MockCameraPlatform {
   Future<void> startVideoCapturing(VideoCaptureOptions options) {
     if (options.streamCallback == null) {
       streamCallLog.add('startVideoCapturing');
-    }
-    else {
+    } else {
       streamCallLog.add('startVideoCapturing with stream');
     }
     return super.startVideoCapturing(options);
