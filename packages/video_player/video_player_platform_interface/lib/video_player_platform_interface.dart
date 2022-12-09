@@ -102,6 +102,21 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
+
+  /// Get all available embedded subtitles of the video.
+  Future<List<EmbeddedSubtitle>> getEmbeddedSubtitles(int textureId) async {
+    throw UnimplementedError(
+        'getEmbeddedSubtitles() has not been implemented.');
+  }
+
+  /// Select one of the embedded subtitles of the video.
+  Future<void> setEmbeddedSubtitles(
+    int textureId,
+    EmbeddedSubtitle? embeddedSubtitle,
+  ) async {
+    throw UnimplementedError(
+        'setEmbeddedSubtitles() has not been implemented.');
+  }
 }
 
 class _PlaceholderImplementation extends VideoPlayerPlatform {}
@@ -114,7 +129,7 @@ class DataSource {
   /// The [sourceType] is always required.
   ///
   /// The [uri] argument takes the form of `'https://example.com/video.mp4'` or
-  /// `'file://${file.path}'`.
+  /// `'file:///absolute/path/to/local/video.mp4`.
   ///
   /// The [formatHint] argument can be null.
   ///
@@ -212,6 +227,7 @@ class VideoEvent {
     this.size,
     this.rotationCorrection,
     this.buffered,
+    this.bufferedData,
   });
 
   /// The type of the event.
@@ -237,6 +253,9 @@ class VideoEvent {
   /// Only used if [eventType] is [VideoEventType.bufferingUpdate].
   final List<DurationRange>? buffered;
 
+  /// Data that will be used in the current buffer.
+  final String? bufferedData;
+
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
@@ -246,6 +265,7 @@ class VideoEvent {
             duration == other.duration &&
             size == other.size &&
             rotationCorrection == other.rotationCorrection &&
+            bufferedData == bufferedData &&
             listEquals(buffered, other.buffered);
   }
 
@@ -256,6 +276,7 @@ class VideoEvent {
         size,
         rotationCorrection,
         buffered,
+        bufferedData,
       );
 }
 
@@ -278,6 +299,9 @@ enum VideoEventType {
 
   /// The video stopped to buffer.
   bufferingEnd,
+
+  /// Updated information on the subtitle.
+  subtitleUpdate,
 
   /// An unknown event has been received.
   unknown,
@@ -371,4 +395,45 @@ class VideoPlayerOptions {
   /// Note: This option will be silently ignored in the web platform (there is
   /// currently no way to implement this feature in this platform).
   final bool mixWithOthers;
+}
+
+/// Subtitle option, which is embedded into the video.
+class EmbeddedSubtitle {
+  /// Subtitle option which embedded into video.
+  ///
+  /// * It's recommended not to create a direct instance with this constructor.
+  ///   Try to get it from the video player controller.
+  const EmbeddedSubtitle({
+    required this.language,
+    required this.label,
+    required this.trackIndex,
+    required this.groupIndex,
+    required this.renderIndex,
+  });
+
+  /// An instance of the embedded subtitle that is used to disable the subtitle stream.
+  const EmbeddedSubtitle.none()
+      : language = null,
+        label = null,
+        trackIndex = null,
+        groupIndex = null,
+        renderIndex = null;
+
+  /// Language of embedded subtitle
+  final String? language;
+
+  /// Label, associated with each option of the embedded subtitle
+  final String? label;
+
+  /// Subtitle track index, in the list of subtitles in the embedded subtitle
+  final int? trackIndex;
+
+  /// Subtitle group track index in the available tracks for the video.
+  final int? groupIndex;
+
+  /// Subtitle group track render index
+  final int? renderIndex;
+
+  /// Checks whether the embedded subtitle is selected or is for removing the subtitle.
+  bool get embeddedSubtitleSelected => trackIndex != null;
 }

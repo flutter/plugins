@@ -1,3 +1,7 @@
+## 6.1.0
+
+* Added support Embedded Close Caption with videos
+
 ## 6.0.0
 
 * **BREAKING CHANGE**: Removes `MethodChannelVideoPlayer`. The default
