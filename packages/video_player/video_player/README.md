@@ -137,16 +137,16 @@ To learn about playback speed limitations, see the [`setPlaybackSpeed` method do
 
 Furthermore, see the example app for an example playback speed implementation.
 
-### Embedded Close caption
+### Embedded Closed Captions
 
-You can use video player to get close caption embedded to video (videos like hls). 
+You can use the video player to get embedded closed captions in videos (like HLS).
 
 #### Get CC options
 
-Use [`getEmbeddedSubtitles`](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/getEmbeddedSubtitles.html) got get list of available options for embedded close caption. The list would be empty if there is not any option for close caption.
+Use [`getEmbeddedSubtitles`](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/getEmbeddedSubtitles.html) to get a list of available options for embedded closed captions. The list will be empty if there are no closed captions.
 
 #### Set CC options
 
-Use [`setEmbeddedSubtitles`](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setEmbeddedSubtitles.html) got set one of possible option for close caption. Video player will start send values from native player to controller then you can access subtitle of each frame in [`value.caption`](https://pub.dev/documentation/video_player/latest/video_player/Caption-class.html) then you can show any why you want in flutter.
+Use [`setEmbeddedSubtitles`](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setEmbeddedSubtitles.html) to set one of the possible options for closed captions. The video player will start sending values from the native player to the controller, allowing you to access the subtitles of each frame in [`value.caption`](https://pub.dev/documentation/video_player/latest/video_player/Caption-class.html). You can now show the subtitles in any way you want in Flutter.
 
-To remove embedded subtitle stream from native to flutter use [`setEmbeddedSubtitles`](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setEmbeddedSubtitles.html) with `EmbeddedSubtitle.none()`
+To remove the embedded subtitle stream from native to flutter, use [`setEmbeddedSubtitles`](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setEmbeddedSubtitles.html) with `EmbeddedSubtitle.none()`
