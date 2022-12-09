@@ -202,8 +202,10 @@ void main() {
           ),
         );
 
-        final List<dynamic> javaScriptChannels =
-            verify(mockWebView.addJavaScriptChannel(captureAny)).captured;
+        final List<android_webview.JavaScriptChannel> javaScriptChannels =
+            verify(mockWebView.addJavaScriptChannel(captureAny))
+                .captured
+                .cast<android_webview.JavaScriptChannel>();
         expect(javaScriptChannels[0].channelName, 'a');
         expect(javaScriptChannels[1].channelName, 'b');
       });
@@ -636,8 +638,10 @@ void main() {
         await buildWidget(tester);
 
         await testController.addJavascriptChannels(<String>{'c', 'd'});
-        final List<dynamic> javaScriptChannels =
-            verify(mockWebView.addJavaScriptChannel(captureAny)).captured;
+        final List<android_webview.JavaScriptChannel> javaScriptChannels =
+            verify(mockWebView.addJavaScriptChannel(captureAny))
+                .captured
+                .cast<android_webview.JavaScriptChannel>();
         expect(javaScriptChannels[0].channelName, 'c');
         expect(javaScriptChannels[1].channelName, 'd');
       });
@@ -647,8 +651,10 @@ void main() {
 
         await testController.addJavascriptChannels(<String>{'c', 'd'});
         await testController.removeJavascriptChannels(<String>{'c', 'd'});
-        final List<dynamic> javaScriptChannels =
-            verify(mockWebView.removeJavaScriptChannel(captureAny)).captured;
+        final List<android_webview.JavaScriptChannel> javaScriptChannels =
+            verify(mockWebView.removeJavaScriptChannel(captureAny))
+                .captured
+                .cast<android_webview.JavaScriptChannel>();
         expect(javaScriptChannels[0].channelName, 'c');
         expect(javaScriptChannels[1].channelName, 'd');
       });

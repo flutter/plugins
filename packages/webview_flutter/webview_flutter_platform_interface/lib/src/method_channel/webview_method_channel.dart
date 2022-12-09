@@ -34,40 +34,44 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   Future<bool?> _onMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'javascriptChannelMessage':
-        final String channel = call.arguments['channel']! as String;
-        final String message = call.arguments['message']! as String;
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
+        final String channel = arguments['channel']! as String;
+        final String message = arguments['message']! as String;
         _javascriptChannelRegistry.onJavascriptChannelMessage(channel, message);
         return true;
       case 'navigationRequest':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         return await _platformCallbacksHandler.onNavigationRequest(
-          url: call.arguments['url']! as String,
-          isForMainFrame: call.arguments['isForMainFrame']! as bool,
+          url: arguments['url']! as String,
+          isForMainFrame: arguments['isForMainFrame']! as bool,
         );
       case 'onPageFinished':
-        _platformCallbacksHandler
-            .onPageFinished(call.arguments['url']! as String);
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
+        _platformCallbacksHandler.onPageFinished(arguments['url']! as String);
         return null;
       case 'onProgress':
-        _platformCallbacksHandler.onProgress(call.arguments['progress'] as int);
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
+        _platformCallbacksHandler.onProgress(arguments['progress']! as int);
         return null;
       case 'onPageStarted':
-        _platformCallbacksHandler
-            .onPageStarted(call.arguments['url']! as String);
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
+        _platformCallbacksHandler.onPageStarted(arguments['url']! as String);
         return null;
       case 'onWebResourceError':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         _platformCallbacksHandler.onWebResourceError(
           WebResourceError(
-            errorCode: call.arguments['errorCode']! as int,
-            description: call.arguments['description']! as String,
+            errorCode: arguments['errorCode']! as int,
+            description: arguments['description']! as String,
             // iOS doesn't support `failingUrl`.
-            failingUrl: call.arguments['failingUrl'] as String?,
-            domain: call.arguments['domain'] as String?,
-            errorType: call.arguments['errorType'] == null
+            failingUrl: arguments['failingUrl'] as String?,
+            domain: arguments['domain'] as String?,
+            errorType: arguments['errorType'] == null
                 ? null
                 : WebResourceErrorType.values.firstWhere(
                     (WebResourceErrorType type) {
                       return type.toString() ==
-                          '$WebResourceErrorType.${call.arguments['errorType']}';
+                          '$WebResourceErrorType.${arguments['errorType']}';
                     },
                   ),
           ),
@@ -78,6 +82,14 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     throw MissingPluginException(
       '${call.method} was invoked but has no handler',
     );
+  }
+
+  /// Returns the arguments of [call] as typed string-keyed Map.
+  ///
+  /// This does not do any type validation, so is only safe to call if the
+  /// arguments are known to be a map.
+  Map<String, Object?> _getArgumentDictionary(MethodCall call) {
+    return (call.arguments as Map<Object?, Object?>).cast<String, Object?>();
   }
 
   @override
