@@ -587,6 +587,7 @@ void main() {
         isMethodCall('startVideoRecording', arguments: <String, Object?>{
           'cameraId': cameraId,
           'maxVideoDuration': null,
+          'enableStream': false,
         }),
       ]);
     });
@@ -609,7 +610,31 @@ void main() {
       expect(channel.log, <Matcher>[
         isMethodCall('startVideoRecording', arguments: <String, Object?>{
           'cameraId': cameraId,
-          'maxVideoDuration': 10000
+          'maxVideoDuration': 10000,
+          'enableStream': false,
+        }),
+      ]);
+    });
+
+    test(
+        'Should pass enableStream if callback is passed when starting recording a video',
+        () async {
+      // Arrange
+      final MethodChannelMock channel = MethodChannelMock(
+        channelName: _channelName,
+        methods: <String, dynamic>{'startVideoRecording': null},
+      );
+
+      // Act
+      await camera.startVideoCapturing(VideoCaptureOptions(cameraId,
+          streamCallback: (CameraImageData imageData) {}));
+
+      // Assert
+      expect(channel.log, <Matcher>[
+        isMethodCall('startVideoRecording', arguments: <String, Object?>{
+          'cameraId': cameraId,
+          'maxVideoDuration': null,
+          'enableStream': true,
         }),
       ]);
     });

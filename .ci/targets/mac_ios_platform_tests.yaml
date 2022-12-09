@@ -1,4 +1,6 @@
 tasks:
+  - name: prepare tool
+    script: .ci/scripts/prepare_tool.sh
   - name: create simulator
     script: .ci/scripts/create_simulator.sh
   - name: build examples

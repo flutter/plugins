@@ -18,7 +18,7 @@ flutter:
         dartPluginClass: AndroidCamera
 
 dependencies:
-  camera_platform_interface: ^2.2.0
+  camera_platform_interface: ^2.3.1
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.2
