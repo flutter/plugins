@@ -1,3 +1,7 @@
+## 0.10.1
+
+* Implements option to also stream when recording a video.
+
 ## 0.10.0+4
 
 * Removes usage of `_ambiguate` method in example.
