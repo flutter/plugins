@@ -47,10 +47,29 @@ Future<void> main() async {
   final String headersUrl = '$prefixUrl/headers';
 
   testWidgets('loadRequest', (WidgetTester tester) async {
+    final Completer<void> pageFinished = Completer<void>();
+
     final PlatformWebViewController controller = PlatformWebViewController(
       const PlatformWebViewControllerCreationParams(),
+    )
+      ..setPlatformNavigationDelegate(
+        PlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        )..setOnPageFinished((_) => pageFinished.complete()),
+      )
+      ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+    await tester.pumpWidget(
+      Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ),
     );
-    controller.loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+    await pageFinished.future;
 
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
@@ -79,10 +98,30 @@ Future<void> main() async {
   }, timeout: const Timeout(Duration(seconds: 10)));
 
   testWidgets('runJavaScriptReturningResult', (WidgetTester tester) async {
+    final Completer<void> pageFinished = Completer<void>();
+
     final PlatformWebViewController controller = PlatformWebViewController(
       const PlatformWebViewControllerCreationParams(),
+    )
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setPlatformNavigationDelegate(
+        PlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        )..setOnPageFinished((_) => pageFinished.complete()),
+      )
+      ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+    await tester.pumpWidget(
+      Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ),
     );
-    controller.loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+    await pageFinished.future;
 
     await expectLater(
       controller.runJavaScriptReturningResult('1 + 1'),
@@ -112,6 +151,16 @@ Future<void> main() async {
           headers: headers,
         ),
       );
+
+    await tester.pumpWidget(
+      Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ),
+    );
 
     await pageLoads.stream.firstWhere((String url) => url == headersUrl);
 
@@ -147,6 +196,16 @@ Future<void> main() async {
       'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
     );
 
+    await tester.pumpWidget(
+      Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ),
+    );
+
     await pageFinished.future;
 
     await controller.runJavaScript('Echo.postMessage("hello");');
@@ -154,6 +213,7 @@ Future<void> main() async {
   });
 
   testWidgets('resize webview', (WidgetTester tester) async {
+    final Completer<void> initialResizeCompleter = Completer<void>();
     final Completer<void> buttonTapResizeCompleter = Completer<void>();
     final Completer<void> onPageFinished = Completer<void>();
 
@@ -162,12 +222,19 @@ Future<void> main() async {
       onResize: () {
         if (resizeButtonTapped) {
           buttonTapResizeCompleter.complete();
+        } else {
+          initialResizeCompleter.complete();
         }
       },
       onPageFinished: () => onPageFinished.complete(),
     ));
 
     await onPageFinished.future;
+    // Wait for a potential call to resize after page is loaded.
+    await initialResizeCompleter.future.timeout(
+      const Duration(seconds: 3),
+      onTimeout: () => null,
+    );
 
     resizeButtonTapped = true;
 
@@ -178,14 +245,34 @@ Future<void> main() async {
   });
 
   testWidgets('set custom userAgent', (WidgetTester tester) async {
+    final Completer<void> pageFinished = Completer<void>();
+
     final PlatformWebViewController controller = PlatformWebViewController(
       const PlatformWebViewControllerCreationParams(),
     )
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setUserAgent('Custom_User_Agent1');
+      ..setPlatformNavigationDelegate(
+        PlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        )..setOnPageFinished((_) => pageFinished.complete()),
+      )
+      ..setUserAgent('Custom_User_Agent1')
+      ..loadRequest(LoadRequestParams(uri: Uri.parse('about:blank')));
 
-    final String customUserAgent2 = await _getUserAgent(controller);
-    expect(customUserAgent2, 'Custom_User_Agent1');
+    await tester.pumpWidget(
+      Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ),
+    );
+
+    await pageFinished.future;
+
+    final String customUserAgent = await _getUserAgent(controller);
+    expect(customUserAgent, 'Custom_User_Agent1');
   });
 
   group('Video playback policy', () {
@@ -249,6 +336,16 @@ Future<void> main() async {
           ),
         );
 
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              PlatformWebViewWidgetCreationParams(controller: controller),
+            ).build(context);
+          },
+        ),
+      );
+
       await pageLoaded.future;
 
       bool isPaused =
@@ -273,6 +370,16 @@ Future<void> main() async {
           ),
         );
 
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              PlatformWebViewWidgetCreationParams(controller: controller),
+            ).build(context);
+          },
+        ),
+      );
+
       await pageLoaded.future;
 
       isPaused =
@@ -284,12 +391,12 @@ Future<void> main() async {
       final Completer<void> pageLoaded = Completer<void>();
       final Completer<void> videoPlaying = Completer<void>();
 
-      final PlatformWebViewController controller = PlatformWebViewController(
+      final PlatformWebViewController controller = AndroidWebViewController(
         const PlatformWebViewControllerCreationParams(),
       )
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..setPlatformNavigationDelegate(
-          PlatformNavigationDelegate(
+          AndroidNavigationDelegate(
             const PlatformNavigationDelegateCreationParams(),
           )..setOnPageFinished((_) => pageLoaded.complete()),
         )
@@ -305,6 +412,7 @@ Future<void> main() async {
             },
           ),
         )
+        ..setMediaPlaybackRequiresUserGesture(false)
         ..loadRequest(
           LoadRequestParams(
             uri: Uri.parse(
@@ -320,7 +428,6 @@ Future<void> main() async {
           ).build(context);
         },
       ));
-      await tester.pumpAndSettle();
 
       await pageLoaded.future;
 
@@ -367,15 +474,16 @@ Future<void> main() async {
     testWidgets('Auto media playback', (WidgetTester tester) async {
       Completer<void> pageLoaded = Completer<void>();
 
-      PlatformWebViewController controller = PlatformWebViewController(
+      PlatformWebViewController controller = AndroidWebViewController(
         const PlatformWebViewControllerCreationParams(),
       )
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..setPlatformNavigationDelegate(
-          PlatformNavigationDelegate(
+          AndroidNavigationDelegate(
             const PlatformNavigationDelegateCreationParams(),
           )..setOnPageFinished((_) => pageLoaded.complete()),
         )
+        ..setMediaPlaybackRequiresUserGesture(false)
         ..loadRequest(
           LoadRequestParams(
             uri: Uri.parse(
@@ -502,6 +610,14 @@ Future<void> main() async {
           ),
         );
 
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
       await pageLoaded.future;
 
       await tester.pumpAndSettle(const Duration(seconds: 3));
@@ -557,6 +673,14 @@ Future<void> main() async {
         ..loadRequest(
           LoadRequestParams(uri: Uri.parse(blankPageEncoded)),
         );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       await pageLoads.stream.first; // Wait for initial page load.
       await controller.runJavaScript('location.href = "$secondaryUrl"');
@@ -810,7 +934,14 @@ Future<void> main() async {
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
 Future<String> _getUserAgent(PlatformWebViewController controller) async {
-  return await controller.runJavaScriptReturningResult('navigator.userAgent;')
+  return _runJavaScriptReturningResult(controller, 'navigator.userAgent;');
+}
+
+Future<String> _runJavaScriptReturningResult(
+  PlatformWebViewController controller,
+  String js,
+) async {
+  return jsonDecode(await controller.runJavaScriptReturningResult(js) as String)
       as String;
 }
 
