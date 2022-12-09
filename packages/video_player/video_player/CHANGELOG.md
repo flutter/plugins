@@ -1,3 +1,7 @@
+## 2.5.0
+
+* Added support Embedded Close Caption with videos
+
 ## 2.4.9
 
 * Fixes file URI construction.

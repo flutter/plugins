@@ -7,6 +7,10 @@
 * Fixes violations of new analysis option use_named_constants.
 * Removes an unnecessary override in example code.
 
+## 2.4.0
+
+* Added support Embedded Close Caption with videos
+
 ## 2.3.9
 
 * Updates ExoPlayer to 2.18.1.
