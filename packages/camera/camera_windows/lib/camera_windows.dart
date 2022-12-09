@@ -399,24 +399,25 @@ class CameraWindows extends CameraPlatform {
         );
         break;
       case 'video_recorded':
+        final Map<String, Object?> arguments =
+            (call.arguments as Map<Object?, Object?>).cast<String, Object?>();
+        final int? maxDuration = arguments['maxVideoDuration'] as int?;
         // This is called if maxVideoDuration was given on record start.
         cameraEventStreamController.add(
           VideoRecordedEvent(
             cameraId,
-            XFile(call.arguments['path'] as String),
-            call.arguments['maxVideoDuration'] != null
-                ? Duration(
-                    milliseconds: call.arguments['maxVideoDuration'] as int,
-                  )
-                : null,
+            XFile(arguments['path']! as String),
+            maxDuration != null ? Duration(milliseconds: maxDuration) : null,
           ),
         );
         break;
       case 'error':
+        final Map<String, Object?> arguments =
+            (call.arguments as Map<Object?, Object?>).cast<String, Object?>();
         cameraEventStreamController.add(
           CameraErrorEvent(
             cameraId,
-            call.arguments['description'] as String,
+            arguments['description']! as String,
           ),
         );
         break;

@@ -1286,9 +1286,8 @@ void main() {
             capturedVideoPartTwo,
           ];
 
-          videoDataAvailableListener
-            ..call(FakeBlobEvent(capturedVideoPartOne))
-            ..call(FakeBlobEvent(capturedVideoPartTwo));
+          videoDataAvailableListener.call(FakeBlobEvent(capturedVideoPartOne));
+          videoDataAvailableListener.call(FakeBlobEvent(capturedVideoPartTwo));
 
           videoRecordingStoppedListener.call(Event('stop'));
 
