@@ -12,15 +12,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_example/example_google_map.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-import 'package:integration_test/integration_test.dart';
 
 const LatLng _kInitialMapCenter = LatLng(0, 0);
 const double _kInitialZoomLevel = 5;
 const CameraPosition _kInitialCameraPosition =
     CameraPosition(target: _kInitialMapCenter, zoom: _kInitialZoomLevel);
 
-void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+void googleMapsTests() {
   GoogleMapsFlutterPlatform.instance.enableDebugInspection();
 
   // Repeatedly checks an asynchronous value against a test condition, waiting
@@ -511,7 +509,9 @@ void main() {
         await waitForValueMatchingPredicate<LatLngBounds>(
                 tester,
                 () => mapController.getVisibleRegion(),
-                (LatLngBounds bounds) => bounds != zeroLatLngBounds) ??
+                (LatLngBounds bounds) =>
+                    bounds != zeroLatLngBounds &&
+                    bounds.northeast != bounds.southwest) ??
             zeroLatLngBounds;
     expect(firstVisibleRegion, isNot(zeroLatLngBounds));
     expect(firstVisibleRegion.contains(_kInitialMapCenter), isTrue);
