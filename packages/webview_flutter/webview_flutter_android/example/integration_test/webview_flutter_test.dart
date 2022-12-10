@@ -192,7 +192,7 @@ Future<void> main() async {
       ),
     );
 
-    controller.loadHtmlString(
+    await controller.loadHtmlString(
       'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
     );
 
@@ -492,6 +492,16 @@ Future<void> main() async {
           ),
         );
 
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              PlatformWebViewWidgetCreationParams(controller: controller),
+            ).build(context);
+          },
+        ),
+      );
+
       await pageLoaded.future;
 
       bool isPaused =
@@ -515,6 +525,16 @@ Future<void> main() async {
             ),
           ),
         );
+
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              PlatformWebViewWidgetCreationParams(controller: controller),
+            ).build(context);
+          },
+        ),
+      );
 
       await pageLoaded.future;
 
@@ -553,6 +573,16 @@ Future<void> main() async {
           ),
         ),
       );
+
+    await tester.pumpWidget(
+      Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ),
+    );
 
     await pageLoaded.future;
 
@@ -694,7 +724,7 @@ Future<void> main() async {
       final Completer<WebResourceError> errorCompleter =
           Completer<WebResourceError>();
 
-      PlatformWebViewController(
+      final PlatformWebViewController controller = PlatformWebViewController(
         const PlatformWebViewControllerCreationParams(),
       )
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -708,6 +738,14 @@ Future<void> main() async {
         ..loadRequest(
           LoadRequestParams(uri: Uri.parse('https://www.notawebsite..com')),
         );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       final WebResourceError error = await errorCompleter.future;
       expect(error, isNotNull);
@@ -727,7 +765,7 @@ Future<void> main() async {
           Completer<WebResourceError>();
       final Completer<void> pageFinishCompleter = Completer<void>();
 
-      PlatformWebViewController(
+      final PlatformWebViewController controller = PlatformWebViewController(
         const PlatformWebViewControllerCreationParams(),
       )
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -747,6 +785,14 @@ Future<void> main() async {
             ),
           ),
         );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       expect(errorCompleter.future, doesNotComplete);
       await pageFinishCompleter.future;
@@ -772,6 +818,14 @@ Future<void> main() async {
             }),
         )
         ..loadRequest(LoadRequestParams(uri: Uri.parse(blankPageEncoded)));
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       await pageLoads.stream.first; // Wait for initial page load.
       await controller
@@ -810,6 +864,14 @@ Future<void> main() async {
         )
         ..loadRequest(LoadRequestParams(uri: Uri.parse(blankPageEncoded)));
 
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
       await pageLoads.stream.first; // Wait for initial page load.
       await controller.runJavaScript('location.href = "$secondaryUrl"');
 
@@ -831,6 +893,14 @@ Future<void> main() async {
         const PlatformNavigationDelegateCreationParams(),
       )..setOnPageFinished((_) => pageLoaded.complete()));
 
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
+
     await controller.runJavaScript('window.open("$primaryUrl", "_blank")');
     await pageLoaded.future;
     final String? currentUrl = await controller.currentUrl();
@@ -850,6 +920,14 @@ Future<void> main() async {
           const PlatformNavigationDelegateCreationParams(),
         )..setOnPageFinished((_) => pageLoaded.complete()))
         ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       expect(controller.currentUrl(), completion(primaryUrl));
       await pageLoaded.future;
@@ -917,6 +995,14 @@ Future<void> main() async {
             ),
           ),
         );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       await pageLoadCompleter.future;
 
