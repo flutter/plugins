@@ -146,7 +146,7 @@ static const NSTimeInterval kTimeout = 30.0;
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
 }
 
-- (void)testFailedWithKnownErrorCode {
+- (void)testFailedWithErrorCode {
   FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
   id mockAuthContext = OCMClassMock([LAContext class]);
   plugin.authContextOverrides = @[ mockAuthContext ];
@@ -212,7 +212,6 @@ static const NSTimeInterval kTimeout = 30.0;
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                         XCTAssertTrue([NSThread isMainThread]);
-                        XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
                         XCTAssertFalse([result boolValue]);
                         [expectation fulfill];
                     }];
