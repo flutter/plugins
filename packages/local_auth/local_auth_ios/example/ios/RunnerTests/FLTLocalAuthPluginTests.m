@@ -124,7 +124,7 @@ static const NSTimeInterval kTimeout = 30.0;
     void (^reply)(BOOL, NSError *);
     [invocation getArgument:&reply atIndex:4];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      reply(NO, [NSError errorWithDomain:@"error" code:99 userInfo:nil]);
+      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorAuthenticationFailed userInfo:nil]);
     });
   };
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
@@ -140,12 +140,106 @@ static const NSTimeInterval kTimeout = 30.0;
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
-                      XCTAssertFalse([result boolValue]);
+                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
                       [expectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
 }
+
+- (void)testFailedWithErrorCode {
+  FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
+  id mockAuthContext = OCMClassMock([LAContext class]);
+  plugin.authContextOverrides = @[ mockAuthContext ];
+
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"handleAuthReplyWithSuccess"
+                                                              arguments:@{
+                                                                @"success" : @NO,
+                                                                @"error" : [NSError errorWithDomain:@"error"
+                                                                                               code:LAErrorPasscodeNotSet
+                                                                                           userInfo:nil],
+                                                                @"stickyAuth" : @NO,
+                                                              }];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable result) {
+                      XCTAssertTrue([NSThread isMainThread]);
+                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
+                      [expectation fulfill];
+                    }];
+  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
+}
+
+- (void)testFailedWithUnknownErrorCode {
+  FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
+  id mockAuthContext = OCMClassMock([LAContext class]);
+  plugin.authContextOverrides = @[ mockAuthContext ];
+
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"handleAuthReplyWithSuccess"
+                                                              arguments:@{
+                                                                @"success" : @NO,
+                                                                @"error" : [NSError errorWithDomain:@"error"
+                                                                                               code:-9999
+                                                                                           userInfo:nil],
+                                                                @"stickyAuth" : @NO,
+                                                              }];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable result) {
+                      XCTAssertTrue([NSThread isMainThread]);
+                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
+                      [expectation fulfill];
+                    }];
+  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
+}
+
+- (void)testHandleAuthReplyFailedWithSystemCancel {
+  FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
+  id mockAuthContext = OCMClassMock([LAContext class]);
+  plugin.authContextOverrides = @[ mockAuthContext ];
+
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"handleAuthReplyWithSuccess"
+                                                              arguments:@{
+                                                                @"success" : @NO,
+                                                                @"error" : [NSError errorWithDomain:@"error"
+                                                                                               code:LAErrorSystemCancel
+                                                                                           userInfo:nil],
+                                                                @"stickyAuth" : @NO,
+                                                              }];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable result) {
+                        XCTAssertTrue([NSThread isMainThread]);
+                        XCTAssertFalse([result boolValue]);
+                        [expectation fulfill];
+                    }];
+  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
+}
+
+
+- (void)testHandleAuthReplySucceeded {
+  FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
+  id mockAuthContext = OCMClassMock([LAContext class]);
+  plugin.authContextOverrides = @[ mockAuthContext ];
+
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"handleAuthReplyWithSuccess"
+                                                              arguments:@{
+                                                                @"success" : @YES
+                                                              }];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable result) {
+                      XCTAssertTrue([NSThread isMainThread]);
+                      XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
+                      XCTAssertTrue([result boolValue]);
+                      [expectation fulfill];
+                    }];
+  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
+}
+
 
 - (void)testFailedAuthWithoutBiometrics {
   FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
@@ -163,7 +257,7 @@ static const NSTimeInterval kTimeout = 30.0;
     void (^reply)(BOOL, NSError *);
     [invocation getArgument:&reply atIndex:4];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      reply(NO, [NSError errorWithDomain:@"error" code:99 userInfo:nil]);
+      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorAuthenticationFailed userInfo:nil]);
     });
   };
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
@@ -179,8 +273,7 @@ static const NSTimeInterval kTimeout = 30.0;
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
-                      XCTAssertFalse([result boolValue]);
+                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
                       [expectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
@@ -203,7 +296,7 @@ static const NSTimeInterval kTimeout = 30.0;
     void (^reply)(BOOL, NSError *);
     [invocation getArgument:&reply atIndex:4];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      reply(NO, [NSError errorWithDomain:@"error" code:99 userInfo:nil]);
+      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorUserFallback userInfo:nil]);
     });
   };
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
@@ -220,10 +313,9 @@ static const NSTimeInterval kTimeout = 30.0;
   XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
-                      XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
                       OCMVerify([mockAuthContext setLocalizedFallbackTitle:localizedFallbackTitle]);
-                      XCTAssertFalse([result boolValue]);
+                      XCTAssertTrue([NSThread isMainThread]);
+                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
                       [expectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
@@ -245,7 +337,7 @@ static const NSTimeInterval kTimeout = 30.0;
     void (^reply)(BOOL, NSError *);
     [invocation getArgument:&reply atIndex:4];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      reply(NO, [NSError errorWithDomain:@"error" code:99 userInfo:nil]);
+      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorUserFallback userInfo:nil]);
     });
   };
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
@@ -260,10 +352,9 @@ static const NSTimeInterval kTimeout = 30.0;
   XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
-                      XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
                       OCMVerify([mockAuthContext setLocalizedFallbackTitle:nil]);
-                      XCTAssertFalse([result boolValue]);
+                      XCTAssertTrue([NSThread isMainThread]);
+                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
                       [expectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
