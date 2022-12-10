@@ -39,14 +39,7 @@ flutter:
     - assets/Audio.mp3
 
 
-# When depending on this package from a real application you should use:
-#   video_player_android: ^x.y.z
-#   video_player_avfoundation: ^x.y.z
-#   video_player_platform_interface: ^x.y.z
-#   video_player_web: ^x.y.z
-# See https://dart.dev/tools/pub/dependencies#version-constraints
-# The example app is bundled with the plugin so we use a path dependency on
-# the parent directory to use the current plugin's version.
+# FOR TESTING ONLY. DO NOT MERGE.
 dependency_overrides:
   video_player_android:
     path: ../../video_player_android
