@@ -114,18 +114,19 @@ class _WebViewExampleState extends State<WebViewExample> {
           },
           onWebResourceError: (WebResourceError error) {
             print('''
-          Page resource error:
-            code: ${error.errorCode}
-            description: ${error.description}
-            errorType: ${error.errorType}
+Page resource error:
+  code: ${error.errorCode}
+  description: ${error.description}
+  errorType: ${error.errorType}
+  isForMainFrame: ${error.isForMainFrame}
           ''');
           },
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request');
+              print('blocking navigation to ${request.url}');
               return NavigationDecision.prevent;
             }
-            print('allowing navigation to $request');
+            print('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           },
         ),
