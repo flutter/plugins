@@ -4,8 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter/webview_flutter_legacy.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_example/main.dart';
+import 'package:webview_flutter_platform_interface/src/platform_webview_cookie_manager.dart';
 
 void main() {
   testWidgets('Test snackbar from ScaffoldMessenger',
@@ -22,7 +23,7 @@ void main() {
   });
 }
 
-class FakeCookieManager implements CookieManager {
+class FakeCookieManager implements WebViewCookieManager {
   factory FakeCookieManager() {
     return _instance ??= FakeCookieManager._();
   }
@@ -36,4 +37,7 @@ class FakeCookieManager implements CookieManager {
 
   @override
   Future<void> setCookie(WebViewCookie cookie) => throw UnimplementedError();
+
+  @override
+  PlatformWebViewCookieManager get platform => throw UnimplementedError();
 }
