@@ -7,6 +7,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -341,8 +342,21 @@ void main() {
             VideoPlayerController.file(File('a.avi'));
         await controller.initialize();
 
-        expect(fakeVideoPlayerPlatform.dataSources[0].uri, 'file://a.avi');
-      });
+        final String uri = fakeVideoPlayerPlatform.dataSources[0].uri!;
+        expect(uri.startsWith('file:///'), true, reason: 'Actual string: $uri');
+        expect(uri.endsWith('/a.avi'), true, reason: 'Actual string: $uri');
+      }, skip: kIsWeb /* Web does not support file assets. */);
+
+      test('file with special characters', () async {
+        final VideoPlayerController controller =
+            VideoPlayerController.file(File('A #1 Hit?.avi'));
+        await controller.initialize();
+
+        final String uri = fakeVideoPlayerPlatform.dataSources[0].uri!;
+        expect(uri.startsWith('file:///'), true, reason: 'Actual string: $uri');
+        expect(uri.endsWith('/A%20%231%20Hit%3F.avi'), true,
+            reason: 'Actual string: $uri');
+      }, skip: kIsWeb /* Web does not support file assets. */);
 
       test('successful initialize on controller with error clears error',
           () async {
@@ -1009,16 +1023,16 @@ void main() {
     });
 
     test('setMixWithOthers', () async {
-      final VideoPlayerController controller = VideoPlayerController.file(
-          File(''),
+      final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
           videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
       await controller.initialize();
       expect(controller.videoPlayerOptions!.mixWithOthers, true);
     });
 
     test('true allowBackgroundPlayback continues playback', () async {
-      final VideoPlayerController controller = VideoPlayerController.file(
-        File(''),
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
         videoPlayerOptions: VideoPlayerOptions(
           allowBackgroundPlayback: true,
         ),
@@ -1032,8 +1046,8 @@ void main() {
     });
 
     test('false allowBackgroundPlayback pauses playback', () async {
-      final VideoPlayerController controller = VideoPlayerController.file(
-        File(''),
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
         videoPlayerOptions: VideoPlayerOptions(),
       );
       await controller.initialize();
