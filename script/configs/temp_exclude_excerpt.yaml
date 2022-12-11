@@ -1,0 +1,23 @@
+# Packages that have not yet adopted code-excerpt.
+#
+# This only exists to allow incrementally adopting the new requirement.
+# Packages shoud never be added to this list.
+
+# TODO(ecosystem): Remove everything from this list. See
+# https://github.com/flutter/flutter/issues/102679
+- camera_web
+- espresso
+- google_maps_flutter/google_maps_flutter
+- google_sign_in/google_sign_in
+- google_sign_in_web
+- image_picker/image_picker
+- image_picker_for_web
+- in_app_purchase/in_app_purchase
+- ios_platform_images
+- path_provider/path_provider
+- plugin_platform_interface
+- quick_actions/quick_actions
+- shared_preferences/shared_preferences
+- webview_flutter/webview_flutter
+- webview_flutter_android
+- webview_flutter_web
