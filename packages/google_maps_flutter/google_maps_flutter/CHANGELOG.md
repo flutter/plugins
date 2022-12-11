@@ -1,8 +1,3 @@
-## NEXT
-
-* Updates code for new analysis options.
-* Updates code for `no_leading_underscores_for_local_identifiers` lint.
-
 ## 2.2.2
 
 * Modified `README.md` to fix minor syntax issues and added Code Excerpt to `README.md`.

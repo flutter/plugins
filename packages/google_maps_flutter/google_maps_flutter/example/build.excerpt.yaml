@@ -9,7 +9,7 @@ targets:
         - lib/$lib$
       exclude:
         - '**/.*/**'
-        - '**/build/**'
-    builders:
-      code_excerpter|code_excerpter:
-        enabled: true
+        # - '**/build/**'
+    # builders:
+    #   code_excerpter|code_excerpter:
+    #     enabled: true
