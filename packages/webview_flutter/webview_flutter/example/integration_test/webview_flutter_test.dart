@@ -9,12 +9,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:webview_flutter/android.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter/wkwebview.dart';
 
 Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -180,6 +186,289 @@ Future<void> main() async {
 
     final String customUserAgent = await _getUserAgent(controller);
     expect(customUserAgent, 'Custom_User_Agent1');
+  });
+
+  group('Video playback policy', () {
+    late String videoTestBase64;
+    setUpAll(() async {
+      final ByteData videoData =
+          await rootBundle.load('assets/sample_video.mp4');
+      final String base64VideoData =
+          base64Encode(Uint8List.view(videoData.buffer));
+      final String videoTest = '''
+        <!DOCTYPE html><html>
+        <head><title>Video auto play</title>
+          <script type="text/javascript">
+            function play() {
+              var video = document.getElementById("video");
+              video.play();
+              video.addEventListener('timeupdate', videoTimeUpdateHandler, false);
+            }
+            function videoTimeUpdateHandler(e) {
+              var video = document.getElementById("video");
+              VideoTestTime.postMessage(video.currentTime);
+            }
+            function isPaused() {
+              var video = document.getElementById("video");
+              return video.paused;
+            }
+            function isFullScreen() {
+              var video = document.getElementById("video");
+              return video.webkitDisplayingFullscreen;
+            }
+          </script>
+        </head>
+        <body onload="play();">
+        <video controls playsinline autoplay id="video">
+          <source src="data:video/mp4;charset=utf-8;base64,$base64VideoData">
+        </video>
+        </body>
+        </html>
+      ''';
+      videoTestBase64 = base64Encode(const Utf8Encoder().convert(videoTest));
+    });
+
+    testWidgets('Auto media playback', (WidgetTester tester) async {
+      Completer<void> pageLoaded = Completer<void>();
+
+      late PlatformWebViewControllerCreationParams params;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        params = WebKitWebViewControllerCreationParams(
+          mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+        );
+      } else {
+        params = const PlatformWebViewControllerCreationParams();
+      }
+
+      WebViewController controller =
+          WebViewController.fromPlatformCreationParams(params)
+            ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            ..setNavigationDelegate(
+              NavigationDelegate(onPageFinished: (_) => pageLoaded.complete()),
+            );
+
+      if (controller.platform is AndroidWebViewController) {
+        (controller.platform as AndroidWebViewController)
+            .setMediaPlaybackRequiresUserGesture(false);
+      }
+
+      await controller.loadRequest(
+        Uri.parse('data:text/html;charset=utf-8;base64,$videoTestBase64'),
+      );
+
+      await tester.pumpWidget(WebViewWidget(controller: controller));
+
+      await pageLoaded.future;
+
+      bool isPaused =
+          await controller.runJavaScriptReturningResult('isPaused();') as bool;
+      expect(isPaused, false);
+
+      pageLoaded = Completer<void>();
+      controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(
+          NavigationDelegate(onPageFinished: (_) => pageLoaded.complete()),
+        )
+        ..loadRequest(
+          Uri.parse('data:text/html;charset=utf-8;base64,$videoTestBase64'),
+        );
+
+      await tester.pumpWidget(WebViewWidget(controller: controller));
+
+      await pageLoaded.future;
+
+      isPaused =
+          await controller.runJavaScriptReturningResult('isPaused();') as bool;
+      expect(isPaused, true);
+    });
+
+    testWidgets('Video plays inline', (WidgetTester tester) async {
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<void> videoPlaying = Completer<void>();
+
+      late PlatformWebViewControllerCreationParams params;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        params = WebKitWebViewControllerCreationParams(
+          mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+          allowsInlineMediaPlayback: true,
+        );
+      } else {
+        params = const PlatformWebViewControllerCreationParams();
+      }
+      final WebViewController controller =
+          WebViewController.fromPlatformCreationParams(params)
+            ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            ..setNavigationDelegate(
+              NavigationDelegate(onPageFinished: (_) => pageLoaded.complete()),
+            )
+            ..addJavaScriptChannel(
+              'VideoTestTime',
+              onMessageReceived: (JavaScriptMessage message) {
+                final double currentTime = double.parse(message.message);
+                // Let it play for at least 1 second to make sure the related video's properties are set.
+                if (currentTime > 1 && !videoPlaying.isCompleted) {
+                  videoPlaying.complete(null);
+                }
+              },
+            );
+
+      if (controller.platform is AndroidWebViewController) {
+        (controller.platform as AndroidWebViewController)
+            .setMediaPlaybackRequiresUserGesture(false);
+      }
+
+      await controller.loadRequest(
+        Uri.parse('data:text/html;charset=utf-8;base64,$videoTestBase64'),
+      );
+
+      await tester.pumpWidget(WebViewWidget(controller: controller));
+      await tester.pumpAndSettle();
+
+      await pageLoaded.future;
+
+      // Makes sure we get the correct event that indicates the video is actually playing.
+      await videoPlaying.future;
+
+      final bool fullScreen = await controller
+          .runJavaScriptReturningResult('isFullScreen();') as bool;
+      expect(fullScreen, false);
+    });
+
+    // allowsInlineMediaPlayback is a noop on Android, so it is skipped.
+    testWidgets(
+        'Video plays full screen when allowsInlineMediaPlayback is false',
+        (WidgetTester tester) async {
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<void> videoPlaying = Completer<void>();
+
+      final WebViewController controller =
+          WebViewController.fromPlatformCreationParams(
+        WebKitWebViewControllerCreationParams(
+          mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+        ),
+      )
+            ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            ..setNavigationDelegate(
+              NavigationDelegate(onPageFinished: (_) => pageLoaded.complete()),
+            )
+            ..addJavaScriptChannel(
+              'VideoTestTime',
+              onMessageReceived: (JavaScriptMessage message) {
+                final double currentTime = double.parse(message.message);
+                // Let it play for at least 1 second to make sure the related video's properties are set.
+                if (currentTime > 1 && !videoPlaying.isCompleted) {
+                  videoPlaying.complete(null);
+                }
+              },
+            )
+            ..loadRequest(
+              Uri.parse(
+                'data:text/html;charset=utf-8;base64,$videoTestBase64',
+              ),
+            );
+
+      await tester.pumpWidget(WebViewWidget(controller: controller));
+      await tester.pumpAndSettle();
+
+      await pageLoaded.future;
+
+      // Makes sure we get the correct event that indicates the video is actually playing.
+      await videoPlaying.future;
+
+      final bool fullScreen = await controller
+          .runJavaScriptReturningResult('isFullScreen();') as bool;
+      expect(fullScreen, true);
+    }, skip: Platform.isAndroid);
+  });
+
+  group('Audio playback policy', () {
+    late String audioTestBase64;
+    setUpAll(() async {
+      final ByteData audioData =
+          await rootBundle.load('assets/sample_audio.ogg');
+      final String base64AudioData =
+          base64Encode(Uint8List.view(audioData.buffer));
+      final String audioTest = '''
+        <!DOCTYPE html><html>
+        <head><title>Audio auto play</title>
+          <script type="text/javascript">
+            function play() {
+              var audio = document.getElementById("audio");
+              audio.play();
+            }
+            function isPaused() {
+              var audio = document.getElementById("audio");
+              return audio.paused;
+            }
+          </script>
+        </head>
+        <body onload="play();">
+        <audio controls id="audio">
+          <source src="data:audio/ogg;charset=utf-8;base64,$base64AudioData">
+        </audio>
+        </body>
+        </html>
+      ''';
+      audioTestBase64 = base64Encode(const Utf8Encoder().convert(audioTest));
+    });
+
+    testWidgets('Auto media playback', (WidgetTester tester) async {
+      Completer<void> pageLoaded = Completer<void>();
+
+      late PlatformWebViewControllerCreationParams params;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        params = WebKitWebViewControllerCreationParams(
+          mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+        );
+      } else {
+        params = const PlatformWebViewControllerCreationParams();
+      }
+
+      WebViewController controller =
+          WebViewController.fromPlatformCreationParams(params)
+            ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            ..setNavigationDelegate(
+              NavigationDelegate(onPageFinished: (_) => pageLoaded.complete()),
+            );
+
+      if (controller.platform is AndroidWebViewController) {
+        (controller.platform as AndroidWebViewController)
+            .setMediaPlaybackRequiresUserGesture(false);
+      }
+
+      await controller.loadRequest(
+        Uri.parse('data:text/html;charset=utf-8;base64,$audioTestBase64'),
+      );
+
+      await tester.pumpWidget(WebViewWidget(controller: controller));
+      await tester.pumpAndSettle();
+
+      await pageLoaded.future;
+
+      bool isPaused =
+          await controller.runJavaScriptReturningResult('isPaused();') as bool;
+      expect(isPaused, false);
+
+      pageLoaded = Completer<void>();
+      controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(
+          NavigationDelegate(onPageFinished: (_) => pageLoaded.complete()),
+        )
+        ..loadRequest(
+          Uri.parse('data:text/html;charset=utf-8;base64,$audioTestBase64'),
+        );
+
+      await tester.pumpWidget(WebViewWidget(controller: controller));
+      await tester.pumpAndSettle();
+
+      await pageLoaded.future;
+
+      isPaused =
+          await controller.runJavaScriptReturningResult('isPaused();') as bool;
+      expect(isPaused, true);
+    });
   });
 
   testWidgets('getTitle', (WidgetTester tester) async {
