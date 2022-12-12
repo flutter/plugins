@@ -1,5 +1,6 @@
-## NEXT
+## 2.1.13
 
+* Updates code for stricted type lint checks.
 * Updates code for new analysis options.
 
 ## 2.1.12

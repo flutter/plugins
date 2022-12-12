@@ -1,3 +1,7 @@
+## 1.9.6
+
+* Updates code for stricted type lint checks.
+
 ## 1.9.5
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
