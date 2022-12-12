@@ -28,7 +28,7 @@ class LocalAuthAndroid extends LocalAuthPlatform {
     required Iterable<AuthMessages> authMessages,
     AuthenticationOptions options = const AuthenticationOptions(),
   }) async {
-    assert(localizedReason.isNotEmpty);
+    /// no empty check assertion because [localizedReason] can be nullable for android
     final Map<String, Object> args = <String, Object>{
       'localizedReason': localizedReason,
       'useErrorDialogs': options.useErrorDialogs,
