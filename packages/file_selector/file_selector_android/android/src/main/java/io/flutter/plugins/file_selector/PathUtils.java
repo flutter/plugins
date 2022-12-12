@@ -19,8 +19,13 @@ public class PathUtils {
   static String cacheFolder = "file_selector";
 
   /**
-   * Given a projection, returns the file name for the uri using the content resolver to avoid
+   * Given a projection, returns the file name for the URI using the content resolver to avoid
    * unwanted parsing.
+   *
+   * @param uri The file URI.
+   * @param context The application context.
+   * @param projection The projection to apply.
+   * @return The file name for the specified URI.
    */
   public static String getFileName(Uri uri, @NonNull Context context, String[] projection) {
     Cursor returnCursor = context.getContentResolver().query(uri, projection, null, null, null);
@@ -32,6 +37,14 @@ public class PathUtils {
     return name;
   }
 
+  /**
+   * Copies a list of file to a temporal folder.
+   *
+   * @param uris The list of source URIs of the files to copy.
+   * @param context The application context.
+   * @param cacheFolderName The name for the cache folder to temporally store the files.
+   * @return The path list of copied files.
+   */
   @NonNull
   public static ArrayList<String> copyFilesToInternalStorage(
       ArrayList<Uri> uris, Context context, String cacheFolderName) {
@@ -80,6 +93,12 @@ public class PathUtils {
     }
   }
 
+  /**
+   * Clears the cache folder.
+   *
+   * @param context The application context.
+   * @param cacheFolderName The folder name to clear.
+   */
   public static void clearCache(Context context, String cacheFolderName) {
     File cacheDir = new File(context.getFilesDir() + "/" + cacheFolderName + "/");
     File[] files = cacheDir.listFiles();

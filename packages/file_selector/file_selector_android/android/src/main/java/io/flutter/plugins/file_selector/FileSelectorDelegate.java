@@ -40,8 +40,6 @@ public class FileSelectorDelegate
 
   static String cacheFolder = "file_selector";
 
-  Intent openFileIntent = new Intent();
-
   private Messages.Result pendingResult;
   private final Activity activity;
 
@@ -51,6 +49,11 @@ public class FileSelectorDelegate
     return true;
   }
 
+  /**
+   * Creates a new instance.
+   *
+   * @param activity The Activity where this delegate is bounded to.
+   */
   public FileSelectorDelegate(final Activity activity) {
     this(activity, null);
   }
@@ -70,10 +73,17 @@ public class FileSelectorDelegate
     this.pendingResult = result;
   }
 
+  /** Clears the cache used for opened files. */
   public void clearCache() {
     PathUtils.clearCache(this.activity, cacheFolder);
   }
 
+  /**
+   * Starts the activity with an ACTION_OPEN_DOCUMENT_TREE intent, so the user can select a folder.
+   *
+   * @param initialDirectory Base directory to start navigation for directory selection
+   * @param result A callback to handle the operation result.
+   */
   public void getDirectoryPath(@Nullable String initialDirectory, Messages.Result<String> result) {
     if (isPendingResult()) {
       finishWithAlreadyActiveError(result);
@@ -83,6 +93,13 @@ public class FileSelectorDelegate
     launchGetDirectoryPath(initialDirectory);
   }
 
+  /**
+   * Starts the activity with an ACTION_GET_CONTENT intent, so the user can pick one or more files.
+   *
+   * @param options Options for picking files, like selecting one or more files, and allowing
+   *     specific MIME TYPES
+   * @param result A callback to handle the operation result.
+   */
   public void openFile(
       @NonNull Messages.SelectionOptions options, Messages.Result<List<String>> result) {
     if (isPendingResult()) {
@@ -94,19 +111,6 @@ public class FileSelectorDelegate
     List<String> acceptedTypeGroups = options.getAllowedTypes();
 
     launchOpenFile(multipleFiles, acceptedTypeGroups);
-  }
-
-  void launchGetDirectoryPath(@Nullable String initialDirectory) {
-    Intent getDirectoryPathIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-
-    if (initialDirectory != null && !initialDirectory.isEmpty()) {
-      Uri uri = getDirectoryPathIntent.getParcelableExtra("android.provider.extra.INITIAL_URI");
-      String scheme = uri.toString();
-      scheme = scheme.replace("/root/", initialDirectory);
-      uri = Uri.parse(scheme);
-      getDirectoryPathIntent.putExtra("android.provider.extra.INITIAL_URI", uri);
-    }
-    activity.startActivityForResult(getDirectoryPathIntent, REQUEST_CODE_GET_DIRECTORY_PATH);
   }
 
   @Override
@@ -123,8 +127,22 @@ public class FileSelectorDelegate
     }
   }
 
-  void launchOpenFile(boolean isMultipleSelection, List<String> acceptedTypeGroups) {
-    openFileIntent.setAction(Intent.ACTION_GET_CONTENT);
+  private void launchGetDirectoryPath(@Nullable String initialDirectory) {
+    Intent getDirectoryPathIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+
+    if (initialDirectory != null && !initialDirectory.isEmpty()) {
+      Uri uri = getDirectoryPathIntent.getParcelableExtra("android.provider.extra.INITIAL_URI");
+      String scheme = uri.toString();
+      scheme = scheme.replace("/root/", initialDirectory);
+      uri = Uri.parse(scheme);
+      getDirectoryPathIntent.putExtra("android.provider.extra.INITIAL_URI", uri);
+    }
+    activity.startActivityForResult(getDirectoryPathIntent, REQUEST_CODE_GET_DIRECTORY_PATH);
+  }
+
+  private void launchOpenFile(boolean isMultipleSelection, List<String> acceptedTypeGroups) {
+    Intent openFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+
     openFileIntent.addCategory(Intent.CATEGORY_OPENABLE);
     openFileIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, isMultipleSelection);
 
@@ -146,7 +164,7 @@ public class FileSelectorDelegate
     finishWithSuccess(null);
   }
 
-  void handleOpenFileResult(int resultCode, Intent data) {
+  private void handleOpenFileResult(int resultCode, Intent data) {
     if (resultCode != Activity.RESULT_OK || data == null) {
       finishWithSuccess(new ArrayList<String>());
       return;
@@ -176,7 +194,7 @@ public class FileSelectorDelegate
     pendingResult = null;
   }
 
-  ArrayList<Uri> uriHandler(Intent data) {
+  private ArrayList<Uri> uriHandler(Intent data) {
     ArrayList<Uri> uris = new ArrayList<>();
     ClipData clipData = data.getClipData();
     if (clipData != null) {

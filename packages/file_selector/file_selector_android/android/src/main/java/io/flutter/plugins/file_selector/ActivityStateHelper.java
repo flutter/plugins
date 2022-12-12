@@ -11,10 +11,7 @@ import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 
-/**
- * Move all activity-lifetime-bound states into this helper object, so that {@code setup} and {@code
- * tearDown} would just become constructor and finalize calls of the helper object.
- */
+/** Owns all activity-lifetime-bound state, to simplify lifetime state handling for clients. */
 public class ActivityStateHelper {
   private Application application;
   private Activity activity;
