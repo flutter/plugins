@@ -277,7 +277,10 @@ void main() {
 
       expect(controller.value.isStreamingImages, true);
 
-      sleep(const Duration(milliseconds: 500));
+      // Stopping recording before anything is recorded will throw, per
+      // https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
+      // so delay long enough to ensure that some data is recorded.
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       await controller.stopVideoRecording();
       await controller.dispose();
