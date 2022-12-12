@@ -6,8 +6,11 @@ library wkwebview;
 
 export 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
     show
+        LoadRequestParams,
+        JavaScriptChannelParams,
         PlatformNavigationDelegate,
         PlatformWebViewCookieManager,
         PlatformWebViewController,
-        PlatformWebViewWidget;
+        PlatformWebViewWidget,
+        WebViewPlatform;
 export 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';

@@ -7,7 +7,10 @@ library android;
 export 'package:webview_flutter_android/webview_flutter_android.dart';
 export 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
     show
-    PlatformNavigationDelegate,
-    PlatformWebViewCookieManager,
-    PlatformWebViewController,
-    PlatformWebViewWidget;
+        LoadRequestParams,
+        JavaScriptChannelParams,
+        PlatformNavigationDelegate,
+        PlatformWebViewCookieManager,
+        PlatformWebViewController,
+        PlatformWebViewWidget,
+        WebViewPlatform;

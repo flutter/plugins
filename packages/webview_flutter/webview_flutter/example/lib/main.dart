@@ -73,9 +73,7 @@ const String kTransparentBackgroundPage = '''
 ''';
 
 class WebViewExample extends StatefulWidget {
-  const WebViewExample({Key? key, this.cookieManager}) : super(key: key);
-
-  final WebViewCookieManager? cookieManager;
+  const WebViewExample({super.key});
 
   @override
   State<WebViewExample> createState() => _WebViewExampleState();
@@ -155,10 +153,7 @@ Page resource error:
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(webViewController: _controller),
-          SampleMenu(
-            webViewController: _controller,
-            cookieManager: widget.cookieManager,
-          ),
+          SampleMenu(webViewController: _controller),
         ],
       ),
       body: WebViewWidget(controller: _controller),
@@ -197,14 +192,12 @@ enum MenuOptions {
 
 class SampleMenu extends StatelessWidget {
   SampleMenu({
-    Key? key,
+    super.key,
     required this.webViewController,
-    WebViewCookieManager? cookieManager,
-  })  : cookieManager = cookieManager ?? WebViewCookieManager(),
-        super(key: key);
+  });
 
   final WebViewController webViewController;
-  late final WebViewCookieManager cookieManager;
+  late final WebViewCookieManager cookieManager = WebViewCookieManager();
 
   @override
   Widget build(BuildContext context) {
@@ -445,8 +438,7 @@ class SampleMenu extends StatelessWidget {
 }
 
 class NavigationControls extends StatelessWidget {
-  const NavigationControls({Key? key, required this.webViewController})
-      : super(key: key);
+  const NavigationControls({super.key, required this.webViewController});
 
   final WebViewController webViewController;
 
