@@ -1,5 +1,6 @@
 ## NEXT
 
+* Fixes file URI construction in example.
 * Updates code for new analysis options.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 * Updates minimum Flutter version to 2.10.

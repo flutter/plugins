@@ -1,3 +1,7 @@
+## 0.10.1
+
+* Implements an option to also stream when recording a video.
+
 ## 0.10.0+5
 
 * Fixes `ArrayIndexOutOfBoundsException` when the permission request is interrupted.
