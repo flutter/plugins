@@ -42,7 +42,7 @@
     } else if ([@"isDeviceSupported" isEqualToString:call.method]) {
         result(@YES);
     } else if ([@"handleAuthReplyWithSuccess" isEqualToString:call.method]) {
-        bool success = [call.arguments[@"success"] boolValue];
+        BOOL success = [call.arguments[@"success"] boolValue];
         NSError* error = call.arguments[@"error"];
         [self handleAuthReplyWithSuccess:success error:error flutterArguments:call.arguments flutterResult:result];
     } else {
@@ -222,10 +222,10 @@
         switch (error.code) {
             case LAErrorSystemCancel:
                 if ([arguments[@"stickyAuth"] boolValue]) {
-                    self->_lastCallArgs = arguments;
-                    self->_lastResult = result;
+                  self->_lastCallArgs = arguments;
+                  self->_lastResult = result;
                 } else {
-                    result(@NO);
+                  result(@NO);
                 }
                 return;
             case LAErrorPasscodeNotSet:

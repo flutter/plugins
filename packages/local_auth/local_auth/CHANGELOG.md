@@ -2,6 +2,10 @@
 
 * Updates minimum Flutter version to 2.10.
 
+## 2.1.3
+
+* Fixes biometric authentication failing silently.
+
 ## 2.1.2
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
