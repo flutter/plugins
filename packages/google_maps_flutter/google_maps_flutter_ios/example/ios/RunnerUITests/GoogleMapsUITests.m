@@ -58,11 +58,11 @@
     XCTFail(@"Failed due to not able to find platform view");
   }
 
-
   // There is a known bug where the permission popups interruption won't get fired until a tap
   // happened in the app. We expect a permission popup so we do a tap here.
-  // iOS 16 has a bug where if the app itself is directly tapped: [app tap], the first button (disable compass)
-  // in the app is also tapped, so instead we tap a arbitrary location in the app instead.
+  // iOS 16 has a bug where if the app itself is directly tapped: [app tap], the first button
+  // (disable compass) in the app is also tapped, so instead we tap a arbitrary location in the app
+  // instead.
   XCUICoordinate *coordinate = [app coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
   [coordinate tap];
   XCUIElement *compass = app.buttons[@"disable compass"];
@@ -198,8 +198,9 @@
 }
 
 - (void)forceTap:(XCUIElement *)button {
-  // iOS 16 introduced a bug where hittable is NO for buttons. We force hit the location of the button
-  // if that is the case. It is likely similar to https://github.com/flutter/flutter/issues/113377.
+  // iOS 16 introduced a bug where hittable is NO for buttons. We force hit the location of the
+  // button if that is the case. It is likely similar to
+  // https://github.com/flutter/flutter/issues/113377.
   if (button.isHittable) {
     [button tap];
     return;
