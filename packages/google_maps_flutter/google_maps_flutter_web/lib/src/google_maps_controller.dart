@@ -160,9 +160,11 @@ class GoogleMapController {
         _lastMapConfiguration, _lastStyles);
     // Initial position can only to be set here!
     options = _applyInitialPosition(_initialCameraPosition, options);
+    var button = _addMyLocationButton();
 
     // Create the map...
     final gmaps.GMap map = _createMap(_div, options);
+    map.controls![gmaps.ControlPosition.TOP_CENTER as int]?.push(button);
     _googleMap = map;
 
     _attachMapEvents(map);
@@ -177,6 +179,35 @@ class GoogleMapController {
     );
 
     _setTrafficLayer(map, _lastMapConfiguration.trafficEnabled ?? false);
+  }
+
+  HtmlElement _addMyLocationButton() {
+    final controlButton = document.createElement('myLocationButton');
+
+    // // Set CSS for the control.
+    controlButton.style.backgroundColor = "#fff";
+    controlButton.style.border = "2px solid #fff";
+    controlButton.style.borderRadius = "3px";
+    controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+    controlButton.style.color = "rgb(25,25,25)";
+    controlButton.style.cursor = "pointer";
+    controlButton.style.fontFamily = "Roboto,Arial,sans-serif";
+    controlButton.style.fontSize = "16px";
+    controlButton.style.lineHeight = "38px";
+    controlButton.style.margin = "8px 0 22px";
+    controlButton.style.padding = "0 5px";
+    controlButton.style.textAlign = "center";
+
+    controlButton.innerHtml = "Center Map";
+    controlButton.title = "Click to recenter the map";
+    // controlButton. = "button";
+    // Setup the click event listeners: simply set the map to Chicago.
+    controlButton.addEventListener("click", ((event) => {}));
+    // final centerControlDiv = document.createElement("div");
+    // Create the control.
+    // Append the control to the DIV.
+    // centerControlDiv.append(controlButton);
+    return controlButton as HtmlElement;
   }
 
   // Funnels map gmap events into the plugin's stream controller.
