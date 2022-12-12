@@ -757,6 +757,19 @@ void main() {
     });
   });
 
+  test('setMediaPlaybackRequiresUserGesture', () async {
+    final MockWebView mockWebView = MockWebView();
+    final MockWebSettings mockSettings = MockWebSettings();
+    final AndroidWebViewController controller = createControllerWithMocks(
+      mockWebView: mockWebView,
+      mockSettings: mockSettings,
+    );
+
+    await controller.setMediaPlaybackRequiresUserGesture(true);
+
+    verify(mockSettings.setMediaPlaybackRequiresUserGesture(true)).called(1);
+  });
+
   group('AndroidWebViewWidget', () {
     testWidgets('Builds AndroidView using supplied parameters',
         (WidgetTester tester) async {
