@@ -1,3 +1,7 @@
+## NEXT
+
+* Allowing empty localizedReason for Android
+
 ## 1.0.15
 
 * Updates androidx.fragment version to 1.5.4.
