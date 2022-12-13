@@ -1,4 +1,4 @@
-## NEXT
+## 1.0.16
 
 * Allowing empty localizedReason for Android
 
