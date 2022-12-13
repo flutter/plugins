@@ -5,7 +5,10 @@
 import Flutter
 import XCTest
 
-@testable import quick_actions_ios
+import QuickActionsPlugin
+import MockShortcutItemParser
+import MockShortcutItemProvider
+import MockMethodChannel
 
 private let elementWaitingTime: TimeInterval = 30
 
