@@ -93,4 +93,28 @@ class RunnerUITests: XCTestCase {
 
     XCTAssert(actionOneConfirmation.exists)
   }
+  
+  func testFetchQuickActionAfterFreshStart() {   
+    let call = FlutterMethodCall(methodName: "getLaunchAction", arguments: nil)
+    let mockChannel = MockMethodChannel()
+    let mockShortcutItemProvider = MockShortcutItemProvider()
+    let mockShortcutItemParser = MockShortcutItemParser()
+    let plugin = QuickActionsPlugin(
+      channel: mockChannel,
+      shortcutItemProvider: mockShortcutItemProvider,
+      shortcutItemParser: mockShortcutItemParser)
+    let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")     
+    let quickActionsAppIcon = springboard.icons["quick_actions_example"]
+    if !quickActionsAppIcon.waitForExistence(timeout: elementWaitingTime) {
+      XCTFail(
+        "Failed due to not able to find the example app from springboard with \(elementWaitingTime) seconds. Springboard debug description: \(springboard.debugDescription)"
+      )
+    }
+    
+    quickActionsAppIcon.press(forDuration: 2)
+    
+    plugin.handle(call) { result in
+      XCTAssertEqual(result, "quick_actions_example")      
+    }
+  }
 }
