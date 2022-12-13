@@ -4,7 +4,7 @@
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'platform_navigation_delegate.dart';
+import '../../src/platform_navigation_delegate.dart';
 import 'platform_webview_controller.dart';
 import 'platform_webview_cookie_manager.dart';
 import 'platform_webview_widget.dart';

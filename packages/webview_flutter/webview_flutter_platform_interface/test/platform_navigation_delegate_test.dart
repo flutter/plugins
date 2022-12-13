@@ -5,8 +5,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_delegate.dart';
-import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'webview_platform_test.mocks.dart';
 
@@ -61,7 +60,7 @@ void main() {
 
     expect(
       () => callbackDelegate.setOnNavigationRequest(
-          ({required bool isForMainFrame, required String url}) => true),
+          (NavigationRequest navigationRequest) => NavigationDecision.navigate),
       throwsUnimplementedError,
     );
   });

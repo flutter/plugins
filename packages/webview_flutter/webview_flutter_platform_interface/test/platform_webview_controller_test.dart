@@ -7,9 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_delegate.dart';
-import 'package:webview_flutter_platform_interface/v4/src/platform_webview_controller.dart';
-import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'platform_navigation_delegate_test.dart';
 import 'webview_platform_test.mocks.dart';
@@ -353,34 +351,6 @@ void main() {
 
     expect(
       () => controller.getScrollPosition(),
-      throwsUnimplementedError,
-    );
-  });
-
-  test(
-      // ignore: lines_longer_than_80_chars
-      'Default implementation of enableDebugging should throw unimplemented error',
-      () {
-    final PlatformWebViewController controller =
-        ExtendsPlatformWebViewController(
-            const PlatformWebViewControllerCreationParams());
-
-    expect(
-      () => controller.enableDebugging(true),
-      throwsUnimplementedError,
-    );
-  });
-
-  test(
-      // ignore: lines_longer_than_80_chars
-      'Default implementation of enableGestureNavigation should throw unimplemented error',
-      () {
-    final PlatformWebViewController controller =
-        ExtendsPlatformWebViewController(
-            const PlatformWebViewControllerCreationParams());
-
-    expect(
-      () => controller.enableGestureNavigation(true),
       throwsUnimplementedError,
     );
   });

@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'platform_navigation_delegate.dart';
+import '../../src/platform_navigation_delegate.dart';
 import 'webview_platform.dart';
 
 /// Interface for a platform implementation of a web view controller.
@@ -178,7 +176,7 @@ abstract class PlatformWebViewController extends PlatformInterface {
   /// The Future completes with an error if a JavaScript error occurred, or if the
   /// type the given expression evaluates to is unsupported. Unsupported values include
   /// certain non-primitive types on iOS, as well as `undefined` or `null` on iOS 14+.
-  Future<String> runJavaScriptReturningResult(String javaScript) {
+  Future<Object> runJavaScriptReturningResult(String javaScript) {
     throw UnimplementedError(
         'runJavaScriptReturningResult is not implemented on the current platform');
   }
@@ -226,24 +224,12 @@ abstract class PlatformWebViewController extends PlatformInterface {
   /// Return the current scroll position of this view.
   ///
   /// Scroll position is measured from the top left.
-  Future<Point<int>> getScrollPosition() {
+  Future<Offset> getScrollPosition() {
     throw UnimplementedError(
         'getScrollPosition is not implemented on the current platform');
   }
 
-  /// Whether to enable the platform's webview content debugging tools.
-  Future<void> enableDebugging(bool enabled) {
-    throw UnimplementedError(
-        'enableDebugging is not implemented on the current platform');
-  }
-
-  /// Whether to allow swipe based navigation on supported platforms.
-  Future<void> enableGestureNavigation(bool enabled) {
-    throw UnimplementedError(
-        'enableGestureNavigation is not implemented on the current platform');
-  }
-
-  /// Whhether to support zooming using its on-screen zoom controls and gestures.
+  /// Whether to support zooming using its on-screen zoom controls and gestures.
   Future<void> enableZoom(bool enabled) {
     throw UnimplementedError(
         'enableZoom is not implemented on the current platform');
@@ -269,9 +255,10 @@ abstract class PlatformWebViewController extends PlatformInterface {
 }
 
 /// Describes the parameters necessary for registering a JavaScript channel.
+@immutable
 class JavaScriptChannelParams {
   /// Creates a new [JavaScriptChannelParams] object.
-  JavaScriptChannelParams({
+  const JavaScriptChannelParams({
     required this.name,
     required this.onMessageReceived,
   });
