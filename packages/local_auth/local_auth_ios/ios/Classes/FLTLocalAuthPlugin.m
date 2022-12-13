@@ -41,10 +41,6 @@
         [self deviceSupportsBiometrics:result];
     } else if ([@"isDeviceSupported" isEqualToString:call.method]) {
         result(@YES);
-    } else if ([@"handleAuthReplyWithSuccess" isEqualToString:call.method]) {
-        BOOL success = [call.arguments[@"success"] boolValue];
-        NSError* error = call.arguments[@"error"];
-        [self handleAuthReplyWithSuccess:success error:error flutterArguments:call.arguments flutterResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -228,13 +224,17 @@
                   result(@NO);
                 }
                 return;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      // TODO(stuartmorgan): Remove the pragma and s/TouchID/Biometry/ in these constants when
+      // iOS 10 support is dropped. The values are the same, only the names have changed.
+            case LAErrorTouchIDNotAvailable:
+            case LAErrorTouchIDNotEnrolled:
+            case LAErrorTouchIDLockout:
+      #pragma clang diagnostic pop
+            case LAErrorUserFallback:
             case LAErrorPasscodeNotSet:
             case LAErrorAuthenticationFailed:
-            case LAErrorBiometryNotAvailable:
-            case LAErrorBiometryNotEnrolled:
-            case LAErrorBiometryLockout:
-            case LAErrorUserFallback:
-            default:
                 [self handleErrors:error flutterArguments:arguments withFlutterResult:result];
                 return;
         }
