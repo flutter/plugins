@@ -1,3 +1,10 @@
+## 2.0.0
+
+* **Breaking Change**: Releases new interface. See [documentation](https://pub.dev/documentation/webview_flutter_platform_interface/2.0.0/) and [design doc](https://flutter.dev/go/webview_flutter_4_interface)
+  for more details.
+* **Breaking Change**: Moves previous interface into import `package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart`.
+* **Breaking Change**: Removes MethodChannel implementation of previous interface.
+
 ## 1.9.5
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
