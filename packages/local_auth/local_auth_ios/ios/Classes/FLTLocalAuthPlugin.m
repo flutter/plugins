@@ -244,7 +244,7 @@
 
 - (void)handleErrors:(NSError *)authError
     flutterArguments:(NSDictionary *)arguments
-   withFlutterResult:(FlutterResult)result {
+    withFlutterResult:(FlutterResult)result {
     NSString *errorCode = @"NotAvailable";
     switch (authError.code) {
         case LAErrorPasscodeNotSet:
