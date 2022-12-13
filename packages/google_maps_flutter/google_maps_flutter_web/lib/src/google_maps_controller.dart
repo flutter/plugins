@@ -160,11 +160,13 @@ class GoogleMapController {
         _lastMapConfiguration, _lastStyles);
     // Initial position can only to be set here!
     options = _applyInitialPosition(_initialCameraPosition, options);
-    var button = _addMyLocationButton();
 
     // Create the map...
     final gmaps.GMap map = _createMap(_div, options);
-    map.controls![gmaps.ControlPosition.TOP_CENTER as int]?.push(button);
+    if (_lastMapConfiguration.myLocationButtonEnabled!) {
+      final button = _addMyLocationButton();
+      map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]?.push(button);
+    }
     _googleMap = map;
 
     _attachMapEvents(map);
@@ -182,10 +184,9 @@ class GoogleMapController {
   }
 
   HtmlElement _addMyLocationButton() {
-    final controlButton = document.createElement('myLocationButton');
+    final controlButton = document.createElement('button');
 
     // // Set CSS for the control.
-    controlButton.style.backgroundColor = "#fff";
     controlButton.style.border = "2px solid #fff";
     controlButton.style.borderRadius = "3px";
     controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
@@ -197,12 +198,24 @@ class GoogleMapController {
     controlButton.style.margin = "8px 0 22px";
     controlButton.style.padding = "0 5px";
     controlButton.style.textAlign = "center";
-
-    controlButton.innerHtml = "Center Map";
+    // controlButton.innerHtml = "&#xe55c;";
+    controlButton.text = "My Location";
     controlButton.title = "Click to recenter the map";
     // controlButton. = "button";
     // Setup the click event listeners: simply set the map to Chicago.
-    controlButton.addEventListener("click", ((event) => {}));
+    controlButton.addEventListener("click", ((event) {
+      window.navigator.geolocation.getCurrentPosition().then((value) {
+        moveCamera(
+          CameraUpdate.newLatLng(LatLng(
+            value.coords!.latitude!.toDouble(),
+            value.coords!.longitude!.toDouble(),
+          )),
+        );
+      });
+    }));
+//       if (window.navigator.geolocation) {
+//     navigator.geolocation.getCurrentPosition(showPosition);
+// }
     // final centerControlDiv = document.createElement("div");
     // Create the control.
     // Append the control to the DIV.
