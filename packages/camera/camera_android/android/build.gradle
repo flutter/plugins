@@ -27,10 +27,10 @@ project.getTasks().withType(JavaCompile){
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 31
 
     defaultConfig {
-        targetSdkVersion 33
+        targetSdkVersion 31
         minSdkVersion 21
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
