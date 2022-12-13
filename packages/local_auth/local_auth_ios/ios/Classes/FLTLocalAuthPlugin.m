@@ -244,30 +244,30 @@
 
 - (void)handleErrors:(NSError *)authError
     flutterArguments:(NSDictionary *)arguments
-    withFlutterResult:(FlutterResult)result {
-        NSString *errorCode = @"NotAvailable";
-        switch (authError.code) {
-            case LAErrorPasscodeNotSet:
-            case LAErrorBiometryNotEnrolled:
-                if ([arguments[@"useErrorDialogs"] boolValue]) {
-                    [self alertMessage:arguments[@"goToSettingDescriptionIOS"]
-                           firstButton:arguments[@"okButton"]
-                         flutterResult:result
-                      additionalButton:arguments[@"goToSetting"]];
-                    return;
-                }
-                errorCode = authError.code == LAErrorPasscodeNotSet ? @"PasscodeNotSet" : @"NotEnrolled";
-                break;
-            case LAErrorBiometryLockout:
-                [self alertMessage:arguments[@"lockOut"]
+   withFlutterResult:(FlutterResult)result {
+    NSString *errorCode = @"NotAvailable";
+    switch (authError.code) {
+        case LAErrorPasscodeNotSet:
+        case LAErrorBiometryNotEnrolled:
+            if ([arguments[@"useErrorDialogs"] boolValue]) {
+                [self alertMessage:arguments[@"goToSettingDescriptionIOS"]
                        firstButton:arguments[@"okButton"]
                      flutterResult:result
-                  additionalButton:nil];
+                  additionalButton:arguments[@"goToSetting"]];
                 return;
-        }
-        result([FlutterError errorWithCode:errorCode
-                                   message:authError.localizedDescription
-                                   details:authError.domain]);
+            }
+            errorCode = authError.code == LAErrorPasscodeNotSet ? @"PasscodeNotSet" : @"NotEnrolled";
+            break;
+        case LAErrorBiometryLockout:
+            [self alertMessage:arguments[@"lockOut"]
+                   firstButton:arguments[@"okButton"]
+                 flutterResult:result
+              additionalButton:nil];
+            return;
+    }
+    result([FlutterError errorWithCode:errorCode
+                               message:authError.localizedDescription
+                               details:authError.domain]);
 }
 
 #pragma mark - AppDelegate
