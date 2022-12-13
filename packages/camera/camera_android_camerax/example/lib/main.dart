@@ -16,7 +16,7 @@ Future<void> main() async {
           name: 'cam',
           lensDirection: CameraLensDirection.back,
           sensorOrientation: 90),
-      ResolutionPreset.medium);
+      ResolutionPreset.low);
   runApp(const MyApp());
 }
 
@@ -52,7 +52,11 @@ class _MyAppState extends State<MyApp> {
                   child: Padding(
                       padding: const EdgeInsets.all(1.0),
                       child: Center(
-                        child: CameraPlatform.instance.buildPreview(_cameraId),
+                        child: AspectRatio(
+                          aspectRatio: (3/4),
+                          child: CameraPlatform.instance.buildPreview(_cameraId),
+                        )
+                        // child: CameraPlatform.instance.buildPreview(_cameraId),
                       ))),
             ),
             IconButton(

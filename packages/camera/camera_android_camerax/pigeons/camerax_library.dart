@@ -86,6 +86,8 @@ abstract class PreviewHostApi {
   int setSurfaceProvider(int identifier);
 
   void setTargetRotation(int identifier, int targetRotation);
+
+  List<int> getResolutionInfo(int identifier);
 }
 
 @FlutterApi()

@@ -67,6 +67,10 @@ class Preview extends UseCase {
     // TODO(camsim99): should this change targetRotation?
     _api.setTargetRotationFromInstance(this, targetRotation);
   }
+
+  Future<List<int?>> getResolutionInfo() {
+    return _api.getResolutionInfoFromInstance(this);
+  }
 }
 
 /// Host API implementation of [Preview].
@@ -127,6 +131,20 @@ class PreviewHostApiImpl extends PreviewHostApi {
     });
 
     setTargetRotation(identifier, targetRotation);
+  }
+
+  Future<List<int?>> getResolutionInfoFromInstance(Preview instance) async {
+    int? identifier = instanceManager.getIdentifier(instance);
+    identifier ??= instanceManager.addDartCreatedInstance(instance,
+        onCopy: (Preview original) {
+      return Preview.detached(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+          targetRotation: original.targetRotation);
+    });
+
+    final List<int?> resolutionInfo = await getResolutionInfo(identifier);
+    return resolutionInfo;
   }
 }
 

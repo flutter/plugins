@@ -5,6 +5,8 @@
 package io.flutter.plugins.camerax;
 
 import android.graphics.SurfaceTexture;
+import java.util.Arrays;
+import java.util.List;
 import android.util.Size;
 import android.view.Surface;
 import androidx.annotation.NonNull;
@@ -60,7 +62,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
         new Preview.SurfaceProvider() {
           @Override
           public void onSurfaceRequested(SurfaceRequest request) {
-            // request.setTransformationInfoListener(...) // can set this listener to get transformation info and can use to fix rotation
+            surfaceTexture.setDefaultBufferSize(request.getResolution().getWidth(), request.getResolution().getHeight());
             Surface flutterSurface = new Surface(surfaceTexture);
             request.provideSurface(
                 flutterSurface, Executors.newSingleThreadExecutor(), (result) -> {});
@@ -74,5 +76,13 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   public void setTargetRotation(@NonNull Long identifier, @NonNull Long targetRotation) {
     Preview preview = (Preview) instanceManager.getInstance(identifier);
     preview.setTargetRotation(targetRotation.intValue());
+  }
+
+  @Override
+  public List<Long> getResolutionInfo(@NonNull Long identifier) {
+    Preview preview = (Preview) instanceManager.getInstance(identifier);
+    Size resolution = preview.getResolutionInfo().getResolution();
+
+    return Arrays.asList(Long.valueOf(resolution.getWidth()), Long.valueOf(resolution.getHeight()));
   }
 }

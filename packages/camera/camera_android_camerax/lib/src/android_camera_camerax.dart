@@ -21,7 +21,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   ProcessCameraProvider? processCameraProvider;
   int? cameraId;
   ResolutionPreset? targetResolutionPreset;
-  Future<Camera>? camera;
+  Camera? camera;
   CameraDescription? cameraDescription;
 
   /// Registers this class as the default instance of [CameraPlatform].
@@ -45,39 +45,43 @@ class AndroidCameraCameraX extends CameraPlatform {
     processCameraProvider = await ProcessCameraProvider.getInstance();
 
     // Set target resolution.
-    List<int>? targetResolution;
-    if (targetResolutionPreset != null) {
-      targetResolution = getTargetResolution(targetResolutionPreset!);
+    // List<int>? targetResolution;
+    // if (targetResolutionPreset != null) {
+    //   targetResolution = getTargetResolution(targetResolutionPreset!);
 
-      if (targetResolution[0] > 1920 && targetResolution[1] > 1080) {
-        preview = Preview();
-      } else {
-        preview = Preview(
-            targetWidth: targetResolution[0],
-            targetHeight: targetResolution[1]);
-      }
-    } else {
-      preview = Preview();
-    }
+    //   if (targetResolution[0] > 1920 && targetResolution[1] > 1080) {
+    //     preview = Preview();
+    //   } else {
+    //     preview = Preview(
+    //         targetWidth: targetResolution[0],
+    //         targetHeight: targetResolution[1]);
+    //   }
+    // } else {
+      // preview = Preview();
+    // }
 
     targetResolutionPreset = resolutionPreset;
     cameraDescription = cameraDescription;
 
-    // Determine lens direction.
-    int? lensFacing = getCameraSelectorLens(cameraDescription!.lensDirection);
-    // TODO(camsim99): Throw error if external camera is attempted to be used.
-    cameraSelector = CameraSelector(lensFacing: lensFacing!);
+    // // Determine lens direction.
+    // int? lensFacing = getCameraSelectorLens(cameraDescription!.lensDirection);
+    // // TODO(camsim99): Throw error if external camera is attempted to be used.
+    // cameraSelector = CameraSelector(lensFacing: lensFacing!);
 
-    // Set target rotation.
-    // TODO(camsim99): can actually do this in constructor
-    int targetRotation =
-        getTargetRotation(cameraDescription!.sensorOrientation);
-    preview!.setTargetRotation(targetRotation);
+    // // Set target rotation.
+    // // TODO(camsim99): can actually do this in constructor
+    // // int targetRotation =
+    // //     getTargetRotation(cameraDescription!.sensorOrientation);
+    // // preview!.setTargetRotation(targetRotation);
 
-    camera = await processCameraProvider!
-        .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
+    // camera = await processCameraProvider!
+    //     .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
 
-    return preview!.setSurfaceProvider();
+    // List<int?> resolutionInfo = await preview!.getResolutionInfo();
+    // print('CAMILLE $resolutionInfo');
+
+    // return preview!.setSurfaceProvider();
+    return 0;
   }
 
   int? getCameraSelectorLens(CameraLensDirection lensDirection) {
@@ -104,10 +108,66 @@ class AndroidCameraCameraX extends CameraPlatform {
         .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
   }
 
+  Future<void> bindPreviewToLifecycle() async {
+    preview = Preview();
+
+    // Set target resolution.
+    // List<int>? targetResolution;
+    // if (targetResolutionPreset != null) {
+    //   targetResolution = getTargetResolution(targetResolutionPreset!);
+
+    //   if (targetResolution[0] > 1920 && targetResolution[1] > 1080) {
+    //     preview = Preview();
+    //   } else {
+    //     preview = Preview(
+    //         targetWidth: targetResolution[0],
+    //         targetHeight: targetResolution[1]);
+    //   }
+    // } else {
+      // preview = Preview();
+    // }
+
+    // Determine lens direction.
+    int? lensFacing = getCameraSelectorLens(cameraDescription!.lensDirection);
+    // TODO(camsim99): Throw error if external camera is attempted to be used.
+    cameraSelector = CameraSelector(lensFacing: lensFacing!);
+
+    // Set target rotation.
+    // TODO(camsim99): can actually do this in constructor
+    // int targetRotation =
+    //     getTargetRotation(cameraDescription!.sensorOrientation);
+    // preview!.setTargetRotation(targetRotation);
+
+    cameraId = await preview!.setSurfaceProvider();
+    print(cameraId);
+
+
+    camera = await processCameraProvider!
+        .bindToLifecycle(cameraSelector!, <UseCase>[preview!]);
+
+    List<int?> resolutionInfo = await preview!.getResolutionInfo();
+    print('CAMILLE $resolutionInfo');
+
+  }
+
   /// Returns a widget showing a live camera preview.
   @override
-  Widget buildPreview(int cameraId) {
-    return Texture(textureId: cameraId);
+  Widget buildPreview(int cameraId2) {
+    return FutureBuilder<void>(
+      future: bindPreviewToLifecycle(),
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        print(snapshot.connectionState);
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.waiting:
+          case ConnectionState.active:
+            return const Text('Loading camera preview...');
+          case ConnectionState.done:
+            print(cameraId);
+            return Texture(textureId: cameraId!);
+        }
+      }
+    );
   }
 
   int getTargetRotation(int sensorOrientation) {
