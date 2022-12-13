@@ -120,7 +120,7 @@
   options[(NSString *)kCGImageSourceTypeIdentifierHint] = (NSString *)kUTTypeGIF;
 
   CGImageSourceRef imageSource =
-      CGImageSourceCreateWithData((CFDataRef)data, (CFDictionaryRef)options);
+      CGImageSourceCreateWithData((__bridge CFDataRef)data, (CFDictionaryRef)options);
 
   size_t numberOfFrames = CGImageSourceGetCount(imageSource);
   NSMutableArray<UIImage *> *images = [NSMutableArray arrayWithCapacity:numberOfFrames];
