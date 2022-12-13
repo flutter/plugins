@@ -218,7 +218,7 @@ static const NSTimeInterval kTimeout = 30.0;
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
-                      XCTAssertTrue([result boolValue]);
+                      XCTAssertFalse([result boolValue]);
                       [expectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
