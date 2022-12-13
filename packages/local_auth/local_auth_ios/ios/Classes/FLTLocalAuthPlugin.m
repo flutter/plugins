@@ -218,20 +218,20 @@
         switch (error.code) {
             case LAErrorSystemCancel:
                 if ([arguments[@"stickyAuth"] boolValue]) {
-                  self->_lastCallArgs = arguments;
-                  self->_lastResult = result;
+                    self->_lastCallArgs = arguments;
+                    self->_lastResult = result;
                 } else {
-                  result(@NO);
+                    result(@NO);
                 }
                 return;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      // TODO(stuartmorgan): Remove the pragma and s/TouchID/Biometry/ in these constants when
-      // iOS 10 support is dropped. The values are the same, only the names have changed.
+                // TODO(stuartmorgan): Remove the pragma and s/TouchID/Biometry/ in these constants when
+                // iOS 10 support is dropped. The values are the same, only the names have changed.
             case LAErrorTouchIDNotAvailable:
             case LAErrorTouchIDNotEnrolled:
             case LAErrorTouchIDLockout:
-      #pragma clang diagnostic pop
+#pragma clang diagnostic pop
             case LAErrorUserFallback:
             case LAErrorPasscodeNotSet:
             case LAErrorAuthenticationFailed:
