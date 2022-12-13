@@ -4,7 +4,6 @@
 
 import Flutter
 import XCTest
-@testable import quick_actions_ios
 
 private let elementWaitingTime: TimeInterval = 30
 
