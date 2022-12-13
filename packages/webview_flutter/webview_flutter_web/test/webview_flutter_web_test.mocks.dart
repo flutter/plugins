@@ -11,8 +11,9 @@ import 'package:flutter/foundation.dart' as _i5;
 import 'package:flutter/src/widgets/notification_listener.dart' as _i7;
 import 'package:flutter/widgets.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_platform_interface/src/types/types.dart' as _i8;
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
+import 'package:webview_flutter_platform_interface/src/legacy/types/types.dart'
+    as _i8;
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart'
     as _i9;
 import 'package:webview_flutter_web/webview_flutter_web.dart' as _i10;
 
@@ -2147,7 +2148,7 @@ class MockBuildContext extends _i1.Mock implements _i4.BuildContext {
         ),
       ) as _i4.InheritedWidget);
   @override
-  void visitAncestorElements(bool Function(_i4.Element)? visitor) =>
+  void visitAncestorElements(_i4.ConditionalElementVisitor? visitor) =>
       super.noSuchMethod(
         Invocation.method(
           #visitAncestorElements,

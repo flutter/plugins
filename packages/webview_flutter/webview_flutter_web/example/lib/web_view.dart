@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
 import 'package:webview_flutter_web/webview_flutter_web.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
