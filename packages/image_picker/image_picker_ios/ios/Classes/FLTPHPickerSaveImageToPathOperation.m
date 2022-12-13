@@ -6,6 +6,8 @@
 
 #import "FLTPHPickerSaveImageToPathOperation.h"
 
+#import <os/log.h>
+
 API_AVAILABLE(ios(14))
 @interface FLTPHPickerSaveImageToPathOperation ()
 
@@ -96,9 +98,11 @@ typedef void (^GetSavedPath)(NSString *);
           loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
                                 completionHandler:^(NSData *_Nullable data,
                                                     NSError *_Nullable error) {
-                                  if (error == nil && data != nil) {
+                                  if (data != nil) {
                                     UIImage *image = [[UIImage alloc] initWithData:data];
                                     [self processImage:image];
+                                  } else {
+                                    os_log_error(OS_LOG_DEFAULT, "Could not process image: %@", error);
                                   }
                                 }];
     }
