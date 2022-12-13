@@ -102,7 +102,8 @@ typedef void (^GetSavedPath)(NSString *);
                                     UIImage *image = [[UIImage alloc] initWithData:data];
                                     [self processImage:image];
                                   } else {
-                                    os_log_error(OS_LOG_DEFAULT, "Could not process image: %@", error);
+                                    os_log_error(OS_LOG_DEFAULT, "Could not process image: %@",
+                                                 error);
                                   }
                                 }];
     }
