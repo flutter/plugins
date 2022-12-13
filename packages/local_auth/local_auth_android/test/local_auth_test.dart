@@ -172,5 +172,53 @@ void main() {
         );
       });
     });
+
+    group('With empty localisedReason', () {
+      test('authenticate with no args.', () async {
+        await localAuthentication.authenticate(
+          authMessages: <AuthMessages>[const AndroidAuthMessages()],
+          localizedReason: '',
+          options: const AuthenticationOptions(biometricOnly: true),
+        );
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('authenticate',
+                arguments: <String, dynamic>{
+                  'localizedReason': '',
+                  'useErrorDialogs': true,
+                  'stickyAuth': false,
+                  'sensitiveTransaction': true,
+                  'biometricOnly': true,
+                }..addAll(const AndroidAuthMessages().args)),
+          ],
+        );
+      });
+
+      test('authenticate with no sensitive transaction.', () async {
+        await localAuthentication.authenticate(
+          authMessages: <AuthMessages>[const AndroidAuthMessages()],
+          localizedReason: '',
+          options: const AuthenticationOptions(
+            sensitiveTransaction: false,
+            useErrorDialogs: false,
+            biometricOnly: true,
+          ),
+        );
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('authenticate',
+                arguments: <String, dynamic>{
+                  'localizedReason': '',
+                  'useErrorDialogs': false,
+                  'stickyAuth': false,
+                  'sensitiveTransaction': false,
+                  'biometricOnly': true,
+                }..addAll(const AndroidAuthMessages().args)),
+          ],
+        );
+      });
+    });
   });
 }
