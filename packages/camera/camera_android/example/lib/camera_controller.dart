@@ -306,11 +306,14 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
-  Future<void> startVideoRecording() async {
-    await CameraPlatform.instance.startVideoRecording(_cameraId);
+  Future<void> startVideoRecording(
+      {Function(CameraImageData image)? streamCallback}) async {
+    await CameraPlatform.instance.startVideoCapturing(
+        VideoCaptureOptions(_cameraId, streamCallback: streamCallback));
     value = value.copyWith(
         isRecordingVideo: true,
         isRecordingPaused: false,
+        isStreamingImages: streamCallback != null,
         recordingOrientation: Optional<DeviceOrientation>.of(
             value.lockedCaptureOrientation ?? value.deviceOrientation));
   }
@@ -319,10 +322,15 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if the capture failed.
   Future<XFile> stopVideoRecording() async {
+    if (value.isStreamingImages) {
+      await stopImageStream();
+    }
+
     final XFile file =
         await CameraPlatform.instance.stopVideoRecording(_cameraId);
     value = value.copyWith(
       isRecordingVideo: false,
+      isRecordingPaused: false,
       recordingOrientation: const Optional<DeviceOrientation>.absent(),
     );
     return file;

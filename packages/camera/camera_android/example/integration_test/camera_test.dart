@@ -245,4 +245,47 @@ void main() {
       await controller.dispose();
     },
   );
+
+  testWidgets(
+    'recording with image stream',
+    (WidgetTester tester) async {
+      final List<CameraDescription> cameras =
+          await CameraPlatform.instance.availableCameras();
+      if (cameras.isEmpty) {
+        return;
+      }
+
+      final CameraController controller = CameraController(
+        cameras[0],
+        ResolutionPreset.low,
+        enableAudio: false,
+      );
+
+      await controller.initialize();
+      bool isDetecting = false;
+
+      await controller.startVideoRecording(
+          streamCallback: (CameraImageData image) {
+        if (isDetecting) {
+          return;
+        }
+
+        isDetecting = true;
+
+        expectLater(image, isNotNull);
+      });
+
+      expect(controller.value.isStreamingImages, true);
+
+      // Stopping recording before anything is recorded will throw, per
+      // https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
+      // so delay long enough to ensure that some data is recorded.
+      await Future<void>.delayed(const Duration(seconds: 2));
+
+      await controller.stopVideoRecording();
+      await controller.dispose();
+
+      expect(controller.value.isStreamingImages, false);
+    },
+  );
 }
