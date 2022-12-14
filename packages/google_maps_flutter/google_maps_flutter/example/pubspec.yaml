@@ -22,6 +22,7 @@ dependencies:
   google_maps_flutter_platform_interface: ^2.2.1
 
 dev_dependencies:
+  build_runner: ^2.1.10
   espresso: ^0.2.0
   flutter_driver:
     sdk: flutter

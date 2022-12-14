@@ -1,5 +1,6 @@
-## NEXT
+## 13.1
 
+* Updates `version-check` to recognize Pigeon's platform test structure.
 * Pins `package:git` dependency to `2.0.x` until `dart >=2.18.0` becomes our
   oldest legacy.
 * Updates test mocks.
