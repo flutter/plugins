@@ -1,7 +1,3 @@
-## 1.0.16
-
-* Updates code for stricter lint checks.
-
 ## 1.0.15
 
 * Updates androidx.fragment version to 1.5.4.

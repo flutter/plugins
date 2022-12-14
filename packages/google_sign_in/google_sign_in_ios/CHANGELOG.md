@@ -1,7 +1,3 @@
-## 5.5.2
-
-* Updates code for stricter lint checks.
-
 ## 5.5.1
 
 * Fixes passing `serverClientId` via the channelled `init` call

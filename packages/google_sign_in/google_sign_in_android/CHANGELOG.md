@@ -1,7 +1,3 @@
-## 6.1.5
-
-* Updates code for stricter lint checks.
-
 ## 6.1.4
 
 * Rolls Guava to version 31.1.

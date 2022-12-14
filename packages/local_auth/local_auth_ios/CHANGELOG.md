@@ -1,7 +1,3 @@
-## 1.0.11
-
-* Updates code for stricter lint checks.
-
 ## 1.0.10
 
 * Updates imports for `prefer_relative_imports`.

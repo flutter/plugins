@@ -1,7 +1,3 @@
-## 0.3.4+1
-
-* Updates code for stricter lint checks.
-
 ## 0.3.4
 
 * Adds macOS as a supported platform.

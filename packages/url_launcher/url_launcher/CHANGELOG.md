@@ -1,7 +1,3 @@
-## 6.1.8
-
-* Updates code for stricter lint checks.
-
 ## 6.1.7
 
 * Updates code for new analysis options.
