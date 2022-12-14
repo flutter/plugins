@@ -30,7 +30,7 @@
                                                              withExtension:@"png"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypePNG.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -40,7 +40,7 @@
                                                              withExtension:@"jpg"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypeJPEG.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -50,7 +50,7 @@
                                                              withExtension:@"gif"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypeGIF.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -60,7 +60,7 @@
                                                              withExtension:@"bmp"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypeBMP.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -70,7 +70,7 @@
                                                              withExtension:@"heic"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypeHEIC.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -80,7 +80,7 @@
                                                              withExtension:@"icns"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypeICNS.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -90,7 +90,7 @@
                                                              withExtension:@"ico"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypeICO.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -100,7 +100,7 @@
                                                              withExtension:@"dng"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypeRAWImage.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -110,7 +110,7 @@
                                                              withExtension:@"svg"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypeSVG.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -120,7 +120,7 @@
                                                              withExtension:@"tiff"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypeTIFF.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
@@ -132,7 +132,7 @@
                                                              withExtension:@"png"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
-                                                 withIdentifier:UTTypeWebP.identifier];
+                                                 withIdentifier:UTTypePNG.identifier];
 
   [self verifySavingImageWithPickerResult:result fullMetadata:NO];
   OCMVerify(times(0), [photoAssetUtil fetchAssetsWithLocalIdentifiers:[OCMArg any]
