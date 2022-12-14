@@ -20,15 +20,11 @@ void main() {
   // like it's coming from a bot, which is true of these tests).
   const String primaryUrl = 'https://flutter.dev/';
 
-  testWidgets('loadRequest', (WidgetTester tester) async {
+  testWidgets('loadHtmlString', (WidgetTester tester) async {
     final WebWebViewController controller =
         WebWebViewController(const PlatformWebViewControllerCreationParams())
-          ..loadRequest(
-            LoadRequestParams(
-              uri: Uri.parse(
-                primaryUrl,
-              ),
-            ),
+          ..loadHtmlString(
+            'data:text/html;charset=utf-8,${Uri.encodeFull('test html')}',
           );
 
     await tester.pumpWidget(
@@ -41,12 +37,14 @@ void main() {
         }),
       ),
     );
-    await tester.pumpAndSettle();
 
     // Assert an iframe has been rendered to the DOM with the correct src attribute.
     final html.IFrameElement? element =
         html.document.querySelector('iframe') as html.IFrameElement?;
     expect(element, isNotNull);
-    expect(element!.src, primaryUrl);
+    expect(
+      element!.src,
+      'data:text/html;charset=utf-8,data:text/html;charset=utf-8,test%2520html',
+    );
   });
 }
