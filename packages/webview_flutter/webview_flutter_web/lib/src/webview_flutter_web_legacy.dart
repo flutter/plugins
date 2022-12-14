@@ -9,7 +9,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
+// ignore: implementation_imports
+import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
 import 'http_request_factory.dart';
 import 'shims/dart_ui.dart' as ui;
 
