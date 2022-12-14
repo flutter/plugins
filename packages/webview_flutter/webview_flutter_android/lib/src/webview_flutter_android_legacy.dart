@@ -2,5 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export 'src/legacy/platform_interface/platform_interface.dart';
-export 'src/legacy/types/types.dart';
+export 'legacy/webview_android.dart';
+export 'legacy/webview_android_cookie_manager.dart';
+export 'legacy/webview_surface_android.dart';

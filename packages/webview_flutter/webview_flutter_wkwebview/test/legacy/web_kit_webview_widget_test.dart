@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
+import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/legacy/web_kit_webview_widget.dart';
 import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit.dart';

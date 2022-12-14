@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart';
+import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
 import 'package:webview_flutter_wkwebview_example/legacy/navigation_decision.dart';

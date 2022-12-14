@@ -29,7 +29,6 @@ import 'android_webview_controller_test.mocks.dart';
   MockSpec<android_webview.WebView>(),
   MockSpec<android_webview.WebViewClient>(),
   MockSpec<android_webview.WebStorage>(),
-  MockSpec<BuildContext>(),
   MockSpec<InstanceManager>(),
 ])
 void main() {
