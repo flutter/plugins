@@ -41,6 +41,7 @@ void main() {
         }),
       ),
     );
+    await tester.pumpAndSettle();
 
     // Assert an iframe has been rendered to the DOM with the correct src attribute.
     final html.IFrameElement? element =
