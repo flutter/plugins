@@ -29,31 +29,12 @@ class Page1 extends StatefulWidget {
 class _Page1State extends State<Page1> {
   @override
   void initState() {
-    Timer time = Timer.periodic(Duration(seconds: 3), (Timer t) => timer());
     super.initState();
   }
 
   LatLng _kMapCenter1 = LatLng(19.0182, 72.8479);
   LatLng _kMapCenter2 = LatLng(19.0183, 72.8480);
   bool toggle = false;
-
-  Future timer() async {
-    if (toggle) {
-      setState(() {
-        _kMapCenter1 = LatLng(19.0181, 72.8478);
-        _kMapCenter2 = LatLng(19.0184, 72.8481);
-      });
-      toggle = !toggle;
-    } else {
-      setState(() {
-        _kMapCenter1 = LatLng(19.0182, 72.8479);
-        _kMapCenter2 = LatLng(19.0183, 72.8480);
-      });
-      toggle = !toggle;
-    }
-
-    print(_kMapCenter1.longitude);
-  }
 
   Completer<GoogleMapController> _controller = Completer();
 
@@ -80,11 +61,6 @@ class _Page1State extends State<Page1> {
         },
         myLocationButtonEnabled: true,
         myLocationEnabled: true,
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: Text('To the lake!'),
-        icon: Icon(Icons.directions_boat),
       ),
     );
   }

@@ -163,9 +163,10 @@ class GoogleMapController {
 
     // Create the map...
     final gmaps.GMap map = _createMap(_div, options);
-    if (_lastMapConfiguration.myLocationButtonEnabled!) {
-      final button = _addMyLocationButton();
-      map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]?.push(button);
+    if (_lastMapConfiguration.myLocationButtonEnabled! &&
+        _lastMapConfiguration.myLocationEnabled!) {
+      map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]
+          ?.push(_addMyLocationButton());
     }
     _googleMap = map;
 
@@ -181,46 +182,75 @@ class GoogleMapController {
     );
 
     _setTrafficLayer(map, _lastMapConfiguration.trafficEnabled ?? false);
+
+    if (_lastMapConfiguration.myLocationEnabled!) {
+      _watchPositionAndAddBlueDot();
+      _moveToCurrentLocation();
+    }
   }
 
   HtmlElement _addMyLocationButton() {
     final controlButton = document.createElement('button');
-
     // // Set CSS for the control.
-    controlButton.style.border = "2px solid #fff";
-    controlButton.style.borderRadius = "3px";
-    controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
-    controlButton.style.color = "rgb(25,25,25)";
-    controlButton.style.cursor = "pointer";
-    controlButton.style.fontFamily = "Roboto,Arial,sans-serif";
-    controlButton.style.fontSize = "16px";
-    controlButton.style.lineHeight = "38px";
-    controlButton.style.margin = "8px 0 22px";
-    controlButton.style.padding = "0 5px";
-    controlButton.style.textAlign = "center";
-    // controlButton.innerHtml = "&#xe55c;";
-    controlButton.text = "My Location";
-    controlButton.title = "Click to recenter the map";
-    // controlButton. = "button";
-    // Setup the click event listeners: simply set the map to Chicago.
+    // controlButton.style.border = "2px solid #fff";
+    // controlButton.style.borderRadius = "3px";
+    // controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+    // controlButton.style.color = "rgb(25,25,25)";
+    // controlButton.style.cursor = "pointer";
+    // controlButton.style.fontFamily = "Roboto,Arial,sans-serif";
+    // controlButton.style.fontSize = "16px";
+    // controlButton.style.lineHeight = "38px";
+    // controlButton.style.margin = "8px 0 22px";
+    // controlButton.style.padding = "0 5px";
+    // controlButton.style.textAlign = "center";
+    controlButton.className = "gm-control-active";
+    controlButton.innerHtml = "&#xe55c;";
+    // controlButton.title = "Click to recenter the map";
     controlButton.addEventListener("click", ((event) {
-      window.navigator.geolocation.getCurrentPosition().then((value) {
-        moveCamera(
-          CameraUpdate.newLatLng(LatLng(
-            value.coords!.latitude!.toDouble(),
-            value.coords!.longitude!.toDouble(),
-          )),
-        );
-      });
+      _moveToCurrentLocation();
     }));
-//       if (window.navigator.geolocation) {
-//     navigator.geolocation.getCurrentPosition(showPosition);
-// }
-    // final centerControlDiv = document.createElement("div");
-    // Create the control.
-    // Append the control to the DIV.
-    // centerControlDiv.append(controlButton);
     return controlButton as HtmlElement;
+  }
+
+  void _moveToCurrentLocation() {
+    window.navigator.geolocation.getCurrentPosition().then((location) {
+      moveCamera(
+        CameraUpdate.newLatLng(LatLng(
+          location.coords!.latitude!.toDouble(),
+          location.coords!.longitude!.toDouble(),
+        )),
+      );
+    });
+  }
+
+  void _watchPositionAndAddBlueDot() {
+    window.navigator.geolocation
+        .watchPosition()
+        .listen((Geoposition geolocation) {
+      _addBlueDot(geolocation);
+    });
+  }
+
+  void _addBlueDot(Geoposition geolocation) {
+    print('add blue dot');
+    assert(
+        _markersController != null, 'Cannot update circles after dispose().');
+    _circlesController?._addCircle(Circle(
+      circleId: CircleId('my_location_blue_dot'),
+      // scale: 10,
+      // fillOpacity: 1,
+      strokeWidth: 2,
+      radius: 50,
+      center: LatLng(
+        geolocation.coords!.latitude!.toDouble(),
+        geolocation.coords!.longitude!.toDouble(),
+      ),
+      
+      // strokeWidth: 2,
+      fillColor: Colors.blue,
+      strokeColor: Colors.white,
+      zIndex: -1,
+    ));
   }
 
   // Funnels map gmap events into the plugin's stream controller.
