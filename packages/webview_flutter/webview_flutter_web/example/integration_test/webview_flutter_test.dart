@@ -19,12 +19,6 @@ Future<void> main() async {
   server.forEach((HttpRequest request) {
     if (request.uri.path == '/hello.txt') {
       request.response.writeln('Hello, world.');
-    } else if (request.uri.path == '/secondary.txt') {
-      request.response.writeln('How are you today?');
-    } else if (request.uri.path == '/headers') {
-      request.response.writeln('${request.headers}');
-    } else if (request.uri.path == '/favicon.ico') {
-      request.response.statusCode = HttpStatus.notFound;
     } else {
       fail('unexpected request: ${request.method} ${request.uri}');
     }
