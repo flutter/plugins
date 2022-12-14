@@ -72,8 +72,8 @@ class LoadRequestParams {
   /// Used by the platform implementation to create a new [LoadRequestParams].
   const LoadRequestParams({
     required this.uri,
-    required this.method,
-    required this.headers,
+    this.method = LoadRequestMethod.get,
+    this.headers = const <String, String>{},
     this.body,
   });
 
@@ -81,6 +81,8 @@ class LoadRequestParams {
   final Uri uri;
 
   /// HTTP method used to make the request.
+  ///
+  /// Defaults to [LoadRequestMethod.get].
   final LoadRequestMethod method;
 
   /// Headers for the request.

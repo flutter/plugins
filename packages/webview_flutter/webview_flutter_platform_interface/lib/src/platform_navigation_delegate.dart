@@ -9,6 +9,19 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'webview_platform.dart';
 
+/// Signature for callbacks that report a pending navigation request.
+typedef NavigationRequestCallback = FutureOr<NavigationDecision> Function(
+    NavigationRequest navigationRequest);
+
+/// Signature for callbacks that report page events triggered by the native web view.
+typedef PageEventCallback = void Function(String url);
+
+/// Signature for callbacks that report loading progress of a page.
+typedef ProgressCallback = void Function(int progress);
+
+/// Signature for callbacks that report a resource loading error.
+typedef WebResourceErrorCallback = void Function(WebResourceError error);
+
 /// An interface defining navigation events that occur on the native platform.
 ///
 /// The [PlatformWebViewController] is notifying this delegate on events that
@@ -40,8 +53,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
   ///
   /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnNavigationRequest(
-    FutureOr<bool> Function({required String url, required bool isForMainFrame})
-        onNavigationRequest,
+    NavigationRequestCallback onNavigationRequest,
   ) {
     throw UnimplementedError(
         'setOnNavigationRequest is not implemented on the current platform.');
@@ -51,7 +63,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
   ///
   /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnPageStarted(
-    void Function(String url) onPageStarted,
+    PageEventCallback onPageStarted,
   ) {
     throw UnimplementedError(
         'setOnPageStarted is not implemented on the current platform.');
@@ -61,7 +73,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
   ///
   /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnPageFinished(
-    void Function(String url) onPageFinished,
+    PageEventCallback onPageFinished,
   ) {
     throw UnimplementedError(
         'setOnPageFinished is not implemented on the current platform.');
@@ -71,7 +83,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
   ///
   /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnProgress(
-    void Function(int progress) onProgress,
+    ProgressCallback onProgress,
   ) {
     throw UnimplementedError(
         'setOnProgress is not implemented on the current platform.');
@@ -81,7 +93,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
   ///
   /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnWebResourceError(
-    void Function(WebResourceError error) onWebResourceError,
+    WebResourceErrorCallback onWebResourceError,
   ) {
     throw UnimplementedError(
         'setOnWebResourceError is not implemented on the current platform.');
