@@ -2,5 +2,5 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export 'src/legacy/webview_cupertino.dart';
-export 'src/legacy/wkwebview_cookie_manager.dart';
+export 'legacy/platform_interface/platform_interface.dart';
+export 'legacy/types/types.dart';
