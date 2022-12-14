@@ -165,8 +165,7 @@ class GoogleMapController {
     final gmaps.GMap map = _createMap(_div, options);
     if (_lastMapConfiguration.myLocationButtonEnabled! &&
         _lastMapConfiguration.myLocationEnabled!) {
-      map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]
-          ?.push(_addMyLocationButton());
+      _addMyLocationButton(map);
     }
     _googleMap = map;
 
@@ -184,36 +183,54 @@ class GoogleMapController {
     _setTrafficLayer(map, _lastMapConfiguration.trafficEnabled ?? false);
 
     if (_lastMapConfiguration.myLocationEnabled!) {
-      _watchPositionAndAddBlueDot();
+      // _watchPositionAndAddBlueDot();
       _moveToCurrentLocation();
     }
   }
 
-  HtmlElement _addMyLocationButton() {
-    final controlButton = document.createElement('button');
-    // // Set CSS for the control.
-    // controlButton.style.border = "2px solid #fff";
-    // controlButton.style.borderRadius = "3px";
-    // controlButton.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
-    // controlButton.style.color = "rgb(25,25,25)";
-    // controlButton.style.cursor = "pointer";
-    // controlButton.style.fontFamily = "Roboto,Arial,sans-serif";
-    // controlButton.style.fontSize = "16px";
-    // controlButton.style.lineHeight = "38px";
-    // controlButton.style.margin = "8px 0 22px";
-    // controlButton.style.padding = "0 5px";
-    // controlButton.style.textAlign = "center";
-    controlButton.className = "gm-control-active";
-    controlButton.innerHtml = "&#xe55c;";
-    // controlButton.title = "Click to recenter the map";
-    controlButton.addEventListener("click", ((event) {
+  void _addMyLocationButton(gmaps.GMap map) {
+    final controlDiv = document.createElement('div');
+    var firstChild = document.createElement('button');
+    firstChild.style.backgroundColor = '#fff';
+    firstChild.style.border = 'none';
+    firstChild.style.outline = 'none';
+    firstChild.style.width = '40px';
+    firstChild.style.height = '40px';
+    firstChild.style.borderRadius = '2px';
+    firstChild.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
+    firstChild.style.cursor = 'pointer';
+    firstChild.style.marginRight = '10px';
+    firstChild.style.padding = '0px';
+    firstChild.title = 'Your Location';
+    firstChild.className = 'gm-control-active"';
+    controlDiv.append(firstChild);
+
+    var secondChild = document.createElement('div'); //class="gm-control-active"
+
+    secondChild.style.margin = '5px';
+    secondChild.style.width = '30px';
+    secondChild.style.height = '30px';
+    secondChild.style.backgroundImage =
+        'url(https://maps.gstatic.com/tactile/mylocation/mylocation-sprite-2x.png)';
+    secondChild.style.backgroundSize = '300px 30px';
+    secondChild.style.backgroundPosition = '0px 0px';
+    secondChild.style.backgroundRepeat = 'no-repeat';
+    secondChild.id = 'you_location_img';
+    firstChild.append(secondChild);
+
+    firstChild.addEventListener("click", ((event) {
       _moveToCurrentLocation();
     }));
-    return controlButton as HtmlElement;
+
+    map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]
+        ?.push(controlDiv as HtmlElement);
   }
 
   void _moveToCurrentLocation() {
-    window.navigator.geolocation.getCurrentPosition().then((location) {
+    window.navigator.geolocation
+        .getCurrentPosition(enableHighAccuracy: true)
+        .then((location) {
+      print('_moveToCurrentLocation');
       moveCamera(
         CameraUpdate.newLatLng(LatLng(
           location.coords!.latitude!.toDouble(),
@@ -227,7 +244,7 @@ class GoogleMapController {
     window.navigator.geolocation
         .watchPosition()
         .listen((Geoposition geolocation) {
-      _addBlueDot(geolocation);
+      // _addBlueDot(geolocation);
     });
   }
 
@@ -235,21 +252,22 @@ class GoogleMapController {
     print('add blue dot');
     assert(
         _markersController != null, 'Cannot update circles after dispose().');
-    _circlesController?._addCircle(Circle(
-      circleId: CircleId('my_location_blue_dot'),
+    _markersController?._addMarker(Marker(
+      markerId: MarkerId('my_location_blue_dot'),
       // scale: 10,
       // fillOpacity: 1,
-      strokeWidth: 2,
-      radius: 50,
-      center: LatLng(
+      // strokeWidth: 2,
+      // radius: 50,
+      // icon: value,
+      position: LatLng(
         geolocation.coords!.latitude!.toDouble(),
         geolocation.coords!.longitude!.toDouble(),
       ),
-      
-      // strokeWidth: 2,
-      fillColor: Colors.blue,
-      strokeColor: Colors.white,
-      zIndex: -1,
+
+      // // strokeWidth: 2,
+      // fillColor: Colors.blue,
+      // strokeColor: Colors.white,
+      // zIndex: -1,
     ));
   }
 
