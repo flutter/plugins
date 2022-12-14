@@ -36,6 +36,7 @@ class WebWebViewControllerCreationParams
   final HttpRequestFactory httpRequestFactory;
 
   /// The underlying element used as the WebView.
+  @visibleForTesting
   final IFrameElement iFrame = IFrameElement()
     ..id = 'webView${_nextIFrameId++}'
     ..width = '100%'

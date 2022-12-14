@@ -11,12 +11,11 @@ import 'package:flutter/foundation.dart' as _i5;
 import 'package:flutter/src/widgets/notification_listener.dart' as _i7;
 import 'package:flutter/widgets.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:webview_flutter_platform_interface/src/legacy/platform_interface/webview_platform_callbacks_handler.dart'
+    as _i9;
 import 'package:webview_flutter_platform_interface/src/legacy/types/types.dart'
     as _i8;
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface_legacy.dart'
-    as _i9;
-import 'package:webview_flutter_web/src/webview_flutter_web_legacy.dart'
-    as _i10;
+import 'package:webview_flutter_web/src/http_request_factory.dart' as _i10;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
