@@ -19,7 +19,6 @@ void main() {
   // 'https://www.google.com/' will sometimes redirect traffic that looks
   // like it's coming from a bot, which is true of these tests).
   const String primaryUrl = 'https://flutter.dev/';
-  const String secondaryUrl = 'https://www.google.com/robots.txt';
 
   testWidgets('loadRequest', (WidgetTester tester) async {
     final WebWebViewController controller =
