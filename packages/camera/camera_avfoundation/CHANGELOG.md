@@ -1,3 +1,7 @@
+## 0.9.9+1
+
+* Updates code for stricter lint checks.
+
 ## 0.9.9
 
 * Implements option to also stream when recording a video.

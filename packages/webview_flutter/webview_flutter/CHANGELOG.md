@@ -1,5 +1,6 @@
-## NEXT
+## 3.0.5
 
+* Updates code for stricter lint checks.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 * Updates minimum Flutter version to 2.10.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.

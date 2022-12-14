@@ -1,5 +1,6 @@
-## NEXT
+## 2.1.8
 
+* Updates code for stricter lint checks.
 * Updates minimum Flutter version to 2.10.
 
 ## 2.1.7
