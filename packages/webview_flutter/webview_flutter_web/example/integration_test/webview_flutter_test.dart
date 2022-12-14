@@ -14,12 +14,6 @@ import 'package:webview_flutter_web/webview_flutter_web.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  // URLs to navigate to in tests. These need to be URLs that we are confident will
-  // always be accessible, and won't do redirection. (E.g., just
-  // 'https://www.google.com/' will sometimes redirect traffic that looks
-  // like it's coming from a bot, which is true of these tests).
-  const String primaryUrl = 'https://flutter.dev/';
-
   testWidgets('loadHtmlString', (WidgetTester tester) async {
     final WebWebViewController controller =
         WebWebViewController(const PlatformWebViewControllerCreationParams())
