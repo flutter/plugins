@@ -640,6 +640,16 @@ class MockAndroidWebViewController extends _i1.Mock
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
+  @override
+  _i9.Future<void> setMediaPlaybackRequiresUserGesture(bool? require) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setMediaPlaybackRequiresUserGesture,
+          [require],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
 }
 
 /// A class which mocks [AndroidWebViewProxy].
@@ -1686,7 +1696,7 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
         ),
       ) as _i6.InheritedWidget);
   @override
-  void visitAncestorElements(bool Function(_i6.Element)? visitor) =>
+  void visitAncestorElements(_i6.ConditionalElementVisitor? visitor) =>
       super.noSuchMethod(
         Invocation.method(
           #visitAncestorElements,
