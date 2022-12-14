@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:html' as html;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -11,8 +12,51 @@ import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_web/webview_flutter_web.dart';
 
-void main() {
+Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  final HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 0);
+  server.forEach((HttpRequest request) {
+    if (request.uri.path == '/hello.txt') {
+      request.response.writeln('Hello, world.');
+    } else if (request.uri.path == '/secondary.txt') {
+      request.response.writeln('How are you today?');
+    } else if (request.uri.path == '/headers') {
+      request.response.writeln('${request.headers}');
+    } else if (request.uri.path == '/favicon.ico') {
+      request.response.statusCode = HttpStatus.notFound;
+    } else {
+      fail('unexpected request: ${request.method} ${request.uri}');
+    }
+    request.response.close();
+  });
+  final String prefixUrl = 'http://${server.address.address}:${server.port}';
+  final String primaryUrl = '$prefixUrl/hello.txt';
+
+  testWidgets('loadRequest', (WidgetTester tester) async {
+    final WebWebViewController controller =
+        WebWebViewController(const PlatformWebViewControllerCreationParams())
+          ..loadRequest(
+            LoadRequestParams(uri: Uri.parse(primaryUrl)),
+          );
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: Builder(builder: (BuildContext context) {
+          return WebWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        }),
+      ),
+    );
+
+    // Assert an iframe has been rendered to the DOM with the correct src attribute.
+    final html.IFrameElement? element =
+        html.document.querySelector('iframe') as html.IFrameElement?;
+    expect(element, isNotNull);
+    expect(element!.src, primaryUrl);
+  });
 
   testWidgets('loadHtmlString', (WidgetTester tester) async {
     final WebWebViewController controller =
