@@ -80,7 +80,8 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
     });
 
     final List<int?> cameraInfos = await getAvailableCameraInfos(identifier);
-    return cameraInfos.map<CameraInfo>((int? id) =>
+    return cameraInfos
+        .map<CameraInfo>((int? id) =>
             instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo)
         .toList();
   }
