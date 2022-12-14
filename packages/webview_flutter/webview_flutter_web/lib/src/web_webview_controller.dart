@@ -18,24 +18,17 @@ class WebWebViewControllerCreationParams
     extends PlatformWebViewControllerCreationParams {
   /// Creates a new [AndroidWebViewControllerCreationParams] instance.
   WebWebViewControllerCreationParams({
-    @visibleForTesting IFrameElement? iFrame,
     @visibleForTesting this.httpRequestFactory = const HttpRequestFactory(),
-  })  : iFrame = iFrame ?? IFrameElement()
-          ..id = 'webView${_nextIFrameId++}'
-          ..width = '100%'
-          ..height = '100%'
-          ..style.border = 'none',
-        super();
+  }) : super();
 
   /// Creates a [WebWebViewControllerCreationParams] instance based on [PlatformWebViewControllerCreationParams].
   WebWebViewControllerCreationParams.fromPlatformWebViewControllerCreationParams(
     // Recommended placeholder to prevent being broken by platform interface.
     // ignore: avoid_unused_constructor_parameters
     PlatformWebViewControllerCreationParams params, {
-    @visibleForTesting IFrameElement? iFrame,
     @visibleForTesting
         HttpRequestFactory httpRequestFactory = const HttpRequestFactory(),
-  }) : this(iFrame: iFrame, httpRequestFactory: httpRequestFactory);
+  }) : this(httpRequestFactory: httpRequestFactory);
 
   static int _nextIFrameId = 0;
 
@@ -43,7 +36,11 @@ class WebWebViewControllerCreationParams
   final HttpRequestFactory httpRequestFactory;
 
   /// The underlying element used as the WebView.
-  final IFrameElement iFrame;
+  final IFrameElement iFrame = IFrameElement()
+    ..id = 'webView${_nextIFrameId++}'
+    ..width = '100%'
+    ..height = '100%'
+    ..style.border = 'none';
 }
 
 /// An implementation of [PlatformWebViewController] using Flutter for Web API.
@@ -108,6 +105,7 @@ class WebWebViewWidget extends PlatformWebViewWidget {
   @override
   Widget build(BuildContext context) {
     return HtmlElementView(
+      key: params.key,
       viewType: (params.controller as WebWebViewController)
           ._webWebViewParams
           .iFrame
