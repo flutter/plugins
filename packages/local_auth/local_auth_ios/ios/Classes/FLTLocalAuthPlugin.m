@@ -216,14 +216,6 @@
     result(@YES);
   } else {
     switch (error.code) {
-      case LAErrorSystemCancel:
-        if ([arguments[@"stickyAuth"] boolValue]) {
-          self->_lastCallArgs = arguments;
-          self->_lastResult = result;
-        } else {
-          result(@NO);
-        }
-        return;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         // TODO(stuartmorgan): Remove the pragma and s/TouchID/Biometry/ in these constants when
@@ -236,6 +228,14 @@
       case LAErrorPasscodeNotSet:
       case LAErrorAuthenticationFailed:
         [self handleErrors:error flutterArguments:arguments withFlutterResult:result];
+        return;
+      case LAErrorSystemCancel:
+        if ([arguments[@"stickyAuth"] boolValue]) {
+          self->_lastCallArgs = arguments;
+          self->_lastResult = result;
+        } else {
+          result(@NO);
+        }
         return;
     }
   }

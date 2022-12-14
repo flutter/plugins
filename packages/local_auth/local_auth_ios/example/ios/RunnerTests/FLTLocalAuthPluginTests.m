@@ -140,7 +140,7 @@ static const NSTimeInterval kTimeout = 30.0;
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
+                      XCTAssertTrue([result isKindOfClass:[FlutterError class]]);
                       [expectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
@@ -256,7 +256,7 @@ static const NSTimeInterval kTimeout = 30.0;
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
+                      XCTAssertTrue([result isKindOfClass:[FlutterError class]]);
                       [expectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
@@ -279,7 +279,7 @@ static const NSTimeInterval kTimeout = 30.0;
     void (^reply)(BOOL, NSError *);
     [invocation getArgument:&reply atIndex:4];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorUserFallback userInfo:nil]);
+      reply(YES, nil);
     });
   };
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
@@ -297,8 +297,6 @@ static const NSTimeInterval kTimeout = 30.0;
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       OCMVerify([mockAuthContext setLocalizedFallbackTitle:localizedFallbackTitle]);
-                      XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
                       [expectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
@@ -320,7 +318,7 @@ static const NSTimeInterval kTimeout = 30.0;
     void (^reply)(BOOL, NSError *);
     [invocation getArgument:&reply atIndex:4];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorUserFallback userInfo:nil]);
+      reply(YES, nil);
     });
   };
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
@@ -336,8 +334,6 @@ static const NSTimeInterval kTimeout = 30.0;
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       OCMVerify([mockAuthContext setLocalizedFallbackTitle:nil]);
-                      XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isMemberOfClass:[FlutterError class]]);
                       [expectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
