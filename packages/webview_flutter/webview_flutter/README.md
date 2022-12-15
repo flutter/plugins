@@ -113,7 +113,7 @@ import 'package:webview_flutter/wkwebview.dart';
 Then additional features can be accessed through the platform implementations provided by the
 imports above:
 
-<?code-excerpt "main.dart (platform_feature)"?>
+<?code-excerpt "main.dart (platform_features)"?>
 ```dart
 final WebViewController controller = WebViewController.fromPlatformCreationParams(
   WebKitWebViewControllerCreationParams(
@@ -138,53 +138,9 @@ for more details on iOS features.
 
 ### Instantiating WebViewController
 
-The most significant difference for `webview_flutter` 4.0 is the `WebViewController` must now be
-instantiated and is no longer a return value from the WebView widget.
-
-In earlier versions, `WebViewController` could only be retrieved in a callback after the
-`WebView` was  added to the widget tree.
-
-```dart
-import 'package:webview_flutter/webview_flutter.dart';
-
- class WebViewExample extends StatefulWidget {
-   @override
-   WebViewExampleState createState() => WebViewExampleState();
- }
-
- class WebViewExampleState extends State<WebViewExample> {
-   late final WebViewController _controller;
-
-   @override
-   Widget build(BuildContext context) {
-     return WebView(
-       onWebViewCreated: (WebViewController controller) {
-         _controller = controller;
-       },
-     );
-   }
- }
-```
-
-Now, `WebViewController` must be instantiated and can be used before it is added to the widget tree.
-
-```dart
-import 'package:webview_flutter/webview_flutter.dart';
-
-class WebViewExample extends StatefulWidget {
-  @override
-  WebViewExampleState createState() => WebViewExampleState();
-}
-
-class WebViewExampleState extends State<WebViewExample> {
-  final WebViewController controller = WebViewController();
-
-  @override
-  Widget build(BuildContext context) {
-    return WebViewWidget(controller: controller);
-  }
-}
-```
+In version 3.0 and below, `WebViewController` could only be retrieved in a callback after the
+`WebView` was  added to the widget tree. Now, `WebViewController` must be instantiated and can be
+used before it is added to the widget tree. See `Usage` section above for an example.
 
 ### Replacing WebView
 
@@ -205,45 +161,11 @@ Layer Hybrid Composition on versions 23+ and automatically fallbacks to Hybrid C
 version 19-23. See https://github.com/flutter/flutter/issues/108106 for progress on manually
 switching to Hybrid Composition on versions 23+.
 
-### Platform Implementations and Creation Parameters
+### Feature Changes
 
-Some methods have been moved to a classes that are specific to a platform.
+Below is an exhaustive list of changes to the location of methods.
 
-To enable debugging on Android:
 
-```dart
-import 'package:webview_flutter/android.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-
-if (Platform.isAndroid) {
-  AndroidWebViewController.enableDebugging(true);
-}
-```
-
-To allow inline media playback on iOS:
-
-```dart
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter/wkwebview.dart';
-
-final WebViewController = WebViewController.fromPlatformCreationParams(
-  WebKitWebViewControllerCreationParams(
-    allowsInlineMediaPlayback: true,
-  ),
-);
-```
-
-To enable gesture navigation on iOS:
-
-```dart
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter/wkwebview.dart';
-
-final WebViewController webViewController = WebViewController();
-if (webViewController is WebKitWebViewController) {
-  webViewController.setAllowsBackForwardNavigationGestures(true);
-}
-```
 
 ## Enable Material Components for Android
 
