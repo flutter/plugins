@@ -15,10 +15,7 @@ import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
-import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerImpl;
-import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
-import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientImpl;
-import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.InputAwareWebViewPlatformView;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
 import java.util.HashMap;
 import org.junit.After;
@@ -39,6 +36,8 @@ public class WebViewTest {
 
   @Mock Context mockContext;
 
+  @Mock BinaryMessenger mockBinaryMessenger;
+
   InstanceManager testInstanceManager;
   WebViewHostApiImpl testHostApiImpl;
 
@@ -46,121 +45,17 @@ public class WebViewTest {
   public void setUp() {
     testInstanceManager = InstanceManager.open(identifier -> {});
 
-    when(mockWebViewProxy.createWebView(mockContext)).thenReturn(mockWebView);
+    when(mockWebViewProxy.createWebView(mockContext, mockBinaryMessenger, testInstanceManager))
+        .thenReturn(mockWebView);
     testHostApiImpl =
-        new WebViewHostApiImpl(testInstanceManager, mockWebViewProxy, mockContext, null);
+        new WebViewHostApiImpl(
+            testInstanceManager, mockBinaryMessenger, mockWebViewProxy, mockContext, null);
     testHostApiImpl.create(0L, true);
   }
 
   @After
   public void tearDown() {
     testInstanceManager.close();
-  }
-
-  @Test
-  public void releaseWebView() {
-    final WebViewPlatformView webView = new WebViewPlatformView(mockContext);
-
-    final WebViewClientImpl mockWebViewClient = mock(WebViewClientImpl.class);
-    final WebChromeClientImpl mockWebChromeClient = mock(WebChromeClientImpl.class);
-    final DownloadListenerImpl mockDownloadListener = mock(DownloadListenerImpl.class);
-    final JavaScriptChannel mockJavaScriptChannel = mock(JavaScriptChannel.class);
-
-    webView.setWebViewClient(mockWebViewClient);
-    webView.setWebChromeClient(mockWebChromeClient);
-    webView.setDownloadListener(mockDownloadListener);
-    webView.addJavascriptInterface(mockJavaScriptChannel, "jchannel");
-
-    webView.release();
-
-    verify(mockWebViewClient).release();
-    verify(mockWebChromeClient).release();
-    verify(mockDownloadListener).release();
-    verify(mockJavaScriptChannel).release();
-  }
-
-  @Test
-  public void releaseWebViewDependents() {
-    final WebViewPlatformView webView = new WebViewPlatformView(mockContext);
-
-    final WebViewClientImpl mockWebViewClient = mock(WebViewClientImpl.class);
-    final WebChromeClientImpl mockWebChromeClient = mock(WebChromeClientImpl.class);
-    final DownloadListenerImpl mockDownloadListener = mock(DownloadListenerImpl.class);
-    final JavaScriptChannel mockJavaScriptChannel = mock(JavaScriptChannel.class);
-    final JavaScriptChannel mockJavaScriptChannel2 = mock(JavaScriptChannel.class);
-
-    webView.setWebViewClient(mockWebViewClient);
-    webView.setWebChromeClient(mockWebChromeClient);
-    webView.setDownloadListener(mockDownloadListener);
-    webView.addJavascriptInterface(mockJavaScriptChannel, "jchannel");
-
-    // Release should be called on the object added above.
-    webView.addJavascriptInterface(mockJavaScriptChannel2, "jchannel");
-    verify(mockJavaScriptChannel).release();
-
-    webView.setWebViewClient(null);
-    webView.setWebChromeClient(null);
-    webView.setDownloadListener(null);
-    webView.removeJavascriptInterface("jchannel");
-
-    verify(mockWebViewClient).release();
-    verify(mockWebChromeClient).release();
-    verify(mockDownloadListener).release();
-    verify(mockJavaScriptChannel2).release();
-  }
-
-  @Test
-  public void releaseInputAwareWebView() {
-    final InputAwareWebViewPlatformView webView =
-        new InputAwareWebViewPlatformView(mockContext, null);
-
-    final WebViewClientImpl mockWebViewClient = mock(WebViewClientImpl.class);
-    final WebChromeClientImpl mockWebChromeClient = mock(WebChromeClientImpl.class);
-    final DownloadListenerImpl mockDownloadListener = mock(DownloadListenerImpl.class);
-    final JavaScriptChannel mockJavaScriptChannel = mock(JavaScriptChannel.class);
-
-    webView.setWebViewClient(mockWebViewClient);
-    webView.setWebChromeClient(mockWebChromeClient);
-    webView.setDownloadListener(mockDownloadListener);
-    webView.addJavascriptInterface(mockJavaScriptChannel, "jchannel");
-
-    webView.release();
-
-    verify(mockWebViewClient).release();
-    verify(mockWebChromeClient).release();
-    verify(mockDownloadListener).release();
-    verify(mockJavaScriptChannel).release();
-  }
-
-  @Test
-  public void releaseInputAwareWebViewDependents() {
-    final InputAwareWebViewPlatformView webView =
-        new InputAwareWebViewPlatformView(mockContext, null);
-
-    final WebViewClientImpl mockWebViewClient = mock(WebViewClientImpl.class);
-    final WebChromeClientImpl mockWebChromeClient = mock(WebChromeClientImpl.class);
-    final DownloadListenerImpl mockDownloadListener = mock(DownloadListenerImpl.class);
-    final JavaScriptChannel mockJavaScriptChannel = mock(JavaScriptChannel.class);
-    final JavaScriptChannel mockJavaScriptChannel2 = mock(JavaScriptChannel.class);
-
-    webView.setWebViewClient(mockWebViewClient);
-    webView.setWebChromeClient(mockWebChromeClient);
-    webView.setDownloadListener(mockDownloadListener);
-    webView.addJavascriptInterface(mockJavaScriptChannel, "jchannel");
-
-    // Release should be called on the object added above.
-    webView.addJavascriptInterface(mockJavaScriptChannel2, "jchannel");
-    verify(mockJavaScriptChannel).release();
-
-    webView.setWebViewClient(null);
-    webView.setWebChromeClient(null);
-    webView.setDownloadListener(null);
-    webView.removeJavascriptInterface("jchannel");
-
-    verify(mockWebViewClient).release();
-    verify(mockWebChromeClient).release();
-    verify(mockDownloadListener).release();
-    verify(mockJavaScriptChannel2).release();
   }
 
   @Test

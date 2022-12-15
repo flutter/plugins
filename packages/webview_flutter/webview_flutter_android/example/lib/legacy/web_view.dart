@@ -8,9 +8,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter_android/webview_android.dart';
-import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+// ignore: implementation_imports
+import 'package:webview_flutter_android/src/webview_flutter_android_legacy.dart';
+// ignore: implementation_imports
+import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
 
 import 'navigation_decision.dart';
 import 'navigation_request.dart';
@@ -319,8 +320,10 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     required bool isForMainFrame,
   }) async {
     if (url.startsWith('https://www.youtube.com/')) {
+      debugPrint('blocking navigation to $url');
       return false;
     }
+    debugPrint('allowing navigation to $url');
     return true;
   }
 
