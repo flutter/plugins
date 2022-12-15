@@ -29,3 +29,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  webview_flutter_platform_interface:
+    path: ../../../webview_flutter/webview_flutter_platform_interface
+  webview_flutter_web:
+    path: ../../../webview_flutter/webview_flutter_web

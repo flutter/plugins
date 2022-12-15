@@ -9,9 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_web/webview_flutter_web.dart';
-import './webview_flutter_web_test.mocks.dart';
+import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
+import 'package:webview_flutter_web/src/http_request_factory.dart';
+import 'package:webview_flutter_web/src/webview_flutter_web_legacy.dart';
+
+import 'webview_flutter_web_test.mocks.dart';
 
 @GenerateMocks(<Type>[
   IFrameElement,
