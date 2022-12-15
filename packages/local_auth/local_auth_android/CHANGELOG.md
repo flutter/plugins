@@ -1,6 +1,6 @@
 ## 1.0.17
 
-* Adds compatibility with intl 0.18.0.
+* Adds compatibility with `intl` 0.18.0.
 
 ## 1.0.16
 

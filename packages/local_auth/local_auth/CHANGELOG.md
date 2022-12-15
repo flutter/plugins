@@ -1,7 +1,7 @@
 ## 2.1.3
 
 * Updates minimum Flutter version to 2.10.
-* Adds compatibility with intl 0.18.0.
+* Adds compatibility with `intl` 0.18.0.
 
 ## 2.1.2
 
