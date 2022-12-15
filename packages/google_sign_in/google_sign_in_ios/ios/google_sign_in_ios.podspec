@@ -18,6 +18,6 @@ Enables Google Sign-In in Flutter apps.
   s.dependency 'Flutter'
   s.dependency 'GoogleSignIn', '~> 6.2'
   s.static_framework = true
-  s.platform = :ios, '9.0'
+  s.platform = :ios, '11.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 end

@@ -1,3 +1,7 @@
+## 0.8.7
+
+* Updates minimum Flutter version to 3.3.
+
 ## 0.8.6+3
 
 * Returns error on image load failure.

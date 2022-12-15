@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Updates minimum Flutter version to 3.3.
+
 ## 1.0.12
 
 * Adds compatibility with `intl` 0.18.0.

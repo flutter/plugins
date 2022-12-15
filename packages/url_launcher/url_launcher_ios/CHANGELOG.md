@@ -1,6 +1,6 @@
-## NEXT
+## 6.1.0
 
-* Updates minimum Flutter version to 2.10.
+* Updates minimum Flutter version to 3.3.
 
 ## 6.0.17
 

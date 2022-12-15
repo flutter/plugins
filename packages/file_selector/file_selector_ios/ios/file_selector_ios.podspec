@@ -16,9 +16,7 @@ Displays the native iOS document picker.
   s.source_files = 'Classes/**/*.{h,m}'
   s.module_map = 'Classes/FileSelectorPlugin.modulemap'
   s.dependency 'Flutter'
-  s.platform = :ios, '9.0'
-
-  # Flutter.framework does not contain a i386 slice.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
+  s.platform = :ios, '11.0'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
 end
