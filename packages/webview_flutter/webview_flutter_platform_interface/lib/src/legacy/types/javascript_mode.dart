@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /// Describes the state of JavaScript support in a given web view.
-enum JavaScriptMode {
+enum JavascriptMode {
   /// JavaScript execution is disabled.
   disabled,
 

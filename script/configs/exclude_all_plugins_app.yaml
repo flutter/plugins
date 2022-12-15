@@ -8,3 +8,4 @@
 
 # This is a permament entry, as it should never be a direct app dependency.
 - plugin_platform_interface
+- webview_flutter_platform_interface
