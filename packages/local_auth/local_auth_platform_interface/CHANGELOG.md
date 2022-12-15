@@ -1,6 +1,6 @@
 ## 1.0.6
 
-* Update the `intl` constraint to ">=0.17.0 <0.19.0" (0.18.0 isn't really a breaking change).
+* Adds compatibility with intl 0.18.0.
 
 ## 1.0.5
 
