@@ -9,13 +9,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import '../../common/instance_manager.dart';
-import '../../common/weak_reference_utils.dart';
-import '../../foundation/foundation.dart';
-import '../../web_kit/web_kit.dart';
+import 'common/instance_manager.dart';
+import 'common/weak_reference_utils.dart';
+import 'foundation/foundation.dart';
+import 'web_kit/web_kit.dart';
 import 'webkit_proxy.dart';
+
+/// Media types that can require a user gesture to begin playing.
+///
+/// See [WebKitWebViewControllerCreationParams.mediaTypesRequiringUserAction].
+enum PlaybackMediaTypes {
+  /// A media type that contains audio.
+  audio,
+
+  /// A media type that contains video.
+  video;
+
+  WKAudiovisualMediaType _toWKAudiovisualMediaType() {
+    switch (this) {
+      case PlaybackMediaTypes.audio:
+        return WKAudiovisualMediaType.audio;
+      case PlaybackMediaTypes.video:
+        return WKAudiovisualMediaType.video;
+    }
+  }
+}
 
 /// Object specifying creation parameters for a [WebKitWebViewController].
 @immutable
@@ -24,7 +44,27 @@ class WebKitWebViewControllerCreationParams
   /// Constructs a [WebKitWebViewControllerCreationParams].
   WebKitWebViewControllerCreationParams({
     @visibleForTesting this.webKitProxy = const WebKitProxy(),
-  }) : _configuration = webKitProxy.createWebViewConfiguration();
+    this.mediaTypesRequiringUserAction = const <PlaybackMediaTypes>{
+      PlaybackMediaTypes.audio,
+      PlaybackMediaTypes.video,
+    },
+    this.allowsInlineMediaPlayback = false,
+  }) : _configuration = webKitProxy.createWebViewConfiguration() {
+    if (mediaTypesRequiringUserAction.isEmpty) {
+      _configuration.setMediaTypesRequiringUserActionForPlayback(
+        <WKAudiovisualMediaType>{WKAudiovisualMediaType.none},
+      );
+    } else {
+      _configuration.setMediaTypesRequiringUserActionForPlayback(
+        mediaTypesRequiringUserAction
+            .map<WKAudiovisualMediaType>(
+              (PlaybackMediaTypes type) => type._toWKAudiovisualMediaType(),
+            )
+            .toSet(),
+      );
+    }
+    _configuration.setAllowsInlineMediaPlayback(allowsInlineMediaPlayback);
+  }
 
   /// Constructs a [WebKitWebViewControllerCreationParams] using a
   /// [PlatformWebViewControllerCreationParams].
@@ -33,9 +73,30 @@ class WebKitWebViewControllerCreationParams
     // ignore: avoid_unused_constructor_parameters
     PlatformWebViewControllerCreationParams params, {
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  }) : this(webKitProxy: webKitProxy);
+    Set<PlaybackMediaTypes> mediaTypesRequiringUserAction =
+        const <PlaybackMediaTypes>{
+      PlaybackMediaTypes.audio,
+      PlaybackMediaTypes.video,
+    },
+    bool allowsInlineMediaPlayback = false,
+  }) : this(
+          webKitProxy: webKitProxy,
+          mediaTypesRequiringUserAction: mediaTypesRequiringUserAction,
+          allowsInlineMediaPlayback: allowsInlineMediaPlayback,
+        );
 
   final WKWebViewConfiguration _configuration;
+
+  /// Media types that require a user gesture to begin playing.
+  ///
+  /// Defaults to include [PlaybackMediaTypes.audio] and
+  /// [PlaybackMediaTypes.video].
+  final Set<PlaybackMediaTypes> mediaTypesRequiringUserAction;
+
+  /// Whether inline playback of HTML5 videos is allowed.
+  ///
+  /// Defaults to false.
+  final bool allowsInlineMediaPlayback;
 
   /// Handles constructing objects and calling static methods for the WebKit
   /// native library.
@@ -71,10 +132,12 @@ class WebKitWebViewController extends PlatformWebViewController {
         NSObject object,
         Map<NSKeyValueChangeKey, Object?> change,
       ) {
-        if (weakReference.target?._onProgress != null) {
+        final ProgressCallback? progressCallback =
+            weakReference.target?._currentNavigationDelegate?._onProgress;
+        if (progressCallback != null) {
           final double progress =
               change[NSKeyValueChangeKey.newValue]! as double;
-          weakReference.target!._onProgress!((progress * 100).round());
+          progressCallback((progress * 100).round());
         }
       },
     );
@@ -84,7 +147,7 @@ class WebKitWebViewController extends PlatformWebViewController {
       <String, WebKitJavaScriptChannelParams>{};
 
   bool _zoomEnabled = true;
-  void Function(int progress)? _onProgress;
+  WebKitNavigationDelegate? _currentNavigationDelegate;
 
   WebKitWebViewControllerCreationParams get _webKitParams =>
       params as WebKitWebViewControllerCreationParams;
@@ -215,7 +278,7 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   @override
-  Future<String> runJavaScriptReturningResult(String javaScript) async {
+  Future<Object> runJavaScriptReturningResult(String javaScript) async {
     final Object? result = await _webView.evaluateJavaScript(javaScript);
     if (result == null) {
       throw ArgumentError(
@@ -223,12 +286,7 @@ class WebKitWebViewController extends PlatformWebViewController {
         'Use `runJavascript` when expecting a null return value.',
       );
     }
-    return result.toString();
-  }
-
-  /// Controls whether inline playback of HTML5 videos is allowed.
-  Future<void> setAllowsInlineMediaPlayback(bool allow) {
-    return _webView.configuration.setAllowsInlineMediaPlayback(allow);
+    return result;
   }
 
   @override
@@ -251,25 +309,23 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   @override
-  Future<Point<int>> getScrollPosition() async {
+  Future<Offset> getScrollPosition() async {
     final Point<double> offset = await _webView.scrollView.getContentOffset();
-    return Point<int>(offset.x.round(), offset.y.round());
+    return Offset(offset.x, offset.y);
   }
 
-  // TODO(bparrishMines): This is unique to iOS. Override should be removed if
-  // this is removed from the platform interface before webview_flutter version
-  // 4.0.0.
-  @override
-  Future<void> enableGestureNavigation(bool enabled) {
+  /// Whether horizontal swipe gestures trigger page navigation.
+  Future<void> setAllowsBackForwardNavigationGestures(bool enabled) {
     return _webView.setAllowsBackForwardNavigationGestures(enabled);
   }
 
   @override
   Future<void> setBackgroundColor(Color color) {
     return Future.wait(<Future<void>>[
-      _webView.scrollView.setBackgroundColor(color),
       _webView.setOpaque(false),
       _webView.setBackgroundColor(Colors.transparent),
+      // This method must be called last.
+      _webView.scrollView.setBackgroundColor(color),
     ]);
   }
 
@@ -306,8 +362,11 @@ class WebKitWebViewController extends PlatformWebViewController {
   Future<void> setPlatformNavigationDelegate(
     covariant WebKitNavigationDelegate handler,
   ) {
-    _onProgress = handler._onProgress;
-    return _webView.setNavigationDelegate(handler._navigationDelegate);
+    _currentNavigationDelegate = handler;
+    return Future.wait(<Future<void>>[
+      _webView.setUIDelegate(handler._uiDelegate),
+      _webView.setNavigationDelegate(handler._navigationDelegate)
+    ]);
   }
 
   Future<void> _disableZoom() {
@@ -441,6 +500,7 @@ class WebKitWebViewWidget extends PlatformWebViewWidget {
   @override
   Widget build(BuildContext context) {
     return UiKitView(
+      key: _webKitParams.key,
       viewType: 'plugins.flutter.io/webview',
       onPlatformViewCreated: (_) {},
       layoutDirection: params.layoutDirection,
@@ -454,11 +514,12 @@ class WebKitWebViewWidget extends PlatformWebViewWidget {
 
 /// An implementation of [WebResourceError] with the WebKit API.
 class WebKitWebResourceError extends WebResourceError {
-  WebKitWebResourceError._(this._nsError)
+  WebKitWebResourceError._(this._nsError, {required bool isForMainFrame})
       : super(
           errorCode: _nsError.code,
           description: _nsError.localizedDescription,
           errorType: _toWebResourceErrorType(_nsError.code),
+          isForMainFrame: isForMainFrame,
         );
 
   static WebResourceErrorType? _toWebResourceErrorType(int code) {
@@ -518,9 +579,10 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
                 .fromPlatformNavigationDelegateCreationParams(params)) {
     final WeakReference<WebKitNavigationDelegate> weakThis =
         WeakReference<WebKitNavigationDelegate>(this);
-    _navigationDelegate = (params as WebKitNavigationDelegateCreationParams)
-        .webKitProxy
-        .createNavigationDelegate(
+    _navigationDelegate =
+        (this.params as WebKitNavigationDelegateCreationParams)
+            .webKitProxy
+            .createNavigationDelegate(
       didFinishNavigation: (WKWebView webView, String? url) {
         if (weakThis.target?._onPageFinished != null) {
           weakThis.target!._onPageFinished!(url ?? '');
@@ -536,27 +598,31 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
         WKNavigationAction action,
       ) async {
         if (weakThis.target?._onNavigationRequest != null) {
-          final bool allow = await weakThis.target!._onNavigationRequest!(
+          final NavigationDecision decision =
+              await weakThis.target!._onNavigationRequest!(NavigationRequest(
             url: action.request.url,
-            isForMainFrame: action.targetFrame.isMainFrame,
-          );
-          return allow
-              ? WKNavigationActionPolicy.allow
-              : WKNavigationActionPolicy.cancel;
+            isMainFrame: action.targetFrame.isMainFrame,
+          ));
+          switch (decision) {
+            case NavigationDecision.prevent:
+              return WKNavigationActionPolicy.cancel;
+            case NavigationDecision.navigate:
+              return WKNavigationActionPolicy.allow;
+          }
         }
         return WKNavigationActionPolicy.allow;
       },
       didFailNavigation: (WKWebView webView, NSError error) {
         if (weakThis.target?._onWebResourceError != null) {
           weakThis.target!._onWebResourceError!(
-            WebKitWebResourceError._(error),
+            WebKitWebResourceError._(error, isForMainFrame: true),
           );
         }
       },
       didFailProvisionalNavigation: (WKWebView webView, NSError error) {
         if (weakThis.target?._onWebResourceError != null) {
           weakThis.target!._onWebResourceError!(
-            WebKitWebResourceError._(error),
+            WebKitWebResourceError._(error, isForMainFrame: true),
           );
         }
       },
@@ -570,8 +636,23 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
                 domain: 'WKErrorDomain',
                 localizedDescription: '',
               ),
+              isForMainFrame: true,
             ),
           );
+        }
+      },
+    );
+
+    _uiDelegate = (this.params as WebKitNavigationDelegateCreationParams)
+        .webKitProxy
+        .createUIDelegate(
+      onCreateWebView: (
+        WKWebView webView,
+        WKWebViewConfiguration configuration,
+        WKNavigationAction navigationAction,
+      ) {
+        if (!navigationAction.targetFrame.isMainFrame) {
+          webView.loadRequest(navigationAction.request);
         }
       },
     );
@@ -580,41 +661,40 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
   // Used to set `WKWebView.setNavigationDelegate` in `WebKitWebViewController`.
   late final WKNavigationDelegate _navigationDelegate;
 
-  void Function(String url)? _onPageFinished;
-  void Function(String url)? _onPageStarted;
-  void Function(int progress)? _onProgress;
-  void Function(WebResourceError error)? _onWebResourceError;
-  FutureOr<bool> Function({required String url, required bool isForMainFrame})?
-      _onNavigationRequest;
+  // Used to set `WKWebView.setUIDelegate` in `WebKitWebViewController`.
+  late final WKUIDelegate _uiDelegate;
+
+  PageEventCallback? _onPageFinished;
+  PageEventCallback? _onPageStarted;
+  ProgressCallback? _onProgress;
+  WebResourceErrorCallback? _onWebResourceError;
+  NavigationRequestCallback? _onNavigationRequest;
 
   @override
-  Future<void> setOnPageFinished(
-    void Function(String url) onPageFinished,
-  ) async {
+  Future<void> setOnPageFinished(PageEventCallback onPageFinished) async {
     _onPageFinished = onPageFinished;
   }
 
   @override
-  Future<void> setOnPageStarted(void Function(String url) onPageStarted) async {
+  Future<void> setOnPageStarted(PageEventCallback onPageStarted) async {
     _onPageStarted = onPageStarted;
   }
 
   @override
-  Future<void> setOnProgress(void Function(int progress) onProgress) async {
+  Future<void> setOnProgress(ProgressCallback onProgress) async {
     _onProgress = onProgress;
   }
 
   @override
   Future<void> setOnWebResourceError(
-    void Function(WebResourceError error) onWebResourceError,
+    WebResourceErrorCallback onWebResourceError,
   ) async {
     _onWebResourceError = onWebResourceError;
   }
 
   @override
   Future<void> setOnNavigationRequest(
-    FutureOr<bool> Function({required String url, required bool isForMainFrame})
-        onNavigationRequest,
+    NavigationRequestCallback onNavigationRequest,
   ) async {
     _onNavigationRequest = onNavigationRequest;
   }
