@@ -238,6 +238,7 @@
         }
         return;
     }
+    [self handleErrors:error flutterArguments:arguments withFlutterResult:result];
   }
 }
 

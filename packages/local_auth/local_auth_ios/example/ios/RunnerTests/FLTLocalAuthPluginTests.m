@@ -146,6 +146,44 @@ static const NSTimeInterval kTimeout = 30.0;
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
 }
 
+- (void)testFailedWithUnknownErrorCode {
+  FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
+  id mockAuthContext = OCMClassMock([LAContext class]);
+  plugin.authContextOverrides = @[ mockAuthContext ];
+
+  const LAPolicy policy = LAPolicyDeviceOwnerAuthentication;
+  NSString *reason = @"a reason";
+  OCMStub([mockAuthContext canEvaluatePolicy:policy error:[OCMArg setTo:nil]]).andReturn(YES);
+
+  // evaluatePolicy:localizedReason:reply: calls back on an internal queue, which is not
+  // guaranteed to be on the main thread. Ensure that's handled correctly by calling back on
+  // a background thread.
+  void (^backgroundThreadReplyCaller)(NSInvocation *) = ^(NSInvocation *invocation) {
+    void (^reply)(BOOL, NSError *);
+    [invocation getArgument:&reply atIndex:4];
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorTouchIDNotEnrolled userInfo:nil]);
+    });
+  };
+  OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
+      .andDo(backgroundThreadReplyCaller);
+
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"authenticate"
+                                                              arguments:@{
+                                                                @"biometricOnly" : @(NO),
+                                                                @"localizedReason" : reason,
+                                                              }];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable result) {
+                      XCTAssertTrue([NSThread isMainThread]);
+                      XCTAssertTrue([result isKindOfClass:[FlutterError class]]);
+                      [expectation fulfill];
+                    }];
+  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
+}
+
 - (void)testFailedWithKnownErrorCode {
   FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
   id mockAuthContext = OCMClassMock([LAContext class]);
@@ -162,7 +200,7 @@ static const NSTimeInterval kTimeout = 30.0;
     void (^reply)(BOOL, NSError *);
     [invocation getArgument:&reply atIndex:4];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorBiometryNotEnrolled userInfo:nil]);
+      reply(NO, [NSError errorWithDomain:@"error" code:99 userInfo:nil]);
     });
   };
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
