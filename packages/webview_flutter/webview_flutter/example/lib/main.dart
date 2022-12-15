@@ -11,9 +11,15 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+// #docregion platform_imports
+// Import for Android features.
 import 'package:webview_flutter/android.dart';
+// #enddocregion platform_imports
 import 'package:webview_flutter/webview_flutter.dart';
+// #docregion platform_imports
+// Import for iOS features.
 import 'package:webview_flutter/wkwebview.dart';
+// #enddocregion platform_imports
 
 void main() => runApp(const MaterialApp(home: WebViewExample()));
 
@@ -86,6 +92,7 @@ class _WebViewExampleState extends State<WebViewExample> {
   void initState() {
     super.initState();
 
+    // #docregion platform_feature
     late final PlatformWebViewControllerCreationParams params;
     if (Platform.isIOS) {
       params = WebKitWebViewControllerCreationParams(
@@ -96,7 +103,11 @@ class _WebViewExampleState extends State<WebViewExample> {
       params = const PlatformWebViewControllerCreationParams();
     }
 
-    _controller = WebViewController.fromPlatformCreationParams(params)
+    final WebViewController controller =
+        WebViewController.fromPlatformCreationParams(params);
+    // #enddocregion platform_feature
+
+    controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
@@ -139,9 +150,14 @@ Page resource error:
       )
       ..loadRequest(Uri.parse('https://flutter.dev'));
 
-    if (_controller is AndroidWebViewController) {
+    // #docregion platform_feature
+    if (controller is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
+      controller.setMediaPlaybackRequiresUserGesture(false);
     }
+    // #enddocregion platform_feature
+
+    _controller = controller;
   }
 
   @override

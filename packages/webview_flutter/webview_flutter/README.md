@@ -1,10 +1,12 @@
 # WebView for Flutter
 
+<?code-excerpt path-base="excerpts/packages/webview_flutter_example"?>
+
 [![pub package](https://img.shields.io/pub/v/webview_flutter.svg)](https://pub.dev/packages/webview_flutter)
 
 A Flutter plugin that provides a WebView widget.
 
-On iOS the WebView widget is backed by a [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview);
+On iOS the WebView widget is backed by a [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview).
 On Android the WebView widget is backed by a [WebView](https://developer.android.com/reference/android/webkit/WebView).
 
 |             | Android        | iOS  |
@@ -14,10 +16,11 @@ On Android the WebView widget is backed by a [WebView](https://developer.android
 ## Usage
 Add `webview_flutter` as a [dependency in your pubspec.yaml file](https://pub.dev/packages/webview_flutter/install).
 
-You can now create a WebView widget by
+You can now display a WebView by:
 
 1. Instantiating a [WebViewController](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewController-class.html).
 
+<?code-excerpt "simple_example.dart (webview_controller)"?>
 ```dart
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -65,6 +68,7 @@ final WebViewController controller = WebViewController()
 
 2. Passing the controller to a [WebViewWidget](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewWidget-class.html).
 
+<?code-excerpt "simple_example.dart (webview_widget)"?>
 ```dart
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -98,6 +102,7 @@ specific features.
 
 To access platform specific features, start by including the import for the desired platform:
 
+<?code-excerpt "main.dart (platform_imports)"?>
 ```dart
 // Import for Android features.
 import 'package:webview_flutter/android.dart';
@@ -106,8 +111,9 @@ import 'package:webview_flutter/wkwebview.dart';
 ```
 
 Then additional features can be accessed through the platform implementations provided by the
-imports above. See the example below:
+imports above:
 
+<?code-excerpt "main.dart (platform_feature)"?>
 ```dart
 final WebViewController controller = WebViewController.fromPlatformCreationParams(
   WebKitWebViewControllerCreationParams(
@@ -185,16 +191,19 @@ class WebViewExampleState extends State<WebViewExample> {
 The `WebView` class has been removed and it's functionality has been split into `WebViewController`
 or `WebViewWidget`.
 
+`WebViewController` handles all functionality that is associated with the underlying WebView
+provided by each platform. (e.g. loading a url, setting the background color of the underlying view,
+or clearing the cache).
+
 `WebViewWidget` takes a `WebViewController` and handles all Flutter widget related functionality
 (e.g. layout direction, gesture recognizers).
 
-`WebViewController` handles all functionality that is associated with the underlying WebView
-provided by each platform. (e.g. loading a url, background color, clearing the cache).
-
 ### PlatformView Implementation on Android
 
-The PlatformView implementation for Android is no longer configurable. It uses Texture Layer Hybrid
-Composition on versions 23+ and Hybrid Composition for version 19-23.
+The PlatformView implementation for Android is currently no longer configurable. It uses Texture
+Layer Hybrid Composition on versions 23+ and automatically fallbacks to Hybrid Composition for
+version 19-23. See https://github.com/flutter/flutter/issues/108106 for progress on manually
+switching to Hybrid Composition on versions 23+.
 
 ### Platform Implementations and Creation Parameters
 
