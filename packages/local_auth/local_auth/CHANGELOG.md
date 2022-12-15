@@ -1,6 +1,7 @@
-## NEXT
+## 2.1.3
 
 * Updates minimum Flutter version to 2.10.
+* Update the `intl` constraint to ">=0.17.0 <0.19.0" (0.18.0 isn't really a breaking change).
 
 ## 2.1.2
 

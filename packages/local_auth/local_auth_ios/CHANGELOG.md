@@ -1,3 +1,7 @@
+## 1.0.11
+
+* Update the `intl` constraint to ">=0.17.0 <0.19.0" (0.18.0 isn't really a breaking change).
+
 ## 1.0.10
 
 * Updates imports for `prefer_relative_imports`.
