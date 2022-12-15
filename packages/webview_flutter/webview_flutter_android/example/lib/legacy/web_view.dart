@@ -320,10 +320,10 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     required bool isForMainFrame,
   }) async {
     if (url.startsWith('https://www.youtube.com/')) {
-      print('blocking navigation to $url');
+      debugPrint('blocking navigation to $url');
       return false;
     }
-    print('allowing navigation to $url');
+    debugPrint('allowing navigation to $url');
     return true;
   }
 
