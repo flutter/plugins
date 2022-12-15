@@ -1,6 +1,7 @@
-## NEXT
+## 3.0.0
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
+* 
 
 ## 2.9.5
 
