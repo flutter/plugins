@@ -12,30 +12,76 @@ On Android the WebView widget is backed by a [WebView](https://developer.android
 | **Support** | SDK 19+ or 20+ | 9.0+ |
 
 ## Usage
-Add `webview_flutter` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels). If you are targeting Android, make sure to read the *Android Platform Views* section below to choose the platform view mode that best suits your needs.
+Add `webview_flutter` as a [dependency in your pubspec.yaml file](https://pub.dev/packages/webview_flutter/install).
 
-You can now include a WebView widget in your widget tree. See the
-[WebView](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebView-class.html)
-widget's Dartdoc for more details on how to use the widget.
+You can now create a WebView widget by
 
-## Android Platform Views
+1. Instantiating a [WebViewController](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewController-class.html).
+
+```dart
+import 'package:webview_flutter/webview_flutter.dart';
+
+final WebViewController controller = WebViewController()
+  ..setJavaScriptMode(JavaScriptMode.unrestricted)
+  ..setBackgroundColor(const Color(0x00000000))
+  ..setNavigationDelegate(
+    NavigationDelegate(
+      onProgress: (int progress) {
+        print('WebView is loading (progress : $progress%)');
+      },
+      onPageStarted: (String url) {
+        print('Page started loading: $url');
+      },
+      onPageFinished: (String url) {
+        print('Page finished loading: $url');
+      },
+      onWebResourceError: (WebResourceError error) {
+        print('''
+          Page resource error:
+            code: ${error.errorCode}
+            description: ${error.description}
+            errorType: ${error.errorType}
+            isForMainFrame: ${error.isForMainFrame}
+          ''');
+      },
+      onNavigationRequest: (NavigationRequest request) {
+        if (request.url.startsWith('https://www.youtube.com/')) {
+          print('blocking navigation to $request');
+          return NavigationDecision.prevent;
+        }
+        print('allowing navigation to $request');
+        return NavigationDecision.navigate;
+      },
+    ),
+  )
+  ..addJavaScriptChannel(
+    'MyChannel',
+    onMessageReceived: (JavaScriptMessage message) {
+      print('message from MyChannel: ${message.message}');
+    },
+  )
+  ..loadRequest(Uri.parse('https://flutter.dev'));
+```
+
+2. Passing the controller to a [WebViewWidget](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewWidget-class.html).
+
+```dart
+import 'package:webview_flutter/webview_flutter.dart';
+
+final Widget webViewWidget = WebViewWidget(controller: controller);
+```
+
+See the Dartdocs for [WebViewController](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewController-class.html)
+and [WebViewWidget](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewWidget-class.html)
+for more details.
+
+### Android Platform Views
+
 This plugin uses
 [Platform Views](https://flutter.dev/docs/development/platform-integration/platform-views) to embed
-the Android’s webview within the Flutter app. It supports two modes:
-*hybrid composition* (the current default) and *virtual display*.
+the Android’s WebView within the Flutter app.
 
-Here are some points to consider when choosing between the two:
-
-* *Hybrid composition* has built-in keyboard support while *virtual display* has multiple
-[keyboard issues](https://github.com/flutter/flutter/issues?q=is%3Aopen+label%3Avd-only+label%3A%22p%3A+webview-keyboard%22).
-* *Hybrid composition* requires Android SDK 19+ while *virtual display* requires Android SDK 20+.
-* *Hybrid composition* and *virtual display* have different
-  [performance tradeoffs](https://flutter.dev/docs/development/platform-integration/platform-views#performance).
-
-
-### Using Hybrid Composition
-
-The mode is currently enabled by default. You should however make sure to set the correct `minSdkVersion` in `android/app/build.gradle` if it was previously lower than 19:
+You should however make sure to set the correct `minSdkVersion` in `android/app/build.gradle` if it was previously lower than 19:
 
 ```groovy
 android {
@@ -45,54 +91,157 @@ android {
 }
 ```
 
-### Using Virtual displays
+### Platform Specific Features
 
-1. Set the correct `minSdkVersion` in `android/app/build.gradle` (if it was previously lower than 20):
+Many classes have a subclass or an underlying implementation that provides access to platform
+specific features.
 
-    ```groovy
-    android {
-        defaultConfig {
-            minSdkVersion 20
-        }
-    }
-    ```
+To access platform specific features, start by including the import for the desired platform:
 
-2. Set `WebView.platform = AndroidWebView();` in `initState()`.
-    For example:
+```dart
+// Import for Android features.
+import 'package:webview_flutter/android.dart';
+// Import for iOS features.
+import 'package:webview_flutter/wkwebview.dart';
+```
 
-    ```dart
-    import 'dart:io';
+Then additional features can be accessed through the platform implementations provided by the
+imports above. See the example below:
 
-    import 'package:webview_flutter/webview_flutter.dart';
+```dart
+final WebViewController controller = WebViewController.fromPlatformCreationParams(
+  WebKitWebViewControllerCreationParams(
+    allowsInlineMediaPlayback: true,
+  ),
+);
 
-    class WebViewExample extends StatefulWidget {
-      @override
-      WebViewExampleState createState() => WebViewExampleState();
-    }
+if (controller is WebKitWebViewController) {
+  controller.setAllowsBackForwardNavigationGestures(true);
+} else if (controller is AndroidWebViewController) {
+  AndroidWebViewController.enableDebugging(true);
+}
+```
 
-    class WebViewExampleState extends State<WebViewExample> {
-      @override
-      void initState() {
-        super.initState();
-        // Enable virtual display.
-        if (Platform.isAndroid) WebView.platform = AndroidWebView();
-      }
+See https://pub.dev/documentation/webview_flutter/latest/android/android-library.html
+for more details on Android features.
 
-      @override
-      Widget build(BuildContext context) {
-        return WebView(
-          initialUrl: 'https://flutter.dev',
-        );
-      }
-    }
-    ```
+See https://pub.dev/documentation/webview_flutter/latest/wkwebview/wkwebview-library.html
+for more details on iOS features.
 
-### Enable Material Components for Android
+## Migrating from 3.0 to 4.0
+
+### Instantiating WebViewController
+
+The most significant difference for `webview_flutter` 4.0 is the `WebViewController` must now be
+instantiated and is no longer a return value from the WebView widget.
+
+In earlier versions, `WebViewController` could only be retrieved in a callback after the
+`WebView` was  added to the widget tree.
+
+```dart
+import 'package:webview_flutter/webview_flutter.dart';
+
+ class WebViewExample extends StatefulWidget {
+   @override
+   WebViewExampleState createState() => WebViewExampleState();
+ }
+
+ class WebViewExampleState extends State<WebViewExample> {
+   late final WebViewController _controller;
+
+   @override
+   Widget build(BuildContext context) {
+     return WebView(
+       onWebViewCreated: (WebViewController controller) {
+         _controller = controller;
+       },
+     );
+   }
+ }
+```
+
+Now, `WebViewController` must be instantiated and can be used before it is added to the widget tree.
+
+```dart
+import 'package:webview_flutter/webview_flutter.dart';
+
+class WebViewExample extends StatefulWidget {
+  @override
+  WebViewExampleState createState() => WebViewExampleState();
+}
+
+class WebViewExampleState extends State<WebViewExample> {
+  final WebViewController controller = WebViewController();
+
+  @override
+  Widget build(BuildContext context) {
+    return WebViewWidget(controller: controller);
+  }
+}
+```
+
+### Replacing WebView
+
+The `WebView` class has been removed and it's functionality has been split into `WebViewController`
+or `WebViewWidget`.
+
+`WebViewWidget` takes a `WebViewController` and handles all Flutter widget related functionality
+(e.g. layout direction, gesture recognizers).
+
+`WebViewController` handles all functionality that is associated with the underlying WebView
+provided by each platform. (e.g. loading a url, background color, clearing the cache).
+
+### PlatformView Implementation on Android
+
+The PlatformView implementation for Android is no longer configurable. It uses Texture Layer Hybrid
+Composition on versions 23+ and Hybrid Composition for version 19-23.
+
+### Platform Implementations and Creation Parameters
+
+Some methods have been moved to a classes that are specific to a platform.
+
+To enable debugging on Android:
+
+```dart
+import 'package:webview_flutter/android.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+if (Platform.isAndroid) {
+  AndroidWebViewController.enableDebugging(true);
+}
+```
+
+To allow inline media playback on iOS:
+
+```dart
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter/wkwebview.dart';
+
+final WebViewController = WebViewController.fromPlatformCreationParams(
+  WebKitWebViewControllerCreationParams(
+    allowsInlineMediaPlayback: true,
+  ),
+);
+```
+
+To enable gesture navigation on iOS:
+
+```dart
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter/wkwebview.dart';
+
+final WebViewController webViewController = WebViewController();
+if (webViewController is WebKitWebViewController) {
+  webViewController.setAllowsBackForwardNavigationGestures(true);
+}
+```
+
+## Enable Material Components for Android
 
 To use Material Components when the user interacts with input elements in the WebView,
 follow the steps described in the [Enabling Material Components instructions](https://flutter.dev/docs/deployment/android#enabling-material-components).
 
-### Setting custom headers on POST requests
+## Setting custom headers on POST requests
 
 Currently, setting custom headers when making a post request with the WebViewController's `loadRequest` method is not supported on Android.
 If you require this functionality, a workaround is to make the request manually, and then load the response data using `loadHTMLString` instead.

@@ -1,4 +1,4 @@
-## NEXT
+## 4.0.0
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 * Updates minimum Flutter version to 2.10.
