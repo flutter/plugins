@@ -10,8 +10,7 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  webview_flutter_platform_interface:
-    path: ../../webview_flutter_platform_interface
+  webview_flutter_platform_interface: ^1.8.0
   webview_flutter_web:
     # When depending on this package from a real application you should use:
     #   webview_flutter_web: ^x.y.z
@@ -30,3 +29,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  webview_flutter_platform_interface:
+    path: ../../../webview_flutter/webview_flutter_platform_interface
+  webview_flutter_web:
+    path: ../../../webview_flutter/webview_flutter_web
