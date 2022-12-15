@@ -100,16 +100,16 @@ class _WebViewExampleState extends State<WebViewExample> {
           const PlatformNavigationDelegateCreationParams(),
         )
           ..setOnProgress((int progress) {
-            print('WebView is loading (progress : $progress%)');
+            debugPrint('WebView is loading (progress : $progress%)');
           })
           ..setOnPageStarted((String url) {
-            print('Page started loading: $url');
+            debugPrint('Page started loading: $url');
           })
           ..setOnPageFinished((String url) {
-            print('Page finished loading: $url');
+            debugPrint('Page finished loading: $url');
           })
           ..setOnWebResourceError((WebResourceError error) {
-            print('''
+            debugPrint('''
 Page resource error:
   code: ${error.errorCode}
   description: ${error.description}
@@ -119,10 +119,10 @@ Page resource error:
           })
           ..setOnNavigationRequest((NavigationRequest request) {
             if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to ${request.url}');
+              debugPrint('blocking navigation to ${request.url}');
               return NavigationDecision.prevent;
             }
-            print('allowing navigation to ${request.url}');
+            debugPrint('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           }),
       )
