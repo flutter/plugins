@@ -162,7 +162,7 @@ static const NSTimeInterval kTimeout = 30.0;
     void (^reply)(BOOL, NSError *);
     [invocation getArgument:&reply atIndex:4];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorTouchIDNotEnrolled userInfo:nil]);
+      reply(NO, [NSError errorWithDomain:@"error" code:99 userInfo:nil]);
     });
   };
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
@@ -200,7 +200,7 @@ static const NSTimeInterval kTimeout = 30.0;
     void (^reply)(BOOL, NSError *);
     [invocation getArgument:&reply atIndex:4];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      reply(NO, [NSError errorWithDomain:@"error" code:99 userInfo:nil]);
+      reply(NO, [NSError errorWithDomain:@"error" code:LAErrorTouchIDNotEnrolled userInfo:nil]);
     });
   };
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
