@@ -82,15 +82,20 @@ android {
 Many classes have a subclass or an underlying implementation that provides access to platform-specific
 features.
 
-To access platform-specific features, start by including the import for the desired platform:
+To access platform-specific features, start by adding the platform implementation packages to your
+app or package:
+
+* **Android**: [webview_flutter_android](https://pub.dev/packages/webview_flutter_android/install)
+* **iOS**: [webview_flutter_wkwebview](https://pub.dev/packages/webview_flutter_wkwebview/install)
+
+Next, add the imports of the implementation packages to your app or package:
 
 <?code-excerpt "main.dart (platform_imports)"?>
 ```dart
 // Import for Android features.
-import 'package:webview_flutter/android.dart';
-// ···
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 // Import for iOS features.
-import 'package:webview_flutter/wkwebview.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 ```
 
 Now, additional features can be accessed through the platform implementations. Classes
@@ -100,9 +105,9 @@ additional functionality provided by the platform and is followed by an example.
 
 1. Pass a creation params class provided by a platform implementation to a `fromPlatformCreationParams`
    constructor (e.g. `WebViewController.fromPlatformCreationParams`,
-   `WebViewWidget.fromPlatformCreationParams`, etc...).
+   `WebViewWidget.fromPlatformCreationParams`, etc.).
 2. Call methods on a platform implementation of a class by using the `platform` field (e.g.
-   `WebViewController.platform`, `WebViewWidget.platform`, etc...).
+   `WebViewController.platform`, `WebViewWidget.platform`, etc.).
 
 Below is an example of setting additional iOS and Android parameters to the `WebViewController`.
 
