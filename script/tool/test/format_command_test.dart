@@ -352,11 +352,7 @@ void main() {
     ];
     processRunner.mockProcessesForExecutable['/usr/local/bin/clang-format'] =
         <io.Process>[MockProcess(exitCode: 1)];
-    Error? commandError;
-    final List<String> output = await runCapturingPrint(
-        runner, <String>['format'], errorHandler: (Error e) {
-      commandError = e;
-    });
+    await runCapturingPrint(runner, <String>['format']);
 
     expect(
         processRunner.recordedCalls,

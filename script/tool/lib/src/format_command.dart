@@ -304,11 +304,11 @@ class FormatCommand extends PackageCommand {
         return <String>[];
       }
 
-      final String stdout = result.stdout as String;
+      final String stdout = result.stdout.trim() as String;
       if (stdout.isEmpty) {
         return <String>[];
       }
-      return stdout.trim().split('\n').toList();
+      return LineSplitter.split(stdout).toList();
     } on io.ProcessException {
       return <String>[];
     }
