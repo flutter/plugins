@@ -144,6 +144,12 @@ Future<void> main() async {
         PlatformNavigationDelegate(
           const PlatformNavigationDelegateCreationParams(),
         )..setOnPageFinished((String url) => pageLoads.add(url)),
+      )
+      ..loadRequest(
+        LoadRequestParams(
+          uri: Uri.parse(headersUrl),
+          headers: headers,
+        ),
       );
 
     await tester.pumpWidget(
@@ -154,10 +160,6 @@ Future<void> main() async {
           ).build(context);
         },
       ),
-    );
-
-    controller.loadRequest(
-      LoadRequestParams(uri: Uri.parse(headersUrl), headers: headers),
     );
 
     await pageLoads.stream.firstWhere((String url) => url == headersUrl);
@@ -680,8 +682,7 @@ Future<void> main() async {
         '${base64Encode(const Utf8Encoder().convert(blankPage))}';
 
     testWidgets('can allow requests', (WidgetTester tester) async {
-      final StreamController<String> pageLoads =
-          StreamController<String>.broadcast();
+      final StreamController<String> pageLoads = StreamController<String>();
 
       final PlatformWebViewController controller = PlatformWebViewController(
         const PlatformWebViewControllerCreationParams(),
@@ -697,6 +698,9 @@ Future<void> main() async {
                   ? NavigationDecision.prevent
                   : NavigationDecision.navigate;
             }),
+        )
+        ..loadRequest(
+          LoadRequestParams(uri: Uri.parse(blankPageEncoded)),
         );
 
       await tester.pumpWidget(Builder(
@@ -706,10 +710,6 @@ Future<void> main() async {
           ).build(context);
         },
       ));
-
-      controller.loadRequest(
-        LoadRequestParams(uri: Uri.parse(blankPageEncoded)),
-      );
 
       await pageLoads.stream.first; // Wait for initial page load.
       await controller.runJavaScript('location.href = "$secondaryUrl"');
@@ -798,8 +798,7 @@ Future<void> main() async {
     });
 
     testWidgets('can block requests', (WidgetTester tester) async {
-      final StreamController<String> pageLoads =
-          StreamController<String>.broadcast();
+      final StreamController<String> pageLoads = StreamController<String>();
 
       final PlatformWebViewController controller = PlatformWebViewController(
         const PlatformWebViewControllerCreationParams(),
@@ -815,7 +814,8 @@ Future<void> main() async {
                   ? NavigationDecision.prevent
                   : NavigationDecision.navigate;
             }),
-        );
+        )
+        ..loadRequest(LoadRequestParams(uri: Uri.parse(blankPageEncoded)));
 
       await tester.pumpWidget(Builder(
         builder: (BuildContext context) {
@@ -824,10 +824,6 @@ Future<void> main() async {
           ).build(context);
         },
       ));
-
-      controller.loadRequest(
-        LoadRequestParams(uri: Uri.parse(blankPageEncoded)),
-      );
 
       await pageLoads.stream.first; // Wait for initial page load.
       await controller
@@ -843,8 +839,7 @@ Future<void> main() async {
     });
 
     testWidgets('supports asynchronous decisions', (WidgetTester tester) async {
-      final StreamController<String> pageLoads =
-          StreamController<String>.broadcast();
+      final StreamController<String> pageLoads = StreamController<String>();
 
       final PlatformWebViewController controller = PlatformWebViewController(
         const PlatformWebViewControllerCreationParams(),
@@ -863,7 +858,8 @@ Future<void> main() async {
                   () => NavigationDecision.navigate);
               return decision;
             }),
-        );
+        )
+        ..loadRequest(LoadRequestParams(uri: Uri.parse(blankPageEncoded)));
 
       await tester.pumpWidget(Builder(
         builder: (BuildContext context) {
@@ -871,10 +867,6 @@ Future<void> main() async {
             PlatformWebViewWidgetCreationParams(controller: controller),
           ).build(context);
         },
-      ));
-
-      controller.loadRequest(LoadRequestParams(
-        uri: Uri.parse(blankPageEncoded),
       ));
 
       await pageLoads.stream.first; // Wait for initial page load.
