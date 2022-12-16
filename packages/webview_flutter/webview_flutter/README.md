@@ -219,4 +219,4 @@ follow the steps described in the [Enabling Material Components instructions](ht
 ### Setting custom headers on POST requests
 
 Currently, setting custom headers when making a post request with the WebViewController's `loadRequest` method is not supported on Android.
-If you require this functionality, a workaround is to make the request manually, and then load the response data using `loadHTMLString` instead.
+If you require this functionality, a workaround is to make the request manually, and then load the response data using `loadHtmlString` instead.
