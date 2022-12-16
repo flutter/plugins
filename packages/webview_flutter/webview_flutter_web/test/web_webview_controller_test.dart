@@ -67,7 +67,7 @@ void main() {
             WebWebViewController(WebWebViewControllerCreationParams());
 
         await expectLater(
-            () async => await controller.loadRequest(
+            () async => controller.loadRequest(
                   LoadRequestParams(uri: Uri.parse('flutter.dev')),
                 ),
             throwsA(const TypeMatcher<ArgumentError>()));

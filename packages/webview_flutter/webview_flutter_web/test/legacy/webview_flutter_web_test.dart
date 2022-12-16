@@ -95,7 +95,7 @@ void main() {
         );
         // Run & Verify
         expect(
-            () async => await controller.loadRequest(
+            () async => controller.loadRequest(
                   WebViewRequest(
                     uri: Uri.parse('flutter.dev'),
                     method: WebViewRequestMethod.get,
