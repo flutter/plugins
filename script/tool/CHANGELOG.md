@@ -1,4 +1,8 @@
-## 13.1
+## 0.13.2
+
+* Falls back to other executables in PATH when `clang-format` does not run.
+
+## 0.13.1
 
 * Updates `version-check` to recognize Pigeon's platform test structure.
 * Pins `package:git` dependency to `2.0.x` until `dart >=2.18.0` becomes our
