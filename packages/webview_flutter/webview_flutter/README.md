@@ -22,46 +22,24 @@ You can now display a WebView by:
 
 <?code-excerpt "simple_example.dart (webview_controller)"?>
 ```dart
-import 'package:webview_flutter/webview_flutter.dart';
-
-final WebViewController controller = WebViewController()
+controller = WebViewController()
   ..setJavaScriptMode(JavaScriptMode.unrestricted)
   ..setBackgroundColor(const Color(0x00000000))
   ..setNavigationDelegate(
     NavigationDelegate(
       onProgress: (int progress) {
-        print('WebView is loading (progress : $progress%)');
+        // Update loading bar.
       },
-      onPageStarted: (String url) {
-        print('Page started loading: $url');
-      },
-      onPageFinished: (String url) {
-        print('Page finished loading: $url');
-      },
-      onWebResourceError: (WebResourceError error) {
-        print('''
-          Page resource error:
-            code: ${error.errorCode}
-            description: ${error.description}
-            errorType: ${error.errorType}
-            isForMainFrame: ${error.isForMainFrame}
-          ''');
-      },
+      onPageStarted: (String url) {},
+      onPageFinished: (String url) {},
+      onWebResourceError: (WebResourceError error) {},
       onNavigationRequest: (NavigationRequest request) {
         if (request.url.startsWith('https://www.youtube.com/')) {
-          print('blocking navigation to $request');
           return NavigationDecision.prevent;
         }
-        print('allowing navigation to $request');
         return NavigationDecision.navigate;
       },
     ),
-  )
-  ..addJavaScriptChannel(
-    'MyChannel',
-    onMessageReceived: (JavaScriptMessage message) {
-      print('message from MyChannel: ${message.message}');
-    },
   )
   ..loadRequest(Uri.parse('https://flutter.dev'));
 ```
@@ -70,9 +48,13 @@ final WebViewController controller = WebViewController()
 
 <?code-excerpt "simple_example.dart (webview_widget)"?>
 ```dart
-import 'package:webview_flutter/webview_flutter.dart';
-
-final Widget webViewWidget = WebViewWidget(controller: controller);
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(title: const Text('Flutter Simple example')),
+    body: WebViewWidget(controller: controller),
+  );
+}
 ```
 
 See the Dartdocs for [WebViewController](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewController-class.html)
@@ -106,6 +88,7 @@ To access platform specific features, start by including the import for the desi
 ```dart
 // Import for Android features.
 import 'package:webview_flutter/android.dart';
+// ···
 // Import for iOS features.
 import 'package:webview_flutter/wkwebview.dart';
 ```
@@ -125,16 +108,23 @@ Below is an example of setting additional iOS and Android parameters to the WebV
 
 <?code-excerpt "main.dart (platform_features)"?>
 ```dart
-final WebViewController controller = WebViewController.fromPlatformCreationParams(
-  WebKitWebViewControllerCreationParams(
+late final PlatformWebViewControllerCreationParams params;
+if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+  params = WebKitWebViewControllerCreationParams(
     allowsInlineMediaPlayback: true,
-  ),
-);
+    mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+  );
+} else {
+  params = const PlatformWebViewControllerCreationParams();
+}
 
-if (controller is WebKitWebViewController) {
-  controller.setAllowsBackForwardNavigationGestures(true);
-} else if (controller is AndroidWebViewController) {
+final WebViewController controller =
+    WebViewController.fromPlatformCreationParams(params);
+// ···
+if (controller.platform is AndroidWebViewController) {
   AndroidWebViewController.enableDebugging(true);
+  (controller.platform as AndroidWebViewController)
+      .setMediaPlaybackRequiresUserGesture(false);
 }
 ```
 
@@ -186,7 +176,9 @@ Below is a non-exhaustive list of changes to the API:
 * `WebViewController.evaluateJavascript` has been removed. Please use
   `WebViewController.runJavaScript` or `WebViewController.runJavaScriptReturningResult`.
 * `WebViewController.getScrollX` and `WebViewController.getScrollY` have been removed and have
-* been replaced by `WebViewController.getScrollPosition`.
+  been replaced by `WebViewController.getScrollPosition`.
+* `WebViewController.runJavaScriptReturningResult` now returns an `Object` and not a `String`. This
+  will attempt to return a `bool` or `num` if the return value can be parsed.
 * The following fields from `WebView` have been moved to `NavigationDelegate`:
   * `WebView.navigationDelegate` -> `NavigationDelegate.onNavigationRequest`
   * `WebView.onPageStarted` -> `NavigationDelegate.onPageStarted`
