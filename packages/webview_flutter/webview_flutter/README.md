@@ -142,17 +142,21 @@ In version 3.0 and below, `WebViewController` could only be retrieved in a callb
 `WebView` was  added to the widget tree. Now, `WebViewController` must be instantiated and can be
 used before it is added to the widget tree. See `Usage` section above for an example.
 
-### Replacing WebView
+### Replacing WebView Functionality
 
 The `WebView` class has been removed and it's functionality has been split into `WebViewController`
-or `WebViewWidget`.
+and `WebViewWidget`.
 
 `WebViewController` handles all functionality that is associated with the underlying WebView
-provided by each platform. (e.g. loading a url, setting the background color of the underlying view,
-or clearing the cache).
+provided by each platform. (e.g. loading a url, setting the background color of the underlying
+platform view, or clearing the cache).
 
 `WebViewWidget` takes a `WebViewController` and handles all Flutter widget related functionality
 (e.g. layout direction, gesture recognizers).
+
+See the Dartdocs for [WebViewController](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewController-class.html)
+and [WebViewWidget](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewWidget-class.html)
+for more details.
 
 ### PlatformView Implementation on Android
 
@@ -161,12 +165,36 @@ Layer Hybrid Composition on versions 23+ and automatically fallbacks to Hybrid C
 version 19-23. See https://github.com/flutter/flutter/issues/108106 for progress on manually
 switching to Hybrid Composition on versions 23+.
 
-### Feature Changes
+### API Changes
 
-Below is an exhaustive list of changes to the location of methods.
+Below is a non-exhaustive list of changes to the API:
 
-
-
+* `WebViewController.clearCache` no longer clears local storage. Please use
+  `WebViewController.clearLocalStorage`.
+* `WebViewController.clearCache` no longer reloads the page.
+* `WebViewController.loadUrl` has been removed. Please use `WebViewController.loadRequest`.
+* `WebViewController.evaluateJavascript` has been removed. Please use
+  `WebViewController.runJavaScript` or `WebViewController.runJavaScriptReturningResult`.
+* `WebViewController.getScrollX` and `WebViewController.getScrollY` have been removed and have
+* been replaced by `WebViewController.getScrollPosition`.
+* The following fields from `WebView` have been moved to `NavigationDelegate`:
+  * `WebView.navigationDelegate` -> `NavigationDelegate.onNavigationRequest`
+  * `WebView.onPageStarted` -> `NavigationDelegate.onPageStarted`
+  * `WebView.onPageFinished` -> `NavigationDelegate.onPageFinished`
+  * `WebView.onProgress` -> `NavigationDelegate.onProgress`
+  * `WebView.onWebResourceError` -> `NavigationDelegate.onWebResourceError`
+* The following fields from `WebView` have been moved to `WebViewController`:
+  * `WebView.javascriptMode` -> `WebViewController.setJavaScriptMode`
+  * `WebView.javascriptChannels` ->
+    `WebViewController.addJavaScriptChannel`/`WebViewController.removeJavaScriptChannel`
+  * `WebView.zoomEnabled` -> `WebViewController.enableZoom`
+  * `WebView.userAgent` -> `WebViewController.setUserAgent`
+  * `WebView.backgroundColor` -> `WebViewController.setBackgroundColor`
+* The following features have been moved to an Android implementation class. See
+  `aoijfea` section to use platform specific features.
+* The following features have been moved to an Android implementation class. See
+  `aoijfea` section to use platform specific features.
+  
 ## Enable Material Components for Android
 
 To use Material Components when the user interacts with input elements in the WebView,
