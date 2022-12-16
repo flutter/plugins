@@ -7,7 +7,7 @@ import 'dart:convert' show json;
 
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/foundation.dart' show debugPrint, visibleForTesting;
 import 'package:path/path.dart' as path;
 import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
@@ -80,7 +80,7 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
     try {
       final File? localDataFile = await _getLocalDataFile();
       if (localDataFile == null) {
-        print('Unable to determine where to write preferences.');
+        debugPrint('Unable to determine where to write preferences.');
         return false;
       }
       if (!localDataFile.existsSync()) {
@@ -89,7 +89,7 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
       final String stringMap = json.encode(preferences);
       localDataFile.writeAsStringSync(stringMap);
     } catch (e) {
-      print('Error saving preferences to disk: $e');
+      debugPrint('Error saving preferences to disk: $e');
       return false;
     }
     return true;
