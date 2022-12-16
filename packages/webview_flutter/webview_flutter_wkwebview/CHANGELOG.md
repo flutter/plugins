@@ -1,5 +1,8 @@
-## NEXT
+## 3.0.0
 
+* **BREAKING CHANGE** Updates platform implementation to `2.0.0` release of
+  `webview_flutter_platform_interface`. See
+  [webview_flutter](https://pub.dev/packages/webview_flutter/versions/4.0.0) for updated usage.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 2.9.5
