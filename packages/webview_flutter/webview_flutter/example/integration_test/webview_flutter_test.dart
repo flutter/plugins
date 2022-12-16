@@ -93,13 +93,11 @@ Future<void> main() async {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(onPageFinished: (String url) => pageLoads.add(url)),
-      )
-      ..loadRequest(
-        Uri.parse(headersUrl),
-        headers: headers,
       );
 
     await tester.pumpWidget(WebViewWidget(controller: controller));
+
+    controller.loadRequest(Uri.parse(headersUrl), headers: headers);
 
     await pageLoads.stream.firstWhere((String url) => url == headersUrl);
 
@@ -591,10 +589,11 @@ Future<void> main() async {
                 ? NavigationDecision.prevent
                 : NavigationDecision.navigate;
           },
-        ))
-        ..loadRequest(Uri.parse(blankPageEncoded));
+        ));
 
       await tester.pumpWidget(WebViewWidget(controller: controller));
+
+      controller.loadRequest(Uri.parse(blankPageEncoded));
 
       await pageLoads.stream.first; // Wait for initial page load.
       await controller.runJavaScript('location.href = "$secondaryUrl"');
@@ -658,10 +657,11 @@ Future<void> main() async {
               return (navigationRequest.url.contains('youtube.com'))
                   ? NavigationDecision.prevent
                   : NavigationDecision.navigate;
-            }))
-        ..loadRequest(Uri.parse(blankPageEncoded));
+            }));
 
       await tester.pumpWidget(WebViewWidget(controller: controller));
+
+      controller.loadRequest(Uri.parse(blankPageEncoded));
 
       await pageLoads.stream.first; // Wait for initial page load.
       await controller
@@ -690,10 +690,11 @@ Future<void> main() async {
                   const Duration(milliseconds: 10),
                   () => NavigationDecision.navigate);
               return decision;
-            }))
-        ..loadRequest(Uri.parse(blankPageEncoded));
+            }));
 
       await tester.pumpWidget(WebViewWidget(controller: controller));
+
+      controller.loadRequest(Uri.parse(blankPageEncoded));
 
       await pageLoads.stream.first; // Wait for initial page load.
       await controller.runJavaScript('location.href = "$secondaryUrl"');
