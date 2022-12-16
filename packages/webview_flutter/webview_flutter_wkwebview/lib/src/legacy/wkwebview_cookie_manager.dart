@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+// ignore: implementation_imports
+import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
 
-import 'foundation/foundation.dart';
-import 'web_kit/web_kit.dart';
+import '../foundation/foundation.dart';
+import '../web_kit/web_kit.dart';
 
 /// Handles all cookie operations for the WebView platform.
 class WKWebViewCookieManager extends WebViewCookieManagerPlatform {

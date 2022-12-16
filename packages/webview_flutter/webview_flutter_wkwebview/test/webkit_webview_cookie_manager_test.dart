@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
-import 'package:webview_flutter_wkwebview/src/v4/src/webkit_proxy.dart';
-import 'package:webview_flutter_wkwebview/src/v4/webview_flutter_wkwebview.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
+import 'package:webview_flutter_wkwebview/src/webkit_proxy.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import 'webkit_webview_cookie_manager_test.mocks.dart';
 
