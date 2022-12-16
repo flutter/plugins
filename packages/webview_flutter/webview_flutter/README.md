@@ -109,7 +109,7 @@ additional functionality provided by the platform and is followed by an example.
 2. Call methods on a platform implementation of a class by using the `platform` field (e.g.
    `WebViewController.platform`, `WebViewWidget.platform`, etc.).
 
-Below is an example of setting additional iOS and Android parameters to the `WebViewController`.
+Below is an example of setting additional iOS and Android parameters on the `WebViewController`.
 
 <?code-excerpt "main.dart (platform_features)"?>
 ```dart
@@ -133,10 +133,10 @@ if (controller.platform is AndroidWebViewController) {
 }
 ```
 
-See https://pub.dev/documentation/webview_flutter/latest/android/android-library.html
+See https://pub.dev/documentation/webview_flutter_android/latest/webview_flutter_android/webview_flutter_android-library.html
 for more details on Android features.
 
-See https://pub.dev/documentation/webview_flutter/latest/wkwebview/wkwebview-library.html
+See https://pub.dev/documentation/webview_flutter_wkwebview/latest/webview_flutter_wkwebview/webview_flutter_wkwebview-library.html
 for more details on iOS features.
 
 ## Migrating from 3.0 to 4.0
@@ -144,20 +144,20 @@ for more details on iOS features.
 ### Instantiating WebViewController
 
 In version 3.0 and below, `WebViewController` could only be retrieved in a callback after the
-`WebView` was  added to the widget tree. Now, `WebViewController` must be instantiated and can be
+`WebView` was added to the widget tree. Now, `WebViewController` must be instantiated and can be
 used before it is added to the widget tree. See `Usage` section above for an example.
 
 ### Replacing WebView Functionality
 
-The `WebView` class has been removed and it's functionality has been split into `WebViewController`
+The `WebView` class has been removed and its functionality has been split into `WebViewController`
 and `WebViewWidget`.
 
-`WebViewController` handles all functionality that is associated with the underlying WebView
-provided by each platform. (e.g. loading a url, setting the background color of the underlying
+`WebViewController` handles all functionality that is associated with the underlying web view
+provided by each platform. (e.g., loading a url, setting the background color of the underlying
 platform view, or clearing the cache).
 
 `WebViewWidget` takes a `WebViewController` and handles all Flutter widget related functionality
-(e.g. layout direction, gesture recognizers).
+(e.g., layout direction, gesture recognizers).
 
 See the Dartdocs for [WebViewController](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewController-class.html)
 and [WebViewWidget](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewWidget-class.html)
@@ -211,12 +211,12 @@ Below is a non-exhaustive list of changes to the API:
   * `WebView.initialMediaPlaybackPolicy` -> `WebKitWebViewControllerCreationParams.mediaTypesRequiringUserAction`
   * `WebView.allowsInlineMediaPlayback` -> `WebKitWebViewControllerCreationParams.allowsInlineMediaPlayback`
   
-## Enable Material Components for Android
+### Enable Material Components for Android
 
 To use Material Components when the user interacts with input elements in the WebView,
 follow the steps described in the [Enabling Material Components instructions](https://flutter.dev/docs/deployment/android#enabling-material-components).
 
-## Setting custom headers on POST requests
+### Setting custom headers on POST requests
 
 Currently, setting custom headers when making a post request with the WebViewController's `loadRequest` method is not supported on Android.
 If you require this functionality, a workaround is to make the request manually, and then load the response data using `loadHTMLString` instead.
