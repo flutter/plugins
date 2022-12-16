@@ -51,7 +51,7 @@ controller = WebViewController()
 @override
 Widget build(BuildContext context) {
   return Scaffold(
-    appBar: AppBar(title: const Text('Flutter Simple example')),
+    appBar: AppBar(title: const Text('Flutter Simple Example')),
     body: WebViewWidget(controller: controller),
   );
 }
@@ -101,10 +101,10 @@ additional functionality provided by the platform and is followed by an example.
 1. Pass a creation params class provided by a platform implementation to a `fromPlatformCreationParams`
    constructor (e.g. `WebViewController.fromPlatformCreationParams`,
    `WebViewWidget.fromPlatformCreationParams`, etc...).
-2. Calling methods on a platform implementation of a class by using the `platform` field (e.g.
+2. Call methods on a platform implementation of a class by using the `platform` field (e.g.
    `WebViewController.platform`, `WebViewWidget.platform`, etc...).
 
-Below is an example of setting additional iOS and Android parameters to the WebViewController.
+Below is an example of setting additional iOS and Android parameters to the `WebViewController`.
 
 <?code-excerpt "main.dart (platform_features)"?>
 ```dart
@@ -182,7 +182,8 @@ Below is a non-exhaustive list of changes to the API:
 * `CookieManager` is replaced by `WebViewCookieManager`.
 * `NavigationDelegate.onWebResourceError` callback includes errors that are not from the main frame.
    Use the `WebResourceError.isForMainFrame` field to filter errors.
-* The following fields from `WebView` have been moved to `NavigationDelegate`:
+* The following fields from `WebView` have been moved to `NavigationDelegate`. They can be added to
+  a WebView with `WebViewController.setNavigationDelegate`.
   * `WebView.navigationDelegate` -> `NavigationDelegate.onNavigationRequest`
   * `WebView.onPageStarted` -> `NavigationDelegate.onPageStarted`
   * `WebView.onPageFinished` -> `NavigationDelegate.onPageFinished`
@@ -197,7 +198,7 @@ Below is a non-exhaustive list of changes to the API:
   * `WebView.backgroundColor` -> `WebViewController.setBackgroundColor`
 * The following features have been moved to an Android implementation class. See section
   `Platform Specific Features` for details on accessing Android platform specific features.
-  * `WebView.debuggingEnabled` -> `AndroidWebViewController.enableDebugging`
+  * `WebView.debuggingEnabled` -> `static AndroidWebViewController.enableDebugging`
   * `WebView.initialMediaPlaybackPolicy` -> `AndroidWebViewController.setMediaPlaybackRequiresUserGesture`
 * The following features have been moved to an iOS implementation class. See section
   `Platform Specific Features` for details on accessing iOS platform specific features.
