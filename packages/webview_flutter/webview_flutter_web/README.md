@@ -5,10 +5,8 @@ This is an implementation of the [`webview_flutter`](https://pub.dev/packages/we
 It is currently severely limited and doesn't implement most of the available functionality.
 The following functionality is currently available:
 
-- `loadUrl` (Without headers)
-- `requestUrl`
-- `loadHTMLString` (Without `baseUrl`)
-- Setting the `initialUrl` through `CreationParams`.
+- `loadRequest`
+- `loadHtmlString` (Without `baseUrl`)
 
 Nothing else is currently supported.
 
@@ -20,7 +18,7 @@ yet, so it currently requires extra setup to use:
 * [Add this package](https://pub.dev/packages/webview_flutter_web/install)
   as an explicit dependency of your project, in addition to depending on
   `webview_flutter`.
-* Register `WebWebViewPlatform` as the `WebView.platform` before creating a
+* Register `WebWebViewPlatform` as the `WebViewPlatform.instance` before creating a
   `WebView`. See below for examples.
 
 Once those steps below are complete, the APIs from `webview_flutter` listed
@@ -39,7 +37,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_web/webview_flutter_web.dart';
 
 main() {
-  WebView.platform = WebWebViewPlatform();
+  WebViewPlatform.instance = WebWebViewPlatform();
   ...
 ```
 
@@ -55,7 +53,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_web/webview_flutter_web.dart';
 
 void registerWebViewWebImplementation() {
-  WebView.platform = WebWebViewPlatform();
+  WebViewPlatform.instance = WebWebViewPlatform();
 }
 ```
 
