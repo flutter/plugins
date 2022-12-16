@@ -185,8 +185,8 @@ void main() {
     final Set<Marker> prev = <Marker>{m1};
     m1 = Marker(
         markerId: const MarkerId('marker_1'),
-        onTap: () => print('hello'),
-        onDragEnd: (LatLng latLng) => print(latLng));
+        onTap: () {},
+        onDragEnd: (LatLng latLng) {});
     final Set<Marker> cur = <Marker>{m1};
 
     await tester.pumpWidget(_mapWithMarkers(prev));
