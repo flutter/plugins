@@ -110,8 +110,18 @@ import 'package:webview_flutter/android.dart';
 import 'package:webview_flutter/wkwebview.dart';
 ```
 
-Then additional features can be accessed through the platform implementations provided by the
-imports above:
+Now, additional features can be accessed through the platform implementations. Classes
+`WebViewController`, `WebViewWidget`, `NavigationDelegate`, and `WebViewCookieManager` pass their
+functionality to a class provided by the current platform. Below are a couple of ways to access
+additional functionality provided by the platform and is followed by an example.
+
+1. Pass a creation params class provided by a platform implementation to a `fromPlatformCreationParams`
+   constructor (e.g. `WebViewController.fromPlatformCreationParams`,
+   `WebViewWidget.fromPlatformCreationParams`, etc...).
+2. Calling methods on a platform implementation of a class by using the `platform` field (e.g.
+   `WebViewController.platform`, `WebViewWidget.platform`, etc...).
+
+Below is an example of setting additional iOS and Android parameters to the WebViewController.
 
 <?code-excerpt "main.dart (platform_features)"?>
 ```dart
@@ -190,10 +200,15 @@ Below is a non-exhaustive list of changes to the API:
   * `WebView.zoomEnabled` -> `WebViewController.enableZoom`
   * `WebView.userAgent` -> `WebViewController.setUserAgent`
   * `WebView.backgroundColor` -> `WebViewController.setBackgroundColor`
-* The following features have been moved to an Android implementation class. See
-  `aoijfea` section to use platform specific features.
-* The following features have been moved to an Android implementation class. See
-  `aoijfea` section to use platform specific features.
+* The following features have been moved to an Android implementation class. See section
+  `Platform Specific Features` for details on accessing Android platform specific features.
+  * `WebView.debuggingEnabled` -> `AndroidWebViewController.enableDebugging`
+  * `WebView.initialMediaPlaybackPolicy` -> `AndroidWebViewController.setMediaPlaybackRequiresUserGesture`
+* The following features have been moved to an iOS implementation class. See section
+  `Platform Specific Features` for details on accessing iOS platform specific features.
+  * `WebView.gestureNavigationEnabled` -> `WebKitWebViewController.setAllowsBackForwardNavigationGestures`
+  * `WebView.initialMediaPlaybackPolicy` -> `WebKitWebViewControllerCreationParams.mediaTypesRequiringUserAction`
+  * `WebView.allowsInlineMediaPlayback` -> `WebKitWebViewControllerCreationParams.allowsInlineMediaPlayback`
   
 ## Enable Material Components for Android
 

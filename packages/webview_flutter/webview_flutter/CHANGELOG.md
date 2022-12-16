@@ -1,8 +1,10 @@
 ## 4.0.0
 
-* **BREAKING CHANGE** See README for details on migrating from version 3.0.
+* **BREAKING CHANGE** Updates implementation to use the `2.0.0` release of
+  `webview_flutter_platform_interface`. See `Usage` section in the README for updated usage. See
+  `Migrating from 3.0 to 4.0` section in the README for details on migrating to this version.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
-* Updates minimum Flutter version to 2.10.
+* Updates minimum Flutter version to 3.0.0.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
 * Updates references to the obsolete master branch.

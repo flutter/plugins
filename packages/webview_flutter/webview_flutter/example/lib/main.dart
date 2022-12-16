@@ -151,9 +151,9 @@ Page resource error:
       ..loadRequest(Uri.parse('https://flutter.dev'));
 
     // #docregion platform_features
-    if (controller is AndroidWebViewController) {
+    if (controller.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
-      (controller as AndroidWebViewController)
+      (controller.platform as AndroidWebViewController)
           .setMediaPlaybackRequiresUserGesture(false);
     }
     // #enddocregion platform_features
