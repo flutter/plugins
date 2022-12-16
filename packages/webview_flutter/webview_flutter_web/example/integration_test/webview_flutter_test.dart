@@ -2,41 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:html' as html;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webview_flutter_web_example/web_view.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_web/webview_flutter_web.dart';
 
-void main() {
+Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  // URLs to navigate to in tests. These need to be URLs that we are confident will
-  // always be accessible, and won't do redirection. (E.g., just
-  // 'https://www.google.com/' will sometimes redirect traffic that looks
-  // like it's coming from a bot, which is true of these tests).
-  const String primaryUrl = 'https://flutter.dev/';
-  const String secondaryUrl = 'https://www.google.com/robots.txt';
+  final HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 0);
+  server.forEach((HttpRequest request) {
+    if (request.uri.path == '/hello.txt') {
+      request.response.writeln('Hello, world.');
+    } else {
+      fail('unexpected request: ${request.method} ${request.uri}');
+    }
+    request.response.close();
+  });
+  final String prefixUrl = 'http://${server.address.address}:${server.port}';
+  final String primaryUrl = '$prefixUrl/hello.txt';
 
-  testWidgets('initialUrl', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
+  testWidgets('loadRequest', (WidgetTester tester) async {
+    final WebWebViewController controller =
+        WebWebViewController(const PlatformWebViewControllerCreationParams())
+          ..loadRequest(
+            LoadRequestParams(uri: Uri.parse(primaryUrl)),
+          );
+
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          initialUrl: primaryUrl,
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-        ),
+        child: Builder(builder: (BuildContext context) {
+          return WebWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        }),
       ),
     );
-    await controllerCompleter.future;
 
     // Assert an iframe has been rendered to the DOM with the correct src attribute.
     final html.IFrameElement? element =
@@ -45,28 +52,31 @@ void main() {
     expect(element!.src, primaryUrl);
   });
 
-  testWidgets('loadUrl', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
+  testWidgets('loadHtmlString', (WidgetTester tester) async {
+    final WebWebViewController controller =
+        WebWebViewController(const PlatformWebViewControllerCreationParams())
+          ..loadHtmlString(
+            'data:text/html;charset=utf-8,${Uri.encodeFull('test html')}',
+          );
+
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          initialUrl: primaryUrl,
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-        ),
+        child: Builder(builder: (BuildContext context) {
+          return WebWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        }),
       ),
     );
-    final WebViewController controller = await controllerCompleter.future;
-    await controller.loadUrl(secondaryUrl);
 
     // Assert an iframe has been rendered to the DOM with the correct src attribute.
     final html.IFrameElement? element =
         html.document.querySelector('iframe') as html.IFrameElement?;
     expect(element, isNotNull);
-    expect(element!.src, secondaryUrl);
+    expect(
+      element!.src,
+      'data:text/html;charset=utf-8,data:text/html;charset=utf-8,test%2520html',
+    );
   });
 }

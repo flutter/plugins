@@ -1,3 +1,7 @@
+## 0.8.6+2
+
+* Fixes issue where selectable images of certain types (such as ProRAW images) could not be loaded.
+
 ## 0.8.6+1
 
 * Fixes issue with crashing the app when picking images with PHPicker without providing `Photo Library Usage` permission.

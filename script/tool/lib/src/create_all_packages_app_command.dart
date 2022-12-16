@@ -230,7 +230,7 @@ class CreateAllPackagesAppCommand extends PackageCommand {
 
   String _pubspecToString(Pubspec pubspec) {
     return '''
-### Generated file. Do not edit. Run `pub global run flutter_plugin_tools gen-pubspec` to update.
+### Generated file. Do not edit. Run `dart pub global run flutter_plugin_tools gen-pubspec` to update.
 name: ${pubspec.name}
 description: ${pubspec.description}
 publish_to: none

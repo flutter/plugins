@@ -9,10 +9,10 @@ same interface.
 # Usage
 
 To implement a new platform-specific implementation of `webview_flutter`, extend
-[`WebviewPlatform`](lib/src/platform_interface/webview_platform.dart) with an implementation that performs the
+[`WebviewPlatform`](lib/src/webview_platform.dart) with an implementation that performs the
 platform-specific behavior, and when you register your plugin, set the default
 `WebviewPlatform` by calling
-`WebviewPlatform.setInstance(MyPlatformWebview())`.
+`WebviewPlatform.instance = MyPlatformWebview()`.
 
 # Note on breaking changes
 
