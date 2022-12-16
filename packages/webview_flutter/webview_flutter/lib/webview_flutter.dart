@@ -20,7 +20,8 @@ export 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
         ProgressCallback,
         WebResourceError,
         WebResourceErrorCallback,
-        WebViewCookie;
+        WebViewCookie,
+        WebViewPlatform;
 
 export 'src/navigation_delegate.dart';
 export 'src/webview_controller.dart';

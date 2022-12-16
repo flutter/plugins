@@ -4,16 +4,8 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:webview_flutter/android.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter/wkwebview.dart';
 
 void main() => runApp(const MaterialApp(home: WebViewExample()));
 
@@ -45,10 +37,8 @@ class _WebViewExampleState extends State<WebViewExample> {
           onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to ${request.url}');
               return NavigationDecision.prevent;
             }
-            print('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           },
         ),

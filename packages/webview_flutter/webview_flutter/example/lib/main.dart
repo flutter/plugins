@@ -94,7 +94,7 @@ class _WebViewExampleState extends State<WebViewExample> {
 
     // #docregion platform_features
     late final PlatformWebViewControllerCreationParams params;
-    if (Platform.isIOS) {
+    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
       params = WebKitWebViewControllerCreationParams(
         allowsInlineMediaPlayback: true,
         mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
@@ -113,16 +113,16 @@ class _WebViewExampleState extends State<WebViewExample> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            print('WebView is loading (progress : $progress%)');
+            debugPrint('WebView is loading (progress : $progress%)');
           },
           onPageStarted: (String url) {
-            print('Page started loading: $url');
+            debugPrint('Page started loading: $url');
           },
           onPageFinished: (String url) {
-            print('Page finished loading: $url');
+            debugPrint('Page finished loading: $url');
           },
           onWebResourceError: (WebResourceError error) {
-            print('''
+            debugPrint('''
 Page resource error:
   code: ${error.errorCode}
   description: ${error.description}
@@ -132,10 +132,10 @@ Page resource error:
           },
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to ${request.url}');
+              debugPrint('blocking navigation to ${request.url}');
               return NavigationDecision.prevent;
             }
-            print('allowing navigation to ${request.url}');
+            debugPrint('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           },
         ),
@@ -153,7 +153,8 @@ Page resource error:
     // #docregion platform_features
     if (controller is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
-      controller.setMediaPlaybackRequiresUserGesture(false);
+      (controller as AndroidWebViewController)
+          .setMediaPlaybackRequiresUserGesture(false);
     }
     // #enddocregion platform_features
 
