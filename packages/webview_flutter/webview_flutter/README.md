@@ -180,6 +180,8 @@ Below is a non-exhaustive list of changes to the API:
 * `WebViewController.runJavaScriptReturningResult` now returns an `Object` and not a `String`. This
   will attempt to return a `bool` or `num` if the return value can be parsed.
 * `CookieManager` is replaced by `WebViewCookieManager`.
+* `NavigationDelegate.onWebResourceError` callback includes errors that are not from the main frame.
+   Use the `WebResourceError.isForMainFrame` field to filter errors.
 * The following fields from `WebView` have been moved to `NavigationDelegate`:
   * `WebView.navigationDelegate` -> `NavigationDelegate.onNavigationRequest`
   * `WebView.onPageStarted` -> `NavigationDelegate.onPageStarted`
