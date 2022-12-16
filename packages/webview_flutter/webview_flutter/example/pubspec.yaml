@@ -29,6 +29,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  webview_flutter_platform_interface: ^2.0.0
 
 flutter:
   uses-material-design: true
