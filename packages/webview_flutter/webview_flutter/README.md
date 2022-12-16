@@ -77,12 +77,12 @@ android {
 }
 ```
 
-### Platform Specific Features
+### Platform-Specific Features
 
-Many classes have a subclass or an underlying implementation that provides access to platform
-specific features.
+Many classes have a subclass or an underlying implementation that provides access to platform-specific
+features.
 
-To access platform specific features, start by including the import for the desired platform:
+To access platform-specific features, start by including the import for the desired platform:
 
 <?code-excerpt "main.dart (platform_imports)"?>
 ```dart
@@ -197,11 +197,11 @@ Below is a non-exhaustive list of changes to the API:
   * `WebView.userAgent` -> `WebViewController.setUserAgent`
   * `WebView.backgroundColor` -> `WebViewController.setBackgroundColor`
 * The following features have been moved to an Android implementation class. See section
-  `Platform Specific Features` for details on accessing Android platform specific features.
+  `Platform-Specific Features` for details on accessing Android platform specific features.
   * `WebView.debuggingEnabled` -> `static AndroidWebViewController.enableDebugging`
   * `WebView.initialMediaPlaybackPolicy` -> `AndroidWebViewController.setMediaPlaybackRequiresUserGesture`
 * The following features have been moved to an iOS implementation class. See section
-  `Platform Specific Features` for details on accessing iOS platform specific features.
+  `Platform-Specific Features` for details on accessing iOS platform specific features.
   * `WebView.gestureNavigationEnabled` -> `WebKitWebViewController.setAllowsBackForwardNavigationGestures`
   * `WebView.initialMediaPlaybackPolicy` -> `WebKitWebViewControllerCreationParams.mediaTypesRequiringUserAction`
   * `WebView.allowsInlineMediaPlayback` -> `WebKitWebViewControllerCreationParams.allowsInlineMediaPlayback`
