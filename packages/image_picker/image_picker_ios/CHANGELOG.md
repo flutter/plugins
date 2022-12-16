@@ -1,3 +1,7 @@
+## 0.8.6+3
+
+* Fix authorization status check for iOS14+ so it includes PHAuthorizationStatusLimited.
+
 ## 0.8.6+2
 
 * Fixes issue where selectable images of certain types (such as ProRAW images) could not be loaded.
