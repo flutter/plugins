@@ -8,10 +8,3 @@
 
 # This is a permament entry, as it should never be a direct app dependency.
 - plugin_platform_interface
-# Packages below are temporarily added to push and release a new webview
-# interface. Remove packages with release of `webview_flutter` 4.0.0. See
-# https://github.com/flutter/flutter/issues/94051.
-- webview_flutter_platform_interface
-- webview_flutter_wkwebview
-- webview_flutter_android
-- webview_flutter_web
