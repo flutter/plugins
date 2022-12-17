@@ -8,9 +8,7 @@ export 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
     show
         JavaScriptMessage,
         JavaScriptMode,
-        JavaScriptChannelParams,
         LoadRequestMethod,
-        LoadRequestParams,
         NavigationDecision,
         NavigationRequest,
         NavigationRequestCallback,
