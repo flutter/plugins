@@ -139,6 +139,16 @@ for more details on Android features.
 See https://pub.dev/documentation/webview_flutter_wkwebview/latest/webview_flutter_wkwebview/webview_flutter_wkwebview-library.html
 for more details on iOS features.
 
+### Enable Material Components for Android
+
+To use Material Components when the user interacts with input elements in the WebView,
+follow the steps described in the [Enabling Material Components instructions](https://flutter.dev/docs/deployment/android#enabling-material-components).
+
+### Setting custom headers on POST requests
+
+Currently, setting custom headers when making a post request with the WebViewController's `loadRequest` method is not supported on Android.
+If you require this functionality, a workaround is to make the request manually, and then load the response data using `loadHtmlString` instead.
+
 ## Migrating from 3.0 to 4.0
 
 ### Instantiating WebViewController
@@ -210,13 +220,3 @@ Below is a non-exhaustive list of changes to the API:
   * `WebView.gestureNavigationEnabled` -> `WebKitWebViewController.setAllowsBackForwardNavigationGestures`
   * `WebView.initialMediaPlaybackPolicy` -> `WebKitWebViewControllerCreationParams.mediaTypesRequiringUserAction`
   * `WebView.allowsInlineMediaPlayback` -> `WebKitWebViewControllerCreationParams.allowsInlineMediaPlayback`
-  
-### Enable Material Components for Android
-
-To use Material Components when the user interacts with input elements in the WebView,
-follow the steps described in the [Enabling Material Components instructions](https://flutter.dev/docs/deployment/android#enabling-material-components).
-
-### Setting custom headers on POST requests
-
-Currently, setting custom headers when making a post request with the WebViewController's `loadRequest` method is not supported on Android.
-If you require this functionality, a workaround is to make the request manually, and then load the response data using `loadHtmlString` instead.
