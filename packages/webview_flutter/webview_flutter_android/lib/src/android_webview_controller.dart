@@ -369,6 +369,7 @@ class AndroidWebViewWidgetCreationParams
     required super.controller,
     super.layoutDirection,
     super.gestureRecognizers,
+    this.displayWithHybridComposition = false,
     @visibleForTesting InstanceManager? instanceManager,
   }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
@@ -376,12 +377,14 @@ class AndroidWebViewWidgetCreationParams
   /// [PlatformWebViewWidgetCreationParams].
   AndroidWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
     PlatformWebViewWidgetCreationParams params, {
-    InstanceManager? instanceManager,
+    bool displayWithHybridComposition = false,
+    @visibleForTesting InstanceManager? instanceManager,
   }) : this(
           key: params.key,
           controller: params.controller,
           layoutDirection: params.layoutDirection,
           gestureRecognizers: params.gestureRecognizers,
+          displayWithHybridComposition: displayWithHybridComposition,
           instanceManager: instanceManager,
         );
 
@@ -392,6 +395,19 @@ class AndroidWebViewWidgetCreationParams
   /// outside of tests.
   @visibleForTesting
   final InstanceManager instanceManager;
+
+  /// Whether the [WebView] will be displayed using the Hybrid Composition
+  /// PlatformView implementation.
+  ///
+  /// For most use cases, this flag should be set to false. Hybrid Composition
+  /// can have performance costs but doesn't have the limitation of rendering to
+  /// an Android SurfaceTexture. See
+  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance
+  /// https://github.com/flutter/flutter/issues/104889,
+  /// https://github.com/flutter/flutter/issues/104889.
+  ///
+  /// Defaults to false.
+  final bool displayWithHybridComposition;
 }
 
 /// An implementation of [PlatformWebViewWidget] with the Android WebView API.
@@ -411,30 +427,50 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformViewLink(
-        key: _androidParams.key,
+      key: _androidParams.key,
+      viewType: 'plugins.flutter.io/webview',
+      surfaceFactory: (
+        BuildContext context,
+        PlatformViewController controller,
+      ) {
+        return AndroidViewSurface(
+          controller: controller as AndroidViewController,
+          gestureRecognizers: _androidParams.gestureRecognizers,
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        );
+      },
+      onCreatePlatformView: (PlatformViewCreationParams params) {
+        return _initAndroidView(
+          params,
+          displayWithHybridComposition:
+              _androidParams.displayWithHybridComposition,
+        )..create();
+      },
+    );
+  }
+
+  PlatformViewController _initAndroidView(
+    PlatformViewCreationParams params, {
+    required bool displayWithHybridComposition,
+  }) {
+    if (displayWithHybridComposition) {
+      return PlatformViewsService.initExpensiveAndroidView(
+        id: params.id,
         viewType: 'plugins.flutter.io/webview',
-        surfaceFactory: (
-          BuildContext context,
-          PlatformViewController controller,
-        ) {
-          return AndroidViewSurface(
-            controller: controller as AndroidViewController,
-            gestureRecognizers: _androidParams.gestureRecognizers,
-            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-          );
-        },
-        onCreatePlatformView: (PlatformViewCreationParams params) {
-          return PlatformViewsService.initSurfaceAndroidView(
-            id: params.id,
-            viewType: 'plugins.flutter.io/webview',
-            layoutDirection: _androidParams.layoutDirection,
-            creationParams: _androidParams.instanceManager.getIdentifier(
-                (_androidParams.controller as AndroidWebViewController)
-                    ._webView),
-            creationParamsCodec: const StandardMessageCodec(),
-          )
-            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-            ..create();
-        });
+        layoutDirection: _androidParams.layoutDirection,
+        creationParams: _androidParams.instanceManager.getIdentifier(
+            (_androidParams.controller as AndroidWebViewController)._webView),
+        creationParamsCodec: const StandardMessageCodec(),
+      )..addOnPlatformViewCreatedListener(params.onPlatformViewCreated);
+    } else {
+      return PlatformViewsService.initSurfaceAndroidView(
+        id: params.id,
+        viewType: 'plugins.flutter.io/webview',
+        layoutDirection: _androidParams.layoutDirection,
+        creationParams: _androidParams.instanceManager.getIdentifier(
+            (_androidParams.controller as AndroidWebViewController)._webView),
+        creationParamsCodec: const StandardMessageCodec(),
+      )..addOnPlatformViewCreatedListener(params.onPlatformViewCreated);
+    }
   }
 }
