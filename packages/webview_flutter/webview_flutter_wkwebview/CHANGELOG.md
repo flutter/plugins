@@ -1,6 +1,7 @@
 ## 3.0.1
 
 * Adds support for retrieving navigation type with internal class.
+* Updates README with details on contributing.
 
 ## 3.0.0
 
