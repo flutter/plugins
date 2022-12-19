@@ -124,7 +124,8 @@
 
   for (NSInteger index = 0; index < gifInfo.images.count; index++) {
     UIImage *image = (UIImage *)[gifInfo.images objectAtIndex:index];
-    CGImageDestinationAddImage(destination, image.CGImage, (__bridge CFDictionaryRef)frameProperties);
+    CGImageDestinationAddImage(destination, image.CGImage,
+                               (__bridge CFDictionaryRef)frameProperties);
   }
 
   CGImageDestinationFinalize(destination);
