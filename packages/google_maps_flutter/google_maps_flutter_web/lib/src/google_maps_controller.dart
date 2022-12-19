@@ -187,16 +187,6 @@ class GoogleMapController {
     }
   }
 
-  Future<void> _moveToCurrentLocation() async {
-    final location = await window.navigator.geolocation.getCurrentPosition();
-    await moveCamera(
-      CameraUpdate.newLatLng(LatLng(
-        location.coords!.latitude!.toDouble(),
-        location.coords!.longitude!.toDouble(),
-      )),
-    );
-  }
-
   // Funnels map gmap events into the plugin's stream controller.
   void _attachMapEvents(gmaps.GMap map) {
     map.onTilesloaded.first.then((void _) {
@@ -468,8 +458,6 @@ class GoogleMapController {
       });
       _moveToCurrentLocation().then((_) {
         timer.cancel();
-        document.getElementById('you_location_img')?.style.backgroundPosition =
-            '-192px 0px';
       });
     }));
 
@@ -480,6 +468,19 @@ class GoogleMapController {
 
     map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]
         ?.push(controlDiv as HtmlElement);
+  }
+
+  Future<void> _moveToCurrentLocation() async {
+    final location = await window.navigator.geolocation.getCurrentPosition();
+    await moveCamera(
+      CameraUpdate.newLatLng(LatLng(
+        location.coords!.latitude!.toDouble(),
+        location.coords!.longitude!.toDouble(),
+      )),
+    );
+
+    document.getElementById('you_location_img')?.style.backgroundPosition =
+        '-192px 0px';
   }
 
   // Cleanup
