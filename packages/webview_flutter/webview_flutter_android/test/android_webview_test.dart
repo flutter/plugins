@@ -269,7 +269,7 @@ void main() {
 
         final WebViewClient mockWebViewClient = MockWebViewClient();
         when(mockWebViewClient.copy()).thenReturn(MockWebViewClient());
-        when(mockWebViewClient.shouldOverrideUrlLoading).thenReturn(false);
+        instanceManager.addDartCreatedInstance(mockWebViewClient);
         webView.setWebViewClient(mockWebViewClient);
 
         final int webViewClientInstanceId =
@@ -334,6 +334,7 @@ void main() {
 
         final DownloadListener mockDownloadListener = MockDownloadListener();
         when(mockDownloadListener.copy()).thenReturn(MockDownloadListener());
+        instanceManager.addDartCreatedInstance(mockDownloadListener);
         webView.setDownloadListener(mockDownloadListener);
 
         final int downloadListenerInstanceId =
@@ -345,16 +346,6 @@ void main() {
       });
 
       test('setWebChromeClient', () {
-        // Setting a WebChromeClient requires setting a WebViewClient first.
-        TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
-        WebViewClient.api = WebViewClientHostApiImpl(
-          instanceManager: instanceManager,
-        );
-        final WebViewClient mockWebViewClient = MockWebViewClient();
-        when(mockWebViewClient.copy()).thenReturn(MockWebViewClient());
-        when(mockWebViewClient.shouldOverrideUrlLoading).thenReturn(false);
-        webView.setWebViewClient(mockWebViewClient);
-
         TestWebChromeClientHostApi.setup(MockTestWebChromeClientHostApi());
         WebChromeClient.api = WebChromeClientHostApiImpl(
           instanceManager: instanceManager,
@@ -362,6 +353,7 @@ void main() {
 
         final WebChromeClient mockWebChromeClient = MockWebChromeClient();
         when(mockWebChromeClient.copy()).thenReturn(MockWebChromeClient());
+        instanceManager.addDartCreatedInstance(mockWebChromeClient);
         webView.setWebChromeClient(mockWebChromeClient);
 
         final int webChromeClientInstanceId =
@@ -370,21 +362,6 @@ void main() {
           webViewInstanceId,
           webChromeClientInstanceId,
         ));
-      });
-
-      test('release', () {
-        final MockTestWebSettingsHostApi mockWebSettingsPlatformHostApi =
-            MockTestWebSettingsHostApi();
-        TestWebSettingsHostApi.setup(mockWebSettingsPlatformHostApi);
-
-        WebSettings.api =
-            WebSettingsHostApiImpl(instanceManager: instanceManager);
-        final int webSettingsInstanceId =
-            instanceManager.getIdentifier(webView.settings)!;
-
-        webView.release();
-        verify(mockWebSettingsPlatformHostApi.dispose(webSettingsInstanceId));
-        verify(mockPlatformHostApi.dispose(webViewInstanceId));
       });
 
       test('copy', () {
@@ -544,16 +521,22 @@ void main() {
       });
 
       test('postMessage', () {
+        late final String result;
+        when(mockJavaScriptChannel.postMessage).thenReturn((String message) {
+          result = message;
+        });
+
         flutterApi.postMessage(
           mockJavaScriptChannelInstanceId,
           'Hello, World!',
         );
-        verify(mockJavaScriptChannel.postMessage('Hello, World!'));
+
+        expect(result, 'Hello, World!');
       });
 
       test('copy', () {
         expect(
-          JavaScriptChannel.detached('channel').copy(),
+          JavaScriptChannel.detached('channel', postMessage: (_) {}).copy(),
           isA<JavaScriptChannel>(),
         );
       });
@@ -588,30 +571,51 @@ void main() {
       });
 
       test('onPageStarted', () {
+        late final List<Object> result;
+        when(mockWebViewClient.onPageStarted).thenReturn(
+          (WebView webView, String url) {
+            result = <Object>[webView, url];
+          },
+        );
+
         flutterApi.onPageStarted(
           mockWebViewClientInstanceId,
           mockWebViewInstanceId,
           'https://www.google.com',
         );
-        verify(mockWebViewClient.onPageStarted(
-          mockWebView,
-          'https://www.google.com',
-        ));
+
+        expect(result, <Object>[mockWebView, 'https://www.google.com']);
       });
 
       test('onPageFinished', () {
+        late final List<Object> result;
+        when(mockWebViewClient.onPageFinished).thenReturn(
+          (WebView webView, String url) {
+            result = <Object>[webView, url];
+          },
+        );
+
         flutterApi.onPageFinished(
           mockWebViewClientInstanceId,
           mockWebViewInstanceId,
           'https://www.google.com',
         );
-        verify(mockWebViewClient.onPageFinished(
-          mockWebView,
-          'https://www.google.com',
-        ));
+
+        expect(result, <Object>[mockWebView, 'https://www.google.com']);
       });
 
       test('onReceivedRequestError', () {
+        late final List<Object> result;
+        when(mockWebViewClient.onReceivedRequestError).thenReturn(
+          (
+            WebView webView,
+            WebResourceRequest request,
+            WebResourceError error,
+          ) {
+            result = <Object>[webView, request, error];
+          },
+        );
+
         flutterApi.onReceivedRequestError(
           mockWebViewClientInstanceId,
           mockWebViewInstanceId,
@@ -626,14 +630,25 @@ void main() {
           WebResourceErrorData(errorCode: 34, description: 'error description'),
         );
 
-        verify(mockWebViewClient.onReceivedRequestError(
-          mockWebView,
-          argThat(isNotNull),
-          argThat(isNotNull),
-        ));
+        expect(
+          result,
+          containsAllInOrder(<Object?>[mockWebView, isNotNull, isNotNull]),
+        );
       });
 
       test('onReceivedError', () {
+        late final List<Object> result;
+        when(mockWebViewClient.onReceivedError).thenReturn(
+          (
+            WebView webView,
+            int errorCode,
+            String description,
+            String failingUrl,
+          ) {
+            result = <Object>[webView, errorCode, description, failingUrl];
+          },
+        );
+
         flutterApi.onReceivedError(
           mockWebViewClientInstanceId,
           mockWebViewInstanceId,
@@ -642,15 +657,22 @@ void main() {
           'https://www.google.com',
         );
 
-        verify(mockWebViewClient.onReceivedError(
-          mockWebView,
-          14,
-          'desc',
-          'https://www.google.com',
-        ));
+        expect(
+          result,
+          containsAllInOrder(
+            <Object?>[mockWebView, 14, 'desc', 'https://www.google.com'],
+          ),
+        );
       });
 
       test('requestLoading', () {
+        late final List<Object> result;
+        when(mockWebViewClient.requestLoading).thenReturn(
+          (WebView webView, WebResourceRequest request) {
+            result = <Object>[webView, request];
+          },
+        );
+
         flutterApi.requestLoading(
           mockWebViewClientInstanceId,
           mockWebViewInstanceId,
@@ -664,20 +686,27 @@ void main() {
           ),
         );
 
-        verify(mockWebViewClient.requestLoading(
-          mockWebView,
-          argThat(isNotNull),
-        ));
+        expect(
+          result,
+          containsAllInOrder(<Object?>[mockWebView, isNotNull]),
+        );
       });
 
       test('urlLoading', () {
+        late final List<Object> result;
+        when(mockWebViewClient.urlLoading).thenReturn(
+          (WebView webView, String url) {
+            result = <Object>[webView, url];
+          },
+        );
+
         flutterApi.urlLoading(mockWebViewClientInstanceId,
             mockWebViewInstanceId, 'https://www.google.com');
 
-        verify(mockWebViewClient.urlLoading(
-          mockWebView,
-          'https://www.google.com',
-        ));
+        expect(
+          result,
+          containsAllInOrder(<Object?>[mockWebView, 'https://www.google.com']),
+        );
       });
 
       test('copy', () {
@@ -705,7 +734,26 @@ void main() {
             instanceManager.addDartCreatedInstance(mockDownloadListener);
       });
 
-      test('onPageStarted', () {
+      test('onDownloadStart', () {
+        late final List<Object> result;
+        when(mockDownloadListener.onDownloadStart).thenReturn(
+          (
+            String url,
+            String userAgent,
+            String contentDisposition,
+            String mimetype,
+            int contentLength,
+          ) {
+            result = <Object>[
+              url,
+              userAgent,
+              contentDisposition,
+              mimetype,
+              contentLength,
+            ];
+          },
+        );
+
         flutterApi.onDownloadStart(
           mockDownloadListenerInstanceId,
           'url',
@@ -714,17 +762,26 @@ void main() {
           'mimetype',
           45,
         );
-        verify(mockDownloadListener.onDownloadStart(
-          'url',
-          'userAgent',
-          'contentDescription',
-          'mimetype',
-          45,
-        ));
+
+        expect(
+          result,
+          containsAllInOrder(<Object?>[
+            'url',
+            'userAgent',
+            'contentDescription',
+            'mimetype',
+            45,
+          ]),
+        );
       });
 
       test('copy', () {
-        expect(DownloadListener.detached().copy(), isA<DownloadListener>());
+        expect(
+          DownloadListener.detached(
+            onDownloadStart: (_, __, ____, _____, ______) {},
+          ).copy(),
+          isA<DownloadListener>(),
+        );
       });
     });
 
@@ -757,13 +814,21 @@ void main() {
             instanceManager.addDartCreatedInstance(mockWebView);
       });
 
-      test('onPageStarted', () {
+      test('onProgressChanged', () {
+        late final List<Object> result;
+        when(mockWebChromeClient.onProgressChanged).thenReturn(
+          (WebView webView, int progress) {
+            result = <Object>[webView, progress];
+          },
+        );
+
         flutterApi.onProgressChanged(
           mockWebChromeClientInstanceId,
           mockWebViewInstanceId,
           76,
         );
-        verify(mockWebChromeClient.onProgressChanged(mockWebView, 76));
+
+        expect(result, containsAllInOrder(<Object?>[mockWebView, 76]));
       });
 
       test('copy', () {
