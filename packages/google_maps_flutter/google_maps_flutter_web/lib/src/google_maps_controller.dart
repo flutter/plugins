@@ -432,44 +432,44 @@ class GoogleMapController {
   }
 
   void _addMyLocationButton(gmaps.GMap map) {
-    final controlDiv = document.createElement('button');
-    controlDiv.style.backgroundColor = '#fff';
-    controlDiv.style.border = 'none';
-    controlDiv.style.outline = 'none';
-    controlDiv.style.width = '40px';
-    controlDiv.style.height = '40px';
-    controlDiv.style.borderRadius = '2px';
-    controlDiv.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
-    controlDiv.style.cursor = 'pointer';
-    controlDiv.style.marginRight = '10px';
-    controlDiv.style.padding = '0px';
+    final controlDiv = document.createElement('div');
+    final firstChild = document.createElement('button');
+    firstChild.style.backgroundColor = '#fff';
+    firstChild.style.border = 'none';
+    firstChild.style.outline = 'none';
+    firstChild.style.width = '40px';
+    firstChild.style.height = '40px';
+    firstChild.style.borderRadius = '2px';
+    firstChild.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
+    firstChild.style.cursor = 'pointer';
+    firstChild.style.marginRight = '10px';
+    controlDiv.append(firstChild);
 
     final secondChild = document.createElement('div');
-    secondChild.style.margin = '5px';
-    secondChild.style.width = '30px';
-    secondChild.style.height = '30px';
+    secondChild.style.margin = '3px';
+    secondChild.style.width = '24px';
+    secondChild.style.height = '24px';
     secondChild.style.backgroundImage =
         'url(https://maps.gstatic.com/tactile/mylocation/mylocation-sprite-2x.png)';
-    secondChild.style.backgroundSize = '300px 30px';
+    secondChild.style.backgroundSize = '240px 24px';
     secondChild.style.backgroundPosition = '0px 0px';
     secondChild.style.backgroundRepeat = 'no-repeat';
     secondChild.id = 'you_location_img';
-    controlDiv.append(secondChild);
+    firstChild.append(secondChild);
 
     // ignore: unnecessary_parenthesis
-    controlDiv.addEventListener("click", ((_) {
+    firstChild.addEventListener("click", ((_) {
       String imgX = '0';
       final Timer timer =
           Timer.periodic(const Duration(milliseconds: 500), (_) {
-        imgX = (imgX == '-30') ? '0' : '-30';
+        imgX = (imgX == '-24') ? '0' : '-24';
         document.getElementById('you_location_img')?.style.backgroundPosition =
             '${imgX}px 0px';
       });
       _moveToCurrentLocation().then((_) {
         timer.cancel();
-        imgX = '-270';
         document.getElementById('you_location_img')?.style.backgroundPosition =
-            '-270px 0px';
+            '-192px 0px';
       });
     }));
 
