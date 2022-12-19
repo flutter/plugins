@@ -781,6 +781,18 @@ class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
       return create(identifier);
     }
   }
+
+  /// Helper method to convert instances ids to objects.
+  Future<List<String?>?>
+      setSynchronousReturnValueForOnShowFileChooserFromInstance(
+    WebChromeClient instance,
+    bool value,
+  ) {
+    return setSynchronousReturnValueForOnShowFileChooser(
+      instanceManager.getIdentifier(instance)!,
+      value,
+    );
+  }
 }
 
 /// Flutter api implementation for [DownloadListener].
@@ -810,6 +822,26 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
       instance.onProgressChanged!(webViewInstance!, progress);
     }
   }
+
+  @override
+  Future<List<String?>> onShowFileChooser(
+    int instanceId,
+    int webViewInstanceId,
+    int paramsInstanceId,
+  ) {
+    final WebChromeClient instance =
+        instanceManager.getInstanceWithWeakReference(instanceId)!;
+    if (instance.onShowFileChooser != null) {
+      return instance.onShowFileChooser!(
+        instanceManager.getInstanceWithWeakReference(webViewInstanceId)!
+            as WebView,
+        instanceManager.getInstanceWithWeakReference(paramsInstanceId)!
+            as FileChooserParams,
+      );
+    }
+
+    return Future<List<String>>.value(const <String>[]);
+  }
 }
 
 /// Host api implementation for [WebStorage].
@@ -834,5 +866,25 @@ class WebStorageHostApiImpl extends WebStorageHostApi {
   /// Helper method to convert instances ids to objects.
   Future<void> deleteAllDataFromInstance(WebStorage instance) {
     return deleteAllData(instanceManager.getIdentifier(instance)!);
+  }
+}
+
+class FileChooserParamsHostApiImpl extends FileChooserParamsHostApi {
+  /// Constructs a [FileChooserParamsHostApiImpl].
+  FileChooserParamsHostApiImpl({
+    super.binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+
+  /// Maintains instances stored to communicate with java objects.
+  final InstanceManager instanceManager;
+
+  /// Helper method to convert instances ids to objects.
+  Future<List<String>> openFilePickerFromInstance(
+    FileChooserParams params,
+  ) async {
+    final List<String?>? result =
+        await openFilePicker(instanceManager.getIdentifier(params)!);
+    return result?.cast<String>() ?? <String>[];
   }
 }

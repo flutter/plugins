@@ -262,6 +262,11 @@ abstract class DownloadListenerFlutterApi {
 @HostApi(dartHostTestHandler: 'TestWebChromeClientHostApi')
 abstract class WebChromeClientHostApi {
   void create(int instanceId);
+
+  List<String>? setSynchronousReturnValueForOnShowFileChooser(
+    int instanceId,
+    bool value,
+  );
 }
 
 @HostApi(dartHostTestHandler: 'TestAssetManagerHostApi')
@@ -274,6 +279,13 @@ abstract class FlutterAssetManagerHostApi {
 @FlutterApi()
 abstract class WebChromeClientFlutterApi {
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
+
+  @async
+  List<String> onShowFileChooser(
+    int instanceId,
+    int webViewInstanceId,
+    int paramsInstanceId,
+  );
 }
 
 @HostApi(dartHostTestHandler: 'TestWebStorageHostApi')
@@ -281,4 +293,15 @@ abstract class WebStorageHostApi {
   void create(int instanceId);
 
   void deleteAllData(int instanceId);
+}
+
+@HostApi(dartHostTestHandler: 'TestFileChooserParamsHostApi')
+abstract class FileChooserParamsHostApi {
+  @async
+  List<String>? openFilePicker(int instanceId);
+}
+
+@FlutterApi()
+abstract class FileChooserParamsFlutterApi {
+  void create(int instanceId, bool isCaptureEnabled);
 }

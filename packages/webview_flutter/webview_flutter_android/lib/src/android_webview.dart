@@ -871,7 +871,8 @@ class DownloadListener extends JavaObject {
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebView].
 class WebChromeClient extends JavaObject {
   /// Constructs a [WebChromeClient].
-  WebChromeClient({this.onProgressChanged}) : super.detached() {
+  WebChromeClient({this.onProgressChanged, this.onShowFileChooser})
+      : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
     api.createFromInstance(this);
   }
@@ -881,7 +882,10 @@ class WebChromeClient extends JavaObject {
   ///
   /// This should only be used by subclasses created by this library or to
   /// create copies.
-  WebChromeClient.detached({this.onProgressChanged}) : super.detached();
+  WebChromeClient.detached({
+    this.onProgressChanged,
+    this.onShowFileChooser,
+  }) : super.detached();
 
   /// Pigeon Host Api implementation for [WebChromeClient].
   @visibleForTesting
@@ -890,9 +894,74 @@ class WebChromeClient extends JavaObject {
   /// Notify the host application that a file should be downloaded.
   final void Function(WebView webView, int progress)? onProgressChanged;
 
+  /// Indicates the client should show a file chooser.
+  ///
+  /// To handle the request for a file chooser with this callback, passing true
+  /// to [setSynchronousReturnValueForOnShowFileChooser] is required. Otherwise,
+  /// the returned list of strings will be ignored and the client will use the
+  /// default handling of a file chooser request.
+  final Future<List<String>> Function(
+    WebView webView,
+    FileChooserParams params,
+  )? onShowFileChooser;
+
+  /// Sets the required synchronous return value for the Java method,
+  /// `WebChromeClient.onShowFileChooser(...)`.
+  ///
+  /// The Java method, `WebChromeClient.onShowFileChooser(...)`, requires
+  /// a boolean to be returned and this method sets the returned value for all
+  /// calls to the Java method.
+  ///
+  /// Setting this to true indicates that all file chooser requests should be
+  /// handled by [onShowFileChooser] and the returned list of Strings will be
+  /// returned to the WebView. Otherwise, the client will use the default
+  /// handling and the returned value in [onShowFileChooser] will be ignored.
+  ///
+  /// Requires [onShowFileChooser] to be nonnull.
+  ///
+  /// Defaults to false.
+  Future<void> setSynchronousReturnValueForOnShowFileChooser(
+    bool value,
+  ) {
+    assert(
+      !value || onShowFileChooser != null,
+      'Setting this to true requires `onShowFileChooser` to be nonnull.',
+    );
+    return api.setSynchronousReturnValueForOnShowFileChooserFromInstance(
+      this,
+      value,
+    );
+  }
+
   @override
   WebChromeClient copy() {
     return WebChromeClient.detached(onProgressChanged: onProgressChanged);
+  }
+}
+
+/// Parameters received when a [WebChromeClient] should show a file chooser.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
+class FileChooserParams extends JavaObject {
+  /// Constructs a [FileChooserParams].
+  FileChooserParams({
+    required this.isCaptureEnabled,
+    super.binaryMessenger,
+    super.instanceManager,
+  })  : _fileChooserParamsApi = FileChooserParamsHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+        super.detached();
+
+  final FileChooserParamsHostApiImpl _fileChooserParamsApi;
+
+  /// Preference for a live media captured value (e.g. Camera, Microphone).
+  final bool isCaptureEnabled;
+
+  /// Start a generic file picker for file selection.
+  Future<List<String>?> openFilePicker() {
+    return _fileChooserParamsApi.openFilePickerFromInstance(this);
   }
 }
 
