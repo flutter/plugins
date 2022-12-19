@@ -487,14 +487,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   BOOL requestFullMetadata = currentCallContext.requestFullMetadata;
   NSMutableArray *pathList = [[NSMutableArray alloc] initWithCapacity:results.count];
   __block FlutterError *saveError = nil;
-
+  __weak typeof(self) weakSelf = self;
   // This operation will be executed on the main queue after
   // all selected files have been saved.
   NSBlockOperation *sendListOperation = [NSBlockOperation blockOperationWithBlock:^{
     if (saveError != nil) {
-      [self sendCallResultWithError:saveError];
+      [weakSelf sendCallResultWithError:saveError];
     } else {
-      [self sendCallResultWithSavedPathList:pathList];
+      [weakSelf sendCallResultWithSavedPathList:pathList];
     }
     // Retain queue until here.
     saveQueue = nil;
