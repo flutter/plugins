@@ -58,7 +58,7 @@
 
 - (void)testFWFWKNavigationActionDataFromNavigationAction {
   WKNavigationAction *mockNavigationAction = OCMClassMock([WKNavigationAction class]);
-  
+
   OCMStub([mockNavigationAction navigationType]).andReturn(WKNavigationTypeReload);
 
   NSURLRequest *request =
@@ -68,7 +68,7 @@
   WKFrameInfo *mockFrameInfo = OCMClassMock([WKFrameInfo class]);
   OCMStub([mockFrameInfo isMainFrame]).andReturn(YES);
   OCMStub([mockNavigationAction targetFrame]).andReturn(mockFrameInfo);
-  
+
   FWFWKNavigationActionData *data =
       FWFWKNavigationActionDataFromNavigationAction(mockNavigationAction);
   XCTAssertNotNil(data);
