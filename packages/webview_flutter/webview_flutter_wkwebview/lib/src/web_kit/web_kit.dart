@@ -144,13 +144,20 @@ class WKWebsiteDataRecord {
 @immutable
 class WKNavigationAction {
   /// Constructs a [WKNavigationAction].
-  const WKNavigationAction({required this.request, required this.targetFrame});
+  const WKNavigationAction({
+    required this.request,
+    required this.targetFrame,
+    required this.navigationType,
+  });
 
   /// The URL request object associated with the navigation action.
   final NSUrlRequest request;
 
   /// The frame in which to display the new content.
   final WKFrameInfo targetFrame;
+
+  /// The type of action that triggered the navigation.
+  final WKNavigationType navigationType;
 }
 
 /// An object that contains information about a frame on a webpage.
