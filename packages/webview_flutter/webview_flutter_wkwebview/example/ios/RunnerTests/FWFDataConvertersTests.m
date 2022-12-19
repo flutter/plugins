@@ -58,6 +58,8 @@
 
 - (void)testFWFWKNavigationActionDataFromNavigationAction {
   WKNavigationAction *mockNavigationAction = OCMClassMock([WKNavigationAction class]);
+  
+  OCMStub([mockNavigationAction navigationType]).andReturn(WKNavigationTypeReload);
 
   NSURLRequest *request =
       [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.flutter.dev/"]];
@@ -66,10 +68,11 @@
   WKFrameInfo *mockFrameInfo = OCMClassMock([WKFrameInfo class]);
   OCMStub([mockFrameInfo isMainFrame]).andReturn(YES);
   OCMStub([mockNavigationAction targetFrame]).andReturn(mockFrameInfo);
-
+  
   FWFWKNavigationActionData *data =
       FWFWKNavigationActionDataFromNavigationAction(mockNavigationAction);
   XCTAssertNotNil(data);
+  XCTAssertEqual(data.navigationType, FWFWKNavigationTypeReload);
 }
 
 - (void)testFWFNSUrlRequestDataFromNSURLRequest {
