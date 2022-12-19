@@ -1,6 +1,6 @@
 ## 1.0.6
 
-* Adds compatibility with `intl` 0.18.0.
+* Removes unused `intl` dependency.
 
 ## 1.0.5
 

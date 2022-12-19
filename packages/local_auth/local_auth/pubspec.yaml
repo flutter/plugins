@@ -22,7 +22,6 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ">=0.17.0 <0.19.0"
   local_auth_android: ^1.0.0
   local_auth_ios: ^1.0.1
   local_auth_platform_interface: ^1.0.1
