@@ -502,7 +502,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   [results enumerateObjectsUsingBlock:^(PHPickerResult *result, NSUInteger index, BOOL *stop) {
     // NSNull means it hasn't saved yet.
-    pathList[index] = [NSNull null];
+    [pathList addObject:[NSNull null]];
     FLTPHPickerSaveImageToPathOperation *saveOperation =
         [[FLTPHPickerSaveImageToPathOperation alloc]
                  initWithResult:result
