@@ -444,12 +444,14 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
           params,
           displayWithHybridComposition:
               _androidParams.displayWithHybridComposition,
-        )..create();
+        )
+          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+          ..create();
       },
     );
   }
 
-  PlatformViewController _initAndroidView(
+  AndroidViewController _initAndroidView(
     PlatformViewCreationParams params, {
     required bool displayWithHybridComposition,
   }) {
@@ -461,7 +463,7 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
         creationParams: _androidParams.instanceManager.getIdentifier(
             (_androidParams.controller as AndroidWebViewController)._webView),
         creationParamsCodec: const StandardMessageCodec(),
-      )..addOnPlatformViewCreatedListener(params.onPlatformViewCreated);
+      );
     } else {
       return PlatformViewsService.initSurfaceAndroidView(
         id: params.id,
@@ -470,7 +472,7 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
         creationParams: _androidParams.instanceManager.getIdentifier(
             (_androidParams.controller as AndroidWebViewController)._webView),
         creationParamsCodec: const StandardMessageCodec(),
-      )..addOnPlatformViewCreatedListener(params.onPlatformViewCreated);
+      );
     }
   }
 }
