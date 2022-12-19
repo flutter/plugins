@@ -925,6 +925,12 @@ class MockAndroidWebViewWidgetCreationParams extends _i1.Mock
         ),
       ) as _i5.InstanceManager);
   @override
+  bool get displayWithHybridComposition => (super.noSuchMethod(
+        Invocation.getter(#displayWithHybridComposition),
+        returnValue: false,
+        returnValueForMissingStub: false,
+      ) as bool);
+  @override
   _i3.PlatformWebViewController get controller => (super.noSuchMethod(
         Invocation.getter(#controller),
         returnValue: _FakePlatformWebViewController_11(

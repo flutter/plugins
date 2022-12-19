@@ -770,6 +770,30 @@ void main() {
   });
 
   group('AndroidWebViewWidget', () {
+    late List<MethodCall> methodChannelLog;
+
+    setUpAll(() {
+      SystemChannels.platform_views.setMockMethodCallHandler(
+        (MethodCall call) async {
+          methodChannelLog.add(call);
+          if (call.method == 'resize') {
+            return <String, Object?>{
+              'width': call.arguments['width'],
+              'height': call.arguments['height'],
+            };
+          }
+        },
+      );
+    });
+
+    tearDownAll(() {
+      SystemChannels.platform_views.setMockMethodCallHandler(null);
+    });
+
+    setUp(() {
+      methodChannelLog = <MethodCall>[];
+    });
+
     testWidgets('Builds AndroidView using supplied parameters',
         (WidgetTester tester) async {
       final MockAndroidWebViewWidgetCreationParams mockParams =
@@ -782,6 +806,7 @@ void main() {
       when(mockParams.key).thenReturn(const Key('test_web_view'));
       when(mockParams.instanceManager).thenReturn(mockInstanceManager);
       when(mockParams.controller).thenReturn(controller);
+      when(mockParams.displayWithHybridComposition).thenReturn(false);
       when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
 
       final AndroidWebViewWidget webViewWidget =
@@ -793,6 +818,62 @@ void main() {
 
       expect(find.byType(PlatformViewLink), findsOneWidget);
       expect(find.byKey(const Key('test_web_view')), findsOneWidget);
+    });
+
+    testWidgets('displayWithHybridComposition is false',
+        (WidgetTester tester) async {
+      final MockAndroidWebViewWidgetCreationParams mockParams =
+          MockAndroidWebViewWidgetCreationParams();
+      final MockInstanceManager mockInstanceManager = MockInstanceManager();
+      final MockWebView mockWebView = MockWebView();
+      final AndroidWebViewController controller =
+          createControllerWithMocks(mockWebView: mockWebView);
+
+      when(mockParams.key).thenReturn(const Key('test_web_view'));
+      when(mockParams.instanceManager).thenReturn(mockInstanceManager);
+      when(mockParams.controller).thenReturn(controller);
+      when(mockParams.displayWithHybridComposition).thenReturn(false);
+      when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
+
+      final AndroidWebViewWidget webViewWidget =
+          AndroidWebViewWidget(mockParams);
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) => webViewWidget.build(context),
+      ));
+      await tester.pumpAndSettle();
+
+      final MethodCall createMethodCall = methodChannelLog[0];
+      expect(createMethodCall.method, 'create');
+      expect(createMethodCall.arguments, isNot(containsPair('hybrid', true)));
+    });
+
+    testWidgets('displayWithHybridComposition is true',
+        (WidgetTester tester) async {
+      final MockAndroidWebViewWidgetCreationParams mockParams =
+          MockAndroidWebViewWidgetCreationParams();
+      final MockInstanceManager mockInstanceManager = MockInstanceManager();
+      final MockWebView mockWebView = MockWebView();
+      final AndroidWebViewController controller =
+          createControllerWithMocks(mockWebView: mockWebView);
+
+      when(mockParams.key).thenReturn(const Key('test_web_view'));
+      when(mockParams.instanceManager).thenReturn(mockInstanceManager);
+      when(mockParams.controller).thenReturn(controller);
+      when(mockParams.displayWithHybridComposition).thenReturn(true);
+      when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
+
+      final AndroidWebViewWidget webViewWidget =
+          AndroidWebViewWidget(mockParams);
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) => webViewWidget.build(context),
+      ));
+      await tester.pumpAndSettle();
+
+      final MethodCall createMethodCall = methodChannelLog[0];
+      expect(createMethodCall.method, 'create');
+      expect(createMethodCall.arguments, containsPair('hybrid', true));
     });
   });
 }
