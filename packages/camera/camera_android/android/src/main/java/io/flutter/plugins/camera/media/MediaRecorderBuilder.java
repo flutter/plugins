@@ -75,33 +75,48 @@ public class MediaRecorderBuilder {
     if (enableAudio) mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
 
-    if (Build.VERSION.SDK_INT >= 31) {
+    boolean isFormatNeedSetup = true;
+    boolean isAudioNeedSetup = enableAudio;
+    boolean isVideoNeedSetup = true;
+
+    if (Build.VERSION.SDK_INT >= 31 && encoderProfiles != null) {
       EncoderProfiles.VideoProfile videoProfile = encoderProfiles.getVideoProfiles().get(0);
       EncoderProfiles.AudioProfile audioProfile = encoderProfiles.getAudioProfiles().get(0);
 
       mediaRecorder.setOutputFormat(encoderProfiles.getRecommendedFileFormat());
-      if (enableAudio) {
+      isFormatNeedSetup = false;
+
+      if (isAudioNeedSetup && audioProfile != null) {
         mediaRecorder.setAudioEncoder(audioProfile.getCodec());
         mediaRecorder.setAudioEncodingBitRate(audioProfile.getBitrate());
         mediaRecorder.setAudioSamplingRate(audioProfile.getSampleRate());
+        isAudioNeedSetup = false;
       }
-      mediaRecorder.setVideoEncoder(videoProfile.getCodec());
-      mediaRecorder.setVideoEncodingBitRate(videoProfile.getBitrate());
-      mediaRecorder.setVideoFrameRate(videoProfile.getFrameRate());
-      mediaRecorder.setVideoSize(videoProfile.getWidth(), videoProfile.getHeight());
-      mediaRecorder.setVideoSize(videoProfile.getWidth(), videoProfile.getHeight());
-    } else {
+      if (videoProfile != null) {
+        mediaRecorder.setVideoEncoder(videoProfile.getCodec());
+        mediaRecorder.setVideoEncodingBitRate(videoProfile.getBitrate());
+        mediaRecorder.setVideoFrameRate(videoProfile.getFrameRate());
+        mediaRecorder.setVideoSize(videoProfile.getWidth(), videoProfile.getHeight());
+        mediaRecorder.setVideoSize(videoProfile.getWidth(), videoProfile.getHeight());
+        isVideoNeedSetup = false;
+      }
+    }
+
+    if (isFormatNeedSetup && camcorderProfile != null) {
       mediaRecorder.setOutputFormat(camcorderProfile.fileFormat);
-      if (enableAudio) {
-        mediaRecorder.setAudioEncoder(camcorderProfile.audioCodec);
-        mediaRecorder.setAudioEncodingBitRate(camcorderProfile.audioBitRate);
-        mediaRecorder.setAudioSamplingRate(camcorderProfile.audioSampleRate);
-      }
+    }
+
+    if (isAudioNeedSetup && camcorderProfile != null) {
+      mediaRecorder.setAudioEncoder(camcorderProfile.audioCodec);
+      mediaRecorder.setAudioEncodingBitRate(camcorderProfile.audioBitRate);
+      mediaRecorder.setAudioSamplingRate(camcorderProfile.audioSampleRate);
+    }
+
+    if (isVideoNeedSetup && camcorderProfile != null) {
       mediaRecorder.setVideoEncoder(camcorderProfile.videoCodec);
       mediaRecorder.setVideoEncodingBitRate(camcorderProfile.videoBitRate);
       mediaRecorder.setVideoFrameRate(camcorderProfile.videoFrameRate);
-      mediaRecorder.setVideoSize(
-          camcorderProfile.videoFrameWidth, camcorderProfile.videoFrameHeight);
+      mediaRecorder.setVideoSize(camcorderProfile.videoFrameWidth, camcorderProfile.videoFrameHeight);
     }
 
     mediaRecorder.setOutputFile(outputFilePath);
