@@ -59,7 +59,7 @@ class _Page1State extends State<Page1> {
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
-        myLocationButtonEnabled: true,
+        myLocationButtonEnabled: false,
         myLocationEnabled: true,
       ),
     );

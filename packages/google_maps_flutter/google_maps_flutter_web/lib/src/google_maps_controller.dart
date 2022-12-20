@@ -163,10 +163,7 @@ class GoogleMapController {
 
     // Create the map...
     final gmaps.GMap map = _createMap(_div, options);
-    if (_lastMapConfiguration.myLocationButtonEnabled! &&
-        _lastMapConfiguration.myLocationEnabled!) {
-      _addMyLocationButton(map);
-    }
+
     _googleMap = map;
 
     _attachMapEvents(map);
@@ -181,7 +178,10 @@ class GoogleMapController {
     );
 
     _setTrafficLayer(map, _lastMapConfiguration.trafficEnabled ?? false);
-
+    if (_lastMapConfiguration.myLocationEnabled! &&
+        _lastMapConfiguration.myLocationButtonEnabled!) {
+      _addMyLocationButton(map);
+    }
     if (_lastMapConfiguration.myLocationEnabled!) {
       _moveToCurrentLocation();
     }
@@ -421,13 +421,12 @@ class GoogleMapController {
     return _markersController?.isInfoWindowShown(markerId) ?? false;
   }
 
+  // Add My Location widget to right bottom
   void _addMyLocationButton(gmaps.GMap map) {
-    // ignore: always_specify_types
-    final controlDiv = document.createElement('div');
+    final HtmlElement controlDiv = DivElement();
     controlDiv.style.marginRight = '10px';
 
-    // ignore: always_specify_types
-    final firstChild = document.createElement('button');
+    final HtmlElement firstChild = ButtonElement();
     firstChild.className = 'gm-control-active';
     firstChild.style.backgroundColor = '#fff';
     firstChild.style.border = 'none';
@@ -440,8 +439,7 @@ class GoogleMapController {
     firstChild.style.padding = '8px';
     controlDiv.append(firstChild);
 
-    // ignore: always_specify_types
-    final secondChild = document.createElement('div');
+    final HtmlElement secondChild = DivElement();
     secondChild.style.width = '24px';
     secondChild.style.height = '24px';
     secondChild.style.backgroundImage =
@@ -452,29 +450,32 @@ class GoogleMapController {
     secondChild.id = 'you_location_img';
     firstChild.append(secondChild);
 
-    // ignore: unnecessary_parenthesis
-    firstChild.addEventListener("click", ((_) {
+    firstChild.addEventListener('click', (_) {
       String imgX = '0';
+      // Add animation when find current location
       final Timer timer =
           Timer.periodic(const Duration(milliseconds: 500), (_) {
         imgX = (imgX == '-24') ? '0' : '-24';
         document.getElementById('you_location_img')?.style.backgroundPosition =
             '${imgX}px 0px';
       });
+      // Find and move to current location
       _moveToCurrentLocation().then((_) {
         timer.cancel();
+        document.getElementById('you_location_img')?.style.backgroundPosition =
+            '-192px 0px';
       });
-    }));
+    });
 
     map.addListener('dragend', () {
       document.getElementById('you_location_img')?.style.backgroundPosition =
           '0px 0px';
     });
 
-    map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]
-        ?.push(controlDiv as HtmlElement);
+    map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]?.push(controlDiv);
   }
 
+  // Find and move to current location
   Future<void> _moveToCurrentLocation() async {
     final Geoposition location =
         await window.navigator.geolocation.getCurrentPosition();
@@ -485,30 +486,28 @@ class GoogleMapController {
       )),
     );
 
-    document.getElementById('you_location_img')?.style.backgroundPosition =
-        '-192px 0px';
     _addBlueDot(location);
   }
 
-  void _addBlueDot(Geoposition location) {
+  // Add blue dot for current location
+  Future<void> _addBlueDot(Geoposition location) async {
     print('add blue dot');
     assert(
         _markersController != null, 'Cannot update markers after dispose().');
-    BitmapDescriptor.fromAssetImage(
+    final BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(
       const ImageConfiguration(size: Size(18, 18)),
       'icons/blue-dot.png',
       package: 'google_maps_flutter_web',
-    ).then((BitmapDescriptor icon) {
-      _markersController?._addMarker(Marker(
-        markerId: const MarkerId('my_location_blue_dot'),
-        icon: icon,
-        position: LatLng(
-          location.coords!.latitude!.toDouble(),
-          location.coords!.longitude!.toDouble(),
-        ),
-        zIndex: 0.5,
-      ));
-    });
+    );
+    _markersController?._addMarker(Marker(
+      markerId: const MarkerId('my_location_blue_dot'),
+      icon: icon,
+      position: LatLng(
+        location.coords!.latitude!.toDouble(),
+        location.coords!.longitude!.toDouble(),
+      ),
+      zIndex: 0.5,
+    ));
   }
 
   // Cleanup
