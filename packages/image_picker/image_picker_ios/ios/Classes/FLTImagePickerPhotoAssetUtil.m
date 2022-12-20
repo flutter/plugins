@@ -11,7 +11,7 @@
 @implementation FLTImagePickerPhotoAssetUtil
 
 + (PHAsset *)getAssetFromImagePickerInfo:(NSDictionary *)info {
-  return [info objectForKey:UIImagePickerControllerPHAsset];
+  return info[UIImagePickerControllerPHAsset];
 }
 
 + (PHAsset *)getAssetFromPHPickerResult:(PHPickerResult *)result API_AVAILABLE(ios(14)) {
