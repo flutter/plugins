@@ -1191,8 +1191,7 @@ void main() {
       cameraController.value = cameraController.value.copyWith(
           isPreviewPaused: false,
           deviceOrientation: DeviceOrientation.portraitUp,
-          lockedCaptureOrientation:
-              Optional<DeviceOrientation>.of(DeviceOrientation.landscapeRight));
+          lockedCaptureOrientation: DeviceOrientation.landscapeRight);
 
       await cameraController.pausePreview();
 
