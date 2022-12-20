@@ -1,7 +1,20 @@
-## 2.4.8
+## 2.4.11
 
 * Added option to configure HTTP headers via `VideoPlayerController` to fix access to M3U8 files on Android.
   
+=======
+## 2.4.10
+
+* Adds compatibilty with version 6.0 of the platform interface.
+
+## 2.4.9
+
+* Fixes file URI construction.
+
+## 2.4.8
+
+* Updates code for new analysis options.
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 2.4.7
 
@@ -24,7 +37,7 @@
 
 ## 2.4.3
 
-* Fixes Android to correctly display videos recorded in landscapeRight (https://github.com/flutter/flutter/issues/60327).
+* Fixes Android to correctly display videos recorded in landscapeRight ([#60327](https://github.com/flutter/flutter/issues/60327)).
 * Fixes order-dependent unit tests.
 
 ## 2.4.2

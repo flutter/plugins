@@ -1,3 +1,13 @@
+## 1.0.2
+
+* Migrates remaining components to Swift and removes all Objective-C settings.
+* Migrates `RunnerUITests` to Swift.
+
+## 1.0.1
+
+* Removes custom modulemap file with "Test" submodule and private headers for Swift migration. 
+* Migrates `FLTQuickActionsPlugin` class to Swift.
+
 ## 1.0.0
 
 * Updates version to 1.0 to reflect current status.

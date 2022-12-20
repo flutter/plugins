@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -76,7 +76,7 @@ public class ImagePickerPluginTest {
     imagePickerPluginWithNullActivity.onMethodCall(call, mockResult);
     verify(mockResult)
         .error("no_activity", "image_picker plugin requires a foreground activity.", null);
-    verifyZeroInteractions(mockImagePickerDelegate);
+    verifyNoInteractions(mockImagePickerDelegate);
   }
 
   @Test
@@ -84,8 +84,8 @@ public class ImagePickerPluginTest {
     exception.expect(IllegalArgumentException.class);
     exception.expectMessage("Unknown method test");
     plugin.onMethodCall(new MethodCall("test", null), mockResult);
-    verifyZeroInteractions(mockImagePickerDelegate);
-    verifyZeroInteractions(mockResult);
+    verifyNoInteractions(mockImagePickerDelegate);
+    verifyNoInteractions(mockResult);
   }
 
   @Test
@@ -93,8 +93,8 @@ public class ImagePickerPluginTest {
     exception.expect(IllegalArgumentException.class);
     exception.expectMessage("Invalid image source: -1");
     plugin.onMethodCall(buildMethodCall(PICK_IMAGE, -1), mockResult);
-    verifyZeroInteractions(mockImagePickerDelegate);
-    verifyZeroInteractions(mockResult);
+    verifyNoInteractions(mockImagePickerDelegate);
+    verifyNoInteractions(mockResult);
   }
 
   @Test
@@ -102,7 +102,7 @@ public class ImagePickerPluginTest {
     MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_GALLERY);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).chooseImageFromGallery(eq(call), any());
-    verifyZeroInteractions(mockResult);
+    verifyNoInteractions(mockResult);
   }
 
   @Test
@@ -110,7 +110,7 @@ public class ImagePickerPluginTest {
     MethodCall call = buildMethodCall(PICK_MULTI_IMAGE);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).chooseMultiImageFromGallery(eq(call), any());
-    verifyZeroInteractions(mockResult);
+    verifyNoInteractions(mockResult);
   }
 
   @Test
@@ -118,7 +118,7 @@ public class ImagePickerPluginTest {
     MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).takeImageWithCamera(eq(call), any());
-    verifyZeroInteractions(mockResult);
+    verifyNoInteractions(mockResult);
   }
 
   @Test

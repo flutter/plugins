@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/services.dart';
-import 'package:image_picker_platform_interface/src/types/types.dart';
+
+import '../types.dart';
 
 /// The response object of [ImagePicker.retrieveLostData].
 ///

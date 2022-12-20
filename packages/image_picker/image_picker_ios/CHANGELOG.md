@@ -1,3 +1,15 @@
+## 0.8.6+3
+
+* Returns error on image load failure.
+
+## 0.8.6+2
+
+* Fixes issue where selectable images of certain types (such as ProRAW images) could not be loaded.
+
+## 0.8.6+1
+
+* Fixes issue with crashing the app when picking images with PHPicker without providing `Photo Library Usage` permission.
+
 ## 0.8.6
 
 * Adds `requestFullMetadata` option to `pickImage`, so images on iOS can be picked without `Photo Library Usage` permission.

@@ -21,6 +21,12 @@ class SamplePluginPlatform extends PlatformInterface {
 class ImplementsSamplePluginPlatform extends Mock
     implements SamplePluginPlatform {}
 
+class ImplementsSamplePluginPlatformUsingNoSuchMethod
+    implements SamplePluginPlatform {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 class ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin extends Mock
     with MockPlatformInterfaceMixin
     implements SamplePluginPlatform {}
@@ -95,6 +101,13 @@ void main() {
     test('prevents implementation with `implements`', () {
       expect(() {
         SamplePluginPlatform.instance = ImplementsSamplePluginPlatform();
+      }, throwsA(isA<AssertionError>()));
+    });
+
+    test('prevents implmentation with `implements` and `noSuchMethod`', () {
+      expect(() {
+        SamplePluginPlatform.instance =
+            ImplementsSamplePluginPlatformUsingNoSuchMethod();
       }, throwsA(isA<AssertionError>()));
     });
 

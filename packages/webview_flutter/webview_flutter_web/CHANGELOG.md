@@ -1,5 +1,7 @@
-## NEXT
+## 0.2.0
 
+* **BREAKING CHANGE** Updates platform implementation to `2.0.0` release of
+  `webview_flutter_platform_interface`. See README for updated usage.
 * Updates minimum Flutter version to 2.10.
 
 ## 0.1.0+4

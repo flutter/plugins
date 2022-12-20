@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
+
+import '../../file_selector_platform_interface.dart';
 
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/file_selector');
@@ -15,7 +16,6 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
   @visibleForTesting
   MethodChannel get channel => _channel;
 
-  /// Load a file from user's computer and return it as an XFile
   @override
   Future<XFile?> openFile({
     List<XTypeGroup>? acceptedTypeGroups,
@@ -36,7 +36,6 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     return path == null ? null : XFile(path.first);
   }
 
-  /// Load multiple files from user's computer and return it as an XFile
   @override
   Future<List<XFile>> openFiles({
     List<XTypeGroup>? acceptedTypeGroups,
@@ -57,7 +56,6 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     return pathList?.map((String path) => XFile(path)).toList() ?? <XFile>[];
   }
 
-  /// Gets the path from a save dialog
   @override
   Future<String?> getSavePath({
     List<XTypeGroup>? acceptedTypeGroups,
@@ -78,7 +76,6 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     );
   }
 
-  /// Gets a directory path from a dialog
   @override
   Future<String?> getDirectoryPath({
     String? initialDirectory,
@@ -91,5 +88,18 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
         'confirmButtonText': confirmButtonText,
       },
     );
+  }
+
+  @override
+  Future<List<String>> getDirectoryPaths(
+      {String? initialDirectory, String? confirmButtonText}) async {
+    final List<String>? pathList = await _channel.invokeListMethod<String>(
+      'getDirectoryPaths',
+      <String, dynamic>{
+        'initialDirectory': initialDirectory,
+        'confirmButtonText': confirmButtonText,
+      },
+    );
+    return pathList ?? <String>[];
   }
 }

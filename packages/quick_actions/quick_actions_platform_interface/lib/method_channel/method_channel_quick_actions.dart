@@ -4,9 +4,9 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:quick_actions_platform_interface/types/types.dart';
 
 import '../platform_interface/quick_actions_platform.dart';
+import '../types/types.dart';
 
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/quick_actions');

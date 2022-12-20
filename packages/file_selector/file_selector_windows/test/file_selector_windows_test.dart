@@ -47,14 +47,14 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
           mimeTypes: <String>['image/jpg'],
@@ -86,7 +86,7 @@ void main() {
     });
 
     test('throws for a type group that does not support Windows', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         mimeTypes: <String>['text/plain'],
       );
@@ -97,7 +97,7 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
       );
 
@@ -125,14 +125,14 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
           mimeTypes: <String>['image/jpg'],
@@ -164,7 +164,7 @@ void main() {
     });
 
     test('throws for a type group that does not support Windows', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         mimeTypes: <String>['text/plain'],
       );
@@ -175,7 +175,7 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
       );
 
@@ -231,14 +231,14 @@ void main() {
     });
 
     test('passes the accepted type groups correctly', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
           label: 'image',
           extensions: <String>['jpg'],
           mimeTypes: <String>['image/jpg'],
@@ -277,7 +277,7 @@ void main() {
     });
 
     test('throws for a type group that does not support Windows', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         mimeTypes: <String>['text/plain'],
       );
@@ -288,7 +288,7 @@ void main() {
     });
 
     test('allows a wildcard group', () async {
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
       );
 

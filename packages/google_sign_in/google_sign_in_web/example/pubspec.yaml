@@ -16,6 +16,7 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+  google_sign_in_platform_interface: ^2.2.0
   http: ^0.13.0
   integration_test:
     sdk: flutter

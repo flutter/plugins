@@ -311,6 +311,45 @@ void main() {
           const ProrationModeConverter().toJson(prorationMode));
     });
 
+    test(
+        'serializes and deserializes data when using immediateAndChargeFullPrice',
+        () async {
+      const String debugMessage = 'dummy message';
+      const BillingResponse responseCode = BillingResponse.ok;
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+          responseCode: responseCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+        name: launchMethodName,
+        value: buildBillingResultMap(expectedBillingResult),
+      );
+      const SkuDetailsWrapper skuDetails = dummySkuDetails;
+      const String accountId = 'hashedAccountId';
+      const String profileId = 'hashedProfileId';
+      const ProrationMode prorationMode =
+          ProrationMode.immediateAndChargeFullPrice;
+
+      expect(
+          await billingClient.launchBillingFlow(
+              sku: skuDetails.sku,
+              accountId: accountId,
+              obfuscatedProfileId: profileId,
+              oldSku: dummyOldPurchase.sku,
+              prorationMode: prorationMode,
+              purchaseToken: dummyOldPurchase.purchaseToken),
+          equals(expectedBillingResult));
+      final Map<dynamic, dynamic> arguments = stubPlatform
+          .previousCallMatching(launchMethodName)
+          .arguments as Map<dynamic, dynamic>;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], equals(accountId));
+      expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
+      expect(arguments['obfuscatedProfileId'], equals(profileId));
+      expect(
+          arguments['purchaseToken'], equals(dummyOldPurchase.purchaseToken));
+      expect(arguments['prorationMode'],
+          const ProrationModeConverter().toJson(prorationMode));
+    });
+
     test('handles null accountId', () async {
       const String debugMessage = 'dummy message';
       const BillingResponse responseCode = BillingResponse.ok;

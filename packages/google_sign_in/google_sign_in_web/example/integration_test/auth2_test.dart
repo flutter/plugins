@@ -66,7 +66,7 @@ void main() {
       () {
     // This function ensures that initWithParams gets called, but for some
     // reason, we ignored that it has thrown stuff...
-    Future<void> _discardInit() async {
+    Future<void> discardInit() async {
       try {
         await plugin.initWithParams(const SignInInitParameters(
           hostedDomain: 'foo',
@@ -84,23 +84,23 @@ void main() {
     });
 
     testWidgets('signInSilently throws', (WidgetTester tester) async {
-      await _discardInit();
+      await discardInit();
       await expectLater(
           plugin.signInSilently(), throwsA(isA<PlatformException>()));
     });
 
     testWidgets('signIn throws', (WidgetTester tester) async {
-      await _discardInit();
+      await discardInit();
       await expectLater(plugin.signIn(), throwsA(isA<PlatformException>()));
     });
 
     testWidgets('getTokens throws', (WidgetTester tester) async {
-      await _discardInit();
+      await discardInit();
       await expectLater(plugin.getTokens(email: 'test@example.com'),
           throwsA(isA<PlatformException>()));
     });
     testWidgets('requestScopes', (WidgetTester tester) async {
-      await _discardInit();
+      await discardInit();
       await expectLater(plugin.requestScopes(<String>['newScope']),
           throwsA(isA<PlatformException>()));
     });

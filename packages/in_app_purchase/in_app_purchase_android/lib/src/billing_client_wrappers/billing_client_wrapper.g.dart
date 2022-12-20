@@ -32,6 +32,7 @@ const _$ProrationModeEnumMap = {
   ProrationMode.immediateAndChargeProratedPrice: 2,
   ProrationMode.immediateWithoutProration: 3,
   ProrationMode.deferred: 4,
+  ProrationMode.immediateAndChargeFullPrice: 5,
 };
 
 const _$BillingClientFeatureEnumMap = {

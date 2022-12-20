@@ -51,6 +51,13 @@ class WebResourceErrorData {
   String description;
 }
 
+class WebViewPoint {
+  WebViewPoint(this.x, this.y);
+
+  int x;
+  int y;
+}
+
 /// Handles methods calls to the native Java Object class.
 ///
 /// Also handles calls to remove the reference to an instance with `dispose`.
@@ -80,8 +87,6 @@ abstract class CookieManagerHostApi {
 @HostApi(dartHostTestHandler: 'TestWebViewHostApi')
 abstract class WebViewHostApi {
   void create(int instanceId, bool useHybridComposition);
-
-  void dispose(int instanceId);
 
   void loadData(
     int instanceId,
@@ -141,6 +146,8 @@ abstract class WebViewHostApi {
 
   int getScrollY(int instanceId);
 
+  WebViewPoint getScrollPosition(int instanceId);
+
   void setWebContentsDebuggingEnabled(bool enabled);
 
   void setWebViewClient(int instanceId, int webViewClientInstanceId);
@@ -159,8 +166,6 @@ abstract class WebViewHostApi {
 @HostApi(dartHostTestHandler: 'TestWebSettingsHostApi')
 abstract class WebSettingsHostApi {
   void create(int instanceId, int webViewInstanceId);
-
-  void dispose(int instanceId);
 
   void setDomStorageEnabled(int instanceId, bool flag);
 
@@ -194,20 +199,21 @@ abstract class JavaScriptChannelHostApi {
 
 @FlutterApi()
 abstract class JavaScriptChannelFlutterApi {
-  void dispose(int instanceId);
-
   void postMessage(int instanceId, String message);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebViewClientHostApi')
 abstract class WebViewClientHostApi {
-  void create(int instanceId, bool shouldOverrideUrlLoading);
+  void create(int instanceId);
+
+  void setSynchronousReturnValueForShouldOverrideUrlLoading(
+    int instanceId,
+    bool value,
+  );
 }
 
 @FlutterApi()
 abstract class WebViewClientFlutterApi {
-  void dispose(int instanceId);
-
   void onPageStarted(int instanceId, int webViewInstanceId, String url);
 
   void onPageFinished(int instanceId, int webViewInstanceId, String url);
@@ -243,8 +249,6 @@ abstract class DownloadListenerHostApi {
 
 @FlutterApi()
 abstract class DownloadListenerFlutterApi {
-  void dispose(int instanceId);
-
   void onDownloadStart(
     int instanceId,
     String url,
@@ -257,7 +261,7 @@ abstract class DownloadListenerFlutterApi {
 
 @HostApi(dartHostTestHandler: 'TestWebChromeClientHostApi')
 abstract class WebChromeClientHostApi {
-  void create(int instanceId, int webViewClientInstanceId);
+  void create(int instanceId);
 }
 
 @HostApi(dartHostTestHandler: 'TestAssetManagerHostApi')
@@ -269,8 +273,6 @@ abstract class FlutterAssetManagerHostApi {
 
 @FlutterApi()
 abstract class WebChromeClientFlutterApi {
-  void dispose(int instanceId);
-
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
 }
 

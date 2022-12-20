@@ -291,7 +291,7 @@ TEST(CaptureController, InitCaptureEngineReportsFailure) {
   EXPECT_CALL(*engine.Get(), Initialize).Times(1).WillOnce(Return(E_FAIL));
 
   EXPECT_CALL(*texture_registrar, RegisterTexture).Times(0);
-  EXPECT_CALL(*texture_registrar, UnregisterTexture).Times(0);
+  EXPECT_CALL(*texture_registrar, UnregisterTexture(_)).Times(0);
   EXPECT_CALL(*camera, OnCreateCaptureEngineSucceeded).Times(0);
   EXPECT_CALL(*camera,
               OnCreateCaptureEngineFailed(Eq(CameraResult::kError),
@@ -335,7 +335,7 @@ TEST(CaptureController, InitCaptureEngineReportsAccessDenied) {
       .WillOnce(Return(E_ACCESSDENIED));
 
   EXPECT_CALL(*texture_registrar, RegisterTexture).Times(0);
-  EXPECT_CALL(*texture_registrar, UnregisterTexture).Times(0);
+  EXPECT_CALL(*texture_registrar, UnregisterTexture(_)).Times(0);
   EXPECT_CALL(*camera, OnCreateCaptureEngineSucceeded).Times(0);
   EXPECT_CALL(*camera,
               OnCreateCaptureEngineFailed(Eq(CameraResult::kAccessDenied),

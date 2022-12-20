@@ -385,7 +385,7 @@ class WKHttpCookieStore extends NSObject {
 
   /// Adds a cookie to the cookie store.
   Future<void> setCookie(NSHttpCookie cookie) {
-    return _httpCookieStoreApi.setCookieForInsances(this, cookie);
+    return _httpCookieStoreApi.setCookieForInstances(this, cookie);
   }
 
   @override

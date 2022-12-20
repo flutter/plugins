@@ -15,6 +15,9 @@ import java.util.WeakHashMap;
 /**
  * Maintains instances used to communicate with the corresponding objects in Dart.
  *
+ * <p>Objects stored in this container are represented by an object in Dart that is also stored in
+ * an InstanceManager with the same identifier.
+ *
  * <p>When an instance is added with an identifier, either can be used to retrieve the other.
  *
  * <p>Added instances are added as a weak reference and a strong reference. When the strong

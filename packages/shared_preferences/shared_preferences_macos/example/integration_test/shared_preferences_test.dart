@@ -38,42 +38,42 @@ void main() {
 
     // Normally the app-facing package adds the prefix, but since this test
     // bypasses the app-facing package it needs to be manually added.
-    String _prefixedKey(String key) {
+    String prefixedKey(String key) {
       return 'flutter.$key';
     }
 
     testWidgets('reading', (WidgetTester _) async {
       final Map<String, Object> values = await preferences.getAll();
-      expect(values[_prefixedKey('String')], isNull);
-      expect(values[_prefixedKey('bool')], isNull);
-      expect(values[_prefixedKey('int')], isNull);
-      expect(values[_prefixedKey('double')], isNull);
-      expect(values[_prefixedKey('List')], isNull);
+      expect(values[prefixedKey('String')], isNull);
+      expect(values[prefixedKey('bool')], isNull);
+      expect(values[prefixedKey('int')], isNull);
+      expect(values[prefixedKey('double')], isNull);
+      expect(values[prefixedKey('List')], isNull);
     });
 
     testWidgets('writing', (WidgetTester _) async {
       await Future.wait(<Future<bool>>[
         preferences.setValue(
-            'String', _prefixedKey('String'), kTestValues2['flutter.String']!),
+            'String', prefixedKey('String'), kTestValues2['flutter.String']!),
         preferences.setValue(
-            'Bool', _prefixedKey('bool'), kTestValues2['flutter.bool']!),
+            'Bool', prefixedKey('bool'), kTestValues2['flutter.bool']!),
         preferences.setValue(
-            'Int', _prefixedKey('int'), kTestValues2['flutter.int']!),
+            'Int', prefixedKey('int'), kTestValues2['flutter.int']!),
         preferences.setValue(
-            'Double', _prefixedKey('double'), kTestValues2['flutter.double']!),
+            'Double', prefixedKey('double'), kTestValues2['flutter.double']!),
         preferences.setValue(
-            'StringList', _prefixedKey('List'), kTestValues2['flutter.List']!)
+            'StringList', prefixedKey('List'), kTestValues2['flutter.List']!)
       ]);
       final Map<String, Object> values = await preferences.getAll();
-      expect(values[_prefixedKey('String')], kTestValues2['flutter.String']);
-      expect(values[_prefixedKey('bool')], kTestValues2['flutter.bool']);
-      expect(values[_prefixedKey('int')], kTestValues2['flutter.int']);
-      expect(values[_prefixedKey('double')], kTestValues2['flutter.double']);
-      expect(values[_prefixedKey('List')], kTestValues2['flutter.List']);
+      expect(values[prefixedKey('String')], kTestValues2['flutter.String']);
+      expect(values[prefixedKey('bool')], kTestValues2['flutter.bool']);
+      expect(values[prefixedKey('int')], kTestValues2['flutter.int']);
+      expect(values[prefixedKey('double')], kTestValues2['flutter.double']);
+      expect(values[prefixedKey('List')], kTestValues2['flutter.List']);
     });
 
     testWidgets('removing', (WidgetTester _) async {
-      final String key = _prefixedKey('testKey');
+      final String key = prefixedKey('testKey');
       await preferences.setValue('String', key, kTestValues['flutter.String']!);
       await preferences.setValue('Bool', key, kTestValues['flutter.bool']!);
       await preferences.setValue('Int', key, kTestValues['flutter.int']!);

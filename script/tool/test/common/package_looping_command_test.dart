@@ -18,7 +18,7 @@ import 'package:test/test.dart';
 
 import '../mocks.dart';
 import '../util.dart';
-import 'plugin_command_test.mocks.dart';
+import 'package_command_test.mocks.dart';
 
 // Constants for colorized output start and end.
 const String _startElapsedTimeColor = '\x1B[90m';
@@ -143,7 +143,7 @@ void main() {
     runner = CommandRunner<void>('test_package_looping_command',
         'Test for base package looping functionality');
     runner.addCommand(command);
-    return await runCapturingPrint(
+    return runCapturingPrint(
       runner,
       <String>[command.name, ...arguments],
       errorHandler: errorHandler,

@@ -104,11 +104,8 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
       errors.add(blockValidationError);
     }
 
-    if (_containsTemplateBoilerplate(readmeLines)) {
-      printError('${indentation}The boilerplate section about getting started '
-          'with Flutter should not be left in.');
-      errors.add('Contains template boilerplate');
-    }
+    errors.addAll(_validateBoilerplate(readmeLines,
+        mainPackage: mainPackage, isExample: isExample));
 
     // Check if this is the main readme for a plugin, and if so enforce extra
     // checks.
@@ -284,10 +281,63 @@ ${indentation * 2}Please use standard capitalizations: ${sortedListString(expect
     return null;
   }
 
-  /// Returns true if the README still has the boilerplate from the
-  /// `flutter create` templates.
-  bool _containsTemplateBoilerplate(List<String> readmeLines) {
+  /// Validates [readmeLines], outputing error messages for any issue and
+  /// returning an array of error summaries (if any).
+  ///
+  /// Returns an empty array if validation passes.
+  List<String> _validateBoilerplate(
+    List<String> readmeLines, {
+    required RepositoryPackage mainPackage,
+    required bool isExample,
+  }) {
+    final List<String> errors = <String>[];
+
+    if (_containsTemplateFlutterBoilerplate(readmeLines)) {
+      printError('${indentation}The boilerplate section about getting started '
+          'with Flutter should not be left in.');
+      errors.add('Contains template boilerplate');
+    }
+
+    // Enforce a repository-standard message in implementation plugin examples,
+    // since they aren't typical examples, which has been a source of
+    // confusion for plugin clients who find them.
+    if (isExample && mainPackage.isPlatformImplementation) {
+      if (_containsExampleBoilerplate(readmeLines)) {
+        printError('${indentation}The boilerplate should not be left in for a '
+            "federated plugin implementation package's example.");
+        errors.add('Contains template boilerplate');
+      }
+      if (!_containsImplementationExampleExplanation(readmeLines)) {
+        printError('${indentation}The example README for a platform '
+            'implementation package should warn readers about its intended '
+            'use. Please copy the example README from another implementation '
+            'package in this repository.');
+        errors.add('Missing implementation package example warning');
+      }
+    }
+
+    return errors;
+  }
+
+  /// Returns true if the README still has unwanted parts of the boilerplate
+  /// from the `flutter create` templates.
+  bool _containsTemplateFlutterBoilerplate(List<String> readmeLines) {
     return readmeLines.any((String line) =>
         line.contains('For help getting started with Flutter'));
+  }
+
+  /// Returns true if the README still has the generic description of an
+  /// example from the `flutter create` templates.
+  bool _containsExampleBoilerplate(List<String> readmeLines) {
+    return readmeLines
+        .any((String line) => line.contains('Demonstrates how to use the'));
+  }
+
+  /// Returns true if the README contains the repository-standard explanation of
+  /// the purpose of a federated plugin implementation's example.
+  bool _containsImplementationExampleExplanation(List<String> readmeLines) {
+    return readmeLines.contains('# Platform Implementation Test App') &&
+        readmeLines
+            .any((String line) => line.contains('This is a test app for'));
   }
 }

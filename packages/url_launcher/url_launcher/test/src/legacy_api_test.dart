@@ -188,7 +188,7 @@ void main() {
     });
 
     test('cannot launch a non-web in webview', () async {
-      expect(() async => await launch('tel:555-555-5555', forceWebView: true),
+      expect(() async => launch('tel:555-555-5555', forceWebView: true),
           throwsA(isA<PlatformException>()));
     });
 
@@ -211,16 +211,14 @@ void main() {
 
     test('cannot send e-mail with forceSafariVC: true', () async {
       expect(
-          () async => await launch(
-              'mailto:gmail-noreply@google.com?subject=Hello',
+          () async => launch('mailto:gmail-noreply@google.com?subject=Hello',
               forceSafariVC: true),
           throwsA(isA<PlatformException>()));
     });
 
     test('cannot send e-mail with forceWebView: true', () async {
       expect(
-          () async => await launch(
-              'mailto:gmail-noreply@google.com?subject=Hello',
+          () async => launch('mailto:gmail-noreply@google.com?subject=Hello',
               forceWebView: true),
           throwsA(isA<PlatformException>()));
     });
@@ -305,7 +303,7 @@ void main() {
 
     test('cannot open non-parseable url with forceSafariVC: true', () async {
       expect(
-          () async => await launch(
+          () async => launch(
               'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
               forceSafariVC: true),
           throwsA(isA<PlatformException>()));
@@ -313,7 +311,7 @@ void main() {
 
     test('cannot open non-parseable url with forceWebView: true', () async {
       expect(
-          () async => await launch(
+          () async => launch(
               'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
               forceWebView: true),
           throwsA(isA<PlatformException>()));

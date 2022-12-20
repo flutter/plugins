@@ -118,7 +118,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
       throw UnimplementedError(
           'ImageSource.gallery is currently the only supported source on Windows');
     }
-    final XTypeGroup typeGroup =
+    const XTypeGroup typeGroup =
         XTypeGroup(label: 'images', extensions: imageFormats);
     final XFile? file = await fileSelector
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
@@ -142,7 +142,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
       throw UnimplementedError(
           'ImageSource.gallery is currently the only supported source on Windows');
     }
-    final XTypeGroup typeGroup =
+    const XTypeGroup typeGroup =
         XTypeGroup(label: 'videos', extensions: videoFormats);
     final XFile? file = await fileSelector
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
@@ -158,7 +158,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    final XTypeGroup typeGroup =
+    const XTypeGroup typeGroup =
         XTypeGroup(label: 'images', extensions: imageFormats);
     final List<XFile> files = await fileSelector
         .openFiles(acceptedTypeGroups: <XTypeGroup>[typeGroup]);

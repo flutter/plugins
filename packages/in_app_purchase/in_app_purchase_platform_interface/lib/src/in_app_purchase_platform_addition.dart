@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
+import '../in_app_purchase_platform_interface.dart';
 
 // ignore: avoid_classes_with_only_static_members
 /// The interface that platform implementations must implement when they want to
