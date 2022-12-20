@@ -1,3 +1,7 @@
+## 0.10.2
+
+* Fixes flash remaining lit after taking a picture.
+
 ## 0.10.1
 
 * Implements an option to also stream when recording a video.
