@@ -120,7 +120,7 @@
   options[(NSString *)kCGImageSourceTypeIdentifierHint] = (NSString *)kUTTypeGIF;
 
   CGImageSourceRef imageSource =
-      CGImageSourceCreateWithData((CFDataRef)data, (CFDictionaryRef)options);
+      CGImageSourceCreateWithData((__bridge CFDataRef)data, (__bridge CFDictionaryRef)options);
 
   size_t numberOfFrames = CGImageSourceGetCount(imageSource);
   NSMutableArray<UIImage *> *images = [NSMutableArray arrayWithCapacity:numberOfFrames];
@@ -128,7 +128,7 @@
   NSTimeInterval interval = 0.0;
   for (size_t index = 0; index < numberOfFrames; index++) {
     CGImageRef imageRef =
-        CGImageSourceCreateImageAtIndex(imageSource, index, (CFDictionaryRef)options);
+        CGImageSourceCreateImageAtIndex(imageSource, index, (__bridge CFDictionaryRef)options);
 
     NSDictionary *properties = (NSDictionary *)CFBridgingRelease(
         CGImageSourceCopyPropertiesAtIndex(imageSource, index, NULL));

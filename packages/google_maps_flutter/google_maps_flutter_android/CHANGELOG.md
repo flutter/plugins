@@ -1,6 +1,15 @@
-## 2.4.0
+## 2.5.0
 
 * Adds support for heatmap layers.
+
+## 2.4.0
+
+* Adds the ability to request a specific map renderer.
+* Updates code for new analysis options.
+
+## 2.3.3
+
+* Update android gradle plugin to 7.3.1.
 
 ## 2.3.2
 

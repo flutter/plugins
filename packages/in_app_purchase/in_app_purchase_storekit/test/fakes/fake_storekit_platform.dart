@@ -176,7 +176,7 @@ class FakeStoreKitPlatform {
         if (call.arguments['applicationUsername'] == 'userWithDiscount') {
           if (call.arguments['paymentDiscount'] != null) {
             final Map<dynamic, dynamic> discountArgument =
-                call.arguments['paymentDiscount'];
+                call.arguments['paymentDiscount'] as Map<dynamic, dynamic>;
             discountReceived = discountArgument.cast<String, dynamic>();
           } else {
             discountReceived = <String, dynamic>{};

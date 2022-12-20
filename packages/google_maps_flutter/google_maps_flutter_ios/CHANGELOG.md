@@ -1,6 +1,9 @@
 ## 2.2.0
 
 * Adds support for heatmap layers
+* Updates code for new analysis options.
+* Re-enable XCUITests: testUserInterface.
+* Remove unnecessary `RunnerUITests` target from Podfile of the example app.
 
 ## 2.1.12
 

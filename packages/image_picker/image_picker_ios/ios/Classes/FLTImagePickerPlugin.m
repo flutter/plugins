@@ -29,10 +29,7 @@
 
 #pragma mark -
 
-@interface FLTImagePickerPlugin () <UINavigationControllerDelegate,
-                                    UIImagePickerControllerDelegate,
-                                    PHPickerViewControllerDelegate,
-                                    UIAdaptivePresentationControllerDelegate>
+@interface FLTImagePickerPlugin ()
 
 /**
  * The PHPickerViewController instance used to pick multiple
@@ -478,52 +475,55 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     [self sendCallResultWithSavedPathList:nil];
     return;
   }
-  dispatch_queue_t backgroundQueue =
-      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
-  dispatch_async(backgroundQueue, ^{
-    NSNumber *maxWidth = self.callContext.maxSize.width;
-    NSNumber *maxHeight = self.callContext.maxSize.height;
-    NSNumber *imageQuality = self.callContext.imageQuality;
-    NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    NSMutableArray *pathList = [self createNSMutableArrayWithSize:results.count];
+  __block NSOperationQueue *saveQueue = [[NSOperationQueue alloc] init];
+  saveQueue.name = @"Flutter Save Image Queue";
+  saveQueue.qualityOfService = NSQualityOfServiceUserInitiated;
 
-    for (int i = 0; i < results.count; i++) {
-      PHPickerResult *result = results[i];
-      FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
-               initWithResult:result
-                    maxHeight:maxHeight
-                     maxWidth:maxWidth
-          desiredImageQuality:desiredImageQuality
-                 fullMetadata:self.callContext.requestFullMetadata
-               savedPathBlock:^(NSString *savedPath) {
-                 pathList[i] = savedPath;
-               }];
-      [operationQueue addOperation:operation];
+  FLTImagePickerMethodCallContext *currentCallContext = self.callContext;
+  NSNumber *maxWidth = currentCallContext.maxSize.width;
+  NSNumber *maxHeight = currentCallContext.maxSize.height;
+  NSNumber *imageQuality = currentCallContext.imageQuality;
+  NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
+  BOOL requestFullMetadata = currentCallContext.requestFullMetadata;
+  NSMutableArray *pathList = [[NSMutableArray alloc] initWithCapacity:results.count];
+  __block FlutterError *saveError = nil;
+  __weak typeof(self) weakSelf = self;
+  // This operation will be executed on the main queue after
+  // all selected files have been saved.
+  NSBlockOperation *sendListOperation = [NSBlockOperation blockOperationWithBlock:^{
+    if (saveError != nil) {
+      [weakSelf sendCallResultWithError:saveError];
+    } else {
+      [weakSelf sendCallResultWithSavedPathList:pathList];
     }
-    [operationQueue waitUntilAllOperationsAreFinished];
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self sendCallResultWithSavedPathList:pathList];
-    });
-  });
-}
+    // Retain queue until here.
+    saveQueue = nil;
+  }];
 
-#pragma mark -
+  [results enumerateObjectsUsingBlock:^(PHPickerResult *result, NSUInteger index, BOOL *stop) {
+    // NSNull means it hasn't saved yet.
+    [pathList addObject:[NSNull null]];
+    FLTPHPickerSaveImageToPathOperation *saveOperation =
+        [[FLTPHPickerSaveImageToPathOperation alloc]
+                 initWithResult:result
+                      maxHeight:maxHeight
+                       maxWidth:maxWidth
+            desiredImageQuality:desiredImageQuality
+                   fullMetadata:requestFullMetadata
+                 savedPathBlock:^(NSString *savedPath, FlutterError *error) {
+                   if (savedPath != nil) {
+                     pathList[index] = savedPath;
+                   } else {
+                     saveError = error;
+                   }
+                 }];
+    [sendListOperation addDependency:saveOperation];
+    [saveQueue addOperation:saveOperation];
+  }];
 
-/**
- * Creates an NSMutableArray of a certain size filled with NSNull objects.
- *
- * The difference with initWithCapacity is that initWithCapacity still gives an empty array making
- * it impossible to add objects on an index larger than the size.
- *
- * @param size The length of the required array
- * @return NSMutableArray An array of a specified size
- */
-- (NSMutableArray *)createNSMutableArrayWithSize:(NSUInteger)size {
-  NSMutableArray *mutableArray = [[NSMutableArray alloc] initWithCapacity:size];
-  for (int i = 0; i < size; [mutableArray addObject:[NSNull null]], i++)
-    ;
-  return mutableArray;
+  // Schedule the final Flutter callback on the main queue
+  // to be run after all images have been saved.
+  [NSOperationQueue.mainQueue addOperation:sendListOperation];
 }
 
 #pragma mark - UIImagePickerControllerDelegate
