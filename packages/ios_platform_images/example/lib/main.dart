@@ -22,6 +22,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     IosPlatformImages.resolveURL('textfile')
+        // ignore: avoid_print
         .then((String? value) => print(value));
   }
 

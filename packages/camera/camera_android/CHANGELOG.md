@@ -1,3 +1,15 @@
+## 0.10.1
+
+* Implements an option to also stream when recording a video.
+
+## 0.10.0+5
+
+* Fixes `ArrayIndexOutOfBoundsException` when the permission request is interrupted.
+
+## 0.10.0+4
+
+* Upgrades `androidx.annotation` version to 1.5.0.
+
 ## 0.10.0+3
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.

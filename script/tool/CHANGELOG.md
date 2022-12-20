@@ -1,3 +1,20 @@
+## 0.13.2
+
+* Falls back to other executables in PATH when `clang-format` does not run.
+
+## 0.13.1
+
+* Updates `version-check` to recognize Pigeon's platform test structure.
+* Pins `package:git` dependency to `2.0.x` until `dart >=2.18.0` becomes our
+  oldest legacy.
+* Updates test mocks.
+
+## 0.13.0
+
+* Renames `all-plugins-app` to `create-all-packages-app` to clarify what it
+  actually does. Also renames the project directory it creates from
+  `all_plugins` to `all_packages`.
+
 ## 0.12.1
 
 * Modifies `publish_check_command.dart` to do a `dart pub get` in all examples
