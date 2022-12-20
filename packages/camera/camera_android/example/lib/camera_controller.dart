@@ -8,7 +8,6 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:quiver/core.dart';
 
 /// The state of a [CameraController].
 class CameraValue {
@@ -108,7 +107,6 @@ class CameraValue {
     FocusMode? focusMode,
     bool? exposurePointSupported,
     bool? focusPointSupported,
-    bool? isPreviewPaused,
     DeviceOrientation? deviceOrientation,
     DeviceOrientation? lockedCaptureOrientation,
     DeviceOrientation? recordingOrientation,
@@ -126,16 +124,12 @@ class CameraValue {
       exposureMode: exposureMode ?? this.exposureMode,
       focusMode: focusMode ?? this.focusMode,
       deviceOrientation: deviceOrientation ?? this.deviceOrientation,
-      lockedCaptureOrientation: lockedCaptureOrientation == null
-          ? this.lockedCaptureOrientation
-          : lockedCaptureOrientation.orNull,
-      recordingOrientation: recordingOrientation == null
-          ? this.recordingOrientation
-          : recordingOrientation.orNull,
+      lockedCaptureOrientation:
+          lockedCaptureOrientation ?? this.lockedCaptureOrientation,
+      recordingOrientation: recordingOrientation ?? this.recordingOrientation,
       isPreviewPaused: isPreviewPaused ?? this.isPreviewPaused,
-      previewPauseOrientation: previewPauseOrientation == null
-          ? this.previewPauseOrientation
-          : previewPauseOrientation.orNull,
+      previewPauseOrientation:
+          previewPauseOrientation ?? this.previewPauseOrientation,
     );
   }
 
@@ -270,8 +264,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Resumes the current camera preview
   Future<void> resumePreview() async {
     await CameraPlatform.instance.resumePreview(_cameraId);
-    value =
-        value.copyWith(isPreviewPaused: false, previewPauseOrientation: null);
+    value = value.copyWith(isPreviewPaused: false);
   }
 
   /// Captures an image and returns the file where it was saved.
@@ -331,7 +324,6 @@ class CameraController extends ValueNotifier<CameraValue> {
     value = value.copyWith(
       isRecordingVideo: false,
       isRecordingPaused: false,
-      recordingOrientation: null,
     );
     return file;
   }
@@ -406,7 +398,6 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Unlocks the capture orientation.
   Future<void> unlockCaptureOrientation() async {
     await CameraPlatform.instance.unlockCaptureOrientation(_cameraId);
-    value = value.copyWith(lockedCaptureOrientation: null);
   }
 
   /// Sets the focus mode for taking pictures.
