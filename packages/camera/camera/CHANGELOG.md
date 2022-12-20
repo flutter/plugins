@@ -1,3 +1,7 @@
+## 0.10.0+6
+
+* Remove usage of deprecated quiver Optional type.
+
 ## 0.10.0+5
 
 * Updates code for stricter lint checks.
