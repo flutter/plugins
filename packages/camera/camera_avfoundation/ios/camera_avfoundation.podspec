@@ -18,6 +18,6 @@ A Flutter plugin to use the camera from your Flutter app.
   s.module_map = 'Classes/CameraPlugin.modulemap'
   s.dependency 'Flutter'
 
-  s.platform = :ios, '9.0'
+  s.platform = :ios, '11.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 end

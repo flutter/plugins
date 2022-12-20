@@ -19,6 +19,6 @@ Downloaded by pub (not CocoaPods).
   s.module_map = 'Classes/FlutterWebView.modulemap'
   s.dependency 'Flutter'
 
-  s.platform = :ios, '9.0'
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
+  s.platform = :ios, '11.0'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 end

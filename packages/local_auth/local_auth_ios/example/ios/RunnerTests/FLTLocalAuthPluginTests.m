@@ -381,8 +381,8 @@ static const NSTimeInterval kTimeout = 30.0;
                                        error:(NSError * __autoreleasing *)[OCMArg anyPointer]])
       .andDo(canEvaluatePolicyHandler);
 
-  FlutterMethodCall *call =
-      [FlutterMethodCall methodCallWithMethodName:@"deviceSupportsBiometrics" arguments:@{}];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"deviceSupportsBiometrics"
+                                                              arguments:@{}];
   XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
