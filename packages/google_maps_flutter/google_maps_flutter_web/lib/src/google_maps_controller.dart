@@ -422,8 +422,13 @@ class GoogleMapController {
   }
 
   void _addMyLocationButton(gmaps.GMap map) {
+    // ignore: always_specify_types
     final controlDiv = document.createElement('div');
+    controlDiv.style.marginRight = '10px';
+
+    // ignore: always_specify_types
     final firstChild = document.createElement('button');
+    firstChild.className = 'gm-control-active';
     firstChild.style.backgroundColor = '#fff';
     firstChild.style.border = 'none';
     firstChild.style.outline = 'none';
@@ -432,11 +437,11 @@ class GoogleMapController {
     firstChild.style.borderRadius = '2px';
     firstChild.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
     firstChild.style.cursor = 'pointer';
-    firstChild.style.marginRight = '10px';
+    firstChild.style.padding = '8px';
     controlDiv.append(firstChild);
 
+    // ignore: always_specify_types
     final secondChild = document.createElement('div');
-    secondChild.style.margin = '3px';
     secondChild.style.width = '24px';
     secondChild.style.height = '24px';
     secondChild.style.backgroundImage =
@@ -471,7 +476,8 @@ class GoogleMapController {
   }
 
   Future<void> _moveToCurrentLocation() async {
-    final location = await window.navigator.geolocation.getCurrentPosition();
+    final Geoposition location =
+        await window.navigator.geolocation.getCurrentPosition();
     await moveCamera(
       CameraUpdate.newLatLng(LatLng(
         location.coords!.latitude!.toDouble(),
@@ -484,12 +490,12 @@ class GoogleMapController {
     _addBlueDot(location);
   }
 
-  void _addBlueDot(Geoposition geolocation) {
+  void _addBlueDot(Geoposition location) {
     print('add blue dot');
     assert(
         _markersController != null, 'Cannot update markers after dispose().');
     BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(size: Size(24, 24)),
+      const ImageConfiguration(size: Size(18, 18)),
       'icons/blue-dot.png',
       package: 'google_maps_flutter_web',
     ).then((BitmapDescriptor icon) {
@@ -497,8 +503,8 @@ class GoogleMapController {
         markerId: const MarkerId('my_location_blue_dot'),
         icon: icon,
         position: LatLng(
-          geolocation.coords!.latitude!.toDouble(),
-          geolocation.coords!.longitude!.toDouble(),
+          location.coords!.latitude!.toDouble(),
+          location.coords!.longitude!.toDouble(),
         ),
         zIndex: 0.5,
       ));
