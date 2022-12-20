@@ -112,8 +112,8 @@ class CameraValue {
     DeviceOrientation? deviceOrientation,
     DeviceOrientation? lockedCaptureOrientation,
     DeviceOrientation? recordingOrientation,
-    DeviceOrientation? previewPauseOrientation,
     bool? isPreviewPaused,
+    DeviceOrientation? previewPauseOrientation,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
