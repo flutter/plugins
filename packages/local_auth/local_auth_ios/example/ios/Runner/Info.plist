@@ -47,5 +47,9 @@
 	<false/>
         <key>NSFaceIDUsageDescription</key>
         <string>App needs to authenticate using faces.</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 </dict>
 </plist>

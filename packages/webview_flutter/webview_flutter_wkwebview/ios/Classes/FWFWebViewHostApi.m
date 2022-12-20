@@ -20,11 +20,10 @@
   if (self) {
     _objectApi = [[FWFObjectFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
                                                           instanceManager:instanceManager];
-    if (@available(iOS 11.0, *)) {
-      self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      if (@available(iOS 13.0, *)) {
-        self.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
-      }
+
+    self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    if (@available(iOS 13.0, *)) {
+      self.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
     }
   }
   return self;
@@ -34,16 +33,15 @@
   [super setFrame:frame];
   // Prevents the contentInsets from being adjusted by iOS and gives control to Flutter.
   self.scrollView.contentInset = UIEdgeInsetsZero;
-  if (@available(iOS 11, *)) {
-    // Above iOS 11, adjust contentInset to compensate the adjustedContentInset so the sum will
-    // always be 0.
-    if (UIEdgeInsetsEqualToEdgeInsets(self.scrollView.adjustedContentInset, UIEdgeInsetsZero)) {
-      return;
-    }
-    UIEdgeInsets insetToAdjust = self.scrollView.adjustedContentInset;
-    self.scrollView.contentInset = UIEdgeInsetsMake(-insetToAdjust.top, -insetToAdjust.left,
-                                                    -insetToAdjust.bottom, -insetToAdjust.right);
+
+  // Adjust contentInset to compensate the adjustedContentInset so the sum will
+  // always be 0.
+  if (UIEdgeInsetsEqualToEdgeInsets(self.scrollView.adjustedContentInset, UIEdgeInsetsZero)) {
+    return;
   }
+  UIEdgeInsets insetToAdjust = self.scrollView.adjustedContentInset;
+  self.scrollView.contentInset = UIEdgeInsetsMake(-insetToAdjust.top, -insetToAdjust.left,
+                                                  -insetToAdjust.bottom, -insetToAdjust.right);
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath

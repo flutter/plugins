@@ -25,7 +25,7 @@
 @property(readonly, nonatomic) AVCaptureVideoDataOutput *captureVideoOutput;
 
 /// The output for photo capturing. Exposed setter for unit tests.
-@property(strong, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
+@property(strong, nonatomic) AVCapturePhotoOutput *capturePhotoOutput;
 
 /// True when images from the camera are being streamed.
 @property(assign, nonatomic) BOOL isStreamingImages;

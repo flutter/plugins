@@ -182,7 +182,7 @@
             [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
 }
 
-- (void)testPickImageWithoutFullMetadata API_AVAILABLE(ios(11)) {
+- (void)testPickImageWithoutFullMetadata {
   id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
   id photoLibrary = OCMClassMock([PHPhotoLibrary class]);
 
@@ -200,7 +200,7 @@
   OCMVerify(times(0), [photoLibrary authorizationStatus]);
 }
 
-- (void)testPickMultiImageWithoutFullMetadata API_AVAILABLE(ios(11)) {
+- (void)testPickMultiImageWithoutFullMetadata {
   id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
   id photoLibrary = OCMClassMock([PHPhotoLibrary class]);
 

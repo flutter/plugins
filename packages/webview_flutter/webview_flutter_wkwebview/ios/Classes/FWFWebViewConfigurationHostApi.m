@@ -117,28 +117,10 @@
 
   WKWebViewConfiguration *configuration =
       (WKWebViewConfiguration *)[self webViewConfigurationForIdentifier:identifier];
-  if (@available(iOS 10.0, *)) {
-    WKAudiovisualMediaTypes typesInt = 0;
-    for (FWFWKAudiovisualMediaTypeEnumData *data in types) {
-      typesInt |= FWFWKAudiovisualMediaTypeFromEnumData(data);
-    }
-    [configuration setMediaTypesRequiringUserActionForPlayback:typesInt];
-  } else {
-    for (FWFWKAudiovisualMediaTypeEnumData *data in types) {
-      switch (data.value) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        case FWFWKAudiovisualMediaTypeEnumNone:
-          configuration.requiresUserActionForMediaPlayback = false;
-          break;
-        case FWFWKAudiovisualMediaTypeEnumAudio:
-        case FWFWKAudiovisualMediaTypeEnumVideo:
-        case FWFWKAudiovisualMediaTypeEnumAll:
-          configuration.requiresUserActionForMediaPlayback = true;
-          break;
-#pragma clang diagnostic pop
-      }
-    }
+  WKAudiovisualMediaTypes typesInt = 0;
+  for (FWFWKAudiovisualMediaTypeEnumData *data in types) {
+    typesInt |= FWFWKAudiovisualMediaTypeFromEnumData(data);
   }
+  [configuration setMediaTypesRequiringUserActionForPlayback:typesInt];
 }
 @end

@@ -46,28 +46,9 @@
   });
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (void)captureOutput:(AVCapturePhotoOutput *)output
-    didFinishProcessingPhotoSampleBuffer:(CMSampleBufferRef)photoSampleBuffer
-                previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
-                        resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings
-                         bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings
-                                   error:(NSError *)error API_AVAILABLE(ios(10)) {
-  [self handlePhotoCaptureResultWithError:error
-                        photoDataProvider:^NSData * {
-                          return [AVCapturePhotoOutput
-                              JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
-                                                    previewPhotoSampleBuffer:
-                                                        previewPhotoSampleBuffer];
-                        }];
-}
-#pragma clang diagnostic pop
-
 - (void)captureOutput:(AVCapturePhotoOutput *)output
     didFinishProcessingPhoto:(AVCapturePhoto *)photo
-                       error:(NSError *)error API_AVAILABLE(ios(11.0)) {
+                       error:(NSError *)error {
   [self handlePhotoCaptureResultWithError:error
                         photoDataProvider:^NSData * {
                           return [photo fileDataRepresentation];

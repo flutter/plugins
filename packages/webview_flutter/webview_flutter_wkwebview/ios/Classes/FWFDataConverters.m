@@ -118,7 +118,6 @@ WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(
   return -1;
 }
 
-API_AVAILABLE(ios(10.0))
 WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(
     FWFWKAudiovisualMediaTypeEnumData *data) {
   switch (data.value) {

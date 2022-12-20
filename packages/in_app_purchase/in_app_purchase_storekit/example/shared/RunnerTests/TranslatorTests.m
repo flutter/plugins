@@ -224,12 +224,10 @@
 }
 
 - (void)testLocaleToMap {
-  if (@available(iOS 10.0, *)) {
-    NSLocale *system = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-    NSDictionary *map = [FIAObjectTranslator getMapFromNSLocale:system];
-    XCTAssertEqualObjects(map[@"currencySymbol"], system.currencySymbol);
-    XCTAssertEqualObjects(map[@"countryCode"], system.countryCode);
-  }
+  NSLocale *system = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+  NSDictionary *map = [FIAObjectTranslator getMapFromNSLocale:system];
+  XCTAssertEqualObjects(map[@"currencySymbol"], system.currencySymbol);
+  XCTAssertEqualObjects(map[@"countryCode"], system.countryCode);
 }
 
 - (void)testSKStorefrontToMap {

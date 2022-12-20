@@ -12,7 +12,7 @@
 @end
 
 @implementation FWFHTTPCookieStoreHostApiTests
-- (void)testCreateFromWebsiteDataStoreWithIdentifier API_AVAILABLE(ios(11.0)) {
+- (void)testCreateFromWebsiteDataStoreWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFHTTPCookieStoreHostApiImpl *hostAPI =
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -28,7 +28,7 @@
   XCTAssertNil(error);
 }
 
-- (void)testSetCookie API_AVAILABLE(ios(11.0)) {
+- (void)testSetCookie {
   WKHTTPCookieStore *mockHttpCookieStore = OCMClassMock([WKHTTPCookieStore class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];

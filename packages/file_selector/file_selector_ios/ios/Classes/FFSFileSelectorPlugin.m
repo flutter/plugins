@@ -21,9 +21,7 @@
                  initWithDocumentTypes:config.utis
                                 inMode:UIDocumentPickerModeImport];
   documentPicker.delegate = self;
-  if (@available(iOS 11.0, *)) {
-    documentPicker.allowsMultipleSelection = config.allowMultiSelection.boolValue;
-  }
+  documentPicker.allowsMultipleSelection = config.allowMultiSelection.boolValue;
 
   UIViewController *presentingVC =
       self.presentingViewControllerOverride

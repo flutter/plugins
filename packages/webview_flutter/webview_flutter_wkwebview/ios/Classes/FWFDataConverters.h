@@ -72,7 +72,6 @@ extern WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(
  *
  * @return A WKAudiovisualMediaType or -1 if data could not be converted.
  */
-API_AVAILABLE(ios(10.0))
 extern WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(
     FWFWKAudiovisualMediaTypeEnumData *data);
 

@@ -137,15 +137,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                              camera:[self cameraDeviceForSource:source]];
       break;
     case FLTSourceTypeGallery:
-      if (@available(iOS 11, *)) {
-        if (context.requestFullMetadata) {
-          [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
-        } else {
-          [self showPhotoLibraryWithImagePicker:imagePickerController];
-        }
-      } else {
-        // Prior to iOS 11, accessing gallery requires authorization
+      if (context.requestFullMetadata) {
         [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
+      } else {
+        [self showPhotoLibraryWithImagePicker:imagePickerController];
       }
       break;
     default:

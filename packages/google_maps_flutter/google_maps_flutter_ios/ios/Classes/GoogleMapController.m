@@ -226,25 +226,20 @@
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
   } else if ([call.method isEqualToString:@"map#takeSnapshot"]) {
-    if (@available(iOS 10.0, *)) {
-      if (self.mapView != nil) {
-        UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat defaultFormat];
-        format.scale = [[UIScreen mainScreen] scale];
-        UIGraphicsImageRenderer *renderer =
-            [[UIGraphicsImageRenderer alloc] initWithSize:self.mapView.frame.size format:format];
+    if (self.mapView != nil) {
+      UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat defaultFormat];
+      format.scale = [[UIScreen mainScreen] scale];
+      UIGraphicsImageRenderer *renderer =
+          [[UIGraphicsImageRenderer alloc] initWithSize:self.mapView.frame.size format:format];
 
-        UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
-          [self.mapView.layer renderInContext:context.CGContext];
-        }];
-        result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
-      } else {
-        result([FlutterError errorWithCode:@"GoogleMap uninitialized"
-                                   message:@"takeSnapshot called prior to map initialization"
-                                   details:nil]);
-      }
+      UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+        [self.mapView.layer renderInContext:context.CGContext];
+      }];
+      result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
     } else {
-      NSLog(@"Taking snapshots is not supported for Flutter Google Maps prior to iOS 10.");
-      result(nil);
+      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                 message:@"takeSnapshot called prior to map initialization"
+                                 details:nil]);
     }
   } else if ([call.method isEqualToString:@"markers#update"]) {
     id markersToAdd = call.arguments[@"markersToAdd"];

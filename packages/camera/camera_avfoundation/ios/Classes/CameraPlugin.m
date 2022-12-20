@@ -104,43 +104,39 @@
 - (void)handleMethodCallAsync:(FlutterMethodCall *)call
                        result:(FLTThreadSafeFlutterResult *)result {
   if ([@"availableCameras" isEqualToString:call.method]) {
-    if (@available(iOS 10.0, *)) {
-      NSMutableArray *discoveryDevices =
-          [@[ AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera ]
-              mutableCopy];
-      if (@available(iOS 13.0, *)) {
-        [discoveryDevices addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
-      }
-      AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
-          discoverySessionWithDeviceTypes:discoveryDevices
-                                mediaType:AVMediaTypeVideo
-                                 position:AVCaptureDevicePositionUnspecified];
-      NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
-      NSMutableArray<NSDictionary<NSString *, NSObject *> *> *reply =
-          [[NSMutableArray alloc] initWithCapacity:devices.count];
-      for (AVCaptureDevice *device in devices) {
-        NSString *lensFacing;
-        switch ([device position]) {
-          case AVCaptureDevicePositionBack:
-            lensFacing = @"back";
-            break;
-          case AVCaptureDevicePositionFront:
-            lensFacing = @"front";
-            break;
-          case AVCaptureDevicePositionUnspecified:
-            lensFacing = @"external";
-            break;
-        }
-        [reply addObject:@{
-          @"name" : [device uniqueID],
-          @"lensFacing" : lensFacing,
-          @"sensorOrientation" : @90,
-        }];
-      }
-      [result sendSuccessWithData:reply];
-    } else {
-      [result sendNotImplemented];
+    NSMutableArray *discoveryDevices =
+        [@[ AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera ]
+            mutableCopy];
+    if (@available(iOS 13.0, *)) {
+      [discoveryDevices addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
     }
+    AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
+        discoverySessionWithDeviceTypes:discoveryDevices
+                              mediaType:AVMediaTypeVideo
+                               position:AVCaptureDevicePositionUnspecified];
+    NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
+    NSMutableArray<NSDictionary<NSString *, NSObject *> *> *reply =
+        [[NSMutableArray alloc] initWithCapacity:devices.count];
+    for (AVCaptureDevice *device in devices) {
+      NSString *lensFacing;
+      switch ([device position]) {
+        case AVCaptureDevicePositionBack:
+          lensFacing = @"back";
+          break;
+        case AVCaptureDevicePositionFront:
+          lensFacing = @"front";
+          break;
+        case AVCaptureDevicePositionUnspecified:
+          lensFacing = @"external";
+          break;
+      }
+      [reply addObject:@{
+        @"name" : [device uniqueID],
+        @"lensFacing" : lensFacing,
+        @"sensorOrientation" : @90,
+      }];
+    }
+    [result sendSuccessWithData:reply];
   } else if ([@"create" isEqualToString:call.method]) {
     [self handleCreateMethodCall:call result:result];
   } else if ([@"startImageStream" isEqualToString:call.method]) {
@@ -188,11 +184,7 @@
       [_camera start];
       [result sendSuccess];
     } else if ([@"takePicture" isEqualToString:call.method]) {
-      if (@available(iOS 10.0, *)) {
-        [_camera captureToFile:result];
-      } else {
-        [result sendNotImplemented];
-      }
+      [_camera captureToFile:result];
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:cameraId];
       [_camera close];

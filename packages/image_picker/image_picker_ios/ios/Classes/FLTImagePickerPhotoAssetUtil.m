@@ -11,19 +11,7 @@
 @implementation FLTImagePickerPhotoAssetUtil
 
 + (PHAsset *)getAssetFromImagePickerInfo:(NSDictionary *)info {
-  if (@available(iOS 11, *)) {
-    return [info objectForKey:UIImagePickerControllerPHAsset];
-  }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  NSURL *referenceURL = [info objectForKey:UIImagePickerControllerReferenceURL];
-  if (!referenceURL) {
-    return nil;
-  }
-  PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsWithALAssetURLs:@[ referenceURL ]
-                                                                 options:nil];
-  return result.firstObject;
-#pragma clang diagnostic pop
+  return [info objectForKey:UIImagePickerControllerPHAsset];
 }
 
 + (PHAsset *)getAssetFromPHPickerResult:(PHPickerResult *)result API_AVAILABLE(ios(14)) {

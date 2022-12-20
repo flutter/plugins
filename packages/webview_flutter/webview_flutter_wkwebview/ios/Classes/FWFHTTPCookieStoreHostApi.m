@@ -20,8 +20,7 @@
   return self;
 }
 
-- (WKHTTPCookieStore *)HTTPCookieStoreForIdentifier:(NSNumber *)identifier
-    API_AVAILABLE(ios(11.0)) {
+- (WKHTTPCookieStore *)HTTPCookieStoreForIdentifier:(NSNumber *)identifier {
   return (WKHTTPCookieStore *)[self.instanceManager instanceForIdentifier:identifier.longValue];
 }
 
@@ -29,17 +28,10 @@
                              dataStoreIdentifier:(nonnull NSNumber *)websiteDataStoreIdentifier
                                            error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                      error {
-  if (@available(iOS 11.0, *)) {
-    WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[self.instanceManager
-        instanceForIdentifier:websiteDataStoreIdentifier.longValue];
-    [self.instanceManager addDartCreatedInstance:dataStore.httpCookieStore
-                                  withIdentifier:identifier.longValue];
-  } else {
-    *error = [FlutterError
-        errorWithCode:@"FWFUnsupportedVersionError"
-              message:@"WKWebsiteDataStore.httpCookieStore is only supported on versions 11+."
-              details:nil];
-  }
+  WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[self.instanceManager
+      instanceForIdentifier:websiteDataStoreIdentifier.longValue];
+  [self.instanceManager addDartCreatedInstance:dataStore.httpCookieStore
+                                withIdentifier:identifier.longValue];
 }
 
 - (void)setCookieForStoreWithIdentifier:(nonnull NSNumber *)identifier
@@ -47,15 +39,9 @@
                              completion:(nonnull void (^)(FlutterError *_Nullable))completion {
   NSHTTPCookie *nsCookie = FWFNSHTTPCookieFromCookieData(cookie);
 
-  if (@available(iOS 11.0, *)) {
-    [[self HTTPCookieStoreForIdentifier:identifier] setCookie:nsCookie
-                                            completionHandler:^{
-                                              completion(nil);
-                                            }];
-  } else {
-    completion([FlutterError errorWithCode:@"FWFUnsupportedVersionError"
-                                   message:@"setCookie is only supported on versions 11+."
-                                   details:nil]);
-  }
+  [[self HTTPCookieStoreForIdentifier:identifier] setCookie:nsCookie
+                                          completionHandler:^{
+                                            completion(nil);
+                                          }];
 }
 @end

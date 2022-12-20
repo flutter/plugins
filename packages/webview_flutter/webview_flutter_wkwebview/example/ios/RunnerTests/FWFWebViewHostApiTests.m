@@ -411,7 +411,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   XCTAssertEqualObjects(errorData.localizedDescription, @"description");
 }
 
-- (void)testWebViewContentInsetBehaviorShouldBeNeverOnIOS11 API_AVAILABLE(ios(11.0)) {
+- (void)testWebViewContentInsetBehaviorShouldBeNever {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
@@ -454,16 +454,14 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
   XCTAssertTrue(CGRectEqualToRect(webView.frame, CGRectMake(0, 0, 300, 200)));
 
-  if (@available(iOS 11, *)) {
-    // After iOS 11, we need to make sure the contentInset compensates the adjustedContentInset.
-    UIScrollView *partialMockScrollView = OCMPartialMock(webView.scrollView);
-    UIEdgeInsets insetToAdjust = UIEdgeInsetsMake(0, 0, 300, 0);
-    OCMStub(partialMockScrollView.adjustedContentInset).andReturn(insetToAdjust);
-    XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
+  // Make sure the contentInset compensates the adjustedContentInset.
+  UIScrollView *partialMockScrollView = OCMPartialMock(webView.scrollView);
+  UIEdgeInsets insetToAdjust = UIEdgeInsetsMake(0, 0, 300, 0);
+  OCMStub(partialMockScrollView.adjustedContentInset).andReturn(insetToAdjust);
+  XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
 
-    webView.frame = CGRectMake(0, 0, 300, 100);
-    XCTAssertTrue(feq(webView.scrollView.contentInset.bottom, -insetToAdjust.bottom));
-    XCTAssertTrue(CGRectEqualToRect(webView.frame, CGRectMake(0, 0, 300, 100)));
-  }
+  webView.frame = CGRectMake(0, 0, 300, 100);
+  XCTAssertTrue(feq(webView.scrollView.contentInset.bottom, -insetToAdjust.bottom));
+  XCTAssertTrue(CGRectEqualToRect(webView.frame, CGRectMake(0, 0, 300, 100)));
 }
 @end
