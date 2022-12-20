@@ -1,0 +1,19 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package io.flutter.plugins.camerax;
+
+public class SystemServicesFlutterApiImpl extends SystemServicesFlutterApi {
+    public SystemServicesFlutterApiImpl(
+        BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+      super(binaryMessenger);
+      this.instanceManager = instanceManager;
+    }
+  
+    private final InstanceManager instanceManager;
+
+    void onDeviceOrientationChanged(String orientation, Reply<Void> callback) {
+        onDeviceOrientationChanged(orientation, reply);
+    }
+}
