@@ -15,7 +15,8 @@ flutter:
       web:
         pluginClass: GoogleMapsPlugin
         fileName: google_maps_flutter_web.dart
-
+  assets:
+    - icons/
 dependencies:
   flutter:
     sdk: flutter
