@@ -489,9 +489,10 @@ class GoogleMapController {
     assert(
         _markersController != null, 'Cannot update markers after dispose().');
     BitmapDescriptor.fromAssetImage(
-            const ImageConfiguration(size: Size(24, 24)), 'icons/blue-dot.png',
-            package: 'google_maps_flutter_web')
-        .then((BitmapDescriptor icon) {
+      const ImageConfiguration(size: Size(24, 24)),
+      'icons/blue-dot.png',
+      package: 'google_maps_flutter_web',
+    ).then((BitmapDescriptor icon) {
       _markersController?._addMarker(Marker(
         markerId: const MarkerId('my_location_blue_dot'),
         icon: icon,
