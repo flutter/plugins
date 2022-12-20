@@ -55,28 +55,6 @@
   [self waitForExpectationsWithTimeout:1.0 handler:nil];
 }
 
-- (void)testReturnsPickedFileLegacy {
-  // Tests that it handles the pre iOS 11 UIDocumentPickerDelegate method.
-  FFSFileSelectorPlugin *plugin = [[FFSFileSelectorPlugin alloc] init];
-  XCTestExpectation *completionWasCalled = [self expectationWithDescription:@"completion"];
-  UIDocumentPickerViewController *picker =
-      [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[]
-                                                             inMode:UIDocumentPickerModeImport];
-  plugin.documentPickerViewControllerOverride = picker;
-  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:@[]
-                                                     allowMultiSelection:@NO]
-                          completion:^(NSArray<NSString *> *paths, FlutterError *error) {
-                            NSArray *expectedPaths = @[ @"/file1.txt" ];
-                            XCTAssertEqualObjects(paths, expectedPaths);
-                            [completionWasCalled fulfill];
-                          }];
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  [plugin documentPicker:picker didPickDocumentAtURL:[NSURL URLWithString:@"file:///file1.txt"]];
-#pragma GCC diagnostic pop
-  [self waitForExpectationsWithTimeout:1.0 handler:nil];
-}
-
 - (void)testCancellingPickerReturnsNil {
   FFSFileSelectorPlugin *plugin = [[FFSFileSelectorPlugin alloc] init];
   UIDocumentPickerViewController *picker =

@@ -197,14 +197,9 @@
     result(@YES);
   } else {
     switch (error.code) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        // TODO(stuartmorgan): Remove the pragma and s/TouchID/Biometry/ in these constants when
-        // iOS 10 support is dropped. The values are the same, only the names have changed.
-      case LAErrorTouchIDNotAvailable:
-      case LAErrorTouchIDNotEnrolled:
-      case LAErrorTouchIDLockout:
-#pragma clang diagnostic pop
+      case LAErrorBiometryNotAvailable:
+      case LAErrorBiometryNotEnrolled:
+      case LAErrorBiometryLockout:
       case LAErrorUserFallback:
       case LAErrorPasscodeNotSet:
       case LAErrorAuthenticationFailed:
@@ -229,12 +224,7 @@
   NSString *errorCode = @"NotAvailable";
   switch (authError.code) {
     case LAErrorPasscodeNotSet:
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      // TODO(stuartmorgan): Remove the pragma and s/TouchID/Biometry/ in this constant when
-      // iOS 10 support is dropped. The values are the same, only the names have changed.
-    case LAErrorTouchIDNotEnrolled:
-#pragma clang diagnostic pop
+    case LAErrorBiometryNotEnrolled:
       if ([arguments[@"useErrorDialogs"] boolValue]) {
         [self alertMessage:arguments[@"goToSettingDescriptionIOS"]
                  firstButton:arguments[@"okButton"]
@@ -244,12 +234,7 @@
       }
       errorCode = authError.code == LAErrorPasscodeNotSet ? @"PasscodeNotSet" : @"NotEnrolled";
       break;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      // TODO(stuartmorgan): Remove the pragma and s/TouchID/Biometry/ in this constant when
-      // iOS 10 support is dropped. The values are the same, only the names have changed.
-    case LAErrorTouchIDLockout:
-#pragma clang diagnostic pop
+    case LAErrorBiometryLockout:
       [self alertMessage:arguments[@"lockOut"]
                firstButton:arguments[@"okButton"]
              flutterResult:result
