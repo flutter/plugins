@@ -629,8 +629,8 @@ Map<String, Object> _jsonForMapConfiguration(MapConfiguration config) {
 // interface, and remove this copy.
 class _TileOverlayUpdates extends MapsObjectUpdates<TileOverlay> {
   /// Computes [TileOverlayUpdates] given previous and current [TileOverlay]s.
-  _TileOverlayUpdates.from(Set<TileOverlay> previous, Set<TileOverlay> current)
-      : super.from(previous, current, objectName: 'tileOverlay');
+  _TileOverlayUpdates.from(super.previous, super.current)
+      : super.from(objectName: 'tileOverlay');
 
   /// Set of TileOverlays to be added in this update.
   Set<TileOverlay> get tileOverlaysToAdd => objectsToAdd;
