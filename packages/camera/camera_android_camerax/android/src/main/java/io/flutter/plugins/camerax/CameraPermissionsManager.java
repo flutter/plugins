@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camerax;
+package io.flutter.plugins.camera;
 
 import android.Manifest;
 import android.Manifest.permission;
@@ -43,7 +43,8 @@ final class CameraPermissionsManager {
   void requestPermissions(
       Activity activity,
       PermissionsRegistry permissionsRegistry,
-      boolean enableAudio) {
+      boolean enableAudio,
+      ResultCallback callback) {
     if (ongoing) {
       callback.onResult(
           CAMERA_PERMISSIONS_REQUEST_ONGOING, CAMERA_PERMISSIONS_REQUEST_ONGOING_MESSAGE);

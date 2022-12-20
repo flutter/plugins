@@ -28,8 +28,21 @@ public class SystemServicesHostApiImpl implements SystemServiesHostApi {
 
     @Override
     public Boolean requestCameraPermissions() {
-        // TODO(camsim99): Pass as a parameter whether or not to enable audio.
-        CameraPermissionsManager cameraPermissionsManager = new CameraPermissionsManager(activity, permissionsRegistry, true);
+        CameraPermissionsManager cameraPermissionsManager = new CameraPermissionsManager();
+        cameraPermissionsManager.requestPermissions(
+            activity,
+            permissionsRegistry,
+            true, // TODO(camsim99): Pass as a parameter whether or not to enable audio.
+            (String errCode, String errDesc) -> {
+              if (errCode == null) {
+                result = true;
+              } else {
+                result = false;
+              }
+            }
+        );
+        // TODO(camsim99): Make this void? Unclear how to handle this.
+        return true;
     }
 
     @Override
