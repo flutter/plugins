@@ -1,8 +1,7 @@
 ## 2.4.11
 
 * Added option to configure HTTP headers via `VideoPlayerController` to fix access to M3U8 files on Android.
-  
-=======
+
 ## 2.4.10
 
 * Adds compatibilty with version 6.0 of the platform interface.
