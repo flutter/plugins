@@ -10,7 +10,8 @@
       android:launchMode="singleTop"
       android:name="io.flutter.embedding.android.FlutterActivity"
       android:theme="@style/LaunchTheme"
-      android:windowSoftInputMode="adjustResize">
+      android:windowSoftInputMode="adjustResize"
+      android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
