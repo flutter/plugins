@@ -1,4 +1,4 @@
-## 0.9.9+1
+## 0.9.10
 
 * Remove usage of deprecated quiver Optional type.
 
