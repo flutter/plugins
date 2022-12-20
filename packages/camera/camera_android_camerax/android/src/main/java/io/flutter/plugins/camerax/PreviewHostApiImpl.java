@@ -18,11 +18,16 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.PreviewHostApi;
 import io.flutter.view.TextureRegistry;
 import java.util.concurrent.Executors;
+import android.util.Log;
+import java.util.Map;
 
 public class PreviewHostApiImpl implements PreviewHostApi {
   private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
   private final TextureRegistry textureRegistry;
+
+  private final String RESOLUTION_WIDTH_KEY = "width";
+  private final String RESOLUTION_HEIGHT_KEY = "height";
 
   @VisibleForTesting public CameraXProxy cameraXProxy = new CameraXProxy();
 
@@ -39,14 +44,13 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   public void create(
       @NonNull Long identifier,
       @Nullable Long rotation,
-      @Nullable Long targetWidth,
-      @Nullable Long targetHeight) {
+      @Nullable Map<String, Long> targetResolution) {
     Preview.Builder previewBuilder = cameraXProxy.createPreviewBuilder();
     if (rotation != null) {
       previewBuilder.setTargetRotation(rotation.intValue());
     }
-    if (targetWidth != null && targetHeight != null) {
-      previewBuilder.setTargetResolution(new Size(targetWidth.intValue(), targetHeight.intValue()));
+    if (targetResolution != null) {
+      previewBuilder.setTargetResolution(new Size(((Number) targetResolution.get(RESOLUTION_WIDTH_KEY)).intValue(), ((Number) targetResolution.get(RESOLUTION_HEIGHT_KEY)).intValue()));
     }
     Preview preview = previewBuilder.build();
     instanceManager.addDartCreatedInstance(preview, identifier);

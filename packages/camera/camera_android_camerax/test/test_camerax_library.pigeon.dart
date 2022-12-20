@@ -218,7 +218,7 @@ class _TestPreviewHostApiCodec extends StandardMessageCodec {
 abstract class TestPreviewHostApi {
   static const MessageCodec<Object?> codec = _TestPreviewHostApiCodec();
 
-  void create(int identifier, int? rotation, int? targetWidth, int? targetHeight);
+  void create(int identifier, int? rotation, Map<String?, int?>? targetResolution);
   int setSurfaceProvider(int identifier);
   void setTargetRotation(int identifier, int targetRotation);
   List<int?> getResolutionInfo(int identifier);
@@ -235,9 +235,8 @@ abstract class TestPreviewHostApi {
           final int? arg_identifier = (args[0] as int?);
           assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.PreviewHostApi.create was null, expected non-null int.');
           final int? arg_rotation = (args[1] as int?);
-          final int? arg_targetWidth = (args[2] as int?);
-          final int? arg_targetHeight = (args[3] as int?);
-          api.create(arg_identifier!, arg_rotation, arg_targetWidth, arg_targetHeight);
+          final Map<String?, int?>? arg_targetResolution = (args[2] as Map<Object?, Object?>?)?.cast<String?, int?>();
+          api.create(arg_identifier!, arg_rotation, arg_targetResolution);
           return <Object?, Object?>{};
         });
       }
@@ -344,6 +343,44 @@ abstract class TestCameraControlHostApi {
           final int? arg_ratio = (args[1] as int?);
           assert(arg_ratio != null, 'Argument for dev.flutter.pigeon.CameraControlHostApi.setZoomRatio was null, expected non-null int.');
           api.setZoomRatio(arg_identifier!, arg_ratio!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}
+
+class _TestSystemServicesHostApiCodec extends StandardMessageCodec {
+  const _TestSystemServicesHostApiCodec();
+}
+abstract class TestSystemServicesHostApi {
+  static const MessageCodec<Object?> codec = _TestSystemServicesHostApiCodec();
+
+  bool requestCameraPermissions();
+  void startListeningForDeviceOrientationChange();
+  static void setup(TestSystemServicesHostApi? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions', codec, binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          // ignore message
+          final bool output = api.requestCameraPermissions();
+          return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange', codec, binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          // ignore message
+          api.startListeningForDeviceOrientationChange();
           return <Object?, Object?>{};
         });
       }

@@ -7,6 +7,7 @@ package io.flutter.plugins.camerax;
 import androidx.camera.core.Preview;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.PreviewFlutterApi;
+import java.util.Map;
 
 public class PreviewFlutterApiImpl extends PreviewFlutterApi {
   private final InstanceManager instanceManager;
@@ -16,7 +17,7 @@ public class PreviewFlutterApiImpl extends PreviewFlutterApi {
     this.instanceManager = instanceManager;
   }
 
-  void create(Preview preview, Long targetRotation, Reply<Void> reply) {
-    create(instanceManager.addHostCreatedInstance(preview), targetRotation, reply);
+  void create(Preview preview, Long targetRotation, Map<String, Long> targetResolution, Reply<Void> reply) {
+    create(instanceManager.addHostCreatedInstance(preview), targetRotation, targetResolution, reply);
   }
 }

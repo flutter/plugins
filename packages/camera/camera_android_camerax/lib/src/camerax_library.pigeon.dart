@@ -416,11 +416,11 @@ class PreviewHostApi {
 
   static const MessageCodec<Object?> codec = _PreviewHostApiCodec();
 
-  Future<void> create(int arg_identifier, int? arg_rotation, int? arg_targetWidth, int? arg_targetHeight) async {
+  Future<void> create(int arg_identifier, int? arg_rotation, Map<String?, int?>? arg_targetResolution) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.PreviewHostApi.create', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_identifier, arg_rotation, arg_targetWidth, arg_targetHeight]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_identifier, arg_rotation, arg_targetResolution]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -521,7 +521,7 @@ class _PreviewFlutterApiCodec extends StandardMessageCodec {
 abstract class PreviewFlutterApi {
   static const MessageCodec<Object?> codec = _PreviewFlutterApiCodec();
 
-  void create(int identifier, int targetRotation);
+  void create(int identifier, int targetRotation, Map<String?, int?>? targetResolution);
   static void setup(PreviewFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -536,7 +536,8 @@ abstract class PreviewFlutterApi {
           assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.PreviewFlutterApi.create was null, expected non-null int.');
           final int? arg_targetRotation = (args[1] as int?);
           assert(arg_targetRotation != null, 'Argument for dev.flutter.pigeon.PreviewFlutterApi.create was null, expected non-null int.');
-          api.create(arg_identifier!, arg_targetRotation!);
+          final Map<String?, int?>? arg_targetResolution = (args[2] as Map<Object?, Object?>?)?.cast<String?, int?>();
+          api.create(arg_identifier!, arg_targetRotation!, arg_targetResolution);
           return;
         });
       }
@@ -670,6 +671,97 @@ abstract class CameraControlFlutterApi {
           final int? arg_identifier = (args[0] as int?);
           assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.CameraControlFlutterApi.create was null, expected non-null int.');
           api.create(arg_identifier!);
+          return;
+        });
+      }
+    }
+  }
+}
+
+class _SystemServicesHostApiCodec extends StandardMessageCodec {
+  const _SystemServicesHostApiCodec();
+}
+
+class SystemServicesHostApi {
+  /// Constructor for [SystemServicesHostApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  SystemServicesHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec = _SystemServicesHostApiCodec();
+
+  Future<bool> requestCameraPermissions() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(null) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as bool?)!;
+    }
+  }
+
+  Future<void> startListeningForDeviceOrientationChange() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(null) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
+class _SystemServicesFlutterApiCodec extends StandardMessageCodec {
+  const _SystemServicesFlutterApiCodec();
+}
+abstract class SystemServicesFlutterApi {
+  static const MessageCodec<Object?> codec = _SystemServicesFlutterApiCodec();
+
+  void onDeviceOrientationChanged(String orientation);
+  static void setup(SystemServicesFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged', codec, binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_orientation = (args[0] as String?);
+          assert(arg_orientation != null, 'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged was null, expected non-null String.');
+          api.onDeviceOrientationChanged(arg_orientation!);
           return;
         });
       }

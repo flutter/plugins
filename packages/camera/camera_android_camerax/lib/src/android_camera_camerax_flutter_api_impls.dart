@@ -22,6 +22,7 @@ class AndroidCameraXCameraFlutterApis {
     PreviewFlutterApiImpl? previewFlutterApi,
     CameraFlutterApiImpl? cameraFlutterApi,
     CameraControlFlutterApiImpl? cameraControlFlutterApi,
+    SystemServicesFlutterApiImpl? systemServicesFlutterApi,
   }) {
     this.javaObjectFlutterApi =
         javaObjectFlutterApi ?? JavaObjectFlutterApiImpl();
@@ -35,6 +36,8 @@ class AndroidCameraXCameraFlutterApis {
     this.cameraFlutterApi = cameraFlutterApi ?? CameraFlutterApiImpl();
     this.cameraControlFlutterApi =
         cameraControlFlutterApi ?? CameraControlFlutterApiImpl();
+    this.systemServicesFlutterApi =
+        systemServicesFlutterApi ?? SystemServicesFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -67,6 +70,9 @@ class AndroidCameraXCameraFlutterApis {
   /// Flutter Api for [CameraControl].
   late final CameraControlFlutterApiImpl cameraControlFlutterApi;
 
+  /// Flutter Api for [SystemServices].
+  late final SystemServicesFlutterApiImpl systemServicesFlutterApi;
+
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
     if (!_haveBeenSetUp) {
@@ -77,6 +83,7 @@ class AndroidCameraXCameraFlutterApis {
       PreviewFlutterApi.setup(previewFlutterApi);
       CameraFlutterApi.setup(cameraFlutterApi);
       CameraControlFlutterApi.setup(cameraControlFlutterApi);
+      SystemServicesFlutterApi.setup(systemServicesFlutterApi);
       _haveBeenSetUp = true;
     }
   }

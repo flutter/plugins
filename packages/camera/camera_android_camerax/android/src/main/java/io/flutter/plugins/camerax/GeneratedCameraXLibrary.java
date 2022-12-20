@@ -455,7 +455,7 @@ public class GeneratedCameraXLibrary {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface PreviewHostApi {
-    void create(@NonNull Long identifier, @Nullable Long rotation, @Nullable Long targetWidth, @Nullable Long targetHeight);
+    void create(@NonNull Long identifier, @Nullable Long rotation, @Nullable Map<String, Long> targetResolution);
     @NonNull Long setSurfaceProvider(@NonNull Long identifier);
     void setTargetRotation(@NonNull Long identifier, @NonNull Long targetRotation);
     @NonNull List<Long> getResolutionInfo(@NonNull Long identifier);
@@ -480,9 +480,8 @@ public class GeneratedCameraXLibrary {
                 throw new NullPointerException("identifierArg unexpectedly null.");
               }
               Number rotationArg = (Number)args.get(1);
-              Number targetWidthArg = (Number)args.get(2);
-              Number targetHeightArg = (Number)args.get(3);
-              api.create((identifierArg == null) ? null : identifierArg.longValue(), (rotationArg == null) ? null : rotationArg.longValue(), (targetWidthArg == null) ? null : targetWidthArg.longValue(), (targetHeightArg == null) ? null : targetHeightArg.longValue());
+              Map<String, Long> targetResolutionArg = (Map<String, Long>)args.get(2);
+              api.create((identifierArg == null) ? null : identifierArg.longValue(), (rotationArg == null) ? null : rotationArg.longValue(), targetResolutionArg);
               wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {
@@ -590,10 +589,10 @@ public class GeneratedCameraXLibrary {
       return PreviewFlutterApiCodec.INSTANCE;
     }
 
-    public void create(@NonNull Long identifierArg, @NonNull Long targetRotationArg, Reply<Void> callback) {
+    public void create(@NonNull Long identifierArg, @NonNull Long targetRotationArg, @Nullable Map<String, Long> targetResolutionArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PreviewFlutterApi.create", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(identifierArg, targetRotationArg)), channelReply -> {
+      channel.send(new ArrayList<Object>(Arrays.asList(identifierArg, targetRotationArg, targetResolutionArg)), channelReply -> {
         callback.reply(null);
       });
     }
@@ -734,6 +733,89 @@ public class GeneratedCameraXLibrary {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CameraControlFlutterApi.create", getCodec());
       channel.send(new ArrayList<Object>(Arrays.asList(identifierArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+  }
+  private static class SystemServicesHostApiCodec extends StandardMessageCodec {
+    public static final SystemServicesHostApiCodec INSTANCE = new SystemServicesHostApiCodec();
+    private SystemServicesHostApiCodec() {}
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
+  public interface SystemServicesHostApi {
+    @NonNull Boolean requestCameraPermissions();
+    void startListeningForDeviceOrientationChange();
+
+    /** The codec used by SystemServicesHostApi. */
+    static MessageCodec<Object> getCodec() {
+      return SystemServicesHostApiCodec.INSTANCE;
+    }
+
+    /** Sets up an instance of `SystemServicesHostApi` to handle messages through the `binaryMessenger`. */
+    static void setup(BinaryMessenger binaryMessenger, SystemServicesHostApi api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              Boolean output = api.requestCameraPermissions();
+              wrapped.put("result", output);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              api.startListeningForDeviceOrientationChange();
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+  private static class SystemServicesFlutterApiCodec extends StandardMessageCodec {
+    public static final SystemServicesFlutterApiCodec INSTANCE = new SystemServicesFlutterApiCodec();
+    private SystemServicesFlutterApiCodec() {}
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java.*/
+  public static class SystemServicesFlutterApi {
+    private final BinaryMessenger binaryMessenger;
+    public SystemServicesFlutterApi(BinaryMessenger argBinaryMessenger){
+      this.binaryMessenger = argBinaryMessenger;
+    }
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    static MessageCodec<Object> getCodec() {
+      return SystemServicesFlutterApiCodec.INSTANCE;
+    }
+
+    public void onDeviceOrientationChanged(@NonNull String orientationArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(orientationArg)), channelReply -> {
         callback.reply(null);
       });
     }

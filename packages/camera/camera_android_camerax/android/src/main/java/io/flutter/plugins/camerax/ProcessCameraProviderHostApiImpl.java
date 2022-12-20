@@ -21,6 +21,7 @@ import io.flutter.plugins.camerax.CameraPermissions.PermissionsRegistry;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderHostApi;
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHostApi {
   private final BinaryMessenger binaryMessenger;
@@ -71,6 +72,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
             // Camera provider is now guaranteed to be available.
             ProcessCameraProvider processCameraProvider = processCameraProviderFuture.get();
 
+            // TODO(camsim99): Try removing this check to see if this fixes process camera provider hot restart problems.
             if (!instanceManager.containsInstance(processCameraProvider)) {
               final ProcessCameraProviderFlutterApiImpl flutterApi =
                   new ProcessCameraProviderFlutterApiImpl(binaryMessenger, instanceManager);
@@ -117,11 +119,9 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         (CameraSelector) instanceManager.getInstance(cameraSelectorIdentifier);
     UseCase[] useCases = new UseCase[useCaseIds.size()];
     for (int i = 0; i < useCaseIds.size(); i++) {
+      // TODO(camsim99): Cannot assume Preview here. Try casting to UseCase instead.
       useCases[i] = (Preview) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
     }
-
-    // For testing purposes only
-    Preview preview = new Preview.Builder().build();
 
     if (lifecycleOwner != null) {
       CameraPermissions cameraPermissions = new CameraPermissions();

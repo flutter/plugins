@@ -26,6 +26,7 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
+
 @HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
 abstract class JavaObjectHostApi {
   void dispose(int identifier);
@@ -81,7 +82,7 @@ abstract class ProcessCameraProviderFlutterApi {
 @HostApi(dartHostTestHandler: 'TestPreviewHostApi')
 abstract class PreviewHostApi {
   void create(
-      int identifier, int? rotation, int? targetWidth, int? targetHeight);
+      int identifier, int? rotation, Map<String, int>? targetResolution);
 
   int setSurfaceProvider(int identifier);
 
@@ -92,7 +93,7 @@ abstract class PreviewHostApi {
 
 @FlutterApi()
 abstract class PreviewFlutterApi {
-  void create(int identifier, int targetRotation);
+  void create(int identifier, int targetRotation, Map<String, int>? targetResolution);
 }
 
 @HostApi(dartHostTestHandler: 'TestCameraHostApi')
@@ -113,4 +114,16 @@ abstract class CameraControlHostApi {
 @FlutterApi()
 abstract class CameraControlFlutterApi {
   void create(int identifier);
+}
+
+@HostApi(dartHostTestHandler: 'TestSystemServicesHostApi')
+abstract class SystemServicesHostApi {
+  bool requestCameraPermissions();
+
+  void startListeningForDeviceOrientationChange();
+}
+
+@FlutterApi()
+abstract class SystemServicesFlutterApi {
+  void onDeviceOrientationChanged(String orientation);
 }
