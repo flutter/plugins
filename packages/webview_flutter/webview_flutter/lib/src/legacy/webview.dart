@@ -8,10 +8,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
-import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
-import 'package:webview_flutter_android/webview_surface_android.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+// ignore: implementation_imports
+import 'package:webview_flutter_android/src/webview_flutter_android_legacy.dart';
+// ignore: implementation_imports
+import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
+// ignore: implementation_imports
+import 'package:webview_flutter_wkwebview/src/webview_flutter_wkwebview_legacy.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
@@ -76,7 +78,7 @@ class WebView extends StatefulWidget {
   ///
   /// The `javascriptMode` and `autoMediaPlaybackPolicy` parameters must not be null.
   const WebView({
-    Key? key,
+    super.key,
     this.onWebViewCreated,
     this.initialUrl,
     this.initialCookies = const <WebViewCookie>[],
@@ -98,8 +100,7 @@ class WebView extends StatefulWidget {
     this.backgroundColor,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
-        assert(allowsInlineMediaPlayback != null),
-        super(key: key);
+        assert(allowsInlineMediaPlayback != null);
 
   static WebViewPlatform? _platform;
 

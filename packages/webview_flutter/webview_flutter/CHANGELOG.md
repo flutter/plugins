@@ -1,11 +1,11 @@
-## NEXT
+## 4.0.0
 
-* Updates code for `no_leading_underscores_for_local_identifiers` lint.
-* Updates minimum Flutter version to 2.10.
-* Fixes avoid_redundant_argument_values lint warnings and minor typos.
-* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+* **BREAKING CHANGE** Updates implementation to use the `2.0.0` release of
+  `webview_flutter_platform_interface`. See `Usage` section in the README for updated usage. See
+  `Migrating from 3.0 to 4.0` section in the README for details on migrating to this version.
+* Updates minimum Flutter version to 3.0.0.
+* Updates code for new analysis options.
 * Updates references to the obsolete master branch.
-* Fixes typo from lowercase to uppercase.
 
 ## 3.0.4
 

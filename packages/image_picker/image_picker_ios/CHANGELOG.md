@@ -1,6 +1,6 @@
 ## 0.8.6+3
 
-* Fix authorization status check for iOS14+ so it includes PHAuthorizationStatusLimited.
+* Returns error on image load failure.
 
 ## 0.8.6+2
 
