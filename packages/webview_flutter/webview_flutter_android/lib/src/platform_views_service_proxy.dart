@@ -11,29 +11,43 @@ import 'package:flutter/services.dart';
 @immutable
 class PlatformViewsServiceProxy {
   /// Constructs a [PlatformViewsServiceProxy].
-  const PlatformViewsServiceProxy({
-    this.initExpensiveAndroidView =
-        PlatformViewsService.initExpensiveAndroidView,
-    this.initSurfaceAndroidView = PlatformViewsService.initSurfaceAndroidView,
-  });
+  const PlatformViewsServiceProxy();
 
   /// Proxy method for [PlatformViewsService.initExpensiveAndroidView].
-  final ExpensiveAndroidViewController Function({
+  ExpensiveAndroidViewController initExpensiveAndroidView({
     required int id,
     required String viewType,
     required TextDirection layoutDirection,
     dynamic creationParams,
     MessageCodec<dynamic>? creationParamsCodec,
     VoidCallback? onFocus,
-  }) initExpensiveAndroidView;
+  }) {
+    return PlatformViewsService.initExpensiveAndroidView(
+      id: id,
+      viewType: viewType,
+      layoutDirection: layoutDirection,
+      creationParams: creationParams,
+      creationParamsCodec: creationParamsCodec,
+      onFocus: onFocus,
+    );
+  }
 
   /// Proxy method for [PlatformViewsService.initSurfaceAndroidView].
-  final SurfaceAndroidViewController Function({
+  SurfaceAndroidViewController initSurfaceAndroidView({
     required int id,
     required String viewType,
     required TextDirection layoutDirection,
     dynamic creationParams,
     MessageCodec<dynamic>? creationParamsCodec,
     VoidCallback? onFocus,
-  }) initSurfaceAndroidView;
+  }) {
+    return PlatformViewsService.initSurfaceAndroidView(
+      id: id,
+      viewType: viewType,
+      layoutDirection: layoutDirection,
+      creationParams: creationParams,
+      creationParamsCodec: creationParamsCodec,
+      onFocus: onFocus,
+    );
+  }
 }

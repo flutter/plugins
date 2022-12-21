@@ -20,12 +20,14 @@ import 'android_webview_controller_test.mocks.dart';
 
 @GenerateNiceMocks(<MockSpec<Object>>[
   MockSpec<AndroidNavigationDelegate>(),
-  MockSpec<AndroidViewController>(),
   MockSpec<AndroidWebViewController>(),
   MockSpec<AndroidWebViewProxy>(),
   MockSpec<AndroidWebViewWidgetCreationParams>(),
+  MockSpec<ExpensiveAndroidViewController>(),
   MockSpec<android_webview.FlutterAssetManager>(),
   MockSpec<android_webview.JavaScriptChannel>(),
+  MockSpec<PlatformViewsServiceProxy>(),
+  MockSpec<SurfaceAndroidViewController>(),
   MockSpec<android_webview.WebChromeClient>(),
   MockSpec<android_webview.WebSettings>(),
   MockSpec<android_webview.WebView>(),
@@ -796,24 +798,16 @@ void main() {
       methodChannelLog = <MethodCall>[];
     });
 
-    testWidgets('Builds AndroidView using supplied parameters',
+    testWidgets('Builds Android view using supplied parameters',
         (WidgetTester tester) async {
-      final MockAndroidWebViewWidgetCreationParams mockParams =
-          MockAndroidWebViewWidgetCreationParams();
-      final MockInstanceManager mockInstanceManager = MockInstanceManager();
-      final MockWebView mockWebView = MockWebView();
-      final AndroidWebViewController controller =
-          createControllerWithMocks(mockWebView: mockWebView);
+      final AndroidWebViewController controller = createControllerWithMocks();
 
-      when(mockParams.key).thenReturn(const Key('test_web_view'));
-      when(mockParams.instanceManager).thenReturn(mockInstanceManager);
-      when(mockParams.platformViewsServiceProxy).thenReturn(const PlatformViewsServiceProxy());
-      when(mockParams.controller).thenReturn(controller);
-      when(mockParams.displayWithHybridComposition).thenReturn(false);
-      when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
-
-      final AndroidWebViewWidget webViewWidget =
-          AndroidWebViewWidget(mockParams);
+      final AndroidWebViewWidget webViewWidget = AndroidWebViewWidget(
+        AndroidWebViewWidgetCreationParams(
+          key: const Key('test_web_view'),
+          controller: controller,
+        ),
+      );
 
       await tester.pumpWidget(Builder(
         builder: (BuildContext context) => webViewWidget.build(context),
@@ -825,60 +819,89 @@ void main() {
 
     testWidgets('displayWithHybridComposition is false',
         (WidgetTester tester) async {
-      final MockAndroidWebViewWidgetCreationParams mockParams =
-          MockAndroidWebViewWidgetCreationParams();
-      final MockInstanceManager mockInstanceManager = MockInstanceManager();
-      final MockWebView mockWebView = MockWebView();
-      final AndroidWebViewController controller =
-          createControllerWithMocks(mockWebView: mockWebView);
+      final AndroidWebViewController controller = createControllerWithMocks();
 
-      when(mockParams.key).thenReturn(const Key('test_web_view'));
-      when(mockParams.instanceManager).thenReturn(mockInstanceManager);
-      when(mockParams.controller).thenReturn(controller);
-      when(mockParams.platformViewsServiceProxy).thenReturn(const PlatformViewsServiceProxy());
-      when(mockParams.displayWithHybridComposition).thenReturn(false);
-      when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
+      final MockPlatformViewsServiceProxy mockPlatformViewsService =
+          MockPlatformViewsServiceProxy();
 
-      final AndroidWebViewWidget webViewWidget =
-          AndroidWebViewWidget(mockParams);
+      when(
+        mockPlatformViewsService.initSurfaceAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      ).thenReturn(MockSurfaceAndroidViewController());
+
+      final AndroidWebViewWidget webViewWidget = AndroidWebViewWidget(
+        AndroidWebViewWidgetCreationParams(
+          key: const Key('test_web_view'),
+          controller: controller,
+          platformViewsServiceProxy: mockPlatformViewsService,
+        ),
+      );
 
       await tester.pumpWidget(Builder(
         builder: (BuildContext context) => webViewWidget.build(context),
       ));
       await tester.pumpAndSettle();
 
-      final MethodCall createMethodCall = methodChannelLog[0];
-      expect(createMethodCall.method, 'create');
-      expect(createMethodCall.arguments, isNot(containsPair('hybrid', true)));
+      verify(
+        mockPlatformViewsService.initSurfaceAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      );
     });
 
     testWidgets('displayWithHybridComposition is true',
         (WidgetTester tester) async {
-      final MockAndroidWebViewWidgetCreationParams mockParams =
-          MockAndroidWebViewWidgetCreationParams();
-      final MockInstanceManager mockInstanceManager = MockInstanceManager();
-      final MockWebView mockWebView = MockWebView();
-      final AndroidWebViewController controller =
-          createControllerWithMocks(mockWebView: mockWebView);
+      final AndroidWebViewController controller = createControllerWithMocks();
 
-      when(mockParams.key).thenReturn(const Key('test_web_view'));
-      when(mockParams.instanceManager).thenReturn(mockInstanceManager);
-      when(mockParams.controller).thenReturn(controller);
-      when(mockParams.displayWithHybridComposition).thenReturn(true);
-      when(mockParams.platformViewsServiceProxy).thenReturn(const PlatformViewsServiceProxy());
-      when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
+      final MockPlatformViewsServiceProxy mockPlatformViewsService =
+          MockPlatformViewsServiceProxy();
 
-      final AndroidWebViewWidget webViewWidget =
-          AndroidWebViewWidget(mockParams);
+      when(
+        mockPlatformViewsService.initExpensiveAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      ).thenReturn(MockExpensiveAndroidViewController());
+
+      final AndroidWebViewWidget webViewWidget = AndroidWebViewWidget(
+        AndroidWebViewWidgetCreationParams(
+          key: const Key('test_web_view'),
+          controller: controller,
+          platformViewsServiceProxy: mockPlatformViewsService,
+          displayWithHybridComposition: true,
+        ),
+      );
 
       await tester.pumpWidget(Builder(
         builder: (BuildContext context) => webViewWidget.build(context),
       ));
       await tester.pumpAndSettle();
 
-      final MethodCall createMethodCall = methodChannelLog[0];
-      expect(createMethodCall.method, 'create');
-      expect(createMethodCall.arguments, containsPair('hybrid', true));
+      verify(
+        mockPlatformViewsService.initExpensiveAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      );
     });
   });
 }
