@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +15,7 @@ import 'package:webview_flutter_android/src/android_proxy.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
 import 'package:webview_flutter_android/src/instance_manager.dart';
+import 'package:webview_flutter_android/src/platform_views_service_proxy.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_platform_interface/src/webview_platform.dart';
 
@@ -22,8 +26,11 @@ import 'android_webview_controller_test.mocks.dart';
   MockSpec<AndroidWebViewController>(),
   MockSpec<AndroidWebViewProxy>(),
   MockSpec<AndroidWebViewWidgetCreationParams>(),
+  MockSpec<ExpensiveAndroidViewController>(),
   MockSpec<android_webview.FlutterAssetManager>(),
   MockSpec<android_webview.JavaScriptChannel>(),
+  MockSpec<PlatformViewsServiceProxy>(),
+  MockSpec<SurfaceAndroidViewController>(),
   MockSpec<android_webview.WebChromeClient>(),
   MockSpec<android_webview.WebSettings>(),
   MockSpec<android_webview.WebView>(),
@@ -770,22 +777,16 @@ void main() {
   });
 
   group('AndroidWebViewWidget', () {
-    testWidgets('Builds AndroidView using supplied parameters',
+    testWidgets('Builds Android view using supplied parameters',
         (WidgetTester tester) async {
-      final MockAndroidWebViewWidgetCreationParams mockParams =
-          MockAndroidWebViewWidgetCreationParams();
-      final MockInstanceManager mockInstanceManager = MockInstanceManager();
-      final MockWebView mockWebView = MockWebView();
-      final AndroidWebViewController controller =
-          createControllerWithMocks(mockWebView: mockWebView);
+      final AndroidWebViewController controller = createControllerWithMocks();
 
-      when(mockParams.key).thenReturn(const Key('test_web_view'));
-      when(mockParams.instanceManager).thenReturn(mockInstanceManager);
-      when(mockParams.controller).thenReturn(controller);
-      when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
-
-      final AndroidWebViewWidget webViewWidget =
-          AndroidWebViewWidget(mockParams);
+      final AndroidWebViewWidget webViewWidget = AndroidWebViewWidget(
+        AndroidWebViewWidgetCreationParams(
+          key: const Key('test_web_view'),
+          controller: controller,
+        ),
+      );
 
       await tester.pumpWidget(Builder(
         builder: (BuildContext context) => webViewWidget.build(context),
@@ -793,6 +794,93 @@ void main() {
 
       expect(find.byType(PlatformViewLink), findsOneWidget);
       expect(find.byKey(const Key('test_web_view')), findsOneWidget);
+    });
+
+    testWidgets('displayWithHybridComposition is false',
+        (WidgetTester tester) async {
+      final AndroidWebViewController controller = createControllerWithMocks();
+
+      final MockPlatformViewsServiceProxy mockPlatformViewsService =
+          MockPlatformViewsServiceProxy();
+
+      when(
+        mockPlatformViewsService.initSurfaceAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      ).thenReturn(MockSurfaceAndroidViewController());
+
+      final AndroidWebViewWidget webViewWidget = AndroidWebViewWidget(
+        AndroidWebViewWidgetCreationParams(
+          key: const Key('test_web_view'),
+          controller: controller,
+          platformViewsServiceProxy: mockPlatformViewsService,
+        ),
+      );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) => webViewWidget.build(context),
+      ));
+      await tester.pumpAndSettle();
+
+      verify(
+        mockPlatformViewsService.initSurfaceAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      );
+    });
+
+    testWidgets('displayWithHybridComposition is true',
+        (WidgetTester tester) async {
+      final AndroidWebViewController controller = createControllerWithMocks();
+
+      final MockPlatformViewsServiceProxy mockPlatformViewsService =
+          MockPlatformViewsServiceProxy();
+
+      when(
+        mockPlatformViewsService.initExpensiveAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      ).thenReturn(MockExpensiveAndroidViewController());
+
+      final AndroidWebViewWidget webViewWidget = AndroidWebViewWidget(
+        AndroidWebViewWidgetCreationParams(
+          key: const Key('test_web_view'),
+          controller: controller,
+          platformViewsServiceProxy: mockPlatformViewsService,
+          displayWithHybridComposition: true,
+        ),
+      );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) => webViewWidget.build(context),
+      ));
+      await tester.pumpAndSettle();
+
+      verify(
+        mockPlatformViewsService.initExpensiveAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      );
     });
   });
 }

@@ -1,3 +1,8 @@
+## 3.1.0
+
+* Adds support for selecting Hybrid Composition on versions 23+. Please use
+  `AndroidWebViewControllerCreationParams.displayWithHybridComposition`.
+
 ## 3.0.0
 
 * **BREAKING CHANGE** Updates platform implementation to `2.0.0` release of
