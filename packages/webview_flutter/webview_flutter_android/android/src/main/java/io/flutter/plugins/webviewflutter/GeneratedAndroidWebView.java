@@ -2148,7 +2148,7 @@ public class GeneratedAndroidWebView {
   }
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface FileChooserParamsHostApi {
-    void openFilePicker(@NonNull Long instanceId, Result<List<String>> result);
+    void openFilePickerForResult(@NonNull Long instanceId, Result<List<String>> result);
 
     /** The codec used by FileChooserParamsHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -2157,7 +2157,7 @@ public class GeneratedAndroidWebView {
     static void setup(BinaryMessenger binaryMessenger, FileChooserParamsHostApi api) {
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FileChooserParamsHostApi.openFilePicker", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FileChooserParamsHostApi.openFilePickerForResult", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             ArrayList wrapped = new ArrayList<>();
@@ -2179,7 +2179,7 @@ public class GeneratedAndroidWebView {
                 }
               };
 
-              api.openFilePicker((instanceIdArg == null) ? null : instanceIdArg.longValue(), resultCallback);
+              api.openFilePickerForResult((instanceIdArg == null) ? null : instanceIdArg.longValue(), resultCallback);
             }
             catch (Error | RuntimeException exception) {
               ArrayList<Object> wrappedError = wrapError(exception);

@@ -943,8 +943,12 @@ class WebChromeClient extends JavaObject {
 ///
 /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
 class FileChooserParams extends JavaObject {
-  /// Constructs a [FileChooserParams].
-  FileChooserParams({
+  /// Constructs a [FileChooserParams] without creating the associated Java
+  /// object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  FileChooserParams.detached({
     required this.isCaptureEnabled,
     super.binaryMessenger,
     super.instanceManager,
@@ -960,8 +964,10 @@ class FileChooserParams extends JavaObject {
   final bool isCaptureEnabled;
 
   /// Start a generic file picker for file selection.
-  Future<List<String>?> openFilePicker() {
-    return _fileChooserParamsApi.openFilePickerFromInstance(this);
+  ///
+  /// Returns a list of file paths.
+  Future<List<String>> openFilePickerForResult() {
+    return _fileChooserParamsApi.openFilePickerForResultFromInstance(this);
   }
 }
 

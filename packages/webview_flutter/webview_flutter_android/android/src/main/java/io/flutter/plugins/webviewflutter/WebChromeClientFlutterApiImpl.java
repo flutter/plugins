@@ -4,8 +4,13 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.net.Uri;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+
+import java.util.Objects;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientFlutterApi;
 
@@ -39,6 +44,11 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
     super.onProgressChanged(
         getIdentifierForClient(webChromeClient), webViewIdentifier, progress, callback);
   }
+
+  public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
+    //super.onShowFileChooser(Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webView)));
+  }
+
 
   private long getIdentifierForClient(WebChromeClient webChromeClient) {
     final Long identifier = instanceManager.getIdentifierForStrongReference(webChromeClient);

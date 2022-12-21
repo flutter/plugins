@@ -1192,23 +1192,23 @@ abstract class TestWebStorageHostApi {
 abstract class TestFileChooserParamsHostApi {
   static const MessageCodec<Object?> codec = StandardMessageCodec();
 
-  Future<List<String?>?> openFilePicker(int instanceId);
+  Future<List<String?>> openFilePickerForResult(int instanceId);
 
   static void setup(TestFileChooserParamsHostApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.FileChooserParamsHostApi.openFilePicker', codec,
+          'dev.flutter.pigeon.FileChooserParamsHostApi.openFilePickerForResult', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.FileChooserParamsHostApi.openFilePicker was null.');
+          'Argument for dev.flutter.pigeon.FileChooserParamsHostApi.openFilePickerForResult was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.FileChooserParamsHostApi.openFilePicker was null, expected non-null int.');
-          final List<String?>? output = await api.openFilePicker(arg_instanceId!);
+          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.FileChooserParamsHostApi.openFilePickerForResult was null, expected non-null int.');
+          final List<String?> output = await api.openFilePickerForResult(arg_instanceId!);
           return <Object?>[output];
         });
       }

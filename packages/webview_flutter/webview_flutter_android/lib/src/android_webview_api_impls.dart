@@ -42,6 +42,7 @@ class AndroidWebViewFlutterApis {
     WebViewClientFlutterApiImpl? webViewClientFlutterApi,
     WebChromeClientFlutterApiImpl? webChromeClientFlutterApi,
     JavaScriptChannelFlutterApiImpl? javaScriptChannelFlutterApi,
+    FileChooserParamsFlutterApiImpl? fileChooserParamsFlutterApi,
   }) {
     this.javaObjectFlutterApi =
         javaObjectFlutterApi ?? JavaObjectFlutterApiImpl();
@@ -53,6 +54,8 @@ class AndroidWebViewFlutterApis {
         webChromeClientFlutterApi ?? WebChromeClientFlutterApiImpl();
     this.javaScriptChannelFlutterApi =
         javaScriptChannelFlutterApi ?? JavaScriptChannelFlutterApiImpl();
+    this.fileChooserParamsFlutterApi =
+        fileChooserParamsFlutterApi ?? FileChooserParamsFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -77,6 +80,9 @@ class AndroidWebViewFlutterApis {
   /// Flutter Api for [JavaScriptChannel].
   late final JavaScriptChannelFlutterApiImpl javaScriptChannelFlutterApi;
 
+  /// Flutter Api for [FileChooserParams].
+  late final FileChooserParamsFlutterApiImpl fileChooserParamsFlutterApi;
+
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
     if (!_haveBeenSetUp) {
@@ -85,6 +91,7 @@ class AndroidWebViewFlutterApis {
       WebViewClientFlutterApi.setup(webViewClientFlutterApi);
       WebChromeClientFlutterApi.setup(webChromeClientFlutterApi);
       JavaScriptChannelFlutterApi.setup(javaScriptChannelFlutterApi);
+      FileChooserParamsFlutterApi.setup(fileChooserParamsFlutterApi);
       _haveBeenSetUp = true;
     }
   }
@@ -869,6 +876,7 @@ class WebStorageHostApiImpl extends WebStorageHostApi {
   }
 }
 
+/// Host api implementation for [FileChooserParams].
 class FileChooserParamsHostApiImpl extends FileChooserParamsHostApi {
   /// Constructs a [FileChooserParamsHostApiImpl].
   FileChooserParamsHostApiImpl({
@@ -880,11 +888,29 @@ class FileChooserParamsHostApiImpl extends FileChooserParamsHostApi {
   final InstanceManager instanceManager;
 
   /// Helper method to convert instances ids to objects.
-  Future<List<String>> openFilePickerFromInstance(
+  Future<List<String>> openFilePickerForResultFromInstance(
     FileChooserParams params,
   ) async {
-    final List<String?>? result =
-        await openFilePicker(instanceManager.getIdentifier(params)!);
-    return result?.cast<String>() ?? <String>[];
+    final List<String?> result =
+        await openFilePickerForResult(instanceManager.getIdentifier(params)!);
+    return result.cast<String>();
+  }
+}
+
+/// Flutter api implementation for [FileChooserParams].
+class FileChooserParamsFlutterApiImpl extends FileChooserParamsFlutterApi {
+  /// Constructs a [FileChooserParamsFlutterApiImpl].
+  FileChooserParamsFlutterApiImpl({InstanceManager? instanceManager})
+      : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+
+  /// Maintains instances stored to communicate with java objects.
+  final InstanceManager instanceManager;
+
+  @override
+  void create(int instanceId, bool isCaptureEnabled) {
+    instanceManager.addHostCreatedInstance(
+      FileChooserParams.detached(isCaptureEnabled: isCaptureEnabled),
+      instanceId,
+    );
   }
 }

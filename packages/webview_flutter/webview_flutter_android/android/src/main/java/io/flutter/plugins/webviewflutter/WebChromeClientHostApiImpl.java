@@ -4,8 +4,10 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -108,6 +110,11 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     @Override
     public void onProgressChanged(WebView view, int progress) {
       flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
+    }
+
+    @Override
+    public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+      return super.onShowFileChooser(webView, filePathCallback, fileChooserParams);
     }
 
     /**

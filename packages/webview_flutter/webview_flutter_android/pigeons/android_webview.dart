@@ -298,7 +298,7 @@ abstract class WebStorageHostApi {
 @HostApi(dartHostTestHandler: 'TestFileChooserParamsHostApi')
 abstract class FileChooserParamsHostApi {
   @async
-  List<String>? openFilePicker(int instanceId);
+  List<String> openFilePickerForResult(int instanceId);
 }
 
 @FlutterApi()
