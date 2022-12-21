@@ -744,7 +744,7 @@ public class GeneratedCameraXLibrary {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface SystemServicesHostApi {
-    @NonNull Boolean requestCameraPermissions();
+    @NonNull Boolean requestCameraPermissions(@NonNull Boolean enableAudio);
     void startListeningForDeviceOrientationChange();
 
     /** The codec used by SystemServicesHostApi. */
@@ -761,7 +761,12 @@ public class GeneratedCameraXLibrary {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
             try {
-              Boolean output = api.requestCameraPermissions();
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Boolean enableAudioArg = (Boolean)args.get(0);
+              if (enableAudioArg == null) {
+                throw new NullPointerException("enableAudioArg unexpectedly null.");
+              }
+              Boolean output = api.requestCameraPermissions(enableAudioArg);
               wrapped.put("result", output);
             }
             catch (Error | RuntimeException exception) {

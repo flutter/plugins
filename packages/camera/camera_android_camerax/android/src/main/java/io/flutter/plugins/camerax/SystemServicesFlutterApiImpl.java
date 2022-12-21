@@ -17,7 +17,6 @@ public class SystemServicesFlutterApiImpl extends SystemServicesFlutterApi {
     private final InstanceManager instanceManager;
 
     public void onCameraPermissionsRequestResult(String resultCode, String resultMessage, Reply<Void> reply) {
-        System.out.println("HELLO!");
         super.onCameraPermissionsRequestResult(resultCode, resultMessage, reply);
     }
 

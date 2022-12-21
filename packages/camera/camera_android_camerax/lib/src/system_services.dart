@@ -17,12 +17,12 @@ class SystemServices {
   static final StreamController<bool> cameraPermissionsStreamController =
       StreamController<bool>.broadcast();
 
-  static Future<bool> requestCameraPermissions({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
+  static Future<bool> requestCameraPermissions(bool enableAudio, {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
     SystemServicesHostApiImpl api = SystemServicesHostApiImpl(
         binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     
-    return api.requestCameraPermissionsFromInstance();
+    return api.requestCameraPermissionsFromInstance(enableAudio);
   }
 
   // static handleCameraPermissionsResult(String resultCode, String resultMessage) {
@@ -57,8 +57,8 @@ class SystemServicesHostApiImpl extends SystemServicesHostApi {
   /// Maintains instances stored to communicate with native language objects.
   late final InstanceManager instanceManager;
   
-  Future<bool> requestCameraPermissionsFromInstance() async {
-    await requestCameraPermissions();
+  Future<bool> requestCameraPermissionsFromInstance(bool enableAudio) async {
+    await requestCameraPermissions(enableAudio);
 
   try {
       await for (final bool result in SystemServices.cameraPermissionsStreamController.stream) {

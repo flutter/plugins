@@ -70,7 +70,7 @@ class AndroidCameraCameraX extends CameraPlatform {
     bool enableAudio = false,
   }) async {
     // TODO(camism99): Request permissions here.
-    bool permissions = await SystemServices.requestCameraPermissions();
+    bool permissions = await SystemServices.requestCameraPermissions(enableAudio);
     print('FINISHED');
 
     assert(permissions == true);

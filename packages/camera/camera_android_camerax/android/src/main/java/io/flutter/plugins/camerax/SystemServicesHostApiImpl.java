@@ -32,19 +32,16 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
     }
 
     @Override
-    public Boolean requestCameraPermissions() {
-        System.out.println("request camera permissions called");
+    public Boolean requestCameraPermissions(Boolean enableAudio) {
         CameraPermissionsManager cameraPermissionsManager = new CameraPermissionsManager();
         cameraPermissionsManager.requestPermissions(
             activity,
             permissionsRegistry,
-            true, // TODO(camsim99): Pass as a parameter whether or not to enable audio.
+            enableAudio,
             (String errCode, String errDesc) -> {
                 //TODO(camsim99): Actually handle this
-                System.out.println("hello1");
                 final SystemServicesFlutterApiImpl api = new SystemServicesFlutterApiImpl(binaryMessenger, instanceManager);
                 api.onCameraPermissionsRequestResult("", "", reply -> {});
-                System.out.println("hello1");
               if (errCode == null) {
                 // return true;
               } else {

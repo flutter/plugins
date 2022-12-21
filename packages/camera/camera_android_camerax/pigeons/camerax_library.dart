@@ -118,7 +118,7 @@ abstract class CameraControlFlutterApi {
 
 @HostApi(dartHostTestHandler: 'TestSystemServicesHostApi')
 abstract class SystemServicesHostApi {
-  bool requestCameraPermissions();
+  bool requestCameraPermissions(bool enableAudio);
 
   void startListeningForDeviceOrientationChange();
 }

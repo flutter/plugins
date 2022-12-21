@@ -692,11 +692,11 @@ class SystemServicesHostApi {
 
   static const MessageCodec<Object?> codec = _SystemServicesHostApiCodec();
 
-  Future<bool> requestCameraPermissions() async {
+  Future<bool> requestCameraPermissions(bool arg_enableAudio) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(null) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_enableAudio]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
