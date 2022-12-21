@@ -2,6 +2,7 @@
 
 * Adds support for retrieving navigation type with internal class.
 * Updates README with details on contributing.
+* Updates pigeon dev dependency to `4.2.13`.
 
 ## 3.0.0
 
