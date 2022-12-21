@@ -20,6 +20,7 @@ import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
 import java.util.HashMap;
+import java.util.Objects;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -266,11 +267,18 @@ public class WebViewTest {
   }
 
   @Test
-  public void defaultWebChromeClient() {
+  public void defaultWebChromeClientIsSecureWebChromeClient() {
     final WebViewPlatformView webView = new WebViewPlatformView(mockContext, null, null);
     assertTrue(
         webView.getWebChromeClient() instanceof WebChromeClientHostApiImpl.SecureWebChromeClient);
     assertFalse(
         webView.getWebChromeClient() instanceof WebChromeClientHostApiImpl.WebChromeClientImpl);
+  }
+
+  @Test
+  public void defaultWebChromeClientDoesNotAttemptToCommunicateWithDart() {
+    final WebViewPlatformView webView = new WebViewPlatformView(mockContext, null, null);
+    // This shouldn't throw an Exception.
+    Objects.requireNonNull(webView.getWebChromeClient()).onProgressChanged(webView, 0);
   }
 }
