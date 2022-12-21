@@ -4,6 +4,9 @@
 
 package io.flutter.plugins.camerax;
 
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugins.camerax.GeneratedCameraXLibrary.SystemServicesFlutterApi;
+
 public class SystemServicesFlutterApiImpl extends SystemServicesFlutterApi {
     public SystemServicesFlutterApiImpl(
         BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
@@ -13,7 +16,12 @@ public class SystemServicesFlutterApiImpl extends SystemServicesFlutterApi {
   
     private final InstanceManager instanceManager;
 
-    void onDeviceOrientationChanged(String orientation, Reply<Void> callback) {
+    public void onCameraPermissionsRequestResult(String resultCode, String resultMessage, Reply<Void> reply) {
+        System.out.println("HELLO!");
+        super.onCameraPermissionsRequestResult(resultCode, resultMessage, reply);
+    }
+
+    public void onDeviceOrientationChanged(String orientation, Reply<Void> reply) {
         onDeviceOrientationChanged(orientation, reply);
     }
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 
 import 'android_camera_camerax_flutter_api_impls.dart';
@@ -11,25 +13,34 @@ import 'java_object.dart';
 import 'use_case.dart';
 
 class SystemServices {
+  // TODO(camsim99): Change this to actually handle errors.
+  static final StreamController<bool> cameraPermissionsStreamController =
+      StreamController<bool>.broadcast();
 
   static Future<bool> requestCameraPermissions({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
-    SystemServicesHostApi api = SystemServicesHostApiImpl(
+    AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
+    SystemServicesHostApiImpl api = SystemServicesHostApiImpl(
         binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     
     return api.requestCameraPermissionsFromInstance();
   }
 
-  static Future<void> startListeningForDeviceOrientationChange({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
+  // static handleCameraPermissionsResult(String resultCode, String resultMessage) {
+  //   // TODO(camsim99): Actually handle camera permissions stuff here.
+  //   cameraPermissionsStreamController.add(true);
+  // }
+
+  static void startListeningForDeviceOrientationChange({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
-    SystemServicesHostApi api = SystemServicesHostApiImpl(
-        binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+    SystemServicesHostApi api = SystemServicesHostApi(
+        binaryMessenger: binaryMessenger);
     
     api.startListeningForDeviceOrientationChange();
   }
 }
 
 /// Host API implementation of [SystemServices].
-class SystemServices extends SystemServicesHostApi {
+class SystemServicesHostApiImpl extends SystemServicesHostApi {
   /// Creates a [SystemServicesHostApiImpl].
   SystemServicesHostApiImpl(
     {this.binaryMessenger, InstanceManager? instanceManager})
@@ -47,8 +58,16 @@ class SystemServices extends SystemServicesHostApi {
   late final InstanceManager instanceManager;
   
   Future<bool> requestCameraPermissionsFromInstance() async {
-    final bool result = await requestCameraPermissions();
-    return result;
+    await requestCameraPermissions();
+
+  try {
+      await for (final bool result in SystemServices.cameraPermissionsStreamController.stream) {
+        return result;
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
   }
 }
 
@@ -68,6 +87,12 @@ class SystemServicesFlutterApiImpl implements SystemServicesFlutterApi {
 
   /// Maintains instances stored to communicate with native language objects.
   final InstanceManager instanceManager;
+
+  @override
+  void onCameraPermissionsRequestResult(String resultCode, String resultMessage) {
+    // SystemServices.handleCameraPermissionsResult(resultCode, resultMessage);
+    SystemServices.cameraPermissionsStreamController.add(true);
+  }
 
   @override
   void onDeviceOrientationChanged(String orientation) {

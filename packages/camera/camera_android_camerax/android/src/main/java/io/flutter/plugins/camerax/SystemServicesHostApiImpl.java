@@ -4,7 +4,12 @@
 
 package io.flutter.plugins.camerax;
 
-public class SystemServicesHostApiImpl implements SystemServiesHostApi {
+import android.app.Activity;
+import io.flutter.plugins.camerax.CameraPermissionsManager.PermissionsRegistry;
+import io.flutter.plugins.camerax.GeneratedCameraXLibrary.SystemServicesHostApi;
+import io.flutter.plugin.common.BinaryMessenger;
+
+public class SystemServicesHostApiImpl implements SystemServicesHostApi {
     private final BinaryMessenger binaryMessenger;
     private final InstanceManager instanceManager;
 
@@ -28,20 +33,26 @@ public class SystemServicesHostApiImpl implements SystemServiesHostApi {
 
     @Override
     public Boolean requestCameraPermissions() {
+        System.out.println("request camera permissions called");
         CameraPermissionsManager cameraPermissionsManager = new CameraPermissionsManager();
         cameraPermissionsManager.requestPermissions(
             activity,
             permissionsRegistry,
             true, // TODO(camsim99): Pass as a parameter whether or not to enable audio.
             (String errCode, String errDesc) -> {
+                //TODO(camsim99): Actually handle this
+                System.out.println("hello1");
+                final SystemServicesFlutterApiImpl api = new SystemServicesFlutterApiImpl(binaryMessenger, instanceManager);
+                api.onCameraPermissionsRequestResult("", "", reply -> {});
+                System.out.println("hello1");
               if (errCode == null) {
-                result = true;
+                // return true;
               } else {
-                result = false;
+                // return false;
               }
             }
         );
-        // TODO(camsim99): Make this void? Unclear how to handle this.
+        // // TODO(camsim99): Make this void? Unclear how to handle this.
         return true;
     }
 

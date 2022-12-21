@@ -6,12 +6,14 @@ import 'dart:async';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/widgets.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 import 'camera.dart';
 import 'camera_selector.dart';
 import 'preview.dart';
 import 'process_camera_provider.dart';
 import 'surface.dart';
+import 'system_services.dart';
 import 'use_case.dart';
 
 /// The Android implementation of [CameraPlatform] that uses the CameraX library.
@@ -68,6 +70,10 @@ class AndroidCameraCameraX extends CameraPlatform {
     bool enableAudio = false,
   }) async {
     // TODO(camism99): Request permissions here.
+    bool permissions = await SystemServices.requestCameraPermissions();
+    print('FINISHED');
+
+    assert(permissions == true);
 
     _cameraDescription = cameraDescription;
     processCameraProvider = await ProcessCameraProvider.getInstance();
@@ -91,6 +97,8 @@ class AndroidCameraCameraX extends CameraPlatform {
     // TODO(camsim99): Determine how to use imageFormatGroup.
     _imageFormatGroup = imageFormatGroup;
 
+    final Completer<void> completer = Completer<void>();
+
     onCameraInitialized(cameraId).first.then((CameraInitializedEvent value) {
       completer.complete();
     });
@@ -100,8 +108,8 @@ class AndroidCameraCameraX extends CameraPlatform {
     assert(preview != null);
     // TODO(camsim99): Change this list to a map with keys and values.
     List<int?> previewResolutionInfo = await preview!.getResolutionInfo();
-    double previewWidth = previewResolutionInfo[0]!;
-    double previewHeight = previewResolutionInfo[1]!;
+    double previewWidth = previewResolutionInfo[0]! as double;
+    double previewHeight = previewResolutionInfo[1]! as double;
     ExposureMode exposureMode = ExposureMode.auto;
     FocusMode focusMode = FocusMode.auto;
     bool exposurePointSupported = false;

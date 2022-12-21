@@ -812,6 +812,13 @@ public class GeneratedCameraXLibrary {
       return SystemServicesFlutterApiCodec.INSTANCE;
     }
 
+    public void onCameraPermissionsRequestResult(@NonNull String resultCodeArg, @NonNull String resultMessageArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.SystemServicesFlutterApi.onCameraPermissionsRequestResult", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(resultCodeArg, resultMessageArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
     public void onDeviceOrientationChanged(@NonNull String orientationArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged", getCodec());

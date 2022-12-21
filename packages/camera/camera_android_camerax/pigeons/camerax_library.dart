@@ -125,5 +125,7 @@ abstract class SystemServicesHostApi {
 
 @FlutterApi()
 abstract class SystemServicesFlutterApi {
+  void onCameraPermissionsRequestResult(String resultCode, String resultMessage);
+
   void onDeviceOrientationChanged(String orientation);
 }

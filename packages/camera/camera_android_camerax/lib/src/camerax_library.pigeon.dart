@@ -748,8 +748,27 @@ class _SystemServicesFlutterApiCodec extends StandardMessageCodec {
 abstract class SystemServicesFlutterApi {
   static const MessageCodec<Object?> codec = _SystemServicesFlutterApiCodec();
 
+  void onCameraPermissionsRequestResult(String resultCode, String resultMessage);
   void onDeviceOrientationChanged(String orientation);
   static void setup(SystemServicesFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.SystemServicesFlutterApi.onCameraPermissionsRequestResult', codec, binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onCameraPermissionsRequestResult was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_resultCode = (args[0] as String?);
+          assert(arg_resultCode != null, 'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onCameraPermissionsRequestResult was null, expected non-null String.');
+          final String? arg_resultMessage = (args[1] as String?);
+          assert(arg_resultMessage != null, 'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onCameraPermissionsRequestResult was null, expected non-null String.');
+          api.onCameraPermissionsRequestResult(arg_resultCode!, arg_resultMessage!);
+          return;
+        });
+      }
+    }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged', codec, binaryMessenger: binaryMessenger);
