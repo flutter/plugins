@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates iOS minimum version in README.
+
 ## 6.1.7
 
 * Updates code for new analysis options.

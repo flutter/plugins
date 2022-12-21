@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates iOS minimum version in README.
+
 ## 3.1.0
 
 * Adds macOS as a supported platform.

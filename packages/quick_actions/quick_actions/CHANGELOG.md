@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates iOS minimum version in README.
+
 ## 1.0.1
 
 * Updates implementaion package versions to current versions.

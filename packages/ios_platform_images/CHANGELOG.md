@@ -1,6 +1,6 @@
 ## 0.2.2
 
-* Updates minimum Flutter version to 3.3.
+* Updates minimum Flutter version to iOS 11.
 
 ## 0.2.1
 

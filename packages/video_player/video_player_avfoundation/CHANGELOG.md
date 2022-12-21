@@ -1,3 +1,7 @@
+## 2.4.0
+
+* Updates minimum Flutter version to 3.3 and iOS 11.
+
 ## 2.3.8
 
 * Adds compatibilty with version 6.0 of the platform interface.

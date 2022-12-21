@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates iOS minimum version in README.
+
 ## 4.0.0
 
 * **BREAKING CHANGE** Updates implementation to use the `2.0.0` release of

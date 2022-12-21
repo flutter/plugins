@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates iOS minimum version in README.
+
 ## 0.8.6
 
 * Updates minimum Flutter version to 2.10.

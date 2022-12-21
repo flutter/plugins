@@ -1,3 +1,7 @@
+## 0.3.5
+
+* Updates minimum Flutter version to 3.3 and iOS 11.
+
 ## 0.3.4
 
 * Adds macOS as a supported platform.

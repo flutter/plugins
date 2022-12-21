@@ -1,3 +1,7 @@
+## 3.1.0
+
+* Updates minimum Flutter version to 3.3 and iOS 11.
+
 ## 3.0.0
 
 * **BREAKING CHANGE** Updates platform implementation to `2.0.0` release of

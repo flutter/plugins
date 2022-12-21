@@ -1,5 +1,6 @@
 ## 2.1.3
 
+* Updates iOS minimum version in README.
 * Updates minimum Flutter version to 2.10.
 * Removes unused `intl` dependency.
 

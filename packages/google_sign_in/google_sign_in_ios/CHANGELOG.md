@@ -1,6 +1,6 @@
 ## 5.6.0
 
-* Updates minimum Flutter version to 3.3.
+* Updates minimum Flutter version to 3.3 and iOS 11.
 
 ## 5.5.1
 

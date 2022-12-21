@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates iOS minimum version in README.
+
 ## 2.2.2
 
 * Modified `README.md` to fix minor syntax issues and added Code Excerpt to `README.md`.

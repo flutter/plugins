@@ -1,6 +1,6 @@
 ## 2.2.0
 
-* Updates minimum Flutter version to 3.3.
+* Updates minimum Flutter version to 3.3 and iOS 11.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 2.1.1

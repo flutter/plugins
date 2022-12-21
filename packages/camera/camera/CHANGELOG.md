@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates iOS minimum version in README.
+
 ## 0.10.1
 
 * Remove usage of deprecated quiver Optional type.

@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates iOS minimum version in README.
+
 ## 0.9.2+2
 
 * Improves API docs and examples.
