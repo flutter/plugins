@@ -5,6 +5,8 @@
 package io.flutter.plugins.webviewflutter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -261,5 +263,14 @@ public class WebViewTest {
 
     testHostApiImpl.setWebChromeClient(0L, 1L);
     verify(mockWebView).setWebChromeClient(mockWebChromeClient);
+  }
+
+  @Test
+  public void defaultWebChromeClient() {
+    final WebViewPlatformView webView = new WebViewPlatformView(mockContext, null, null);
+    assertTrue(
+        webView.getWebChromeClient() instanceof WebChromeClientHostApiImpl.SecureWebChromeClient);
+    assertFalse(
+        webView.getWebChromeClient() instanceof WebChromeClientHostApiImpl.WebChromeClientImpl);
   }
 }

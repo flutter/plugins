@@ -1,3 +1,7 @@
+## 3.0.1
+
+* Fixes bug where a `AndroidNavigationDelegate` was required to load a request.
+
 ## 3.0.0
 
 * **BREAKING CHANGE** Updates platform implementation to `2.0.0` release of
