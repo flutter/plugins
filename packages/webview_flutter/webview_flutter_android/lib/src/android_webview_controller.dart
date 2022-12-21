@@ -402,9 +402,9 @@ class AndroidWebViewWidgetCreationParams
   /// For most use cases, this flag should be set to false. Hybrid Composition
   /// can have performance costs but doesn't have the limitation of rendering to
   /// an Android SurfaceTexture. See
-  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance
-  /// https://github.com/flutter/flutter/issues/104889,
-  /// https://github.com/flutter/flutter/issues/104889.
+  /// * https://flutter.dev/docs/development/platform-integration/platform-views#performance
+  /// * https://github.com/flutter/flutter/issues/104889
+  /// * https://github.com/flutter/flutter/issues/116954
   ///
   /// Defaults to false.
   final bool displayWithHybridComposition;

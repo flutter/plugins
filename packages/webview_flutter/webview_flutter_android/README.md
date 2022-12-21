@@ -7,6 +7,17 @@ The Android implementation of [`webview_flutter`][1].
 This package is [endorsed][2], which means you can simply use `webview_flutter`
 normally. This package will be automatically included in your app when you do.
 
+### Hybrid Composition
+
+This package uses Texture Layer Hybrid Composition by default but allows changing the PlatformView
+implementation to Hybrid Composition. This can have performance costs but doesn't have the
+limitation of rendering to an Android SurfaceTexture. See:
+* https://flutter.dev/docs/development/platform-integration/platform-views#performance
+* https://github.com/flutter/flutter/issues/104889
+* https://github.com/flutter/flutter/issues/116954
+
+This can be configured with `AndroidWebViewControllerCreationParams.displayWithHybridComposition`.
+
 ## Contributing
 
 This package uses [pigeon][3] to generate the communication layer between Flutter and the host
