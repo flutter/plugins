@@ -96,11 +96,6 @@ class RunnerUITests: XCTestCase {
   
   func testGetLaunchedQuickAction() {
     let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-    springboard.shared.shortcutItems = [UIApplicationShortcutItem(type: "quickActionTest",
-        localizedTitle: "quickActionTest",
-        localizedSubtitle: nil,
-        icon: nil,
-        userInfo: nil
     let quickActionsAppIcon = springboard.icons["quick_actions_example"]
     if !quickActionsAppIcon.waitForExistence(timeout: elementWaitingTime) {
       XCTFail(
@@ -109,7 +104,16 @@ class RunnerUITests: XCTestCase {
     }
 
     quickActionsAppIcon.press(forDuration: 2)   
-    springboard.shared.press("quickActionTest")
-    XCTAssert(springboard.launchArguments.contains("quickActionTest"))
+                                                                  
+    let actionOne = springboard.buttons["Action one"]
+    if !actionOne.waitForExistence(timeout: elementWaitingTime) {
+      XCTFail(
+        "Failed due to not able to find the actionOne button from springboard with \(elementWaitingTime) seconds. Springboard debug description: \(springboard.debugDescription)"
+      )
+    }
+
+    actionOne.tap()                                                              
+                                                                  
+    XCTAssert(springboard.launchArguments.contains("Action one"))
   }
 }
