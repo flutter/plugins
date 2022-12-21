@@ -16,6 +16,7 @@ import 'android_proxy.dart';
 import 'android_webview.dart' as android_webview;
 import 'android_webview.dart';
 import 'instance_manager.dart';
+import 'platform_views_service_proxy.dart';
 import 'weak_reference_utils.dart';
 
 /// Object specifying creation parameters for creating a [AndroidWebViewController].
@@ -371,6 +372,8 @@ class AndroidWebViewWidgetCreationParams
     super.gestureRecognizers,
     this.displayWithHybridComposition = false,
     @visibleForTesting InstanceManager? instanceManager,
+    @visibleForTesting
+        this.platformViewsServiceProxy = const PlatformViewsServiceProxy(),
   }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Constructs a [WebKitWebViewWidgetCreationParams] using a
@@ -379,6 +382,8 @@ class AndroidWebViewWidgetCreationParams
     PlatformWebViewWidgetCreationParams params, {
     bool displayWithHybridComposition = false,
     @visibleForTesting InstanceManager? instanceManager,
+    @visibleForTesting PlatformViewsServiceProxy platformViewsServiceProxy =
+        const PlatformViewsServiceProxy(),
   }) : this(
           key: params.key,
           controller: params.controller,
@@ -386,6 +391,7 @@ class AndroidWebViewWidgetCreationParams
           gestureRecognizers: params.gestureRecognizers,
           displayWithHybridComposition: displayWithHybridComposition,
           instanceManager: instanceManager,
+          platformViewsServiceProxy: platformViewsServiceProxy,
         );
 
   /// Maintains instances used to communicate with the native objects they
@@ -395,6 +401,12 @@ class AndroidWebViewWidgetCreationParams
   /// outside of tests.
   @visibleForTesting
   final InstanceManager instanceManager;
+
+  /// Proxy that provides access to the platform views service.
+  ///
+  /// This service allows creating and controlling platform-specific views.
+  @visibleForTesting
+  final PlatformViewsServiceProxy platformViewsServiceProxy;
 
   /// Whether the [WebView] will be displayed using the Hybrid Composition
   /// PlatformView implementation.
@@ -456,7 +468,7 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
     required bool displayWithHybridComposition,
   }) {
     if (displayWithHybridComposition) {
-      return PlatformViewsService.initExpensiveAndroidView(
+      return _androidParams.platformViewsServiceProxy.initExpensiveAndroidView(
         id: params.id,
         viewType: 'plugins.flutter.io/webview',
         layoutDirection: _androidParams.layoutDirection,
@@ -465,7 +477,7 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
         creationParamsCodec: const StandardMessageCodec(),
       );
     } else {
-      return PlatformViewsService.initSurfaceAndroidView(
+      return _androidParams.platformViewsServiceProxy.initSurfaceAndroidView(
         id: params.id,
         viewType: 'plugins.flutter.io/webview',
         layoutDirection: _androidParams.layoutDirection,
