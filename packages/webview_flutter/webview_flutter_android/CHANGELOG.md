@@ -1,3 +1,7 @@
+## 3.1.1
+
+* Fixes bug where a `AndroidNavigationDelegate` was required to load a request.
+
 ## 3.1.0
 
 * Adds support for selecting Hybrid Composition on versions 23+. Please use
