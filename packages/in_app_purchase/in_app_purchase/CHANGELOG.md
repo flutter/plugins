@@ -1,3 +1,7 @@
+## 3.1.0
+
+* Adds macOS as a supported platform.
+
 ## 3.0.8
 
 * Updates minimum Flutter version to 2.10.
