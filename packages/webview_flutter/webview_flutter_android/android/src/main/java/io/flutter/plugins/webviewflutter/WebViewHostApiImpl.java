@@ -124,8 +124,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     }
 
     // When running unit tests, the parent `WebView` class is replaced by a stub that returns null
-    // for every method. This is overriden so that this returns the current WebChromeClient during
-    // unit tests. This should only remain overriden as long as `setWebChromeClient` is overriden.
+    // for every method. This is overridden so that this returns the current WebChromeClient during
+    // unit tests. This should only remain overridden as long as `setWebChromeClient` is overridden.
     @Nullable
     @Override
     public WebChromeClient getWebChromeClient() {
