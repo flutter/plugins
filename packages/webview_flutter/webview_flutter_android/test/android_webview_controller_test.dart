@@ -774,30 +774,6 @@ void main() {
   });
 
   group('AndroidWebViewWidget', () {
-    late List<MethodCall> methodChannelLog;
-
-    setUpAll(() {
-      SystemChannels.platform_views.setMockMethodCallHandler(
-        (MethodCall call) async {
-          methodChannelLog.add(call);
-          if (call.method == 'resize') {
-            return <String, Object?>{
-              'width': call.arguments['width'],
-              'height': call.arguments['height'],
-            };
-          }
-        },
-      );
-    });
-
-    tearDownAll(() {
-      SystemChannels.platform_views.setMockMethodCallHandler(null);
-    });
-
-    setUp(() {
-      methodChannelLog = <MethodCall>[];
-    });
-
     testWidgets('Builds Android view using supplied parameters',
         (WidgetTester tester) async {
       final AndroidWebViewController controller = createControllerWithMocks();
