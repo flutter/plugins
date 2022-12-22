@@ -1,3 +1,7 @@
+## 2.1.4
+
+* Updates documentation for Android version 8 and below theme compatibility.
+
 ## 2.1.3
 
 * Updates minimum Flutter version to 2.10.
