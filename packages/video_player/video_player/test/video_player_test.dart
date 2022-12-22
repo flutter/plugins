@@ -114,6 +114,13 @@ class _FakeClosedCaptionFile extends ClosedCaptionFile {
 }
 
 void main() {
+  late FakeVideoPlayerPlatform fakeVideoPlayerPlatform;
+
+  setUp(() {
+    fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
+    VideoPlayerPlatform.instance = fakeVideoPlayerPlatform;
+  });
+
   void verifyPlayStateRespondsToLifecycle(
     VideoPlayerController controller, {
     required bool shouldPlayInBackground,
@@ -243,13 +250,6 @@ void main() {
   });
 
   group('VideoPlayerController', () {
-    late FakeVideoPlayerPlatform fakeVideoPlayerPlatform;
-
-    setUp(() {
-      fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
-      VideoPlayerPlatform.instance = fakeVideoPlayerPlatform;
-    });
-
     group('initialize', () {
       test('started app lifecycle observing', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
@@ -1023,13 +1023,6 @@ void main() {
   });
 
   group('VideoPlayerOptions', () {
-    late FakeVideoPlayerPlatform fakeVideoPlayerPlatform;
-
-    setUp(() {
-      fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
-      VideoPlayerPlatform.instance = fakeVideoPlayerPlatform;
-    });
-
     test('setMixWithOthers', () async {
       final VideoPlayerController controller = VideoPlayerController.network(
           'https://127.0.0.1',
@@ -1167,6 +1160,11 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   @override
   Future<void> setMixWithOthers(bool mixWithOthers) async {
     calls.add('setMixWithOthers');
+  }
+
+  @override
+  Widget buildView(int textureId) {
+    return Texture(textureId: textureId);
   }
 }
 

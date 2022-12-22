@@ -2,6 +2,10 @@
 
 * Added support Embedded Close Caption with videos
 
+## 2.4.10
+
+* Adds compatibilty with version 6.0 of the platform interface.
+
 ## 2.4.9
 
 * Fixes file URI construction.

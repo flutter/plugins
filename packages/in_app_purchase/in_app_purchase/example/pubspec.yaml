@@ -17,7 +17,7 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
   in_app_purchase_android: ^0.2.1
-  in_app_purchase_storekit: ^0.3.0+1
+  in_app_purchase_storekit: ^0.3.4
   shared_preferences: ^2.0.0
 
 dev_dependencies:

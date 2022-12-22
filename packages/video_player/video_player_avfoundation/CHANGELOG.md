@@ -1,5 +1,6 @@
-## NEXT
+## 2.3.8
 
+* Adds compatibilty with version 6.0 of the platform interface.
 * Fixes file URI construction in example.
 * Updates code for new analysis options.
 * Adds an integration test for a bug where the aspect ratios of some HLS videos are incorrectly inverted.
