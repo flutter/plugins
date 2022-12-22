@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #import <OCMock/OCMock.h>
-#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 @import image_picker_ios;
 @import image_picker_ios.Test;
+@import UniformTypeIdentifiers;
 @import XCTest;
 
 @interface PickerSaveImageToPathOperationTests : XCTestCase
@@ -113,6 +113,60 @@
   [self verifySavingImageWithPickerResult:result fullMetadata:YES];
 }
 
+- (void)testNonexistentImage API_AVAILABLE(ios(14)) {
+  NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"bogus"
+                                                             withExtension:@"png"];
+  NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
+  PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
+
+  XCTestExpectation *errorExpectation = [self expectationWithDescription:@"invalid source error"];
+  FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
+           initWithResult:result
+                maxHeight:@100
+                 maxWidth:@100
+      desiredImageQuality:@100
+             fullMetadata:YES
+           savedPathBlock:^(NSString *savedPath, FlutterError *error) {
+             XCTAssertEqualObjects(error.code, @"invalid_source");
+             [errorExpectation fulfill];
+           }];
+
+  [operation start];
+  [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+- (void)testFailingImageLoad API_AVAILABLE(ios(14)) {
+  NSError *loadDataError = [NSError errorWithDomain:@"PHPickerDomain" code:1234 userInfo:nil];
+
+  id mockItemProvider = OCMClassMock([NSItemProvider class]);
+  OCMStub([mockItemProvider hasItemConformingToTypeIdentifier:OCMOCK_ANY]).andReturn(YES);
+  [[mockItemProvider stub]
+      loadDataRepresentationForTypeIdentifier:OCMOCK_ANY
+                            completionHandler:[OCMArg invokeBlockWithArgs:[NSNull null],
+                                                                          loadDataError, nil]];
+
+  id pickerResult = OCMClassMock([PHPickerResult class]);
+  OCMStub([pickerResult itemProvider]).andReturn(mockItemProvider);
+
+  XCTestExpectation *errorExpectation = [self expectationWithDescription:@"invalid image error"];
+
+  FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
+           initWithResult:pickerResult
+                maxHeight:@100
+                 maxWidth:@100
+      desiredImageQuality:@100
+             fullMetadata:YES
+           savedPathBlock:^(NSString *savedPath, FlutterError *error) {
+             XCTAssertEqualObjects(error.code, @"invalid_image");
+             XCTAssertEqualObjects(error.message, loadDataError.localizedDescription);
+             XCTAssertEqualObjects(error.details, @"PHPickerDomain");
+             [errorExpectation fulfill];
+           }];
+
+  [operation start];
+  [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
 - (void)testSavePNGImageWithoutFullMetadata API_AVAILABLE(ios(14)) {
   id photoAssetUtil = OCMClassMock([PHAsset class]);
 
@@ -120,10 +174,10 @@
                                                              withExtension:@"png"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
+  OCMReject([photoAssetUtil fetchAssetsWithLocalIdentifiers:OCMOCK_ANY options:OCMOCK_ANY]);
 
   [self verifySavingImageWithPickerResult:result fullMetadata:NO];
-  OCMVerify(times(0), [photoAssetUtil fetchAssetsWithLocalIdentifiers:[OCMArg any]
-                                                              options:[OCMArg any]]);
+  OCMVerifyAll(photoAssetUtil);
 }
 
 /**
@@ -153,6 +207,8 @@
 - (void)verifySavingImageWithPickerResult:(PHPickerResult *)result
                              fullMetadata:(BOOL)fullMetadata API_AVAILABLE(ios(14)) {
   XCTestExpectation *pathExpectation = [self expectationWithDescription:@"Path was created"];
+  XCTestExpectation *operationExpectation =
+      [self expectationWithDescription:@"Operation completed"];
 
   FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
            initWithResult:result
@@ -160,14 +216,17 @@
                  maxWidth:@100
       desiredImageQuality:@100
              fullMetadata:fullMetadata
-           savedPathBlock:^(NSString *savedPath) {
-             if ([[NSFileManager defaultManager] fileExistsAtPath:savedPath]) {
-               [pathExpectation fulfill];
-             }
+           savedPathBlock:^(NSString *savedPath, FlutterError *error) {
+             XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:savedPath]);
+             [pathExpectation fulfill];
            }];
+  operation.completionBlock = ^{
+    [operationExpectation fulfill];
+  };
 
   [operation start];
-  [self waitForExpectations:@[ pathExpectation ] timeout:30];
+  [self waitForExpectationsWithTimeout:30 handler:nil];
+  XCTAssertTrue(operation.isFinished);
 }
 
 @end

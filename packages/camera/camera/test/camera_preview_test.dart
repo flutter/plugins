@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiver/core.dart';
 
 class FakeController extends ValueNotifier<CameraValue>
     implements CameraController {
@@ -139,11 +138,8 @@ void main() {
         isInitialized: true,
         isRecordingVideo: true,
         deviceOrientation: DeviceOrientation.portraitUp,
-        lockedCaptureOrientation:
-            const Optional<DeviceOrientation>.fromNullable(
-                DeviceOrientation.landscapeRight),
-        recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
-            DeviceOrientation.landscapeLeft),
+        lockedCaptureOrientation: DeviceOrientation.landscapeRight,
+        recordingOrientation: DeviceOrientation.landscapeLeft,
         previewSize: const Size(480, 640),
       );
 
@@ -173,11 +169,8 @@ void main() {
       controller.value = controller.value.copyWith(
         isInitialized: true,
         deviceOrientation: DeviceOrientation.portraitUp,
-        lockedCaptureOrientation:
-            const Optional<DeviceOrientation>.fromNullable(
-                DeviceOrientation.landscapeRight),
-        recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
-            DeviceOrientation.landscapeLeft),
+        lockedCaptureOrientation: DeviceOrientation.landscapeRight,
+        recordingOrientation: DeviceOrientation.landscapeLeft,
         previewSize: const Size(480, 640),
       );
 
@@ -207,8 +200,7 @@ void main() {
       controller.value = controller.value.copyWith(
         isInitialized: true,
         deviceOrientation: DeviceOrientation.portraitUp,
-        recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
-            DeviceOrientation.landscapeLeft),
+        recordingOrientation: DeviceOrientation.landscapeLeft,
         previewSize: const Size(480, 640),
       );
 

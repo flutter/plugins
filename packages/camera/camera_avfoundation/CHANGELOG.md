@@ -1,6 +1,10 @@
-## 0.9.10
+## 0.9.11
 
 * Allows camera to be switched while video recording.
+
+## 0.9.10
+
+* Remove usage of deprecated quiver Optional type.
 
 ## 0.9.9
 

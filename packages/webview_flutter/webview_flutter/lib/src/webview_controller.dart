@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
-
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
 // ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+
+import 'navigation_delegate.dart';
 
 /// Controls a WebView provided by the host platform.
 ///
@@ -125,6 +125,12 @@ class WebViewController {
     return platform.reload();
   }
 
+  /// Sets the [NavigationDelegate] containing the callback methods that are
+  /// called during navigation events.
+  Future<void> setNavigationDelegate(NavigationDelegate delegate) {
+    return platform.setPlatformNavigationDelegate(delegate.platform);
+  }
+
   /// Clears all caches used by the WebView.
   ///
   /// The following caches are cleared:
@@ -233,9 +239,8 @@ class WebViewController {
   /// Returns the current scroll position of this view.
   ///
   /// Scroll position is measured from the top left.
-  Future<Offset> getScrollPosition() async {
-    final Point<int> position = await platform.getScrollPosition();
-    return Offset(position.x.toDouble(), position.y.toDouble());
+  Future<Offset> getScrollPosition() {
+    return platform.getScrollPosition();
   }
 
   /// Whether to support zooming using the on-screen zoom controls and gestures.

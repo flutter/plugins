@@ -5,7 +5,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'webview_controller.dart';
 
@@ -35,8 +35,7 @@ class WebViewWidget extends StatelessWidget {
   }) : this.fromPlatform(key: key, platform: PlatformWebViewWidget(params));
 
   /// Constructs a [WebViewWidget] from a specific platform implementation.
-  WebViewWidget.fromPlatform({Key? key, required this.platform})
-      : super(key: key);
+  WebViewWidget.fromPlatform({super.key, required this.platform});
 
   /// Implementation of [PlatformWebViewWidget] for the current platform.
   final PlatformWebViewWidget platform;

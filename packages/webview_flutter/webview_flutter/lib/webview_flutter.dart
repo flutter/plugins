@@ -2,9 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export 'package:webview_flutter_android/webview_android.dart';
-export 'package:webview_flutter_android/webview_surface_android.dart';
-export 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+library webview_flutter;
 
-export 'platform_interface.dart';
-export 'src/webview.dart';
+export 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
+    show
+        JavaScriptMessage,
+        JavaScriptMode,
+        LoadRequestMethod,
+        NavigationDecision,
+        NavigationRequest,
+        NavigationRequestCallback,
+        PageEventCallback,
+        PlatformNavigationDelegateCreationParams,
+        PlatformWebViewControllerCreationParams,
+        PlatformWebViewCookieManagerCreationParams,
+        PlatformWebViewWidgetCreationParams,
+        ProgressCallback,
+        WebResourceError,
+        WebResourceErrorCallback,
+        WebViewCookie,
+        WebViewPlatform;
+
+export 'src/navigation_delegate.dart';
+export 'src/webview_controller.dart';
+export 'src/webview_cookie_manager.dart';
+export 'src/webview_widget.dart';
