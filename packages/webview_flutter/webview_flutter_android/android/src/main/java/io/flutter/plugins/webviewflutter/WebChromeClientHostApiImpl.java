@@ -31,9 +31,8 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
   /**
    * Implementation of {@link WebChromeClient} that passes arguments of callback methods to Dart.
    */
-  public static class WebChromeClientImpl extends WebChromeClient {
+  public static class WebChromeClientImpl extends SecureWebChromeClient {
     private final WebChromeClientFlutterApiImpl flutterApi;
-    @Nullable private WebViewClient webViewClient;
 
     /**
      * Creates a {@link WebChromeClient} that passes arguments of callbacks methods to Dart.
@@ -43,6 +42,24 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     public WebChromeClientImpl(@NonNull WebChromeClientFlutterApiImpl flutterApi) {
       this.flutterApi = flutterApi;
     }
+
+    @Override
+    public void onProgressChanged(WebView view, int progress) {
+      flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
+    }
+
+    @Override
+    public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+      return super.onShowFileChooser(webView, filePathCallback, fileChooserParams);
+    }
+  }
+
+  /**
+   * Implementation of {@link WebChromeClient} that only allows secure urls when opening a new
+   * window.
+   */
+  public static class SecureWebChromeClient extends WebChromeClient {
+    @Nullable private WebViewClient webViewClient;
 
     @Override
     public boolean onCreateWindow(
@@ -105,16 +122,6 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
       resultMsg.sendToTarget();
 
       return true;
-    }
-
-    @Override
-    public void onProgressChanged(WebView view, int progress) {
-      flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
-    }
-
-    @Override
-    public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-      return super.onShowFileChooser(webView, filePathCallback, fileChooserParams);
     }
 
     /**

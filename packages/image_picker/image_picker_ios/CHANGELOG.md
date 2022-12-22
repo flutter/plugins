@@ -1,3 +1,7 @@
+## 0.8.6+3
+
+* Returns error on image load failure.
+
 ## 0.8.6+2
 
 * Fixes issue where selectable images of certain types (such as ProRAW images) could not be loaded.
