@@ -719,11 +719,11 @@ class SystemServicesHostApi {
     }
   }
 
-  Future<void> startListeningForDeviceOrientationChange() async {
+  Future<void> startListeningForDeviceOrientationChange(bool arg_isFrontFacing, int arg_sensorOrientation) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(null) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_isFrontFacing, arg_sensorOrientation]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

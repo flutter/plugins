@@ -120,7 +120,7 @@ abstract class CameraControlFlutterApi {
 abstract class SystemServicesHostApi {
   bool requestCameraPermissions(bool enableAudio);
 
-  void startListeningForDeviceOrientationChange();
+  void startListeningForDeviceOrientationChange(bool isFrontFacing, int sensorOrientation);
 }
 
 @FlutterApi()

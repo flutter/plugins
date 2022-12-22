@@ -48,14 +48,6 @@ class AndroidCameraCameraX extends CameraPlatform {
       cameraEventStreamController.stream
           .where((CameraEvent event) => event.cameraId == cameraId);
 
-  /// The controller we need to broadcast the different events coming
-  /// from handleMethodCall, specific to general device events.
-  ///
-  /// It is a `broadcast` because multiple controllers will connect to
-  /// different stream views of this Controller.
-  late final StreamController<DeviceEvent> _deviceEventStreamController =
-      StreamController<DeviceEvent>.broadcast();
-
   /// Returns list of all available cameras and their descriptions.
   @override
   Future<List<CameraDescription>> availableCameras() async {
@@ -167,8 +159,7 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    return _deviceEventStreamController.stream
-        .whereType<DeviceOrientationChangedEvent>();
+    return SystemServices.deviceOrientationChangedStreamController.stream;
   }
 
   Future<void> bindPreviewToLifecycle() async {

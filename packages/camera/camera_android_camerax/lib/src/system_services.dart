@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:camera_platform_interface/camera_platform_interface.dart' show DeviceOrientationChangedEvent;
 import 'package:flutter/services.dart';
 
 import 'android_camera_camerax_flutter_api_impls.dart';
@@ -16,6 +17,9 @@ class SystemServices {
   // TODO(camsim99): Change this to actually handle errors.
   static final StreamController<bool> cameraPermissionsStreamController =
       StreamController<bool>.broadcast();
+
+  static final StreamController<DeviceOrientationChangedEvent> deviceOrientationChangedStreamController =
+    StreamController<DeviceOrientationChangedEvent>.broadcast();
 
   static Future<bool> requestCameraPermissions(bool enableAudio, {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
@@ -30,12 +34,12 @@ class SystemServices {
   //   cameraPermissionsStreamController.add(true);
   // }
 
-  static void startListeningForDeviceOrientationChange({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
+  static void startListeningForDeviceOrientationChange(bool isFrontFacing, int sensorOrientation, {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
     SystemServicesHostApi api = SystemServicesHostApi(
         binaryMessenger: binaryMessenger);
     
-    api.startListeningForDeviceOrientationChange();
+    api.startListeningForDeviceOrientationChange(isFrontFacing, sensorOrientation);
   }
 }
 
@@ -90,12 +94,31 @@ class SystemServicesFlutterApiImpl implements SystemServicesFlutterApi {
 
   @override
   void onCameraPermissionsRequestResult(String resultCode, String resultMessage) {
-    // SystemServices.handleCameraPermissionsResult(resultCode, resultMessage);
+    // TODO(camsim99): Actually decode and handle results here
     SystemServices.cameraPermissionsStreamController.add(true);
   }
 
   @override
   void onDeviceOrientationChanged(String orientation) {
-    print('DEVICE ORIENTATION: $orientation');
+    DeviceOrientation? deviceOrientation = getDeviceOrientation(orientation);
+    if (deviceOrientation == null) {
+      return;
+    }
+    SystemServices.deviceOrientationChangedStreamController.add(DeviceOrientationChangedEvent(deviceOrientation!));
+  }
+
+  DeviceOrientation? getDeviceOrientation(String orientation) {
+    switch(orientation) {
+      case 'LANDSCAPE_LEFT':
+        return DeviceOrientation.landscapeLeft;
+      case 'LANDSCAPE_RIGHT':
+        return DeviceOrientation.landscapeRight;
+      case 'PORTRAIT_DOWN':
+        return DeviceOrientation.portraitDown;
+      case 'PORTRAIT_UP':
+        return DeviceOrientation.portraitUp;
+      default:
+        return null;
+    }
   }
 }

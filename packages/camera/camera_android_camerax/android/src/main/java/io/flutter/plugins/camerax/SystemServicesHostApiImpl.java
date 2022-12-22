@@ -39,7 +39,7 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
             permissionsRegistry,
             enableAudio,
             (String errCode, String errDesc) -> {
-                //TODO(camsim99): Actually handle this
+                //TODO(camsim99): Actually handle this.
                 final SystemServicesFlutterApiImpl api = new SystemServicesFlutterApiImpl(binaryMessenger, instanceManager);
                 api.onCameraPermissionsRequestResult("", "", reply -> {});
               if (errCode == null) {
@@ -49,13 +49,18 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
               }
             }
         );
-        // // TODO(camsim99): Make this void? Unclear how to handle this.
+        // // TODO(camsim99): Make this method void.
         return true;
     }
 
     @Override
-    public void startListeningForDeviceOrientationChange() {
-        //TODO(camsim99): Use this method to start listening for device orientation changes.
+    public void startListeningForDeviceOrientationChange(Boolean isFrontFacing, Long sensorOrientation) {
+        DeviceOrientationManager deviceOrientationManager = new DeviceOrientationManager(activity, isFrontFacing, sensorOrientation.intValue(),
+        (String newOrientation) -> {
+          final SystemServicesFlutterApiImpl api = new SystemServicesFlutterApiImpl(binaryMessenger, instanceManager);
+          api.onDeviceOrientationChanged(newOrientation, reply -> {});
+        });
+        deviceOrientationManager.start();
     }
 
 }

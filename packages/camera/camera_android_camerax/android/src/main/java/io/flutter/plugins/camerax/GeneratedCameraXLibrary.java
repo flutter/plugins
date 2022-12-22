@@ -745,7 +745,7 @@ public class GeneratedCameraXLibrary {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface SystemServicesHostApi {
     @NonNull Boolean requestCameraPermissions(@NonNull Boolean enableAudio);
-    void startListeningForDeviceOrientationChange();
+    void startListeningForDeviceOrientationChange(@NonNull Boolean isFrontFacing, @NonNull Long sensorOrientation);
 
     /** The codec used by SystemServicesHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -785,7 +785,16 @@ public class GeneratedCameraXLibrary {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
             try {
-              api.startListeningForDeviceOrientationChange();
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Boolean isFrontFacingArg = (Boolean)args.get(0);
+              if (isFrontFacingArg == null) {
+                throw new NullPointerException("isFrontFacingArg unexpectedly null.");
+              }
+              Number sensorOrientationArg = (Number)args.get(1);
+              if (sensorOrientationArg == null) {
+                throw new NullPointerException("sensorOrientationArg unexpectedly null.");
+              }
+              api.startListeningForDeviceOrientationChange(isFrontFacingArg, (sensorOrientationArg == null) ? null : sensorOrientationArg.longValue());
               wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {
