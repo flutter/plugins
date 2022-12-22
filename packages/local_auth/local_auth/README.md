@@ -252,6 +252,24 @@ types (such as face scanning) and you want to support SDKs lower than Q,
 _do not_ call `getAvailableBiometrics`. Simply call `authenticate` with `biometricOnly: true`.
 This will return an error if there was no hardware available.
 
+Furthermore, you need to update the `AndroidManifest.xml` file with the 
+`Theme.AppCompat.Light` theme to be compatible with **Android version 8 and below**; 
+otherwise the app crashes for those versions.  
+
+```xml
+...
+	<application
+		...
+		<activity
+			...
+			android:theme="@style/Theme.AppCompat.Light"
+			...	
+		>
+		</activity>
+	</application>
+...
+```
+
 ## Sticky Auth
 
 You can set the `stickyAuth` option on the plugin to true so that plugin does not
