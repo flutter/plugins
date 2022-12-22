@@ -47,6 +47,7 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
 
   public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
     //super.onShowFileChooser(Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webView)));
+    return false;
   }
 
 

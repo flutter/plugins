@@ -16,6 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+
+import java.util.List;
+
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 
 /**
@@ -169,5 +172,11 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     final WebChromeClient webChromeClient =
         webChromeClientCreator.createWebChromeClient(flutterApi);
     instanceManager.addDartCreatedInstance(webChromeClient, instanceId);
+  }
+
+  @Nullable
+  @Override
+  public List<String> setSynchronousReturnValueForOnShowFileChooser(@NonNull Long instanceId, @NonNull Boolean value) {
+    return null;
   }
 }
