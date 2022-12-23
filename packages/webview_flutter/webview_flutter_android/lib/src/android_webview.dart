@@ -902,6 +902,8 @@ class WebChromeClient extends JavaObject {
   /// to [setSynchronousReturnValueForOnShowFileChooser] is required. Otherwise,
   /// the returned list of strings will be ignored and the client will use the
   /// default handling of a file chooser request.
+  ///
+  /// Only invoked on Android versions 21+.
   final Future<List<String>> Function(
     WebView webView,
     FileChooserParams params,
@@ -978,6 +980,8 @@ class FileChooserParams extends JavaObject {
   final FileChooserMode mode;
 
   /// Start a generic file picker for file selection.
+  ///
+  /// Throws [PlatformException] if the request was canceled or failed.
   ///
   /// Returns a list of file paths.
   Future<List<String>> openFilePickerForResult() {

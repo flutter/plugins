@@ -790,8 +790,7 @@ class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
-  Future<List<String?>?>
-      setSynchronousReturnValueForOnShowFileChooserFromInstance(
+  Future<void> setSynchronousReturnValueForOnShowFileChooserFromInstance(
     WebChromeClient instance,
     bool value,
   ) {

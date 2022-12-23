@@ -5,10 +5,14 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.net.Uri;
+import android.os.Build;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import androidx.annotation.RequiresApi;
+
+import java.util.List;
 import java.util.Objects;
 
 import io.flutter.plugin.common.BinaryMessenger;
@@ -20,6 +24,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClient
  * <p>Passes arguments of callbacks methods from a {@link WebChromeClient} to Dart.
  */
 public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
+  private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
 
   /**
@@ -31,6 +36,7 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
   public WebChromeClientFlutterApiImpl(
       BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     super(binaryMessenger);
+    this.binaryMessenger = binaryMessenger;
     this.instanceManager = instanceManager;
   }
 
@@ -45,9 +51,19 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
         getIdentifierForClient(webChromeClient), webViewIdentifier, progress, callback);
   }
 
-  public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
-    //super.onShowFileChooser(Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webView)));
-    return false;
+  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+  public void onShowFileChooser(WebChromeClient webChromeClient,
+                                WebView webView,
+                                WebChromeClient.FileChooserParams fileChooserParams,
+                                Reply<List<String>> callback) {
+    Long paramsInstanceId = instanceManager.getIdentifierForStrongReference(fileChooserParams);
+    if (paramsInstanceId == null) {
+      final FileChooserParamsFlutterApiImpl flutterApi =
+          new FileChooserParamsFlutterApiImpl(binaryMessenger, instanceManager);
+      paramsInstanceId = flutterApi.create(fileChooserParams, reply -> {});
+    }
+    onShowFileChooser(Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webChromeClient)),
+        Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webView)), paramsInstanceId, callback);
   }
 
 

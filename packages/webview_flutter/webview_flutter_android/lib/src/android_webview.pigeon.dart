@@ -1613,7 +1613,7 @@ class WebChromeClientHostApi {
     }
   }
 
-  Future<List<String?>?> setSynchronousReturnValueForOnShowFileChooser(int arg_instanceId, bool arg_value) async {
+  Future<void> setSynchronousReturnValueForOnShowFileChooser(int arg_instanceId, bool arg_value) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WebChromeClientHostApi.setSynchronousReturnValueForOnShowFileChooser', codec,
         binaryMessenger: _binaryMessenger);
@@ -1631,7 +1631,7 @@ class WebChromeClientHostApi {
         details: replyList[2],
       );
     } else {
-      return (replyList[0] as List<Object?>?)?.cast<String?>();
+      return;
     }
   }
 }

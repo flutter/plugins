@@ -1972,7 +1972,7 @@ public class GeneratedAndroidWebView {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface WebChromeClientHostApi {
     void create(@NonNull Long instanceId);
-    @Nullable List<String> setSynchronousReturnValueForOnShowFileChooser(@NonNull Long instanceId, @NonNull Boolean value);
+    void setSynchronousReturnValueForOnShowFileChooser(@NonNull Long instanceId, @NonNull Boolean value);
 
     /** The codec used by WebChromeClientHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -2022,8 +2022,8 @@ public class GeneratedAndroidWebView {
               if (valueArg == null) {
                 throw new NullPointerException("valueArg unexpectedly null.");
               }
-              List<String> output = api.setSynchronousReturnValueForOnShowFileChooser((instanceIdArg == null) ? null : instanceIdArg.longValue(), valueArg);
-              wrapped.add(0, output);
+              api.setSynchronousReturnValueForOnShowFileChooser((instanceIdArg == null) ? null : instanceIdArg.longValue(), valueArg);
+              wrapped.add(0, null);
             }
             catch (Error | RuntimeException exception) {
               ArrayList<Object> wrappedError = wrapError(exception);

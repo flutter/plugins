@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
@@ -17,8 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import java.util.List;
+import java.util.Objects;
 
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 
 /**
@@ -36,6 +38,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
    */
   public static class WebChromeClientImpl extends SecureWebChromeClient {
     private final WebChromeClientFlutterApiImpl flutterApi;
+    private boolean returnValueForOnShowFileChooser = false;
 
     /**
      * Creates a {@link WebChromeClient} that passes arguments of callbacks methods to Dart.
@@ -51,9 +54,24 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
       flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-      return super.onShowFileChooser(webView, filePathCallback, fileChooserParams);
+      flutterApi.onShowFileChooser(this, webView, fileChooserParams, reply -> {
+        if (returnValueForOnShowFileChooser) {
+          final Uri[] filePaths = new Uri[reply.size()];
+          for (int i = 0; i < reply.size(); i++) {
+            filePaths[i] = Uri.parse(reply.get(i));
+          }
+          filePathCallback.onReceiveValue(filePaths);
+        }
+      });
+      return returnValueForOnShowFileChooser;
+    }
+
+    /** Sets return value for {@link #onShowFileChooser}. */
+    public void setReturnValueForOnShowFileChooser(boolean value) {
+      returnValueForOnShowFileChooser = value;
     }
   }
 
@@ -174,9 +192,9 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     instanceManager.addDartCreatedInstance(webChromeClient, instanceId);
   }
 
-  @Nullable
   @Override
-  public List<String> setSynchronousReturnValueForOnShowFileChooser(@NonNull Long instanceId, @NonNull Boolean value) {
-    return null;
+  public void setSynchronousReturnValueForOnShowFileChooser(@NonNull Long instanceId, @NonNull Boolean value) {
+    final WebChromeClientImpl webChromeClient = (WebChromeClientImpl) instanceManager.getInstance(instanceId);
+    Objects.requireNonNull(webChromeClient).setReturnValueForOnShowFileChooser(value);
   }
 }

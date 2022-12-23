@@ -4,7 +4,10 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -13,6 +16,7 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformViewRegistry;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.CookieManagerHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
@@ -24,6 +28,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHost
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.FileChooserParamsHostApi;
 
 /**
  * Java platform implementation of the webview_flutter plugin.
@@ -38,6 +43,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private FlutterPluginBinding pluginBinding;
   private WebViewHostApiImpl webViewHostApi;
   private JavaScriptChannelHostApiImpl javaScriptChannelHostApi;
+  private FileChooserParamsHostApiImpl fileChooserParamsHostApi;
 
   /**
    * Add an instance of this to {@link io.flutter.embedding.engine.plugins.PluginRegistry} to
@@ -132,6 +138,11 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     WebStorageHostApi.setup(
         binaryMessenger,
         new WebStorageHostApiImpl(instanceManager, new WebStorageHostApiImpl.WebStorageCreator()));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      FileChooserParamsHostApi.setup(binaryMessenger, new FileChooserParamsHostApiImpl(instanceManager));
+    }
+
+    updateContext(context);
   }
 
   @Override
@@ -154,6 +165,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
     updateContext(activityPluginBinding.getActivity());
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      activityPluginBinding.addActivityResultListener(fileChooserParamsHostApi.getActivityResultListener());
+    }
   }
 
   @Override
@@ -165,6 +179,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   public void onReattachedToActivityForConfigChanges(
       @NonNull ActivityPluginBinding activityPluginBinding) {
     updateContext(activityPluginBinding.getActivity());
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      activityPluginBinding.addActivityResultListener(fileChooserParamsHostApi.getActivityResultListener());
+    }
   }
 
   @Override
@@ -175,6 +192,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private void updateContext(Context context) {
     webViewHostApi.setContext(context);
     javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(context.getMainLooper()));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && context instanceof Activity) {
+      fileChooserParamsHostApi.setActivity((Activity) context);
+    }
   }
 
   /** Maintains instances used to communicate with the corresponding objects in Dart. */

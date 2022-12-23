@@ -1048,7 +1048,7 @@ abstract class TestWebChromeClientHostApi {
 
   void create(int instanceId);
 
-  List<String?>? setSynchronousReturnValueForOnShowFileChooser(int instanceId, bool value);
+  void setSynchronousReturnValueForOnShowFileChooser(int instanceId, bool value);
 
   static void setup(TestWebChromeClientHostApi? api, {BinaryMessenger? binaryMessenger}) {
     {
@@ -1084,8 +1084,8 @@ abstract class TestWebChromeClientHostApi {
           assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebChromeClientHostApi.setSynchronousReturnValueForOnShowFileChooser was null, expected non-null int.');
           final bool? arg_value = (args[1] as bool?);
           assert(arg_value != null, 'Argument for dev.flutter.pigeon.WebChromeClientHostApi.setSynchronousReturnValueForOnShowFileChooser was null, expected non-null bool.');
-          final List<String?>? output = api.setSynchronousReturnValueForOnShowFileChooser(arg_instanceId!, arg_value!);
-          return <Object?>[output];
+          api.setSynchronousReturnValueForOnShowFileChooser(arg_instanceId!, arg_value!);
+          return <Object?>[];
         });
       }
     }

@@ -271,7 +271,7 @@ abstract class DownloadListenerFlutterApi {
 abstract class WebChromeClientHostApi {
   void create(int instanceId);
 
-  List<String>? setSynchronousReturnValueForOnShowFileChooser(
+  void setSynchronousReturnValueForOnShowFileChooser(
     int instanceId,
     bool value,
   );
