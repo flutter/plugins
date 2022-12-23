@@ -264,10 +264,21 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   }
 }
 
-class _ControlsOverlay extends StatelessWidget {
-  const _ControlsOverlay({Key? key, required this.controller})
-      : super(key: key);
+class _ControlsOverlay extends StatefulWidget {
+  const _ControlsOverlay({
+    Key? key,
+    required this.controller,
+    this.fullscreen = false,
+  }) : super(key: key);
 
+  final VideoPlayerController controller;
+  final bool fullscreen;
+
+  @override
+  State<_ControlsOverlay> createState() => _ControlsOverlayState();
+}
+
+class _ControlsOverlayState extends State<_ControlsOverlay> {
   static const List<Duration> _exampleCaptionOffsets = <Duration>[
     Duration(seconds: -10),
     Duration(seconds: -3),
@@ -290,7 +301,26 @@ class _ControlsOverlay extends StatelessWidget {
     10.0,
   ];
 
-  final VideoPlayerController controller;
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_videoPlayerControllerListener);
+  }
+
+  @override
+  void didUpdateWidget(_ControlsOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller.removeListener(_videoPlayerControllerListener);
+      widget.controller.addListener(_videoPlayerControllerListener);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_videoPlayerControllerListener);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -299,7 +329,7 @@ class _ControlsOverlay extends StatelessWidget {
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 50),
           reverseDuration: const Duration(milliseconds: 200),
-          child: controller.value.isPlaying
+          child: widget.controller.value.isPlaying
               ? const SizedBox.shrink()
               : Container(
                   color: Colors.black26,
@@ -315,16 +345,18 @@ class _ControlsOverlay extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            controller.value.isPlaying ? controller.pause() : controller.play();
+            widget.controller.value.isPlaying
+                ? widget.controller.pause()
+                : widget.controller.play();
           },
         ),
         Align(
           alignment: Alignment.topLeft,
           child: PopupMenuButton<Duration>(
-            initialValue: controller.value.captionOffset,
+            initialValue: widget.controller.value.captionOffset,
             tooltip: 'Caption Offset',
             onSelected: (Duration delay) {
-              controller.setCaptionOffset(delay);
+              widget.controller.setCaptionOffset(delay);
             },
             itemBuilder: (BuildContext context) {
               return <PopupMenuItem<Duration>>[
@@ -343,17 +375,18 @@ class _ControlsOverlay extends StatelessWidget {
                 vertical: 12,
                 horizontal: 16,
               ),
-              child: Text('${controller.value.captionOffset.inMilliseconds}ms'),
+              child: Text(
+                  '${widget.controller.value.captionOffset.inMilliseconds}ms'),
             ),
           ),
         ),
         Align(
           alignment: Alignment.topRight,
           child: PopupMenuButton<double>(
-            initialValue: controller.value.playbackSpeed,
+            initialValue: widget.controller.value.playbackSpeed,
             tooltip: 'Playback speed',
             onSelected: (double speed) {
-              controller.setPlaybackSpeed(speed);
+              widget.controller.setPlaybackSpeed(speed);
             },
             itemBuilder: (BuildContext context) {
               return <PopupMenuItem<double>>[
@@ -372,11 +405,67 @@ class _ControlsOverlay extends StatelessWidget {
                 vertical: 12,
                 horizontal: 16,
               ),
-              child: Text('${controller.value.playbackSpeed}x'),
+              child: Text('${widget.controller.value.playbackSpeed}x'),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: IconButton(
+              onPressed: () {
+                if (widget.fullscreen) {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute<_FullscreenVideoPage>(
+                          builder: (_) => _FullscreenVideoPage(
+                              controller: widget.controller)));
+                }
+              },
+              icon: Icon(
+                widget.fullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  void _videoPlayerControllerListener() {
+    setState(() {});
+  }
+}
+
+class _FullscreenVideoPage extends StatelessWidget {
+  const _FullscreenVideoPage({required this.controller});
+
+  final VideoPlayerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: AspectRatio(
+          aspectRatio: controller.value.aspectRatio,
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: <Widget>[
+              VideoPlayer(controller),
+              _ControlsOverlay(
+                controller: controller,
+                fullscreen: true,
+              ),
+              VideoProgressIndicator(controller, allowScrubbing: true),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
