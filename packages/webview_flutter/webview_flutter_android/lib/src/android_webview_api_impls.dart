@@ -907,9 +907,20 @@ class FileChooserParamsFlutterApiImpl extends FileChooserParamsFlutterApi {
   final InstanceManager instanceManager;
 
   @override
-  void create(int instanceId, bool isCaptureEnabled) {
+  void create(
+    int instanceId,
+    bool isCaptureEnabled,
+    List<String?> acceptTypes,
+    FileChooserModeEnumData mode,
+    String? filenameHint,
+  ) {
     instanceManager.addHostCreatedInstance(
-      FileChooserParams.detached(isCaptureEnabled: isCaptureEnabled),
+      FileChooserParams.detached(
+        isCaptureEnabled: isCaptureEnabled,
+        acceptTypes: acceptTypes.cast(),
+        mode: mode.value,
+        filenameHint: filenameHint,
+      ),
       instanceId,
     );
   }

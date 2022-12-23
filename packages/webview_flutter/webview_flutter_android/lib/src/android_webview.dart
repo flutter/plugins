@@ -20,6 +20,8 @@ import 'android_webview.pigeon.dart';
 import 'android_webview_api_impls.dart';
 import 'instance_manager.dart';
 
+export 'android_webview.pigeon.dart' show FileChooserMode;
+
 /// Root of the Java class hierarchy.
 ///
 /// See https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html.
@@ -950,6 +952,9 @@ class FileChooserParams extends JavaObject {
   /// create copies.
   FileChooserParams.detached({
     required this.isCaptureEnabled,
+    required this.acceptTypes,
+    required this.filenameHint,
+    required this.mode,
     super.binaryMessenger,
     super.instanceManager,
   })  : _fileChooserParamsApi = FileChooserParamsHostApiImpl(
@@ -962,6 +967,15 @@ class FileChooserParams extends JavaObject {
 
   /// Preference for a live media captured value (e.g. Camera, Microphone).
   final bool isCaptureEnabled;
+
+  /// A list of acceptable MIME types.
+  final List<String> acceptTypes;
+
+  /// The file name of a default selection if specified, or null.
+  final String? filenameHint;
+
+  /// Mode of which the file path/s will be used.
+  final FileChooserMode mode;
 
   /// Start a generic file picker for file selection.
   ///

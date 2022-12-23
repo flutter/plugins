@@ -26,6 +26,14 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
+enum FileChooserMode { open, openMultiple, save }
+
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
+class FileChooserModeEnumData {
+  late FileChooserMode value;
+}
+
 class WebResourceRequestData {
   WebResourceRequestData(
     this.url,
@@ -303,5 +311,11 @@ abstract class FileChooserParamsHostApi {
 
 @FlutterApi()
 abstract class FileChooserParamsFlutterApi {
-  void create(int instanceId, bool isCaptureEnabled);
+  void create(
+    int instanceId,
+    bool isCaptureEnabled,
+    List<String> acceptTypes,
+    FileChooserModeEnumData mode,
+    String? filenameHint,
+  );
 }
