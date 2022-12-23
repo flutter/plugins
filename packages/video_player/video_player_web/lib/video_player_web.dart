@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
+import 'src/media_stream_view.dart';
 import 'src/shims/dart_ui.dart' as ui;
 import 'src/video_player.dart';
 
@@ -76,13 +77,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
     final VideoElement videoElement = VideoElement()
       ..id = 'videoElement-$textureId'
       ..src = uri
-      ..style.border = 'none'
-      ..style.height = '100%'
-      ..style.width = '100%';
-
-    // TODO(hterkelsen): Use initialization parameters once they are available
-    ui.platformViewRegistry.registerViewFactory(
-        'videoPlayer-$textureId', (int viewId) => videoElement);
+      ..crossOrigin = 'anonymous';
 
     final VideoPlayer player = VideoPlayer(videoElement: videoElement)
       ..initialize();
@@ -140,7 +135,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 
   @override
   Widget buildView(int textureId) {
-    return HtmlElementView(viewType: 'videoPlayer-$textureId');
+    return MediaStreamView(mediaStream: _player(textureId).capturedStream);
   }
 
   /// Sets the audio mode to mix with other sources (ignored)

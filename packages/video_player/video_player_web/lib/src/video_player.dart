@@ -52,6 +52,9 @@ class VideoPlayer {
   /// Returns the [Stream] of [VideoEvent]s from the inner [html.VideoElement].
   Stream<VideoEvent> get events => _eventController.stream;
 
+  /// Returns the captured [html.MediaStream] from the inner [html.VideoElement].
+  late final html.MediaStream capturedStream = _videoElement.captureStream();
+
   /// Initializes the wrapped [html.VideoElement].
   ///
   /// This method sets the required DOM attributes so videos can [play] programmatically,
