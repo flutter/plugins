@@ -398,7 +398,7 @@ class _PlayerVideoAndPopPageState extends State<_PlayerVideoAndPopPage> {
         VideoPlayerController.asset('assets/Butterfly-209.mp4');
     _videoPlayerController.addListener(() {
       if (startedPlaying && !_videoPlayerController.value.isPlaying) {
-        Navigator.pop(context);
+        Navigator.maybePop(context);
       }
     });
   }
