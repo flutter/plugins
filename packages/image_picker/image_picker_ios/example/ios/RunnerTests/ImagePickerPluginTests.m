@@ -397,4 +397,46 @@
   [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
+- (void)testPickImageRequestAuthorization API_AVAILABLE(ios(14)) {
+  id mockPhotoLibrary = OCMClassMock([PHPhotoLibrary class]);
+  OCMStub([mockPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite])
+      .andReturn(PHAuthorizationStatusNotDetermined);
+  OCMExpect([mockPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelReadWrite
+                                                         handler:OCMOCK_ANY]);
+
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
+
+  [plugin pickImageWithSource:[FLTSourceSpecification makeWithType:FLTSourceTypeGallery
+                                                            camera:FLTSourceCameraFront]
+                      maxSize:[[FLTMaxSize alloc] init]
+                      quality:nil
+                 fullMetadata:@YES
+                   completion:^(NSString *result, FlutterError *error){
+                   }];
+  OCMVerifyAll(mockPhotoLibrary);
+}
+
+- (void)testPickImageAuthorizationDenied API_AVAILABLE(ios(14)) {
+  id mockPhotoLibrary = OCMClassMock([PHPhotoLibrary class]);
+  OCMStub([mockPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite])
+      .andReturn(PHAuthorizationStatusDenied);
+
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
+
+  XCTestExpectation *resultExpectation = [self expectationWithDescription:@"result"];
+
+  [plugin pickImageWithSource:[FLTSourceSpecification makeWithType:FLTSourceTypeGallery
+                                                            camera:FLTSourceCameraFront]
+                      maxSize:[[FLTMaxSize alloc] init]
+                      quality:nil
+                 fullMetadata:@YES
+                   completion:^(NSString *result, FlutterError *error) {
+                     XCTAssertNil(result);
+                     XCTAssertEqualObjects(error.code, @"photo_access_denied");
+                     XCTAssertEqualObjects(error.message, @"The user did not allow photo access.");
+                     [resultExpectation fulfill];
+                   }];
+  [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
 @end
