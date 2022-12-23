@@ -39,6 +39,8 @@ void main() {
       main_file.WebResourceErrorCallback;
       // ignore: unnecessary_statements
       main_file.WebViewCookie;
+      // ignore: unnecessary_statements
+      main_file.WebResourceErrorType;
     });
   });
 }
