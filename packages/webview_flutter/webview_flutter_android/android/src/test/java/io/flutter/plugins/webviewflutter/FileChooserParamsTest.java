@@ -1,17 +1,18 @@
 package io.flutter.plugins.webviewflutter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.webkit.WebChromeClient;
+import android.net.Uri;
 import android.webkit.WebChromeClient.FileChooserParams;
-
-import androidx.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +24,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import io.flutter.plugin.common.BinaryMessenger;
@@ -69,5 +72,47 @@ public class FileChooserParamsTest {
         eq("filenameHint"),
         any());
     assertEquals(modeCaptor.getValue().getValue(), GeneratedAndroidWebView.FileChooserMode.OPEN_MULTIPLE);
+  }
+
+  @Test
+  public void activityResultIsSetInPlugin() {
+
+  }
+
+  @Test
+  public void openFilePickerForResult() {
+    final FileChooserParamsHostApiImpl.FileChooserParamsProxy mockFileChooserParamsProxy = mock(FileChooserParamsHostApiImpl.FileChooserParamsProxy.class);
+    final FileChooserParamsHostApiImpl hostApi =
+        new FileChooserParamsHostApiImpl(instanceManager, mockFileChooserParamsProxy);
+
+    final Activity mockActivity = mock(Activity.class);
+    hostApi.setActivity(mockActivity);
+
+    final Intent mockIntent = mock(Intent.class);
+    when(mockFileChooserParams.createIntent()).thenReturn(mockIntent);
+    instanceManager.addDartCreatedInstance(mockFileChooserParams, 0);
+
+    final String[] successResult = new String[1];
+    hostApi.openFilePickerForResult(0L, new GeneratedAndroidWebView.Result<List<String>>() {
+      @Override
+      public void success(List<String> result) {
+        assertEquals(result.size(), 1);
+        successResult[0] = result.get(0);
+      }
+
+      @Override
+      public void error(Throwable error) {
+
+      }
+    });
+    verify(mockActivity).startActivityForResult(mockIntent, 0);
+
+    final Uri mockUri = mock(Uri.class);
+    when(mockUri.toString()).thenReturn("my/file");
+
+    when(mockFileChooserParamsProxy.parseResult(0, mockIntent)).thenReturn(new Uri[]{mockUri});
+    hostApi.getActivityResultListener().onActivityResult(0, 0, mockIntent);
+
+    assertEquals(successResult[0], "my/file");
   }
 }
