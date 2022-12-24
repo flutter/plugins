@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import static org.junit.Assert.assertEquals;
@@ -20,6 +24,7 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.platform.PlatformViewRegistry;
 import io.flutter.plugins.webviewflutter.utils.TestUtils;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.junit.After;
@@ -122,19 +127,11 @@ public class FileChooserParamsTest {
     when(mockFileChooserParams.createIntent()).thenReturn(mockIntent);
     instanceManager.addDartCreatedInstance(mockFileChooserParams, 0);
 
-    final String[] successResult = new String[1];
+    //noinspection unchecked
+    final GeneratedAndroidWebView.Result<List<String>> mockResult =
+        mock(GeneratedAndroidWebView.Result.class);
     hostApi.openFilePickerForResult(
-        0L,
-        new GeneratedAndroidWebView.Result<List<String>>() {
-          @Override
-          public void success(List<String> result) {
-            assertEquals(result.size(), 1);
-            successResult[0] = result.get(0);
-          }
-
-          @Override
-          public void error(Throwable error) {}
-        });
+        0L, mockResult);
     verify(mockActivity).startActivityForResult(mockIntent, 0);
 
     final Uri mockUri = mock(Uri.class);
@@ -143,7 +140,7 @@ public class FileChooserParamsTest {
     when(mockFileChooserParamsProxy.parseResult(0, mockIntent)).thenReturn(new Uri[] {mockUri});
     hostApi.getActivityResultListener().onActivityResult(0, 0, mockIntent);
 
-    assertEquals(successResult[0], "my/file");
+    verify(mockResult).success(Collections.singletonList("my/file"));
   }
 
   @Test
