@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Host api implementation for {@link android.webkit.WebChromeClient.FileChooserParams}.
+ *
+ * <p>Handles creating {@link android.webkit.WebChromeClient.FileChooserParams}s that intercommunicate with a paired Dart object.
+ */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FileChooserParamsHostApiImpl
     implements GeneratedAndroidWebView.FileChooserParamsHostApi {
@@ -77,6 +82,11 @@ public class FileChooserParamsHostApiImpl
     return activityResultListener;
   }
 
+  /**
+   * Sets the activity to handle intents.
+   *
+   * @param activity the desired activity
+   */
   public void setActivity(@Nullable Activity activity) {
     this.activity = activity;
   }

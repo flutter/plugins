@@ -6,6 +6,11 @@ import androidx.annotation.RequiresApi;
 import io.flutter.plugin.common.BinaryMessenger;
 import java.util.Arrays;
 
+/**
+ * Flutter Api implementation for {@link android.webkit.WebChromeClient.FileChooserParams}.
+ *
+ * <p>Passes arguments of callbacks methods from a {@link android.webkit.WebChromeClient.FileChooserParams} to Dart.
+ */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FileChooserParamsFlutterApiImpl
     extends GeneratedAndroidWebView.FileChooserParamsFlutterApi {
@@ -44,6 +49,9 @@ public class FileChooserParamsFlutterApiImpl
     return builder.build();
   }
 
+  /**
+   * Stores the FileChooserParams instance and notifies Dart to create a new FileChooserParams instance that is attached to this one.
+   */
   public long create(WebChromeClient.FileChooserParams instance, Reply<Void> callback) {
     final long instanceId = instanceManager.addHostCreatedInstance(instance);
     create(

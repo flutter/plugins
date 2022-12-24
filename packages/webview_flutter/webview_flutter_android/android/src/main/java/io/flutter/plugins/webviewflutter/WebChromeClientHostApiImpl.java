@@ -56,12 +56,15 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
         WebView webView,
         ValueCallback<Uri[]> filePathCallback,
         FileChooserParams fileChooserParams) {
+      final boolean currentReturnValueForOnShowFileChooser = returnValueForOnShowFileChooser;
       flutterApi.onShowFileChooser(
           this,
           webView,
           fileChooserParams,
           reply -> {
-            if (returnValueForOnShowFileChooser) {
+            // The returned list of file paths can only be passed to `filePathCallback` if the
+            // `onShowFileChooser` method returned true.
+            if (currentReturnValueForOnShowFileChooser) {
               final Uri[] filePaths = new Uri[reply.size()];
               for (int i = 0; i < reply.size(); i++) {
                 filePaths[i] = Uri.parse(reply.get(i));
@@ -69,7 +72,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
               filePathCallback.onReceiveValue(filePaths);
             }
           });
-      return returnValueForOnShowFileChooser;
+      return currentReturnValueForOnShowFileChooser;
     }
 
     /** Sets return value for {@link #onShowFileChooser}. */

@@ -46,6 +46,7 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
         getIdentifierForClient(webChromeClient), webViewIdentifier, progress, callback);
   }
 
+  /** Passes arguments from {@link WebChromeClient#onShowFileChooser} to Dart. */
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public void onShowFileChooser(
       WebChromeClient webChromeClient,
