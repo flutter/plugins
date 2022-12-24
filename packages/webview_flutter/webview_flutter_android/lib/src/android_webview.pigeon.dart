@@ -10,9 +10,24 @@ import 'dart:typed_data' show Float64List, Int32List, Int64List, Uint8List;
 import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
 
+/// Mode of how to select files for a file chooser.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
 enum FileChooserMode {
+  /// Open single file and requires that the file exists before allowing the
+  /// user to pick it.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN.
   open,
+
+  /// Similar to [open] but allows multiple files to be selected.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN_MULTIPLE.
   openMultiple,
+
+  /// Allows picking a nonexistent file and saving it.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_SAVE.
   save,
 }
 
@@ -1903,6 +1918,9 @@ class WebStorageHostApi {
   }
 }
 
+/// Handles methods calls to the native Java FileChooserParams class.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
 class FileChooserParamsHostApi {
   /// Constructor for [FileChooserParamsHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
@@ -1966,6 +1984,9 @@ class _FileChooserParamsFlutterApiCodec extends StandardMessageCodec {
   }
 }
 
+/// Handles callbacks methods for the native Java FileChooserParams class.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
 abstract class FileChooserParamsFlutterApi {
   static const MessageCodec<Object?> codec =
       _FileChooserParamsFlutterApiCodec();

@@ -17,7 +17,8 @@ import java.util.Objects;
 /**
  * Host api implementation for {@link android.webkit.WebChromeClient.FileChooserParams}.
  *
- * <p>Handles creating {@link android.webkit.WebChromeClient.FileChooserParams}s that intercommunicate with a paired Dart object.
+ * <p>Handles creating {@link android.webkit.WebChromeClient.FileChooserParams}s that
+ * intercommunicate with a paired Dart object.
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FileChooserParamsHostApiImpl

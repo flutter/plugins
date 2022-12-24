@@ -305,17 +305,20 @@ class MockTestWebChromeClientHostApi extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  List<String?>? setSynchronousReturnValueForOnShowFileChooser(
+  void setSynchronousReturnValueForOnShowFileChooser(
     int? instanceId,
     bool? value,
   ) =>
-      (super.noSuchMethod(Invocation.method(
-        #setSynchronousReturnValueForOnShowFileChooser,
-        [
-          instanceId,
-          value,
-        ],
-      )) as List<String?>?);
+      super.noSuchMethod(
+        Invocation.method(
+          #setSynchronousReturnValueForOnShowFileChooser,
+          [
+            instanceId,
+            value,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
 }
 
 /// A class which mocks [TestWebSettingsHostApi].

@@ -26,7 +26,27 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
-enum FileChooserMode { open, openMultiple, save }
+
+/// Mode of how to select files for a file chooser.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
+enum FileChooserMode {
+  /// Open single file and requires that the file exists before allowing the
+  /// user to pick it.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN.
+  open,
+
+  /// Similar to [open] but allows multiple files to be selected.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN_MULTIPLE.
+  openMultiple,
+
+  /// Allows picking a nonexistent file and saving it.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_SAVE.
+  save,
+}
 
 // TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
 // be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
@@ -303,12 +323,18 @@ abstract class WebStorageHostApi {
   void deleteAllData(int instanceId);
 }
 
+/// Handles methods calls to the native Java FileChooserParams class.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
 @HostApi(dartHostTestHandler: 'TestFileChooserParamsHostApi')
 abstract class FileChooserParamsHostApi {
   @async
   List<String> openFilePickerForResult(int instanceId);
 }
 
+/// Handles callbacks methods for the native Java FileChooserParams class.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
 @FlutterApi()
 abstract class FileChooserParamsFlutterApi {
   void create(

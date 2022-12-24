@@ -1290,6 +1290,9 @@ abstract class TestWebStorageHostApi {
   }
 }
 
+/// Handles methods calls to the native Java FileChooserParams class.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
 abstract class TestFileChooserParamsHostApi {
   static const MessageCodec<Object?> codec = StandardMessageCodec();
 

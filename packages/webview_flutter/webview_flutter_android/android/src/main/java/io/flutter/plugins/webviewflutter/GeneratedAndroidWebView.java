@@ -25,9 +25,33 @@ import java.util.Map;
 @SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression"})
 public class GeneratedAndroidWebView {
 
+  /**
+   * Mode of how to select files for a file chooser.
+   *
+   * <p>See
+   * https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
+   */
   public enum FileChooserMode {
+    /**
+     * Open single file and requires that the file exists before allowing the user to pick it.
+     *
+     * <p>See
+     * https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN.
+     */
     OPEN(0),
+    /**
+     * Similar to [open] but allows multiple files to be selected.
+     *
+     * <p>See
+     * https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN_MULTIPLE.
+     */
     OPEN_MULTIPLE(1),
+    /**
+     * Allows picking a nonexistent file and saving it.
+     *
+     * <p>See
+     * https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_SAVE.
+     */
     SAVE(2);
 
     private final int index;
@@ -2691,7 +2715,14 @@ public class GeneratedAndroidWebView {
       }
     }
   }
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  /**
+   * Handles methods calls to the native Java FileChooserParams class.
+   *
+   * <p>See
+   * https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
+   *
+   * <p>Generated interface from Pigeon that represents a handler of messages from Flutter.
+   */
   public interface FileChooserParamsHostApi {
     void openFilePickerForResult(@NonNull Long instanceId, Result<List<String>> result);
 
@@ -2776,7 +2807,14 @@ public class GeneratedAndroidWebView {
     }
   }
 
-  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  /**
+   * Handles callbacks methods for the native Java FileChooserParams class.
+   *
+   * <p>See
+   * https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
+   *
+   * <p>Generated class from Pigeon that represents Flutter messages that can be called from Java.
+   */
   public static class FileChooserParamsFlutterApi {
     private final BinaryMessenger binaryMessenger;
 

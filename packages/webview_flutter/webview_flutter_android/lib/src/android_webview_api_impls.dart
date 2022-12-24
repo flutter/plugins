@@ -13,6 +13,8 @@ import 'android_webview.dart';
 import 'android_webview.pigeon.dart';
 import 'instance_manager.dart';
 
+export 'android_webview.pigeon.dart' show FileChooserMode;
+
 /// Converts [WebResourceRequestData] to [WebResourceRequest]
 WebResourceRequest _toWebResourceRequest(WebResourceRequestData data) {
   return WebResourceRequest(

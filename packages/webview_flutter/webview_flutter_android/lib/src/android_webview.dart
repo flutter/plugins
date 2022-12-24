@@ -20,7 +20,7 @@ import 'android_webview.pigeon.dart';
 import 'android_webview_api_impls.dart';
 import 'instance_manager.dart';
 
-export 'android_webview.pigeon.dart' show FileChooserMode;
+export 'android_webview_api_impls.dart' show FileChooserMode;
 
 /// Root of the Java class hierarchy.
 ///
@@ -976,7 +976,7 @@ class FileChooserParams extends JavaObject {
   /// The file name of a default selection if specified, or null.
   final String? filenameHint;
 
-  /// Mode of which the file path/s will be used.
+  /// Mode of how to select files for a file chooser.
   final FileChooserMode mode;
 
   /// Start a generic file picker for file selection.
