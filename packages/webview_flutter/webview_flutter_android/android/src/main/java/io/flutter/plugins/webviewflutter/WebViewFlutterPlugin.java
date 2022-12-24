@@ -18,6 +18,7 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformViewRegistry;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.CookieManagerHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.FileChooserParamsHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.FlutterAssetManagerHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaObjectHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelHostApi;
@@ -26,7 +27,6 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHost
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.FileChooserParamsHostApi;
 
 /**
  * Java platform implementation of the webview_flutter plugin.
@@ -67,16 +67,18 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   @SuppressWarnings({"unused", "deprecation"})
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final WebViewFlutterPlugin plugin = new WebViewFlutterPlugin();
-        plugin.setUp(
-            registrar.messenger(),
-            registrar.platformViewRegistry(),
-            registrar.activity(),
-            registrar.view(),
-            new FlutterAssetManager.RegistrarFlutterAssetManager(
-                registrar.context().getAssets(), registrar));
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && plugin.fileChooserParamsHostApi != null) {
+    plugin.setUp(
+        registrar.messenger(),
+        registrar.platformViewRegistry(),
+        registrar.activity(),
+        registrar.view(),
+        new FlutterAssetManager.RegistrarFlutterAssetManager(
+            registrar.context().getAssets(), registrar));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+        && plugin.fileChooserParamsHostApi != null) {
       plugin.fileChooserParamsHostApi.setActivity(registrar.activity());
-      registrar.addActivityResultListener(plugin.fileChooserParamsHostApi.getActivityResultListener());
+      registrar.addActivityResultListener(
+          plugin.fileChooserParamsHostApi.getActivityResultListener());
     }
   }
 
@@ -201,7 +203,8 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && fileChooserParamsHostApi != null) {
       if (activityPluginBinding != null) {
         fileChooserParamsHostApi.setActivity(activityPluginBinding.getActivity());
-        activityPluginBinding.addActivityResultListener(fileChooserParamsHostApi.getActivityResultListener());
+        activityPluginBinding.addActivityResultListener(
+            fileChooserParamsHostApi.getActivityResultListener());
       } else {
         fileChooserParamsHostApi.setActivity(null);
       }

@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
@@ -17,11 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
-
-import java.util.Objects;
-
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
+import java.util.Objects;
 
 /**
  * Host api implementation for {@link WebChromeClient}.
@@ -56,16 +52,23 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-      flutterApi.onShowFileChooser(this, webView, fileChooserParams, reply -> {
-        if (returnValueForOnShowFileChooser) {
-          final Uri[] filePaths = new Uri[reply.size()];
-          for (int i = 0; i < reply.size(); i++) {
-            filePaths[i] = Uri.parse(reply.get(i));
-          }
-          filePathCallback.onReceiveValue(filePaths);
-        }
-      });
+    public boolean onShowFileChooser(
+        WebView webView,
+        ValueCallback<Uri[]> filePathCallback,
+        FileChooserParams fileChooserParams) {
+      flutterApi.onShowFileChooser(
+          this,
+          webView,
+          fileChooserParams,
+          reply -> {
+            if (returnValueForOnShowFileChooser) {
+              final Uri[] filePaths = new Uri[reply.size()];
+              for (int i = 0; i < reply.size(); i++) {
+                filePaths[i] = Uri.parse(reply.get(i));
+              }
+              filePathCallback.onReceiveValue(filePaths);
+            }
+          });
       return returnValueForOnShowFileChooser;
     }
 
@@ -193,8 +196,10 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
   }
 
   @Override
-  public void setSynchronousReturnValueForOnShowFileChooser(@NonNull Long instanceId, @NonNull Boolean value) {
-    final WebChromeClientImpl webChromeClient = (WebChromeClientImpl) instanceManager.getInstance(instanceId);
+  public void setSynchronousReturnValueForOnShowFileChooser(
+      @NonNull Long instanceId, @NonNull Boolean value) {
+    final WebChromeClientImpl webChromeClient =
+        (WebChromeClientImpl) instanceManager.getInstance(instanceId);
     Objects.requireNonNull(webChromeClient).setReturnValueForOnShowFileChooser(value);
   }
 }

@@ -4,19 +4,14 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.net.Uri;
 import android.os.Build;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-
 import androidx.annotation.RequiresApi;
-
-import java.util.List;
-import java.util.Objects;
-
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientFlutterApi;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Flutter Api implementation for {@link WebChromeClient}.
@@ -52,20 +47,23 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
   }
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-  public void onShowFileChooser(WebChromeClient webChromeClient,
-                                WebView webView,
-                                WebChromeClient.FileChooserParams fileChooserParams,
-                                Reply<List<String>> callback) {
+  public void onShowFileChooser(
+      WebChromeClient webChromeClient,
+      WebView webView,
+      WebChromeClient.FileChooserParams fileChooserParams,
+      Reply<List<String>> callback) {
     Long paramsInstanceId = instanceManager.getIdentifierForStrongReference(fileChooserParams);
     if (paramsInstanceId == null) {
       final FileChooserParamsFlutterApiImpl flutterApi =
           new FileChooserParamsFlutterApiImpl(binaryMessenger, instanceManager);
       paramsInstanceId = flutterApi.create(fileChooserParams, reply -> {});
     }
-    onShowFileChooser(Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webChromeClient)),
-        Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webView)), paramsInstanceId, callback);
+    onShowFileChooser(
+        Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webChromeClient)),
+        Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webView)),
+        paramsInstanceId,
+        callback);
   }
-
 
   private long getIdentifierForClient(WebChromeClient webChromeClient) {
     final Long identifier = instanceManager.getIdentifierForStrongReference(webChromeClient);

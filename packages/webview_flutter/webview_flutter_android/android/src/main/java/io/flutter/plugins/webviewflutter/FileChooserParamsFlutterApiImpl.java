@@ -2,18 +2,13 @@ package io.flutter.plugins.webviewflutter;
 
 import android.os.Build;
 import android.webkit.WebChromeClient;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
-import java.util.Arrays;
-import java.util.List;
-
 import io.flutter.plugin.common.BinaryMessenger;
+import java.util.Arrays;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class FileChooserParamsFlutterApiImpl extends GeneratedAndroidWebView.FileChooserParamsFlutterApi {
+public class FileChooserParamsFlutterApiImpl
+    extends GeneratedAndroidWebView.FileChooserParamsFlutterApi {
   private final InstanceManager instanceManager;
 
   /**
@@ -28,11 +23,11 @@ public class FileChooserParamsFlutterApiImpl extends GeneratedAndroidWebView.Fil
     this.instanceManager = instanceManager;
   }
 
-  static private GeneratedAndroidWebView.FileChooserModeEnumData toFileChooserEnumData(int mode) {
+  private static GeneratedAndroidWebView.FileChooserModeEnumData toFileChooserEnumData(int mode) {
     final GeneratedAndroidWebView.FileChooserModeEnumData.Builder builder =
         new GeneratedAndroidWebView.FileChooserModeEnumData.Builder();
 
-    switch(mode) {
+    switch (mode) {
       case WebChromeClient.FileChooserParams.MODE_OPEN:
         builder.setValue(GeneratedAndroidWebView.FileChooserMode.OPEN);
         break;
@@ -51,7 +46,8 @@ public class FileChooserParamsFlutterApiImpl extends GeneratedAndroidWebView.Fil
 
   public long create(WebChromeClient.FileChooserParams instance, Reply<Void> callback) {
     final long instanceId = instanceManager.addHostCreatedInstance(instance);
-    create(instanceId,
+    create(
+        instanceId,
         instance.isCaptureEnabled(),
         Arrays.asList(instance.getAcceptTypes()),
         toFileChooserEnumData(instance.getMode()),
