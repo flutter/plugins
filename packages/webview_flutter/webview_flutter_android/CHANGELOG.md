@@ -1,3 +1,8 @@
+## 3.1.2
+
+* Adds support for receiving Java callback `WebChromeClient.onShowFileChooser` with internal class.
+* Updates pigeon dev dependency to `4.2.14`.
+
 ## 3.1.1
 
 * Fixes bug where a `AndroidNavigationDelegate` was required to load a request.
