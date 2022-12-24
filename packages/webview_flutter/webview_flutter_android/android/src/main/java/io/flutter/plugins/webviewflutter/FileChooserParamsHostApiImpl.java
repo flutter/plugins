@@ -68,17 +68,24 @@ public class FileChooserParamsHostApiImpl
   @Override
   public void openFilePickerForResult(
       @NonNull Long instanceId, GeneratedAndroidWebView.Result<List<String>> result) {
-    final WebChromeClient.FileChooserParams instance =
-        Objects.requireNonNull(instanceManager.getInstance(instanceId));
     if (activity == null) {
       throw new IllegalStateException("Activity has not been set.");
     } else if (pendingResult != null) {
       throw new IllegalStateException("A file picker result is already pending.");
     }
+
+    final WebChromeClient.FileChooserParams instance =
+        Objects.requireNonNull(instanceManager.getInstance(instanceId));
+
     pendingResult = result;
     activity.startActivityForResult(instance.createIntent(), SHOW_FILE_CHOOSER_REQUEST);
   }
 
+  /**
+   * The listener that handles returned values from activities opened for results.
+   *
+   * @return the result listener of this Flutter API
+   */
   public PluginRegistry.ActivityResultListener getActivityResultListener() {
     return activityResultListener;
   }
@@ -86,7 +93,7 @@ public class FileChooserParamsHostApiImpl
   /**
    * Sets the activity to handle intents.
    *
-   * @param activity the desired activity
+   * @param activity the desired activity to handle intents
    */
   public void setActivity(@Nullable Activity activity) {
     this.activity = activity;

@@ -53,6 +53,8 @@ public class FileChooserParamsFlutterApiImpl
   /**
    * Stores the FileChooserParams instance and notifies Dart to create a new FileChooserParams
    * instance that is attached to this one.
+   *
+   * @return the instanceId of the stored instance
    */
   public long create(WebChromeClient.FileChooserParams instance, Reply<Void> callback) {
     final long instanceId = instanceManager.addHostCreatedInstance(instance);

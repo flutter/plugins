@@ -201,8 +201,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
   @Override
   public void setSynchronousReturnValueForOnShowFileChooser(
       @NonNull Long instanceId, @NonNull Boolean value) {
-    final WebChromeClientImpl webChromeClient =
-        (WebChromeClientImpl) instanceManager.getInstance(instanceId);
-    Objects.requireNonNull(webChromeClient).setReturnValueForOnShowFileChooser(value);
+    final WebChromeClientImpl webChromeClient = Objects.requireNonNull(instanceManager.getInstance(instanceId));
+    webChromeClient.setReturnValueForOnShowFileChooser(value);
   }
 }
