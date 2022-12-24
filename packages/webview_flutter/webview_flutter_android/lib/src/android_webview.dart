@@ -981,6 +981,10 @@ class FileChooserParams extends JavaObject {
 
   /// Start a generic file picker for file selection.
   ///
+  /// This method isn't a part of the Java `FileChooserParams` class. It is a
+  /// helper method that creates an Android `Intent` from this object and starts
+  /// a file picker activity to choose files.
+  ///
   /// Throws [PlatformException] if the request was canceled or failed.
   ///
   /// Returns a list of file paths.
