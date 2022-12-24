@@ -242,6 +242,26 @@ class MockTestDownloadListenerHostApi extends _i1.Mock
       );
 }
 
+/// A class which mocks [TestFileChooserParamsHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestFileChooserParamsHostApi extends _i1.Mock
+    implements _i6.TestFileChooserParamsHostApi {
+  MockTestFileChooserParamsHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i5.Future<List<String?>> openFilePickerForResult(int? instanceId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #openFilePickerForResult,
+          [instanceId],
+        ),
+        returnValue: _i5.Future<List<String?>>.value(<String?>[]),
+      ) as _i5.Future<List<String?>>);
+}
+
 /// A class which mocks [TestJavaObjectHostApi].
 ///
 /// See the documentation for Mockito's code generation for more information.

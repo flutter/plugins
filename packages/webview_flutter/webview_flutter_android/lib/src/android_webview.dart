@@ -987,6 +987,16 @@ class FileChooserParams extends JavaObject {
   Future<List<String>> openFilePickerForResult() {
     return _fileChooserParamsApi.openFilePickerForResultFromInstance(this);
   }
+
+  @override
+  FileChooserParams copy() {
+    return FileChooserParams.detached(
+      isCaptureEnabled: isCaptureEnabled,
+      acceptTypes: acceptTypes,
+      filenameHint: filenameHint,
+      mode: mode,
+    );
+  }
 }
 
 /// Encompasses parameters to the [WebViewClient.requestLoading] method.
