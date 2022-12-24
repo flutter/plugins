@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
-
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +64,8 @@ public class FileChooserParamsHostApiImpl
   }
 
   /**
-   * Creates a host API that handles method calls from Dart for {@link android.webkit.WebChromeClient.FileChooserParams}s.
+   * Creates a host API that handles method calls from Dart for {@link
+   * android.webkit.WebChromeClient.FileChooserParams}s.
    *
    * @param instanceManager maintains instances stored to communicate with Dart objects
    */
@@ -74,13 +74,16 @@ public class FileChooserParamsHostApiImpl
   }
 
   /**
-   * Creates a test host API that handles method calls from Dart for {@link android.webkit.WebChromeClient.FileChooserParams}s.
+   * Creates a test host API that handles method calls from Dart for {@link
+   * android.webkit.WebChromeClient.FileChooserParams}s.
    *
    * @param instanceManager maintains instances stored to communicate with Dart objects
-   * @param fileChooserParamsProxy handles static methods for {@link android.webkit.WebChromeClient.FileChooserParams}.
+   * @param fileChooserParamsProxy handles static methods for {@link
+   *     android.webkit.WebChromeClient.FileChooserParams}.
    */
   @VisibleForTesting
-  public FileChooserParamsHostApiImpl(InstanceManager instanceManager, FileChooserParamsProxy fileChooserParamsProxy) {
+  public FileChooserParamsHostApiImpl(
+      InstanceManager instanceManager, FileChooserParamsProxy fileChooserParamsProxy) {
     this.instanceManager = instanceManager;
     this.fileChooserParamsProxy = fileChooserParamsProxy;
   }
