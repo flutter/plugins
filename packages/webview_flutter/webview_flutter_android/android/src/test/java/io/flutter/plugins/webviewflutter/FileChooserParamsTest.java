@@ -130,8 +130,7 @@ public class FileChooserParamsTest {
     //noinspection unchecked
     final GeneratedAndroidWebView.Result<List<String>> mockResult =
         mock(GeneratedAndroidWebView.Result.class);
-    hostApi.openFilePickerForResult(
-        0L, mockResult);
+    hostApi.openFilePickerForResult(0L, mockResult);
     verify(mockActivity).startActivityForResult(mockIntent, 0);
 
     final Uri mockUri = mock(Uri.class);
