@@ -485,6 +485,25 @@ void main() {
           expect(controller.trafficLayer, isNotNull);
         });
       });
+
+      group('My Location button', () {
+        testWidgets('by default is disabled', (WidgetTester tester) async {
+          controller = createController();
+          controller.init();
+          expect(controller.myLocationButton, isNull);
+        });
+
+        testWidgets('initializes with my location button',
+            (WidgetTester tester) async {
+          controller = createController(
+              mapConfiguration: const MapConfiguration(
+            myLocationEnabled: true,
+          ));
+          controller.debugSetOverrides(createMap: (_, __) => map);
+          controller.init();
+          expect(controller.myLocationButton, isNotNull);
+        });
+      });
     });
 
     // These are the methods that are delegated to the gmaps.GMap object, that we can mock...

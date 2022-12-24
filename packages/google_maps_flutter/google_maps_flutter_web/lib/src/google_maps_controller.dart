@@ -9,6 +9,10 @@ part of google_maps_flutter_web;
 typedef DebugCreateMapFunction = gmaps.GMap Function(
     HtmlElement div, gmaps.MapOptions options);
 
+/// Type used when passing an override to the _getCurrentLocation function.
+@visibleForTesting
+typedef DebugGetCurrentLocation = Future<LatLng> Function();
+
 /// Encapsulates a [gmaps.GMap], its events, and where in the DOM it's rendered.
 class GoogleMapController {
   /// Initializes the GMap, and the sub-controllers related to it. Wires events.
@@ -64,6 +68,7 @@ class GoogleMapController {
   // The Flutter widget that contains the rendered Map.
   HtmlElementView? _widget;
   late HtmlElement _div;
+  late HtmlElement _myLocationButton;
 
   /// The Flutter widget that will contain the rendered Map. Used for caching.
   Widget? get widget {
@@ -74,6 +79,10 @@ class GoogleMapController {
     }
     return _widget;
   }
+
+  /// A getter for the my location button
+  @visibleForTesting
+  HtmlElement? get myLocationButton => _myLocationButton;
 
   // The currently-enabled traffic layer.
   gmaps.TrafficLayer? _trafficLayer;
@@ -114,13 +123,18 @@ class GoogleMapController {
     CirclesController? circles,
     PolygonsController? polygons,
     PolylinesController? polylines,
+    DebugGetCurrentLocation? getCurrentLocation,
   }) {
     _overrideCreateMap = createMap;
     _markersController = markers ?? _markersController;
     _circlesController = circles ?? _circlesController;
     _polygonsController = polygons ?? _polygonsController;
     _polylinesController = polylines ?? _polylinesController;
+    _overrideGetCurrentLocation = getCurrentLocation;
   }
+
+  // Get current location
+  DebugGetCurrentLocation? _overrideGetCurrentLocation;
 
   DebugCreateMapFunction? _overrideCreateMap;
 
@@ -178,6 +192,7 @@ class GoogleMapController {
     );
 
     _setTrafficLayer(map, _lastMapConfiguration.trafficEnabled ?? false);
+
     if (_lastMapConfiguration.myLocationEnabled! &&
         _lastMapConfiguration.myLocationButtonEnabled!) {
       _addMyLocationButton(map);
@@ -422,7 +437,7 @@ class GoogleMapController {
   }
 
   // Add My Location widget to right bottom
-  void _addMyLocationButton(gmaps.GMap map) {
+  HtmlElement _createMyLocationButton() {
     final HtmlElement controlDiv = DivElement();
     controlDiv.style.marginRight = '10px';
 
@@ -467,31 +482,50 @@ class GoogleMapController {
       });
     });
 
-    map.addListener('dragend', () {
-      document.getElementById('you_location_img')?.style.backgroundPosition =
-          '0px 0px';
-    });
+    return controlDiv;
+  }
 
-    map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]?.push(controlDiv);
+  // Get current location
+  Future<LatLng> _getCurrentLocation() async {
+    final Geoposition location =
+        await window.navigator.geolocation.getCurrentPosition();
+    return LatLng(
+      location.coords!.latitude!.toDouble(),
+      location.coords!.longitude!.toDouble(),
+    );
   }
 
   // Find and move to current location
   Future<void> _moveToCurrentLocation() async {
-    final Geoposition location =
-        await window.navigator.geolocation.getCurrentPosition();
+    LatLng location;
+    if (_overrideGetCurrentLocation != null) {
+      location = await _overrideGetCurrentLocation!.call();
+    } else {
+      location = await _getCurrentLocation();
+    }
+
     await moveCamera(
-      CameraUpdate.newLatLng(LatLng(
-        location.coords!.latitude!.toDouble(),
-        location.coords!.longitude!.toDouble(),
-      )),
+      CameraUpdate.newLatLng(location),
     );
 
     _addBlueDot(location);
   }
 
+  // Add my location to map
+  void _addMyLocationButton(gmaps.GMap map) {
+    _myLocationButton = _createMyLocationButton();
+
+    map.addListener('dragend', () {
+      document.getElementById('you_location_img')?.style.backgroundPosition =
+          '0px 0px';
+    });
+
+    map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]
+        ?.push(_myLocationButton);
+  }
+
   // Add blue dot for current location
-  Future<void> _addBlueDot(Geoposition location) async {
-    print('add blue dot');
+  Future<void> _addBlueDot(LatLng location) async {
     assert(
         _markersController != null, 'Cannot update markers after dispose().');
     final BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(
@@ -502,10 +536,7 @@ class GoogleMapController {
     _markersController?._addMarker(Marker(
       markerId: const MarkerId('my_location_blue_dot'),
       icon: icon,
-      position: LatLng(
-        location.coords!.latitude!.toDouble(),
-        location.coords!.longitude!.toDouble(),
-      ),
+      position: location,
       zIndex: 0.5,
     ));
   }
