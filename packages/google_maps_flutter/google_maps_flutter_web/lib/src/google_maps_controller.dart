@@ -68,7 +68,7 @@ class GoogleMapController {
   // The Flutter widget that contains the rendered Map.
   HtmlElementView? _widget;
   late HtmlElement _div;
-  late HtmlElement _myLocationButton;
+  HtmlElement? _myLocationButton;
 
   /// The Flutter widget that will contain the rendered Map. Used for caching.
   Widget? get widget {
@@ -193,11 +193,11 @@ class GoogleMapController {
 
     _setTrafficLayer(map, _lastMapConfiguration.trafficEnabled ?? false);
 
-    if (_lastMapConfiguration.myLocationEnabled! &&
-        _lastMapConfiguration.myLocationButtonEnabled!) {
+    if ((_lastMapConfiguration.myLocationEnabled ?? false) &&
+        (_lastMapConfiguration.myLocationButtonEnabled ?? false)) {
       _addMyLocationButton(map);
     }
-    if (_lastMapConfiguration.myLocationEnabled!) {
+    if (_lastMapConfiguration.myLocationEnabled ?? false) {
       _moveToCurrentLocation();
     }
   }
@@ -508,7 +508,7 @@ class GoogleMapController {
       CameraUpdate.newLatLng(location),
     );
 
-    _addBlueDot(location);
+    _addBlueDotMarker(location);
   }
 
   // Add my location to map
@@ -525,7 +525,7 @@ class GoogleMapController {
   }
 
   // Add blue dot for current location
-  Future<void> _addBlueDot(LatLng location) async {
+  Future<void> _addBlueDotMarker(LatLng location) async {
     assert(
         _markersController != null, 'Cannot update markers after dispose().');
     final BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(
@@ -533,12 +533,14 @@ class GoogleMapController {
       'icons/blue-dot.png',
       package: 'google_maps_flutter_web',
     );
-    _markersController?._addMarker(Marker(
-      markerId: const MarkerId('my_location_blue_dot'),
-      icon: icon,
-      position: location,
-      zIndex: 0.5,
-    ));
+    _markersController?.addMarkers(<Marker>{
+      Marker(
+        markerId: const MarkerId('my_location_blue_dot'),
+        icon: icon,
+        position: location,
+        zIndex: 0.5,
+      )
+    });
   }
 
   // Cleanup

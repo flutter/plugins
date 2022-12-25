@@ -86,10 +86,6 @@ void main() {
             initialCameraPosition: initialCameraPosition,
             textDirection: TextDirection.ltr,
           ),
-          mapConfiguration: const MapConfiguration(
-            myLocationButtonEnabled: false,
-            myLocationEnabled: false,
-          ),
         );
 
         expect(widget, isA<HtmlElementView>());
@@ -128,10 +124,6 @@ void main() {
             initialCameraPosition: initialCameraPosition,
             textDirection: TextDirection.ltr,
           ),
-          mapConfiguration: const MapConfiguration(
-            myLocationButtonEnabled: false,
-            myLocationEnabled: false,
-          ),
         );
 
         expect(widget, equals(expected));
@@ -150,10 +142,6 @@ void main() {
           widgetConfiguration: const MapWidgetConfiguration(
             initialCameraPosition: initialCameraPosition,
             textDirection: TextDirection.ltr,
-          ),
-          mapConfiguration: const MapConfiguration(
-            myLocationButtonEnabled: false,
-            myLocationEnabled: false,
           ),
         );
 

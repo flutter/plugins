@@ -486,22 +486,71 @@ void main() {
         });
       });
 
-      group('My Location button', () {
+      group('My Location', () {
         testWidgets('by default is disabled', (WidgetTester tester) async {
           controller = createController();
           controller.init();
           expect(controller.myLocationButton, isNull);
         });
 
-        testWidgets('initializes with my location button',
+        testWidgets('initializes with my location with my location button',
             (WidgetTester tester) async {
+          const LatLng currentLocation = LatLng(10.8231, 106.6297);
           controller = createController(
               mapConfiguration: const MapConfiguration(
             myLocationEnabled: true,
+            myLocationButtonEnabled: true,
           ));
-          controller.debugSetOverrides(createMap: (_, __) => map);
+          controller.debugSetOverrides(
+            createMap: (_, __) => map,
+            markers: markers,
+            getCurrentLocation: () => Future<LatLng>.value(currentLocation),
+          );
           controller.init();
+
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+
+          final Set<Marker> capturedMarkers =
+              verify(markers.addMarkers(captureAny)).captured[1] as Set<Marker>;
+
+          final gmaps.LatLng gmCenter = map.center!;
+
           expect(controller.myLocationButton, isNotNull);
+          expect(capturedMarkers.length, 1);
+          expect(capturedMarkers.first.position, currentLocation);
+          expect(capturedMarkers.first.zIndex, 0.5);
+          expect(gmCenter.lat, currentLocation.latitude);
+          expect(gmCenter.lng, currentLocation.longitude);
+        });
+
+        testWidgets('initializes with my location without my location button',
+            (WidgetTester tester) async {
+          const LatLng currentLocation = LatLng(10.8231, 106.6297);
+          controller = createController(
+              mapConfiguration: const MapConfiguration(
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+          ));
+          controller.debugSetOverrides(
+            createMap: (_, __) => map,
+            markers: markers,
+            getCurrentLocation: () => Future<LatLng>.value(currentLocation),
+          );
+          controller.init();
+
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+
+          final Set<Marker> capturedMarkers =
+              verify(markers.addMarkers(captureAny)).captured[1] as Set<Marker>;
+
+          final gmaps.LatLng gmCenter = map.center!;
+
+          expect(controller.myLocationButton, isNull);
+          expect(capturedMarkers.length, 1);
+          expect(capturedMarkers.first.position, currentLocation);
+          expect(capturedMarkers.first.zIndex, 0.5);
+          expect(gmCenter.lat, currentLocation.latitude);
+          expect(gmCenter.lng, currentLocation.longitude);
         });
       });
     });
