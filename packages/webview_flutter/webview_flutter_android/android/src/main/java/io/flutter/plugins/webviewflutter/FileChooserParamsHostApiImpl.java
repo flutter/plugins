@@ -61,6 +61,10 @@ public class FileChooserParamsHostApiImpl
         }
       };
 
+  /**
+   * Proxy for static methods called on {@link android.webkit.WebChromeClient.FileChooserParams}.
+   */
+  @VisibleForTesting
   public static class FileChooserParamsProxy {
     public Uri[] parseResult(int resultCode, Intent data) {
       return WebChromeClient.FileChooserParams.parseResult(resultCode, data);
