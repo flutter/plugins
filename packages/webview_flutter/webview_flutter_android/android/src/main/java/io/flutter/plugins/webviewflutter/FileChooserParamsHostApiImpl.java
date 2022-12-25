@@ -21,8 +21,8 @@ import java.util.Objects;
 /**
  * Host api implementation for {@link android.webkit.WebChromeClient.FileChooserParams}.
  *
- * <p>Handles creating {@link android.webkit.WebChromeClient.FileChooserParams}s that
- * intercommunicate with a paired Dart object.
+ * <p>Handles receiving method calls from Dart that call methods on an attached {@link
+ * android.webkit.WebChromeClient.FileChooserParams}.
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FileChooserParamsHostApiImpl
@@ -61,9 +61,7 @@ public class FileChooserParamsHostApiImpl
         }
       };
 
-  /**
-   * Proxy for {@link android.webkit.WebChromeClient.FileChooserParams} static methods.
-   */
+  /** Proxy for {@link android.webkit.WebChromeClient.FileChooserParams} static methods. */
   @VisibleForTesting
   public static class FileChooserParamsProxy {
     public Uri[] parseResult(int resultCode, Intent data) {
