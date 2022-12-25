@@ -41,7 +41,7 @@ double _getCssOpacity(Color color) {
 // myLocationEnabled needs to be built through dart:html navigator.geolocation
 //   See: https://api.dart.dev/stable/2.8.4/dart-html/Geolocation-class.html
 // trafficEnabled is handled when creating the GMap object, since it needs to be added as a layer.
-// trackCameraPosition is just a boolan value that indicates if the map has an onCameraMove handler.
+// trackCameraPosition is just a boolean value that indicates if the map has an onCameraMove handler.
 // indoorViewEnabled seems to not have an equivalent in web
 // buildingsEnabled seems to not have an equivalent in web
 // padding seems to behave differently in web than mobile. You can't move UI elements in web.
