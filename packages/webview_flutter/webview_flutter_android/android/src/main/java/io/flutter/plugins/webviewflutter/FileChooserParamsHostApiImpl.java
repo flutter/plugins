@@ -62,7 +62,7 @@ public class FileChooserParamsHostApiImpl
       };
 
   /**
-   * Proxy for static methods called on {@link android.webkit.WebChromeClient.FileChooserParams}.
+   * Proxy for {@link android.webkit.WebChromeClient.FileChooserParams} static methods.
    */
   @VisibleForTesting
   public static class FileChooserParamsProxy {
