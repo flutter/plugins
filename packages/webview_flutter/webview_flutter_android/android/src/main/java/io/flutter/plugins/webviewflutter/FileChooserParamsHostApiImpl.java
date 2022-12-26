@@ -41,6 +41,10 @@ public class FileChooserParamsHostApiImpl
         @Override
         public boolean onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
           if (requestCode == SHOW_FILE_CHOOSER_REQUEST) {
+            final GeneratedAndroidWebView.Result<List<String>> pendingResult =
+                Objects.requireNonNull(pendingFileChooserResult);
+            pendingFileChooserResult = null;
+
             final Uri[] result = fileChooserParamsProxy.parseResult(resultCode, data);
 
             if (result != null) {
@@ -48,12 +52,11 @@ public class FileChooserParamsHostApiImpl
               for (Uri uri : result) {
                 filePaths.add(uri.toString());
               }
-              pendingFileChooserResult.success(filePaths);
+              pendingResult.success(filePaths);
             } else {
-              pendingFileChooserResult.error(new Exception("Request cancelled or failed."));
+              pendingResult.error(new Exception("Request cancelled or failed."));
             }
 
-            pendingFileChooserResult = null;
             return true;
           }
 
