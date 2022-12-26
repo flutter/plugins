@@ -1,3 +1,7 @@
+## 0.10.1+1
+
+* Remove unnecessary `Container`
+
 ## 0.10.1
 
 * Remove usage of deprecated quiver Optional type.
