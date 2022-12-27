@@ -86,11 +86,11 @@ class UrlLauncher {
               .putExtra(Browser.EXTRA_HEADERS, headersBundle);
     }
 
-    try {
+//    try {
       activity.startActivity(launchIntent);
-    } catch (ActivityNotFoundException e) {
-      return LaunchStatus.ACTIVITY_NOT_FOUND;
-    }
+//    } catch (ActivityNotFoundException e) {
+//      return LaunchStatus.ACTIVITY_NOT_FOUND;
+//    }
 
     return LaunchStatus.OK;
   }
