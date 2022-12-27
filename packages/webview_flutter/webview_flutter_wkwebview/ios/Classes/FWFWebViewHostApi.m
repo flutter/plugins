@@ -72,6 +72,7 @@
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @property NSBundle *bundle;
 @property FWFAssetManager *assetManager;
+@property NSURLRequest *previousUrlRequest;
 @end
 
 @implementation FWFWebViewHostApiImpl
@@ -133,6 +134,7 @@
                                  details:[NSString stringWithFormat:@"URL was: '%@'", request.url]];
     return;
   }
+  _previousUrlRequest = urlRequest;
   [[self webViewForIdentifier:identifier] loadRequest:urlRequest];
 }
 
@@ -251,7 +253,11 @@
 
 - (void)reloadWebViewWithIdentifier:(nonnull NSNumber *)identifier
                               error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  [[self webViewForIdentifier:identifier] reload];
+    if ([self webViewForIdentifier:identifier].URL == NULL && _previousUrlRequest != NULL) {
+        [[self webViewForIdentifier:identifier] loadRequest:_previousUrlRequest];
+    } else {
+        [[self webViewForIdentifier:identifier] reload];
+    }
 }
 
 - (void)
