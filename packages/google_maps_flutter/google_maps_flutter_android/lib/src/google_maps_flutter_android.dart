@@ -41,12 +41,29 @@ class UnknownMapIDError extends Error {
   }
 }
 
+/// The possible android map renderer types that can be
+/// requested from the native Google Maps SDK.
+enum AndroidMapRenderer {
+  /// Latest renderer type.
+  latest,
+
+  /// Legacy renderer type.
+  legacy,
+
+  /// Requests the default map renderer type.
+  platformDefault,
+}
+
 /// An implementation of [GoogleMapsFlutterPlatform] for Android.
 class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
   /// Registers the Android implementation of GoogleMapsFlutterPlatform.
   static void registerWith() {
     GoogleMapsFlutterPlatform.instance = GoogleMapsFlutterAndroid();
   }
+
+  /// The method channel used to initialize the native Google Maps SDK.
+  final MethodChannel _initializerChannel = const MethodChannel(
+      'plugins.flutter.dev/google_maps_android_initializer');
 
   // Keep a collection of id -> channel
   // Every method call passes the int mapId
@@ -480,6 +497,52 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
   /// Currently defaults to true, but the default is subject to change.
   bool useAndroidViewSurface = true;
 
+  /// Requests Google Map Renderer with [AndroidMapRenderer] type.
+  ///
+  /// See https://pub.dev/packages/google_maps_flutter_android#map-renderer
+  /// for more information.
+  ///
+  /// The renderer must be requested before creating GoogleMap instances as the
+  /// renderer can be initialized only once per application context.
+  /// Throws a [PlatformException] if method is called multiple times.
+  ///
+  /// The returned [Future] completes after renderer has been initialized.
+  /// Initialized [AndroidMapRenderer] type is returned.
+  Future<AndroidMapRenderer> initializeWithRenderer(
+      AndroidMapRenderer? rendererType) async {
+    String preferredRenderer;
+    switch (rendererType) {
+      case AndroidMapRenderer.latest:
+        preferredRenderer = 'latest';
+        break;
+      case AndroidMapRenderer.legacy:
+        preferredRenderer = 'legacy';
+        break;
+      case AndroidMapRenderer.platformDefault:
+      default:
+        preferredRenderer = 'default';
+    }
+
+    final String? initializedRenderer = await _initializerChannel
+        .invokeMethod<String>('initializer#preferRenderer',
+            <String, dynamic>{'value': preferredRenderer});
+
+    if (initializedRenderer == null) {
+      throw AndroidMapRendererException('Failed to initialize map renderer.');
+    }
+
+    // Returns mapped [AndroidMapRenderer] enum type.
+    switch (initializedRenderer) {
+      case 'latest':
+        return AndroidMapRenderer.latest;
+      case 'legacy':
+        return AndroidMapRenderer.legacy;
+      default:
+        throw AndroidMapRendererException(
+            'Failed to initialize latest or legacy renderer, got $initializedRenderer.');
+    }
+  }
+
   Widget _buildView(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
@@ -688,4 +751,17 @@ class _TileOverlayUpdates extends MapsObjectUpdates<TileOverlay> {
 
   /// Set of TileOverlays to be changed in this update.
   Set<TileOverlay> get tileOverlaysToChange => objectsToChange;
+}
+
+/// Thrown to indicate that a platform interaction failed to initialize renderer.
+class AndroidMapRendererException implements Exception {
+  /// Creates a [AndroidMapRendererException] with an optional human-readable
+  /// error message.
+  AndroidMapRendererException([this.message]);
+
+  /// A human-readable error message, possibly null.
+  final String? message;
+
+  @override
+  String toString() => 'AndroidMapRendererException($message)';
 }

@@ -151,4 +151,13 @@ extern FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyVa
  */
 extern FWFWKScriptMessageData *FWFWKScriptMessageDataFromWKScriptMessage(WKScriptMessage *message);
 
+/**
+ * Converts a WKNavigationType to an FWFWKNavigationType.
+ *
+ * @param type The object containing information to create a FWFWKNavigationType
+ *
+ * @return A FWFWKNavigationType.
+ */
+extern FWFWKNavigationType FWFWKNavigationTypeFromWKNavigationType(WKNavigationType type);
+
 NS_ASSUME_NONNULL_END

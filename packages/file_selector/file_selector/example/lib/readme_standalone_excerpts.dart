@@ -54,4 +54,14 @@ class _MyAppState extends State<MyApp> {
     await textFile.saveTo(path);
     // #enddocregion Save
   }
+
+  Future<void> directoryPath() async {
+    // #docregion GetDirectory
+    final String? directoryPath = await getDirectoryPath();
+    if (directoryPath == null) {
+      // Operation was canceled by the user.
+      return;
+    }
+    // #enddocregion GetDirectory
+  }
 }

@@ -1,8 +1,12 @@
-## NEXT
+## 2.3.10
 
+* Adds compatibilty with version 6.0 of the platform interface.
+* Fixes file URI construction in example.
+* Updates code for new analysis options.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 * Updates minimum Flutter version to 2.10.
 * Fixes violations of new analysis option use_named_constants.
+* Removes an unnecessary override in example code.
 
 ## 2.3.9
 
