@@ -300,14 +300,14 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 - (void)testReload {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
-  
+
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
-  
+
   FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
-                                    initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
-                                    instanceManager:instanceManager];
-  
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
+
   FlutterError *error;
   [hostAPI reloadWebViewWithIdentifier:@0 error:&error];
   OCMVerify([mockWebView reload]);
@@ -336,7 +336,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   OCMVerify([mockWebView loadRequest:request]);
   XCTAssertNil(error);
   // WKWebView set URL property after loadRequest scceeded.
-  OCMStub([mockWebView URL]).andReturn( [NSURL URLWithString:@"https://www.flutter.dev"]);
+  OCMStub([mockWebView URL]).andReturn([NSURL URLWithString:@"https://www.flutter.dev"]);
   [hostAPI reloadWebViewWithIdentifier:@0 error:&error];
   OCMVerify([mockWebView reload]);
   XCTAssertNil(error);
