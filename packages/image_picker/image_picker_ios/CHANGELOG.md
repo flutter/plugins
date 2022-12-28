@@ -1,6 +1,10 @@
+## 0.8.6+5
+
+* Fixes crash when `imageQuality` is set.
+
 ## 0.8.6+4
 
-* Fix authorization status check for iOS14+ so it includes `PHAuthorizationStatusLimited`.
+* Fixes authorization status check for iOS14+ so it includes `PHAuthorizationStatusLimited`.
 
 ## 0.8.6+3
 
