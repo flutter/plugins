@@ -30,6 +30,7 @@ part 'src/google_maps_controller.dart';
 part 'src/google_maps_flutter_web.dart';
 part 'src/marker.dart';
 part 'src/markers.dart';
+part 'src/my_location.dart';
 part 'src/polygon.dart';
 part 'src/polygons.dart';
 part 'src/polyline.dart';

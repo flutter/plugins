@@ -9,10 +9,6 @@ part of google_maps_flutter_web;
 typedef DebugCreateMapFunction = gmaps.GMap Function(
     HtmlElement div, gmaps.MapOptions options);
 
-/// Type used when passing an override to the _getCurrentLocation function.
-@visibleForTesting
-typedef DebugGetCurrentLocation = Future<LatLng> Function();
-
 /// Encapsulates a [gmaps.GMap], its events, and where in the DOM it's rendered.
 class GoogleMapController {
   /// Initializes the GMap, and the sub-controllers related to it. Wires events.
@@ -68,7 +64,6 @@ class GoogleMapController {
   // The Flutter widget that contains the rendered Map.
   HtmlElementView? _widget;
   late HtmlElement _div;
-  HtmlElement? _myLocationButton;
 
   /// The Flutter widget that will contain the rendered Map. Used for caching.
   Widget? get widget {
@@ -193,12 +188,11 @@ class GoogleMapController {
 
     _setTrafficLayer(map, _lastMapConfiguration.trafficEnabled ?? false);
 
-    if ((_lastMapConfiguration.myLocationEnabled ?? false) &&
-        (_lastMapConfiguration.myLocationButtonEnabled ?? false)) {
-      _addMyLocationButton(map);
-    }
     if (_lastMapConfiguration.myLocationEnabled ?? false) {
-      _moveToCurrentLocation();
+      if (_lastMapConfiguration.myLocationButtonEnabled ?? false) {
+        _addMyLocationButton(map, this);
+      }
+      _displayAndCenterMyCurrentLocation(this);
     }
   }
 
@@ -434,113 +428,6 @@ class GoogleMapController {
   /// Returns true if the [InfoWindow] of the marker identified by [MarkerId] is shown.
   bool isInfoWindowShown(MarkerId markerId) {
     return _markersController?.isInfoWindowShown(markerId) ?? false;
-  }
-
-  // Add My Location widget to right bottom
-  HtmlElement _createMyLocationButton() {
-    final HtmlElement controlDiv = DivElement();
-    controlDiv.style.marginRight = '10px';
-
-    final HtmlElement firstChild = ButtonElement();
-    firstChild.className = 'gm-control-active';
-    firstChild.style.backgroundColor = '#fff';
-    firstChild.style.border = 'none';
-    firstChild.style.outline = 'none';
-    firstChild.style.width = '40px';
-    firstChild.style.height = '40px';
-    firstChild.style.borderRadius = '2px';
-    firstChild.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
-    firstChild.style.cursor = 'pointer';
-    firstChild.style.padding = '8px';
-    controlDiv.append(firstChild);
-
-    final HtmlElement secondChild = DivElement();
-    secondChild.style.width = '24px';
-    secondChild.style.height = '24px';
-    secondChild.style.backgroundImage =
-        'url(https://maps.gstatic.com/tactile/mylocation/mylocation-sprite-2x.png)';
-    secondChild.style.backgroundSize = '240px 24px';
-    secondChild.style.backgroundPosition = '0px 0px';
-    secondChild.style.backgroundRepeat = 'no-repeat';
-    secondChild.id = 'you_location_img';
-    firstChild.append(secondChild);
-
-    firstChild.addEventListener('click', (_) {
-      String imgX = '0';
-      // Add animation when find current location
-      final Timer timer =
-          Timer.periodic(const Duration(milliseconds: 500), (_) {
-        imgX = (imgX == '-24') ? '0' : '-24';
-        document.getElementById('you_location_img')?.style.backgroundPosition =
-            '${imgX}px 0px';
-      });
-      // Find and move to current location
-      _moveToCurrentLocation().then((_) {
-        timer.cancel();
-        document.getElementById('you_location_img')?.style.backgroundPosition =
-            '-192px 0px';
-      });
-    });
-
-    return controlDiv;
-  }
-
-  // Get current location
-  Future<LatLng> _getCurrentLocation() async {
-    final Geoposition location =
-        await window.navigator.geolocation.getCurrentPosition();
-    return LatLng(
-      location.coords!.latitude!.toDouble(),
-      location.coords!.longitude!.toDouble(),
-    );
-  }
-
-  // Find and move to current location
-  Future<void> _moveToCurrentLocation() async {
-    LatLng location;
-    if (_overrideGetCurrentLocation != null) {
-      location = await _overrideGetCurrentLocation!.call();
-    } else {
-      location = await _getCurrentLocation();
-    }
-
-    await moveCamera(
-      CameraUpdate.newLatLng(location),
-    );
-
-    _addBlueDotMarker(location);
-  }
-
-  // Add my location to map
-  void _addMyLocationButton(gmaps.GMap map) {
-    _myLocationButton = _createMyLocationButton();
-
-    map.addListener('dragend', () {
-      document.getElementById('you_location_img')?.style.backgroundPosition =
-          '0px 0px';
-    });
-
-    map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]
-        ?.push(_myLocationButton);
-  }
-
-  // Add blue dot for current location
-  Future<void> _addBlueDotMarker(LatLng location) async {
-    assert(
-        _markersController != null, 'Cannot update markers after dispose().');
-    final BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(size: Size(18, 18)),
-      'icons/blue-dot.png',
-      package: 'google_maps_flutter_web',
-    );
-    _markersController?.addMarkers(<Marker>{
-      Marker(
-        markerId: const MarkerId('my_location_blue_dot'),
-        icon: icon,
-        position: location,
-        zIndex: 0.5,
-      )
-    });
   }
 
   // Cleanup
