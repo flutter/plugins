@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Fix webview_flutter_wkwebview reload when an initial load failed.
+
 ## 3.0.1
 
 * Adds support for retrieving navigation type with internal class.

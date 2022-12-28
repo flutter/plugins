@@ -1,3 +1,7 @@
+## 4.0.2
+
+* Fix webview_flutter_wkwebview reload when an initial load failed.
+
 ## 4.0.1
 
 * Exposes `WebResourceErrorType` from platform interface.
