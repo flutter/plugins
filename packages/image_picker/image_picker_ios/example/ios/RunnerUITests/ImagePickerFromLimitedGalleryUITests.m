@@ -72,6 +72,13 @@ const int kLimitedElementWaitingTime = 30;
 
   // Find an image and tap on it.
   XCUIElement *aImage = [self.app.scrollViews.firstMatch.images elementBoundByIndex:1];
+  os_log_error(OS_LOG_DEFAULT, "description before picking image %@", self.app.debugDescription);
+  if (![aImage waitForExistenceWithTimeout:kLimitedElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+    XCTFail(@"Failed due to not able to find an image with %@ seconds",
+            @(kLimitedElementWaitingTime));
+  }
+
   [aImage tap];
 
   // Find and tap on the `Done` button.
