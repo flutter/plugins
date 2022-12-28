@@ -300,15 +300,71 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 - (void)testReload {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
+  
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
+  
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+                                    initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+                                    instanceManager:instanceManager];
+  
+  FlutterError *error;
+  [hostAPI reloadWebViewWithIdentifier:@0 error:&error];
+  OCMVerify([mockWebView reload]);
+  XCTAssertNil(error);
+}
+
+- (void)testReloadWhenFirstLoadRequestSucceeded {
+  FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
-
   FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
 
   FlutterError *error;
+  FWFNSUrlRequestData *requestData = [FWFNSUrlRequestData makeWithUrl:@"https://www.flutter.dev"
+                                                           httpMethod:@"get"
+                                                             httpBody:nil
+                                                  allHttpHeaderFields:@{@"a" : @"header"}];
+  [hostAPI loadRequestForWebViewWithIdentifier:@0 request:requestData error:&error];
+  NSURL *url = [NSURL URLWithString:@"https://www.flutter.dev"];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  request.HTTPMethod = @"get";
+  request.allHTTPHeaderFields = @{@"a" : @"header"};
+  OCMVerify([mockWebView loadRequest:request]);
+  XCTAssertNil(error);
+  // WKWebView set URL property after loadRequest scceeded.
+  OCMStub([mockWebView URL]).andReturn( [NSURL URLWithString:@"https://www.flutter.dev"]);
+  [hostAPI reloadWebViewWithIdentifier:@0 error:&error];
+  OCMVerify([mockWebView reload]);
+  XCTAssertNil(error);
+}
+
+- (void)testReloadWhenFirstLoadRequestFailed {
+  FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
+
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
+
+  FlutterError *error;
+  FWFNSUrlRequestData *requestData = [FWFNSUrlRequestData makeWithUrl:@"https://www.flutter.dev"
+                                                           httpMethod:@"get"
+                                                             httpBody:nil
+                                                  allHttpHeaderFields:@{@"a" : @"header"}];
+  [hostAPI loadRequestForWebViewWithIdentifier:@0 request:requestData error:&error];
+  NSURL *url = [NSURL URLWithString:@"https://www.flutter.dev"];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  request.HTTPMethod = @"get";
+  request.allHTTPHeaderFields = @{@"a" : @"header"};
+  OCMVerify([mockWebView loadRequest:request]);
+  XCTAssertNil(error);
+  // WKWebView return NULL after loadRequest failed.
+  OCMStub([mockWebView URL]).andReturn(NULL);
   [hostAPI reloadWebViewWithIdentifier:@0 error:&error];
   OCMVerify([mockWebView reload]);
   XCTAssertNil(error);
