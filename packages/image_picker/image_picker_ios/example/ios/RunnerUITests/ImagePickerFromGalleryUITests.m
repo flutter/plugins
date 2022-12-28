@@ -85,8 +85,7 @@ const int kElementWaitingTime = 30;
   [self.app tap];
 
   // Find and tap on the `Cancel` button.
-  XCUIElement *cancelButton =
-      self.app.buttons[@"Cancel"].firstMatch;
+  XCUIElement *cancelButton = self.app.buttons[@"Cancel"].firstMatch;
   if (![cancelButton waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find Cancel button with %@ seconds",
@@ -96,7 +95,8 @@ const int kElementWaitingTime = 30;
   [cancelButton tap];
 
   // Find the "not picked image text".
-  XCUIElement *imageNotPickedText = self.app.staticTexts[@"You have not yet picked an image."].firstMatch;
+  XCUIElement *imageNotPickedText =
+      self.app.staticTexts[@"You have not yet picked an image."].firstMatch;
   if (![imageNotPickedText waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find imageNotPickedText with %@ seconds",
@@ -108,12 +108,13 @@ const int kElementWaitingTime = 30;
   [self launchPickerAndPickWithMaxWidth:nil maxHeight:nil quality:nil];
 }
 
-
 - (void)testPickingWithContraintsFromGallery {
   [self launchPickerAndPickWithMaxWidth:@200 maxHeight:@100 quality:@50];
 }
 
-- (void)launchPickerAndPickWithMaxWidth:(NSNumber *)maxWidth maxHeight:(NSNumber *)maxHeight quality:(NSNumber *)quality {
+- (void)launchPickerAndPickWithMaxWidth:(NSNumber *)maxWidth
+                              maxHeight:(NSNumber *)maxHeight
+                                quality:(NSNumber *)quality {
   // Find and tap on the pick from gallery button.
   XCUIElement *imageFromGalleryButton =
       self.app.otherElements[@"image_picker_example_from_gallery"].firstMatch;

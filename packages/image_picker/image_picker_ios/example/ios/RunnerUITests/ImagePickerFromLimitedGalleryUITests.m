@@ -49,7 +49,8 @@ const int kLimitedElementWaitingTime = 30;
 // Test the `Select Photos` button which is available after iOS 14.
 - (void)testSelectingFromGallery API_AVAILABLE(ios(14)) {
   // Find and tap on the pick from gallery button.
-  XCUIElement *imageFromGalleryButton = self.app.otherElements[@"image_picker_example_from_gallery"].firstMatch;
+  XCUIElement *imageFromGalleryButton =
+      self.app.otherElements[@"image_picker_example_from_gallery"].firstMatch;
   if (![imageFromGalleryButton waitForExistenceWithTimeout:kLimitedElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find image from gallery button with %@ seconds",
