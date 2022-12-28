@@ -1,7 +1,3 @@
-## 3.0.2
-
-* Fix reload when an initial load failed.
-
 ## 3.0.1
 
 * Adds support for retrieving navigation type with internal class.
