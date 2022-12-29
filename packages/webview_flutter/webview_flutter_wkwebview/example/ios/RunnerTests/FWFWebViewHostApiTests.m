@@ -366,7 +366,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   // WKWebView return NULL after loadRequest failed.
   OCMStub([mockWebView URL]).andReturn(NULL);
   [hostAPI reloadWebViewWithIdentifier:@0 error:&error];
-  OCMVerify([mockWebView reload]);
+  OCMVerify([mockWebView loadRequest:request]);
   XCTAssertNil(error);
 }
 
