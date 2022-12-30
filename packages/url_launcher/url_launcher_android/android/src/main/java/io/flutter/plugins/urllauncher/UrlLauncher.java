@@ -86,6 +86,8 @@ class UrlLauncher {
               .putExtra(Browser.EXTRA_HEADERS, headersBundle);
     }
 
+    Log.e('flutter', 'test - $url');
+
 //    try {
       activity.startActivity(launchIntent);
 //    } catch (ActivityNotFoundException e) {
