@@ -16,6 +16,12 @@ A Flutter plugin for iOS, Android and Web allowing access to the device cameras.
 * Snapshots can be captured and saved to a file.
 * Record video.
 * Add access to the image stream from Dart.
+* Zoom camera
+* Flash support
+* Auto Focus
+* ImageFormat selection for ImageStream and Video(iOS only).
+* Capture audio
+* Pause and resume camera preview
 
 ## Installation
 
