@@ -43,6 +43,8 @@ class UrlLauncher {
     ComponentName componentName =
         launchIntent.resolveActivity(applicationContext.getPackageManager());
 
+    Log.i(TAG, "canLaunch test ");
+
     if (componentName == null) {
       Log.i(TAG, "component name for " + url + " is null");
       return false;
@@ -86,7 +88,7 @@ class UrlLauncher {
               .putExtra(Browser.EXTRA_HEADERS, headersBundle);
     }
 
-    Log.e(TAG, 'test - $url');
+    Log.e(TAG, "launch - " + url);
 
 //    try {
       activity.startActivity(launchIntent);
