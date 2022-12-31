@@ -3,7 +3,9 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:file_selector_macos/src/messages.g.dart' as _i3;
+import 'dart:async' as _i3;
+
+import 'package:file_selector_macos/src/messages.g.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 
 import 'messages_test.g.dart' as _i2;
@@ -29,18 +31,21 @@ class MockTestFileSelectorApi extends _i1.Mock
   }
 
   @override
-  List<String?> displayOpenPanel(_i3.OpenPanelOptions? options) =>
+  _i3.Future<List<String?>> displayOpenPanel(_i4.OpenPanelOptions? options) =>
       (super.noSuchMethod(
         Invocation.method(
           #displayOpenPanel,
           [options],
         ),
-        returnValue: <String?>[],
-      ) as List<String?>);
+        returnValue: _i3.Future<List<String?>>.value(<String?>[]),
+      ) as _i3.Future<List<String?>>);
   @override
-  String? displaySavePanel(_i3.SavePanelOptions? options) =>
-      (super.noSuchMethod(Invocation.method(
-        #displaySavePanel,
-        [options],
-      )) as String?);
+  _i3.Future<String?> displaySavePanel(_i4.SavePanelOptions? options) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #displaySavePanel,
+          [options],
+        ),
+        returnValue: _i3.Future<String?>.value(),
+      ) as _i3.Future<String?>);
 }

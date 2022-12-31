@@ -58,12 +58,12 @@ abstract class TestFileSelectorApi {
   /// selected paths.
   ///
   /// An empty list corresponds to a cancelled selection.
-  List<String?> displayOpenPanel(OpenPanelOptions options);
+  Future<List<String?>> displayOpenPanel(OpenPanelOptions options);
 
   /// Shows a save panel with the given [options], returning the selected path.
   ///
   /// A null return corresponds to a cancelled save.
-  String? displaySavePanel(SavePanelOptions options);
+  Future<String?> displaySavePanel(SavePanelOptions options);
 
   static void setup(TestFileSelectorApi? api, {BinaryMessenger? binaryMessenger}) {
     {
@@ -79,7 +79,7 @@ abstract class TestFileSelectorApi {
           final List<Object?> args = (message as List<Object?>?)!;
           final OpenPanelOptions? arg_options = (args[0] as OpenPanelOptions?);
           assert(arg_options != null, 'Argument for dev.flutter.pigeon.FileSelectorApi.displayOpenPanel was null, expected non-null OpenPanelOptions.');
-          final List<String?> output = api.displayOpenPanel(arg_options!);
+          final List<String?> output = await api.displayOpenPanel(arg_options!);
           return <Object?>[output];
         });
       }
@@ -97,7 +97,7 @@ abstract class TestFileSelectorApi {
           final List<Object?> args = (message as List<Object?>?)!;
           final SavePanelOptions? arg_options = (args[0] as SavePanelOptions?);
           assert(arg_options != null, 'Argument for dev.flutter.pigeon.FileSelectorApi.displaySavePanel was null, expected non-null SavePanelOptions.');
-          final String? output = api.displaySavePanel(arg_options!);
+          final String? output = await api.displaySavePanel(arg_options!);
           return <Object?>[output];
         });
       }

@@ -73,10 +73,12 @@ abstract class FileSelectorApi {
   // TODO(stuartmorgan): Declare this return as a non-nullable generic once
   // https://github.com/flutter/flutter/issues/97848 is fixed. In practice,
   // the values will never be null, and the calling code assumes that.
+  @async
   List<String?> displayOpenPanel(OpenPanelOptions options);
 
   /// Shows a save panel with the given [options], returning the selected path.
   ///
   /// A null return corresponds to a cancelled save.
+  @async
   String? displaySavePanel(SavePanelOptions options);
 }

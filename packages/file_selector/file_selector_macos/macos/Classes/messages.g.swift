@@ -115,6 +115,7 @@ struct OpenPanelOptions {
     ]
   }
 }
+
 private class FileSelectorApiCodecReader: FlutterStandardReader {
   override func readValue(ofType type: UInt8) -> Any? {
     switch type {
@@ -167,11 +168,11 @@ protocol FileSelectorApi {
   /// selected paths.
   ///
   /// An empty list corresponds to a cancelled selection.
-  func displayOpenPanel(options: OpenPanelOptions) -> [String?]
+  func displayOpenPanel(options: OpenPanelOptions, completion: @escaping ([String?]) -> Void)
   /// Shows a save panel with the given [options], returning the selected path.
   ///
   /// A null return corresponds to a cancelled save.
-  func displaySavePanel(options: SavePanelOptions) -> String?
+  func displaySavePanel(options: SavePanelOptions, completion: @escaping (String?) -> Void)
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -189,8 +190,9 @@ class FileSelectorApiSetup {
       displayOpenPanelChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
         let optionsArg = args[0] as! OpenPanelOptions
-        let result = api.displayOpenPanel(options: optionsArg)
-        reply(wrapResult(result))
+        api.displayOpenPanel(options: optionsArg) { result in
+          reply(wrapResult(result))
+        }
       }
     } else {
       displayOpenPanelChannel.setMessageHandler(nil)
@@ -203,8 +205,9 @@ class FileSelectorApiSetup {
       displaySavePanelChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
         let optionsArg = args[0] as! SavePanelOptions
-        let result = api.displaySavePanel(options: optionsArg)
-        reply(wrapResult(result))
+        api.displaySavePanel(options: optionsArg) { result in
+          reply(wrapResult(result))
+        }
       }
     } else {
       displaySavePanelChannel.setMessageHandler(nil)
