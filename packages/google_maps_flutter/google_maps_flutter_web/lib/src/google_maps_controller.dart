@@ -77,7 +77,7 @@ class GoogleMapController {
 
   /// A getter for the my location button
   @visibleForTesting
-  HtmlElement? get myLocationButton => _myLocationButton;
+  _MyLocationButton? get myLocationButton => _myLocationButton;
 
   // The currently-enabled traffic layer.
   gmaps.TrafficLayer? _trafficLayer;
@@ -127,9 +127,6 @@ class GoogleMapController {
     _polylinesController = polylines ?? _polylinesController;
     _overrideGetCurrentLocation = getCurrentLocation;
   }
-
-  // Get current location
-  DebugGetCurrentLocation? _overrideGetCurrentLocation;
 
   DebugCreateMapFunction? _overrideCreateMap;
 
@@ -188,11 +185,17 @@ class GoogleMapController {
 
     _setTrafficLayer(map, _lastMapConfiguration.trafficEnabled ?? false);
 
+    _renderMyLocation(map);
+  }
+
+  // Render my location
+  Future<void> _renderMyLocation(gmaps.GMap map) async {
     if (_lastMapConfiguration.myLocationEnabled ?? false) {
       if (_lastMapConfiguration.myLocationButtonEnabled ?? false) {
-        _addMyLocationButton(map, this);
+        _renderMyLocationButton(map, this);
       }
-      _displayAndCenterMyCurrentLocation(this);
+      _watchLocationAndUpdateBlueDot(this);
+      _centerMyCurrentLocation(this);
     }
   }
 

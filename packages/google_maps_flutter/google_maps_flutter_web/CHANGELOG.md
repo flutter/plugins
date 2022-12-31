@@ -1,4 +1,4 @@
-## 0.4.0+4
+## 0.4.1
 
 * Add "My Location" Widget. Issue [#64073](https://github.com/flutter/flutter/issues/64073)
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
