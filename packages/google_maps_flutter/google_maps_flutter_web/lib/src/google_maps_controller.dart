@@ -192,9 +192,9 @@ class GoogleMapController {
   Future<void> _renderMyLocation(gmaps.GMap map) async {
     if (_lastMapConfiguration.myLocationEnabled ?? false) {
       if (_lastMapConfiguration.myLocationButtonEnabled ?? false) {
-        _renderMyLocationButton(map, this);
+        _addMyLocationButton(map, this);
       }
-      _watchLocationAndUpdateBlueDot(this);
+      _displayAndWatchMyLocation(_markersController!);
       _centerMyCurrentLocation(this);
     }
   }

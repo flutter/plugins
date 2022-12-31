@@ -14,22 +14,25 @@ DebugGetCurrentLocation? _overrideGetCurrentLocation;
 _MyLocationButton? _myLocationButton;
 
 // Watch current location and update blue dot
-void _watchLocationAndUpdateBlueDot(GoogleMapController controller) {
+Future<void> _displayAndWatchMyLocation(MarkersController controller) async {
+  final Marker marker = await _createBlueDotMarker();
   window.navigator.geolocation
       .watchPosition()
       .listen((Geoposition location) async {
-    final Marker blueDot = await _createBlueDotMarker(LatLng(
-      location.coords!.latitude!.toDouble(),
-      location.coords!.longitude!.toDouble(),
-    ));
-    controller._markersController?.addMarkers(<Marker>{blueDot});
+    controller.addMarkers(<Marker>{
+      marker.copyWith(
+          positionParam: LatLng(
+        location.coords!.latitude!.toDouble(),
+        location.coords!.longitude!.toDouble(),
+      ))
+    });
   });
 }
 
 // Get current location
 Future<LatLng> _getCurrentLocation() async {
-  final Geoposition location =
-      await window.navigator.geolocation.getCurrentPosition();
+  final Geoposition location = await window.navigator.geolocation
+      .getCurrentPosition(timeout: const Duration(seconds: 30));
   return LatLng(
     location.coords!.latitude!.toDouble(),
     location.coords!.longitude!.toDouble(),
@@ -52,14 +55,13 @@ Future<void> _centerMyCurrentLocation(
     );
     _myLocationButton?.doneAnimation();
   } catch (e) {
-    _myLocationButton?.disable();
+    _myLocationButton?.disableBtn();
   }
 }
 
 // Add my location to map
-void _renderMyLocationButton(gmaps.GMap map, GoogleMapController controller) {
+void _addMyLocationButton(gmaps.GMap map, GoogleMapController controller) {
   _myLocationButton = _MyLocationButton();
-
   _myLocationButton?.addClickListener(
     () async {
       _myLocationButton?.startAnimation();
@@ -72,11 +74,11 @@ void _renderMyLocationButton(gmaps.GMap map, GoogleMapController controller) {
   });
 
   map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]
-      ?.push(_myLocationButton?.getButtonElement);
+      ?.push(_myLocationButton?.getButton);
 }
 
-// Create blue dot marker with current location
-Future<Marker> _createBlueDotMarker(LatLng location) async {
+// Create blue dot marker
+Future<Marker> _createBlueDotMarker() async {
   final BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(
     const ImageConfiguration(size: Size(18, 18)),
     'icons/blue-dot.png',
@@ -85,25 +87,26 @@ Future<Marker> _createBlueDotMarker(LatLng location) async {
   return Marker(
     markerId: const MarkerId('my_location_blue_dot'),
     icon: icon,
-    position: location,
     zIndex: 0.5,
   );
 }
 
+// This class support create my location button & handle animation
 class _MyLocationButton {
   _MyLocationButton() {
     _addCss();
     _createButton();
   }
 
-  late ButtonElement _firstChild;
-  late DivElement _secondChild;
+  late ButtonElement _btnChild;
+  late DivElement _imageChild;
   late DivElement _controlDiv;
-  bool isAnimating = false;
+
   // Add animation css
   void _addCss() {
     final StyleElement styleElement = StyleElement();
     document.head?.append(styleElement);
+    // ignore: cast_nullable_to_non_nullable
     final CssStyleSheet sheet = styleElement.sheet as CssStyleSheet;
     String rule =
         '.waiting { animation: 1000ms infinite step-end blink-position-icon;}';
@@ -120,68 +123,64 @@ class _MyLocationButton {
 
     _controlDiv.style.marginRight = '10px';
 
-    _firstChild = ButtonElement();
-    _firstChild.className = 'gm-control-active';
-    _firstChild.style.backgroundColor = '#fff';
-    _firstChild.style.border = 'none';
-    _firstChild.style.outline = 'none';
-    _firstChild.style.width = '40px';
-    _firstChild.style.height = '40px';
-    _firstChild.style.borderRadius = '2px';
-    _firstChild.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
-    _firstChild.style.cursor = 'pointer';
-    _firstChild.style.padding = '8px';
-    _controlDiv.append(_firstChild);
+    _btnChild = ButtonElement();
+    _btnChild.className = 'gm-control-active';
+    _btnChild.style.backgroundColor = '#fff';
+    _btnChild.style.border = 'none';
+    _btnChild.style.outline = 'none';
+    _btnChild.style.width = '40px';
+    _btnChild.style.height = '40px';
+    _btnChild.style.borderRadius = '2px';
+    _btnChild.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
+    _btnChild.style.cursor = 'pointer';
+    _btnChild.style.padding = '8px';
+    _controlDiv.append(_btnChild);
 
-    _secondChild = DivElement();
-    _secondChild.style.width = '24px';
-    _secondChild.style.height = '24px';
-    _secondChild.style.backgroundImage =
+    _imageChild = DivElement();
+    _imageChild.style.width = '24px';
+    _imageChild.style.height = '24px';
+    _imageChild.style.backgroundImage =
         'url(${window.location.href.replaceAll('/#', '')}/assets/packages/google_maps_flutter_web/icons/mylocation-sprite-2x.png)';
-    _secondChild.style.backgroundSize = '240px 24px';
-    _secondChild.style.backgroundPosition = '0px 0px';
-    _secondChild.style.backgroundRepeat = 'no-repeat';
-    _secondChild.id = 'my_location_btn';
-    _firstChild.append(_secondChild);
+    _imageChild.style.backgroundSize = '240px 24px';
+    _imageChild.style.backgroundPosition = '0px 0px';
+    _imageChild.style.backgroundRepeat = 'no-repeat';
+    _imageChild.id = 'my_location_btn';
+    _btnChild.append(_imageChild);
   }
 
-  HtmlElement get getButtonElement => _controlDiv;
+  HtmlElement get getButton => _controlDiv;
 
   void addClickListener(Function onLick) {
-    _firstChild.addEventListener('click', (_) {
+    _btnChild.addEventListener('click', (_) {
       onLick();
     });
   }
 
   void resetAnimation() {
-    if (_firstChild.disabled) {
-      _secondChild.style.backgroundPosition = '-24px 0px';
+    if (_btnChild.disabled) {
+      _imageChild.style.backgroundPosition = '-24px 0px';
     } else {
-      _secondChild.style.backgroundPosition = '0px 0px';
+      _imageChild.style.backgroundPosition = '0px 0px';
     }
   }
 
   void startAnimation() {
-    if (_firstChild.disabled && !isAnimating) {
+    if (_btnChild.disabled) {
       return;
     }
-    _secondChild.classes.add('waiting');
+    _imageChild.classes.add('waiting');
   }
 
   void doneAnimation() {
-    if (_firstChild.disabled) {
+    if (_btnChild.disabled) {
       return;
     }
-    _secondChild.classes.remove('waiting');
-    _secondChild.style.backgroundPosition = '-192px 0px';
+    _imageChild.classes.remove('waiting');
+    _imageChild.style.backgroundPosition = '-192px 0px';
   }
 
-  void disable() {
-    _firstChild.disabled = true;
-    _secondChild.style.backgroundPosition = '-24px 0px';
-  }
-
-  void enable() {
-    _firstChild.disabled = false;
+  void disableBtn() {
+    _btnChild.disabled = true;
+    _imageChild.style.backgroundPosition = '-24px 0px';
   }
 }
