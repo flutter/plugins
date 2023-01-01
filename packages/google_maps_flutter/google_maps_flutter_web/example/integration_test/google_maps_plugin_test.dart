@@ -26,7 +26,6 @@ void main() {
 
   group('GoogleMapsPlugin', () {
     late MockGoogleMapController controller;
-    
     late GoogleMapsPlugin plugin;
     late Completer<int> reportedMapIdCompleter;
     int numberOnPlatformViewCreatedCalls = 0;
