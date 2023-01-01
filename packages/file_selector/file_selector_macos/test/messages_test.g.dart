@@ -34,19 +34,17 @@ class _TestFileSelectorApiCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return AllowedTypes.decode(readValue(buffer)!);
-      
-      case 129:       
-        return OpenPanelOptions.decode(readValue(buffer)!);
-      
-      case 130:       
-        return SavePanelOptions.decode(readValue(buffer)!);
-      
-      default:
 
+      case 129:
+        return OpenPanelOptions.decode(readValue(buffer)!);
+
+      case 130:
+        return SavePanelOptions.decode(readValue(buffer)!);
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -65,7 +63,8 @@ abstract class TestFileSelectorApi {
   /// A null return corresponds to a cancelled save.
   Future<String?> displaySavePanel(SavePanelOptions options);
 
-  static void setup(TestFileSelectorApi? api, {BinaryMessenger? binaryMessenger}) {
+  static void setup(TestFileSelectorApi? api,
+      {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.FileSelectorApi.displayOpenPanel', codec,
@@ -75,10 +74,11 @@ abstract class TestFileSelectorApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.FileSelectorApi.displayOpenPanel was null.');
+              'Argument for dev.flutter.pigeon.FileSelectorApi.displayOpenPanel was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final OpenPanelOptions? arg_options = (args[0] as OpenPanelOptions?);
-          assert(arg_options != null, 'Argument for dev.flutter.pigeon.FileSelectorApi.displayOpenPanel was null, expected non-null OpenPanelOptions.');
+          assert(arg_options != null,
+              'Argument for dev.flutter.pigeon.FileSelectorApi.displayOpenPanel was null, expected non-null OpenPanelOptions.');
           final List<String?> output = await api.displayOpenPanel(arg_options!);
           return <Object?>[output];
         });
@@ -93,10 +93,11 @@ abstract class TestFileSelectorApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.FileSelectorApi.displaySavePanel was null.');
+              'Argument for dev.flutter.pigeon.FileSelectorApi.displaySavePanel was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final SavePanelOptions? arg_options = (args[0] as SavePanelOptions?);
-          assert(arg_options != null, 'Argument for dev.flutter.pigeon.FileSelectorApi.displaySavePanel was null, expected non-null SavePanelOptions.');
+          assert(arg_options != null,
+              'Argument for dev.flutter.pigeon.FileSelectorApi.displaySavePanel was null, expected non-null SavePanelOptions.');
           final String? output = await api.displaySavePanel(arg_options!);
           return <Object?>[output];
         });
