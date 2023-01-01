@@ -530,7 +530,7 @@ void main() {
 
           controller.init();
 
-          await Future<void>.delayed(const Duration(seconds: 1));
+          await Future<void>.delayed(const Duration(milliseconds: 50));
 
           final Set<Marker> capturedMarkers =
               verify(markers.addMarkers(captureAny)).captured[1] as Set<Marker>;
@@ -580,7 +580,7 @@ void main() {
 
           controller.init();
 
-          await Future<void>.delayed(const Duration(seconds: 1));
+          await Future<void>.delayed(const Duration(milliseconds: 50));
 
           final Set<Marker> capturedMarkers =
               verify(markers.addMarkers(captureAny)).captured[1] as Set<Marker>;
@@ -594,6 +594,48 @@ void main() {
           expect(gmCenter.lat, currentLocation.latitude);
           expect(gmCenter.lng, currentLocation.longitude);
         });
+      });
+
+      testWidgets(
+          'My location button should be disable when dont have permission access to location',
+          (WidgetTester tester) async {
+        late final MockGeolocation mockGeolocation = MockGeolocation();
+        late final MockGeoposition mockGeoposition = MockGeoposition();
+        late final MockCoordinates mockCoordinates = MockCoordinates();
+        const LatLng currentLocation = LatLng(10.8231, 106.6297);
+
+        controller = createController(
+            mapConfiguration: const MapConfiguration(
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
+        ));
+
+        controller.debugSetOverrides(
+          createMap: (_, __) => map,
+          markers: markers,
+          geolocation: mockGeolocation,
+        );
+
+        when(mockGeolocation.getCurrentPosition(
+                timeout: const Duration(seconds: 30)))
+            .thenAnswer(
+          (_) async => throw 'permission denied',
+        );
+
+        when(mockGeolocation.watchPosition()).thenAnswer((_) {
+          return Stream<MockGeoposition>.fromIterable(<MockGeoposition>[]);
+        });
+
+        controller.init();
+
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        final Set<Marker> capturedMarkers =
+            verify(markers.addMarkers(captureAny)).captured[0] as Set<Marker>;
+
+        expect(controller.myLocationButton, isNotNull);
+        expect(controller.myLocationButton?.isDisabled(), true);
+        expect(capturedMarkers.length, 0);
       });
     });
 
