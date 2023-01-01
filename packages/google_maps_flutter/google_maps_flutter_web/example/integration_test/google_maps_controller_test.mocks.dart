@@ -3,10 +3,13 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _i6;
+import 'dart:html' as _i3;
+
 import 'package:google_maps/google_maps.dart' as _i2;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
-    as _i4;
-import 'package:google_maps_flutter_web/google_maps_flutter_web.dart' as _i3;
+    as _i5;
+import 'package:google_maps_flutter_web/google_maps_flutter_web.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -30,16 +33,26 @@ class _FakeGMap_0 extends _i1.SmartFake implements _i2.GMap {
         );
 }
 
+class _FakeGeoposition_1 extends _i1.SmartFake implements _i3.Geoposition {
+  _FakeGeoposition_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [CirclesController].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCirclesController extends _i1.Mock implements _i3.CirclesController {
+class MockCirclesController extends _i1.Mock implements _i4.CirclesController {
   @override
-  Map<_i4.CircleId, _i3.CircleController> get circles => (super.noSuchMethod(
+  Map<_i5.CircleId, _i4.CircleController> get circles => (super.noSuchMethod(
         Invocation.getter(#circles),
-        returnValue: <_i4.CircleId, _i3.CircleController>{},
-        returnValueForMissingStub: <_i4.CircleId, _i3.CircleController>{},
-      ) as Map<_i4.CircleId, _i3.CircleController>);
+        returnValue: <_i5.CircleId, _i4.CircleController>{},
+        returnValueForMissingStub: <_i5.CircleId, _i4.CircleController>{},
+      ) as Map<_i5.CircleId, _i4.CircleController>);
   @override
   _i2.GMap get googleMap => (super.noSuchMethod(
         Invocation.getter(#googleMap),
@@ -75,7 +88,7 @@ class MockCirclesController extends _i1.Mock implements _i3.CirclesController {
         returnValueForMissingStub: null,
       );
   @override
-  void addCircles(Set<_i4.Circle>? circlesToAdd) => super.noSuchMethod(
+  void addCircles(Set<_i5.Circle>? circlesToAdd) => super.noSuchMethod(
         Invocation.method(
           #addCircles,
           [circlesToAdd],
@@ -83,7 +96,7 @@ class MockCirclesController extends _i1.Mock implements _i3.CirclesController {
         returnValueForMissingStub: null,
       );
   @override
-  void changeCircles(Set<_i4.Circle>? circlesToChange) => super.noSuchMethod(
+  void changeCircles(Set<_i5.Circle>? circlesToChange) => super.noSuchMethod(
         Invocation.method(
           #changeCircles,
           [circlesToChange],
@@ -91,7 +104,7 @@ class MockCirclesController extends _i1.Mock implements _i3.CirclesController {
         returnValueForMissingStub: null,
       );
   @override
-  void removeCircles(Set<_i4.CircleId>? circleIdsToRemove) =>
+  void removeCircles(Set<_i5.CircleId>? circleIdsToRemove) =>
       super.noSuchMethod(
         Invocation.method(
           #removeCircles,
@@ -120,13 +133,13 @@ class MockCirclesController extends _i1.Mock implements _i3.CirclesController {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockPolygonsController extends _i1.Mock
-    implements _i3.PolygonsController {
+    implements _i4.PolygonsController {
   @override
-  Map<_i4.PolygonId, _i3.PolygonController> get polygons => (super.noSuchMethod(
+  Map<_i5.PolygonId, _i4.PolygonController> get polygons => (super.noSuchMethod(
         Invocation.getter(#polygons),
-        returnValue: <_i4.PolygonId, _i3.PolygonController>{},
-        returnValueForMissingStub: <_i4.PolygonId, _i3.PolygonController>{},
-      ) as Map<_i4.PolygonId, _i3.PolygonController>);
+        returnValue: <_i5.PolygonId, _i4.PolygonController>{},
+        returnValueForMissingStub: <_i5.PolygonId, _i4.PolygonController>{},
+      ) as Map<_i5.PolygonId, _i4.PolygonController>);
   @override
   _i2.GMap get googleMap => (super.noSuchMethod(
         Invocation.getter(#googleMap),
@@ -162,7 +175,7 @@ class MockPolygonsController extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void addPolygons(Set<_i4.Polygon>? polygonsToAdd) => super.noSuchMethod(
+  void addPolygons(Set<_i5.Polygon>? polygonsToAdd) => super.noSuchMethod(
         Invocation.method(
           #addPolygons,
           [polygonsToAdd],
@@ -170,7 +183,7 @@ class MockPolygonsController extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void changePolygons(Set<_i4.Polygon>? polygonsToChange) => super.noSuchMethod(
+  void changePolygons(Set<_i5.Polygon>? polygonsToChange) => super.noSuchMethod(
         Invocation.method(
           #changePolygons,
           [polygonsToChange],
@@ -178,7 +191,7 @@ class MockPolygonsController extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void removePolygons(Set<_i4.PolygonId>? polygonIdsToRemove) =>
+  void removePolygons(Set<_i5.PolygonId>? polygonIdsToRemove) =>
       super.noSuchMethod(
         Invocation.method(
           #removePolygons,
@@ -207,13 +220,13 @@ class MockPolygonsController extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockPolylinesController extends _i1.Mock
-    implements _i3.PolylinesController {
+    implements _i4.PolylinesController {
   @override
-  Map<_i4.PolylineId, _i3.PolylineController> get lines => (super.noSuchMethod(
+  Map<_i5.PolylineId, _i4.PolylineController> get lines => (super.noSuchMethod(
         Invocation.getter(#lines),
-        returnValue: <_i4.PolylineId, _i3.PolylineController>{},
-        returnValueForMissingStub: <_i4.PolylineId, _i3.PolylineController>{},
-      ) as Map<_i4.PolylineId, _i3.PolylineController>);
+        returnValue: <_i5.PolylineId, _i4.PolylineController>{},
+        returnValueForMissingStub: <_i5.PolylineId, _i4.PolylineController>{},
+      ) as Map<_i5.PolylineId, _i4.PolylineController>);
   @override
   _i2.GMap get googleMap => (super.noSuchMethod(
         Invocation.getter(#googleMap),
@@ -249,7 +262,7 @@ class MockPolylinesController extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void addPolylines(Set<_i4.Polyline>? polylinesToAdd) => super.noSuchMethod(
+  void addPolylines(Set<_i5.Polyline>? polylinesToAdd) => super.noSuchMethod(
         Invocation.method(
           #addPolylines,
           [polylinesToAdd],
@@ -257,7 +270,7 @@ class MockPolylinesController extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void changePolylines(Set<_i4.Polyline>? polylinesToChange) =>
+  void changePolylines(Set<_i5.Polyline>? polylinesToChange) =>
       super.noSuchMethod(
         Invocation.method(
           #changePolylines,
@@ -266,7 +279,7 @@ class MockPolylinesController extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void removePolylines(Set<_i4.PolylineId>? polylineIdsToRemove) =>
+  void removePolylines(Set<_i5.PolylineId>? polylineIdsToRemove) =>
       super.noSuchMethod(
         Invocation.method(
           #removePolylines,
@@ -294,13 +307,13 @@ class MockPolylinesController extends _i1.Mock
 /// A class which mocks [MarkersController].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
+class MockMarkersController extends _i1.Mock implements _i4.MarkersController {
   @override
-  Map<_i4.MarkerId, _i3.MarkerController> get markers => (super.noSuchMethod(
+  Map<_i5.MarkerId, _i4.MarkerController> get markers => (super.noSuchMethod(
         Invocation.getter(#markers),
-        returnValue: <_i4.MarkerId, _i3.MarkerController>{},
-        returnValueForMissingStub: <_i4.MarkerId, _i3.MarkerController>{},
-      ) as Map<_i4.MarkerId, _i3.MarkerController>);
+        returnValue: <_i5.MarkerId, _i4.MarkerController>{},
+        returnValueForMissingStub: <_i5.MarkerId, _i4.MarkerController>{},
+      ) as Map<_i5.MarkerId, _i4.MarkerController>);
   @override
   _i2.GMap get googleMap => (super.noSuchMethod(
         Invocation.getter(#googleMap),
@@ -336,7 +349,7 @@ class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
         returnValueForMissingStub: null,
       );
   @override
-  void addMarkers(Set<_i4.Marker>? markersToAdd) => super.noSuchMethod(
+  void addMarkers(Set<_i5.Marker>? markersToAdd) => super.noSuchMethod(
         Invocation.method(
           #addMarkers,
           [markersToAdd],
@@ -344,7 +357,7 @@ class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
         returnValueForMissingStub: null,
       );
   @override
-  void changeMarkers(Set<_i4.Marker>? markersToChange) => super.noSuchMethod(
+  void changeMarkers(Set<_i5.Marker>? markersToChange) => super.noSuchMethod(
         Invocation.method(
           #changeMarkers,
           [markersToChange],
@@ -352,7 +365,7 @@ class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
         returnValueForMissingStub: null,
       );
   @override
-  void removeMarkers(Set<_i4.MarkerId>? markerIdsToRemove) =>
+  void removeMarkers(Set<_i5.MarkerId>? markerIdsToRemove) =>
       super.noSuchMethod(
         Invocation.method(
           #removeMarkers,
@@ -361,7 +374,7 @@ class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
         returnValueForMissingStub: null,
       );
   @override
-  void showMarkerInfoWindow(_i4.MarkerId? markerId) => super.noSuchMethod(
+  void showMarkerInfoWindow(_i5.MarkerId? markerId) => super.noSuchMethod(
         Invocation.method(
           #showMarkerInfoWindow,
           [markerId],
@@ -369,7 +382,7 @@ class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
         returnValueForMissingStub: null,
       );
   @override
-  void hideMarkerInfoWindow(_i4.MarkerId? markerId) => super.noSuchMethod(
+  void hideMarkerInfoWindow(_i5.MarkerId? markerId) => super.noSuchMethod(
         Invocation.method(
           #hideMarkerInfoWindow,
           [markerId],
@@ -377,7 +390,7 @@ class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
         returnValueForMissingStub: null,
       );
   @override
-  bool isInfoWindowShown(_i4.MarkerId? markerId) => (super.noSuchMethod(
+  bool isInfoWindowShown(_i5.MarkerId? markerId) => (super.noSuchMethod(
         Invocation.method(
           #isInfoWindowShown,
           [markerId],
@@ -401,3 +414,80 @@ class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
         returnValueForMissingStub: null,
       );
 }
+
+/// A class which mocks [Geolocation].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGeolocation extends _i1.Mock implements _i3.Geolocation {
+  @override
+  _i6.Future<_i3.Geoposition> getCurrentPosition({
+    bool? enableHighAccuracy,
+    Duration? timeout,
+    Duration? maximumAge,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getCurrentPosition,
+          [],
+          {
+            #enableHighAccuracy: enableHighAccuracy,
+            #timeout: timeout,
+            #maximumAge: maximumAge,
+          },
+        ),
+        returnValue: _i6.Future<_i3.Geoposition>.value(_FakeGeoposition_1(
+          this,
+          Invocation.method(
+            #getCurrentPosition,
+            [],
+            {
+              #enableHighAccuracy: enableHighAccuracy,
+              #timeout: timeout,
+              #maximumAge: maximumAge,
+            },
+          ),
+        )),
+        returnValueForMissingStub:
+            _i6.Future<_i3.Geoposition>.value(_FakeGeoposition_1(
+          this,
+          Invocation.method(
+            #getCurrentPosition,
+            [],
+            {
+              #enableHighAccuracy: enableHighAccuracy,
+              #timeout: timeout,
+              #maximumAge: maximumAge,
+            },
+          ),
+        )),
+      ) as _i6.Future<_i3.Geoposition>);
+  @override
+  _i6.Stream<_i3.Geoposition> watchPosition({
+    bool? enableHighAccuracy,
+    Duration? timeout,
+    Duration? maximumAge,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #watchPosition,
+          [],
+          {
+            #enableHighAccuracy: enableHighAccuracy,
+            #timeout: timeout,
+            #maximumAge: maximumAge,
+          },
+        ),
+        returnValue: _i6.Stream<_i3.Geoposition>.empty(),
+        returnValueForMissingStub: _i6.Stream<_i3.Geoposition>.empty(),
+      ) as _i6.Stream<_i3.Geoposition>);
+}
+
+/// A class which mocks [Geoposition].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGeoposition extends _i1.Mock implements _i3.Geoposition {}
+
+/// A class which mocks [Coordinates].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCoordinates extends _i1.Mock implements _i3.Coordinates {}

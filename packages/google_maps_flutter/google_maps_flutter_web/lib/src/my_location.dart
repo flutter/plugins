@@ -4,21 +4,13 @@
 
 part of google_maps_flutter_web;
 
-/// Type used when passing an override to the _getCurrentLocation function.
-@visibleForTesting
-typedef DebugGetCurrentLocation = Future<LatLng> Function();
-
-DebugGetCurrentLocation? _overrideGetCurrentLocation;
-
-// Get current location
-_MyLocationButton? _myLocationButton;
+// geolocation
+Geolocation _geolocation = window.navigator.geolocation;
 
 // Watch current location and update blue dot
 Future<void> _displayAndWatchMyLocation(MarkersController controller) async {
   final Marker marker = await _createBlueDotMarker();
-  window.navigator.geolocation
-      .watchPosition()
-      .listen((Geoposition location) async {
+  _geolocation.watchPosition().listen((Geoposition location) async {
     controller.addMarkers(<Marker>{
       marker.copyWith(
           positionParam: LatLng(
@@ -31,8 +23,8 @@ Future<void> _displayAndWatchMyLocation(MarkersController controller) async {
 
 // Get current location
 Future<LatLng> _getCurrentLocation() async {
-  final Geoposition location = await window.navigator.geolocation
-      .getCurrentPosition(timeout: const Duration(seconds: 30));
+  final Geoposition location = await _geolocation.getCurrentPosition(
+      timeout: const Duration(seconds: 30));
   return LatLng(
     location.coords!.latitude!.toDouble(),
     location.coords!.longitude!.toDouble(),
@@ -44,37 +36,32 @@ Future<void> _centerMyCurrentLocation(
   GoogleMapController controller,
 ) async {
   try {
-    LatLng location;
-    if (_overrideGetCurrentLocation != null) {
-      location = await _overrideGetCurrentLocation!.call();
-    } else {
-      location = await _getCurrentLocation();
-    }
+    final LatLng location = await _getCurrentLocation();
     await controller.moveCamera(
       CameraUpdate.newLatLng(location),
     );
-    _myLocationButton?.doneAnimation();
+    controller._myLocationButton?.doneAnimation();
   } catch (e) {
-    _myLocationButton?.disableBtn();
+    controller._myLocationButton?.disableBtn();
   }
 }
 
 // Add my location to map
 void _addMyLocationButton(gmaps.GMap map, GoogleMapController controller) {
-  _myLocationButton = _MyLocationButton();
-  _myLocationButton?.addClickListener(
+  controller._myLocationButton = MyLocationButton();
+  controller._myLocationButton?.addClickListener(
     () async {
-      _myLocationButton?.startAnimation();
+      controller._myLocationButton?.startAnimation();
 
       await _centerMyCurrentLocation(controller);
     },
   );
   map.addListener('dragend', () {
-    _myLocationButton?.resetAnimation();
+    controller._myLocationButton?.resetAnimation();
   });
 
   map.controls![gmaps.ControlPosition.RIGHT_BOTTOM as int]
-      ?.push(_myLocationButton?.getButton);
+      ?.push(controller._myLocationButton?.getButton);
 }
 
 // Create blue dot marker
@@ -91,9 +78,11 @@ Future<Marker> _createBlueDotMarker() async {
   );
 }
 
-// This class support create my location button & handle animation
-class _MyLocationButton {
-  _MyLocationButton() {
+/// This class support create my location button & handle animation
+@visibleForTesting
+class MyLocationButton {
+  /// Add css and create my location button
+  MyLocationButton() {
     _addCss();
     _createButton();
   }
@@ -148,14 +137,17 @@ class _MyLocationButton {
     _btnChild.append(_imageChild);
   }
 
+  /// Get button element
   HtmlElement get getButton => _controlDiv;
 
+  /// Add click listener
   void addClickListener(Function onLick) {
     _btnChild.addEventListener('click', (_) {
       onLick();
     });
   }
 
+  /// Reset animation
   void resetAnimation() {
     if (_btnChild.disabled) {
       _imageChild.style.backgroundPosition = '-24px 0px';
@@ -164,6 +156,7 @@ class _MyLocationButton {
     }
   }
 
+  /// Start animation
   void startAnimation() {
     if (_btnChild.disabled) {
       return;
@@ -171,6 +164,7 @@ class _MyLocationButton {
     _imageChild.classes.add('waiting');
   }
 
+  /// Done animation
   void doneAnimation() {
     if (_btnChild.disabled) {
       return;
@@ -179,6 +173,7 @@ class _MyLocationButton {
     _imageChild.style.backgroundPosition = '-192px 0px';
   }
 
+  /// Disable button
   void disableBtn() {
     _btnChild.disabled = true;
     _imageChild.style.backgroundPosition = '-24px 0px';
