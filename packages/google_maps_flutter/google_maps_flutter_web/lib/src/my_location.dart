@@ -4,13 +4,17 @@
 
 part of google_maps_flutter_web;
 
-// geolocation
 Geolocation _geolocation = window.navigator.geolocation;
 
 // Watch current location and update blue dot
 Future<void> _displayAndWatchMyLocation(MarkersController controller) async {
   final Marker marker = await _createBlueDotMarker();
   _geolocation.watchPosition().listen((Geoposition location) async {
+    // TODO(nploi): https://github.com/flutter/plugins/pull/6868#discussion_r1057898052
+    // We're discarding a lot of information from coords, like its accuracy, heading and speed. Those can be used to:
+    // - Render a bigger "blue halo" around the current position marker when the accuracy is low.
+    // - Render the direction in which we're looking at with a small "cone" using the heading information.
+    // - Render the current position marker as an arrow when the current position is "moving" (speed > certain threshold), and the direction in which the arrow should point (again, with the heading information).
     controller.addMarkers(<Marker>{
       marker.copyWith(
           positionParam: LatLng(
