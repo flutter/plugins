@@ -182,4 +182,9 @@ class MyLocationButton {
     _btnChild.disabled = true;
     _imageChild.style.backgroundPosition = '-24px 0px';
   }
+
+  /// Check button disabled or enabled
+  bool isDisabled() {
+    return _btnChild.disabled;
+  }
 }
