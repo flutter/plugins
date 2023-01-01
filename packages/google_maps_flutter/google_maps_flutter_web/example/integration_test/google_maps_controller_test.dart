@@ -600,9 +600,6 @@ void main() {
           'My location button should be disable when dont have permission access to location',
           (WidgetTester tester) async {
         late final MockGeolocation mockGeolocation = MockGeolocation();
-        late final MockGeoposition mockGeoposition = MockGeoposition();
-        late final MockCoordinates mockCoordinates = MockCoordinates();
-        const LatLng currentLocation = LatLng(10.8231, 106.6297);
 
         controller = createController(
             mapConfiguration: const MapConfiguration(
