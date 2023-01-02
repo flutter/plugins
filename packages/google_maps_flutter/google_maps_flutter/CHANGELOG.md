@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixed a minor syntax error in `README.md` and added missing imports.
+
 ## 2.2.2
 
 * Modified `README.md` to fix minor syntax issues and added Code Excerpt to `README.md`.
