@@ -1,3 +1,7 @@
+## 0.2.2
+
+* Adds `loadSystemImage` to load system images, also known as 'sfsymbols'.
+
 ## 0.2.1+1
 
 * Add lint ignore comments
@@ -7,10 +11,6 @@
 * Updates minimum Flutter version to 3.3.0.
 * Removes usage of deprecated [ImageProvider.load].
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
-
-## 0.2.1
-
-* Adds `loadSystemImage` to load system images, also known as 'sfsymbols'.
 
 ## 0.2.0+9
 
