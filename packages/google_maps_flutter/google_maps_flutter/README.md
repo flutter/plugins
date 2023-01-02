@@ -109,6 +109,11 @@ the `GoogleMap`'s `onMapCreated` callback.
 
 <?code-excerpt "readme_sample.dart (MapSample)"?>
 ```dart
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 class MapSample extends StatefulWidget {
   const MapSample({Key? key}) : super(key: key);
 
@@ -153,6 +158,7 @@ class MapSampleState extends State<MapSample> {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
+}
 ```
 
 See the `example` directory for a complete sample app.
