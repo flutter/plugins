@@ -1,3 +1,7 @@
+## 0.10.2
+
+* Adds option to `CameraValue`s `copyWith` method to explicitly interpret optional orientation values.
+
 ## 0.10.1
 
 * Remove usage of deprecated quiver Optional type.
