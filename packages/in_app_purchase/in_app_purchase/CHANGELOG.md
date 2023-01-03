@@ -1,6 +1,6 @@
 ## 3.1.1
 
-* Adds screenshots to pubspec.yaml
+* Adds screenshots to pubspec.yaml.
 
 ## 3.1.0
 
