@@ -1041,7 +1041,6 @@ Future<void> main() async {
       ));
 
       await pageLoaded.future;
-      pageLoaded = Completer<void>();
 
       await tester.pumpWidget(Container());
       await tester.pumpAndSettle();
@@ -1054,6 +1053,7 @@ Future<void> main() async {
         },
       ));
 
+      pageLoaded = Completer<void>();
       await controller.loadRequest(
         LoadRequestParams(uri: Uri.parse(primaryUrl)),
       );
