@@ -281,4 +281,19 @@ public class WebViewTest {
     // This shouldn't throw an Exception.
     Objects.requireNonNull(webView.getWebChromeClient()).onProgressChanged(webView, 0);
   }
+
+  @Test
+  public void disposeDoesNotCallDestroy() {
+    final boolean[] destroyCalled = {false};
+    final WebViewPlatformView webView =
+        new WebViewPlatformView(mockContext, null, null) {
+          @Override
+          public void destroy() {
+            destroyCalled[0] = true;
+          }
+        };
+    webView.dispose();
+
+    assertFalse(destroyCalled[0]);
+  }
 }
