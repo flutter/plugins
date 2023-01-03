@@ -95,6 +95,11 @@ class CameraValue {
   ///
   /// Explicitly specified fields get the specified value, all other fields get
   /// the same value of the current object.
+  ///
+  /// Nullable orientations ([lockedCaptureOrientation], [recordingOrientation],
+  /// and [previewPauseOrientation]) default to current object's value if
+  /// specified as null. To have specified orientations explicitly interpreted,
+  /// set [clearNullOrientationsFlag] to true.
   CameraValue copyWith({
     bool? isInitialized,
     bool? isRecordingVideo,
