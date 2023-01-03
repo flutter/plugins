@@ -18,7 +18,6 @@ import 'test_android_webview.pigeon.dart';
   DownloadListener,
   JavaScriptChannel,
   TestDownloadListenerHostApi,
-  TestFileChooserParamsHostApi,
   TestJavaObjectHostApi,
   TestJavaScriptChannelHostApi,
   TestWebChromeClientHostApi,
@@ -892,34 +891,6 @@ void main() {
         expect(instance.acceptTypes, const <String>['my', 'list']);
         expect(instance.mode, FileChooserMode.openMultiple);
         expect(instance.filenameHint, 'filenameHint');
-      });
-
-      test('openFilePickerForResult', () async {
-        final MockTestFileChooserParamsHostApi mockApi =
-            MockTestFileChooserParamsHostApi();
-        TestFileChooserParamsHostApi.setup(mockApi);
-
-        final InstanceManager instanceManager = InstanceManager(
-          onWeakReferenceRemoved: (_) {},
-        );
-
-        final FileChooserParams instance = FileChooserParams.detached(
-          isCaptureEnabled: true,
-          acceptTypes: <String>[],
-          mode: FileChooserMode.save,
-          filenameHint: 'filenameHint',
-          instanceManager: instanceManager,
-        );
-        instanceManager.addHostCreatedInstance(instance, 0);
-
-        when(mockApi.openFilePickerForResult(0)).thenAnswer(
-          (_) => Future<List<String>>.value(<String>['my', 'files']),
-        );
-
-        await expectLater(
-          instance.openFilePickerForResult(),
-          completion(<String>['my', 'files']),
-        );
       });
     });
   });

@@ -2715,69 +2715,6 @@ public class GeneratedAndroidWebView {
       }
     }
   }
-  /**
-   * Handles methods calls to the native Java FileChooserParams class.
-   *
-   * <p>See
-   * https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
-   *
-   * <p>Generated interface from Pigeon that represents a handler of messages from Flutter.
-   */
-  public interface FileChooserParamsHostApi {
-    void openFilePickerForResult(@NonNull Long instanceId, Result<List<String>> result);
-
-    /** The codec used by FileChooserParamsHostApi. */
-    static MessageCodec<Object> getCodec() {
-      return new StandardMessageCodec();
-    }
-    /**
-     * Sets up an instance of `FileChooserParamsHostApi` to handle messages through the
-     * `binaryMessenger`.
-     */
-    static void setup(BinaryMessenger binaryMessenger, FileChooserParamsHostApi api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(
-                binaryMessenger,
-                "dev.flutter.pigeon.FileChooserParamsHostApi.openFilePickerForResult",
-                getCodec());
-        if (api != null) {
-          channel.setMessageHandler(
-              (message, reply) -> {
-                ArrayList wrapped = new ArrayList<>();
-                try {
-                  ArrayList<Object> args = (ArrayList<Object>) message;
-                  assert args != null;
-                  Number instanceIdArg = (Number) args.get(0);
-                  if (instanceIdArg == null) {
-                    throw new NullPointerException("instanceIdArg unexpectedly null.");
-                  }
-                  Result<List<String>> resultCallback =
-                      new Result<List<String>>() {
-                        public void success(List<String> result) {
-                          wrapped.add(0, result);
-                          reply.reply(wrapped);
-                        }
-
-                        public void error(Throwable error) {
-                          ArrayList<Object> wrappedError = wrapError(error);
-                          reply.reply(wrappedError);
-                        }
-                      };
-
-                  api.openFilePickerForResult(
-                      (instanceIdArg == null) ? null : instanceIdArg.longValue(), resultCallback);
-                } catch (Error | RuntimeException exception) {
-                  ArrayList<Object> wrappedError = wrapError(exception);
-                  reply.reply(wrappedError);
-                }
-              });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-    }
-  }
 
   private static class FileChooserParamsFlutterApiCodec extends StandardMessageCodec {
     public static final FileChooserParamsFlutterApiCodec INSTANCE =

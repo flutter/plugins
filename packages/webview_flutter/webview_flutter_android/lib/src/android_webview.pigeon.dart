@@ -1918,48 +1918,6 @@ class WebStorageHostApi {
   }
 }
 
-/// Handles methods calls to the native Java FileChooserParams class.
-///
-/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
-class FileChooserParamsHostApi {
-  /// Constructor for [FileChooserParamsHostApi].  The [binaryMessenger] named argument is
-  /// available for dependency injection.  If it is left null, the default
-  /// BinaryMessenger will be used which routes to the host platform.
-  FileChooserParamsHostApi({BinaryMessenger? binaryMessenger})
-      : _binaryMessenger = binaryMessenger;
-  final BinaryMessenger? _binaryMessenger;
-
-  static const MessageCodec<Object?> codec = StandardMessageCodec();
-
-  Future<List<String?>> openFilePickerForResult(int arg_instanceId) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.FileChooserParamsHostApi.openFilePickerForResult',
-        codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_instanceId]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as List<Object?>?)!.cast<String?>();
-    }
-  }
-}
-
 class _FileChooserParamsFlutterApiCodec extends StandardMessageCodec {
   const _FileChooserParamsFlutterApiCodec();
   @override

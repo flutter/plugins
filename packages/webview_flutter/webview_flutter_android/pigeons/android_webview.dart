@@ -323,15 +323,6 @@ abstract class WebStorageHostApi {
   void deleteAllData(int instanceId);
 }
 
-/// Handles methods calls to the native Java FileChooserParams class.
-///
-/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
-@HostApi(dartHostTestHandler: 'TestFileChooserParamsHostApi')
-abstract class FileChooserParamsHostApi {
-  @async
-  List<String> openFilePickerForResult(int instanceId);
-}
-
 /// Handles callbacks methods for the native Java FileChooserParams class.
 ///
 /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.

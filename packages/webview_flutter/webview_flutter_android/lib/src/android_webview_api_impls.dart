@@ -877,27 +877,6 @@ class WebStorageHostApiImpl extends WebStorageHostApi {
   }
 }
 
-/// Host api implementation for [FileChooserParams].
-class FileChooserParamsHostApiImpl extends FileChooserParamsHostApi {
-  /// Constructs a [FileChooserParamsHostApiImpl].
-  FileChooserParamsHostApiImpl({
-    super.binaryMessenger,
-    InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
-
-  /// Maintains instances stored to communicate with java objects.
-  final InstanceManager instanceManager;
-
-  /// Helper method to convert instances ids to objects.
-  Future<List<String>> openFilePickerForResultFromInstance(
-    FileChooserParams params,
-  ) async {
-    final List<String?> result =
-        await openFilePickerForResult(instanceManager.getIdentifier(params)!);
-    return result.cast<String>();
-  }
-}
-
 /// Flutter api implementation for [FileChooserParams].
 class FileChooserParamsFlutterApiImpl extends FileChooserParamsFlutterApi {
   /// Constructs a [FileChooserParamsFlutterApiImpl].

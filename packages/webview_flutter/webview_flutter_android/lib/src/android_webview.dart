@@ -959,13 +959,7 @@ class FileChooserParams extends JavaObject {
     required this.mode,
     super.binaryMessenger,
     super.instanceManager,
-  })  : _fileChooserParamsApi = FileChooserParamsHostApiImpl(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-        ),
-        super.detached();
-
-  final FileChooserParamsHostApiImpl _fileChooserParamsApi;
+  }) : super.detached();
 
   /// Preference for a live media captured value (e.g. Camera, Microphone).
   final bool isCaptureEnabled;
@@ -978,19 +972,6 @@ class FileChooserParams extends JavaObject {
 
   /// Mode of how to select files for a file chooser.
   final FileChooserMode mode;
-
-  /// Start a generic file picker for file selection.
-  ///
-  /// This method isn't a part of the Java `FileChooserParams` class. It is a
-  /// helper method that creates an Android `Intent` from this object and starts
-  /// a file picker activity to choose files.
-  ///
-  /// Throws [PlatformException] if the request was canceled or failed.
-  ///
-  /// Returns a list of file paths.
-  Future<List<String>> openFilePickerForResult() {
-    return _fileChooserParamsApi.openFilePickerForResultFromInstance(this);
-  }
 
   @override
   FileChooserParams copy() {
