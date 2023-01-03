@@ -325,7 +325,7 @@ class AndroidJavaScriptChannelParams extends JavaScriptChannelParams {
   })  : assert(name.isNotEmpty),
         _javaScriptChannel = webViewProxy.createJavaScriptChannel(
           name,
-          postMessage: withWeakRefenceTo(
+          postMessage: withWeakReferenceTo(
             onMessageReceived,
             (WeakReference<void Function(JavaScriptMessage)> weakReference) {
               return (
