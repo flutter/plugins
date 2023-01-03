@@ -1,6 +1,6 @@
 ## 2.2.3
 
-* Fixed a minor syntax error in `README.md`.
+* Fixes a minor syntax error in `README.md`.
 
 ## 2.2.2
 
