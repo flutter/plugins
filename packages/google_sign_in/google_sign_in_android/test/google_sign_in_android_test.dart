@@ -111,6 +111,7 @@ void main() {
         'scopes': <String>['two', 'scopes'],
         'signInOption': 'SignInOption.games',
         'clientId': 'fakeClientId',
+        'serverClientId': null,
         'forceCodeForRefreshToken': false,
       }),
       () {
@@ -119,12 +120,14 @@ void main() {
             scopes: <String>['two', 'scopes'],
             signInOption: SignInOption.games,
             clientId: 'fakeClientId',
+            serverClientId: 'fakeServerClientId',
             forceCodeForRefreshToken: true));
       }: isMethodCall('init', arguments: <String, dynamic>{
         'hostedDomain': 'example.com',
         'scopes': <String>['two', 'scopes'],
         'signInOption': 'SignInOption.games',
         'clientId': 'fakeClientId',
+        'serverClientId': 'fakeServerClientId',
         'forceCodeForRefreshToken': true,
       }),
       () {

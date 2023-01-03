@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
-          final List<XFile>? pickedFileList = await _picker.pickMultiImage(
+          final List<XFile> pickedFileList = await _picker.pickMultiImage(
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             imageQuality: quality,

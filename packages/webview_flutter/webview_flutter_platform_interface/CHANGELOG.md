@@ -1,3 +1,10 @@
+## 2.0.0
+
+* **Breaking Change**: Releases new interface. See [documentation](https://pub.dev/documentation/webview_flutter_platform_interface/2.0.0/) and [design doc](https://flutter.dev/go/webview_flutter_4_interface)
+  for more details.
+* **Breaking Change**: Removes MethodChannel implementation of interface. All platform
+  implementations will now need to create their own by implementing `WebViewPlatform`.
+
 ## 1.9.5
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.

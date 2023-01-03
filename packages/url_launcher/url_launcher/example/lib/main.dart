@@ -196,7 +196,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () => setState(() {
                   _launched = _launchInWebViewOrVC(toLaunch);
                   Timer(const Duration(seconds: 5), () {
-                    print('Closing WebView after 5 seconds...');
                     closeInAppWebView();
                   });
                 }),

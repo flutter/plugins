@@ -216,26 +216,29 @@
     result(@YES);
   } else {
     switch (error.code) {
-      case LAErrorPasscodeNotSet:
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      // TODO(stuartmorgan): Remove the pragma and s/TouchID/Biometry/ in these constants when
-      // iOS 10 support is dropped. The values are the same, only the names have changed.
+        // TODO(stuartmorgan): Remove the pragma and s/TouchID/Biometry/ in these constants when
+        // iOS 10 support is dropped. The values are the same, only the names have changed.
       case LAErrorTouchIDNotAvailable:
       case LAErrorTouchIDNotEnrolled:
       case LAErrorTouchIDLockout:
 #pragma clang diagnostic pop
       case LAErrorUserFallback:
+      case LAErrorPasscodeNotSet:
+      case LAErrorAuthenticationFailed:
         [self handleErrors:error flutterArguments:arguments withFlutterResult:result];
         return;
       case LAErrorSystemCancel:
         if ([arguments[@"stickyAuth"] boolValue]) {
           self->_lastCallArgs = arguments;
           self->_lastResult = result;
-          return;
+        } else {
+          result(@NO);
         }
+        return;
     }
-    result(@NO);
+    [self handleErrors:error flutterArguments:arguments withFlutterResult:result];
   }
 }
 
