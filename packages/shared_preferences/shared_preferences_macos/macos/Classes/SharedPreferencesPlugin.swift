@@ -5,44 +5,36 @@
 import FlutterMacOS
 import Foundation
 
-public class SharedPreferencesPlugin: NSObject, FlutterPlugin {
+public class SharedPreferencesPlugin: NSObject, FlutterPlugin, UserDefaultsApi {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(
-      name: "plugins.flutter.io/shared_preferences_macos",
-      binaryMessenger: registrar.messenger)
     let instance = SharedPreferencesPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
+    UserDefaultsApiSetup.setUp(binaryMessenger: registrar.messenger, api: instance)
   }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch call.method {
-    case "getAll":
-      result(getAllPrefs())
-    case "setBool",
-         "setInt",
-         "setDouble",
-         "setString",
-         "setStringList":
-      let arguments = call.arguments as! [String: Any]
-      let key = arguments["key"] as! String
-      UserDefaults.standard.set(arguments["value"], forKey: key)
-      result(true)
-    case "commit":
-      // UserDefaults does not need to be synchronized.
-      result(true)
-    case "remove":
-      let arguments = call.arguments as! [String: Any]
-      let key = arguments["key"] as! String
-      UserDefaults.standard.removeObject(forKey: key)
-      result(true)
-    case "clear":
-      let defaults = UserDefaults.standard
-      for (key, _) in getAllPrefs() {
-        defaults.removeObject(forKey: key)
-      }
-      result(true)
-    default:
-      result(FlutterMethodNotImplemented)
+  func getAll() -> [String? : Any?] {
+    return getAllPrefs();
+  }
+
+  func setBool(key: String, value: Bool) {
+    UserDefaults.standard.set(value, forKey: key)
+  }
+
+  func setDouble(key: String, value: Double) {
+    UserDefaults.standard.set(value, forKey: key)
+  }
+
+  func setValue(key: String, value: Any) {
+    UserDefaults.standard.set(value, forKey: key)
+  }
+
+  func remove(key: String) {
+    UserDefaults.standard.removeObject(forKey: key)
+  }
+
+  func clear() {
+    let defaults = UserDefaults.standard
+    for (key, _) in getAllPrefs() {
+      defaults.removeObject(forKey: key)
     }
   }
 }
