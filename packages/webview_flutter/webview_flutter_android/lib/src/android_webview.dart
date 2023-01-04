@@ -939,7 +939,10 @@ class WebChromeClient extends JavaObject {
 
   @override
   WebChromeClient copy() {
-    return WebChromeClient.detached(onProgressChanged: onProgressChanged);
+    return WebChromeClient.detached(
+      onProgressChanged: onProgressChanged,
+      onShowFileChooser: onShowFileChooser,
+    );
   }
 }
 

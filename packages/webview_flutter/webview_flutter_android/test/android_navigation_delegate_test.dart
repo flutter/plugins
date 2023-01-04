@@ -495,6 +495,7 @@ class CapturingWebViewClient extends android_webview.WebViewClient {
 class CapturingWebChromeClient extends android_webview.WebChromeClient {
   CapturingWebChromeClient({
     super.onProgressChanged,
+    super.onShowFileChooser,
   }) : super.detached() {
     lastCreatedDelegate = this;
   }

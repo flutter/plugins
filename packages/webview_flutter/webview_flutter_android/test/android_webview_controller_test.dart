@@ -57,9 +57,14 @@ void main() {
         AndroidWebViewControllerCreationParams(
             androidWebStorage: mockWebStorage ?? MockWebStorage(),
             androidWebViewProxy: AndroidWebViewProxy(
-              createAndroidWebChromeClient: (
-                      {void Function(android_webview.WebView, int)?
-                          onProgressChanged}) =>
+              createAndroidWebChromeClient: ({
+                void Function(android_webview.WebView, int)? onProgressChanged,
+                Future<List<String>> Function(
+                  android_webview.WebView webView,
+                  android_webview.FileChooserParams params,
+                )?
+                    onShowFileChooser,
+              }) =>
                   mockWebChromeClient ?? MockWebChromeClient(),
               createAndroidWebView: ({required bool useHybridComposition}) =>
                   nonNullMockWebView,
