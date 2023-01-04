@@ -162,7 +162,8 @@ FWFWKNavigationActionData *FWFWKNavigationActionDataFromNavigationAction(
     WKNavigationAction *action) {
   return [FWFWKNavigationActionData
       makeWithRequest:FWFNSUrlRequestDataFromNSURLRequest(action.request)
-          targetFrame:FWFWKFrameInfoDataFromWKFrameInfo(action.targetFrame)];
+          targetFrame:FWFWKFrameInfoDataFromWKFrameInfo(action.targetFrame)
+       navigationType:FWFWKNavigationTypeFromWKNavigationType(action.navigationType)];
 }
 
 FWFNSUrlRequestData *FWFNSUrlRequestDataFromNSURLRequest(NSURLRequest *request) {
@@ -217,4 +218,21 @@ FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChan
 
 FWFWKScriptMessageData *FWFWKScriptMessageDataFromWKScriptMessage(WKScriptMessage *message) {
   return [FWFWKScriptMessageData makeWithName:message.name body:message.body];
+}
+
+FWFWKNavigationType FWFWKNavigationTypeFromWKNavigationType(WKNavigationType type) {
+  switch (type) {
+    case WKNavigationTypeLinkActivated:
+      return FWFWKNavigationTypeLinkActivated;
+    case WKNavigationTypeFormSubmitted:
+      return FWFWKNavigationTypeFormResubmitted;
+    case WKNavigationTypeBackForward:
+      return FWFWKNavigationTypeBackForward;
+    case WKNavigationTypeReload:
+      return FWFWKNavigationTypeReload;
+    case WKNavigationTypeFormResubmitted:
+      return FWFWKNavigationTypeFormResubmitted;
+    case WKNavigationTypeOther:
+      return FWFWKNavigationTypeOther;
+  }
 }

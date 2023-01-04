@@ -46,6 +46,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
               VIEW_TYPE,
               new GoogleMapFactory(
                   registrar.messenger(),
+                  registrar.context(),
                   new LifecycleProvider() {
                     @Override
                     public Lifecycle getLifecycle() {
@@ -57,7 +58,10 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
           .platformViewRegistry()
           .registerViewFactory(
               VIEW_TYPE,
-              new GoogleMapFactory(registrar.messenger(), new ProxyLifecycleProvider(activity)));
+              new GoogleMapFactory(
+                  registrar.messenger(),
+                  registrar.context(),
+                  new ProxyLifecycleProvider(activity)));
     }
   }
 
@@ -73,6 +77,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
             VIEW_TYPE,
             new GoogleMapFactory(
                 binding.getBinaryMessenger(),
+                binding.getApplicationContext(),
                 new LifecycleProvider() {
                   @Nullable
                   @Override

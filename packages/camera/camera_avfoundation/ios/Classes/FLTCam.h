@@ -50,6 +50,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)captureToFile:(FLTThreadSafeFlutterResult *)result API_AVAILABLE(ios(10));
 - (void)close;
 - (void)startVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result;
+/**
+ * Starts recording a video with an optional streaming messenger.
+ * If the messenger is non-null then it will be called for each
+ * captured frame, allowing streaming concurrently with recording.
+ *
+ * @param messenger Nullable messenger for capturing each frame.
+ */
+- (void)startVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result
+                messengerForStreaming:(nullable NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result;
 - (void)pauseVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result;
 - (void)resumeVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result;
