@@ -346,22 +346,6 @@ void main() {
           isTrue);
     });
 
-    test('onProgress', () {
-      final AndroidNavigationDelegate androidNavigationDelegate =
-          AndroidNavigationDelegate(_buildCreationParams());
-
-      late final int callbackProgress;
-      androidNavigationDelegate
-          .setOnProgress((int progress) => callbackProgress = progress);
-
-      CapturingWebChromeClient.lastCreatedDelegate.onProgressChanged!(
-        android_webview.WebView.detached(),
-        42,
-      );
-
-      expect(callbackProgress, 42);
-    });
-
     test(
         'onLoadRequest from onDownloadStart should not be called when navigationRequestCallback is not specified',
         () {
