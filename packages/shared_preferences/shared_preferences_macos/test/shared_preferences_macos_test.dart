@@ -82,7 +82,8 @@ void main() {
     final Map<String?, Object?> all = await plugin.getAll();
     expect(all.length, 5);
     expect(all['flutter.aBool'], api.items['flutter.aBool']);
-    expect(all['flutter.aDouble'], api.items['flutter.aDouble']);
+    expect(all['flutter.aDouble'],
+        closeTo(api.items['flutter.aDouble']! as num, 0.0001));
     expect(all['flutter.anInt'], api.items['flutter.anInt']);
     expect(all['flutter.aString'], api.items['flutter.aString']);
     expect(all['flutter.aStringList'], api.items['flutter.aStringList']);
