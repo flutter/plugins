@@ -1,6 +1,6 @@
-## 3.1.2
+## 3.2.0
 
-* Adds support for receiving Java callback `WebChromeClient.onShowFileChooser` with internal class.
+* Adds support for handling file selection.
 * Updates pigeon dev dependency to `4.2.14`.
 
 ## 3.1.1
