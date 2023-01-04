@@ -30,6 +30,8 @@ android {
         consumerProguardFiles 'proguard.txt'
     }
     lintOptions {
+        // TODO(stuartmorgan): Enable when gradle is updated.
+        // disable 'AndroidGradlePluginVersion'
         disable 'InvalidPackage'
         disable 'GradleDependency'
     }

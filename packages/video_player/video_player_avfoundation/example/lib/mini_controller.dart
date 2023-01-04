@@ -157,7 +157,7 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
 
   /// Constructs a [MiniController] playing a video from obtained from a file.
   MiniController.file(File file)
-      : dataSource = 'file://${file.path}',
+      : dataSource = Uri.file(file.absolute.path).toString(),
         dataSourceType = DataSourceType.file,
         package = null,
         super(VideoPlayerValue(duration: Duration.zero));
@@ -331,7 +331,7 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
 
   /// The position in the current video.
   Future<Duration?> get position async {
-    return await _platform.getPosition(_textureId);
+    return _platform.getPosition(_textureId);
   }
 
   /// Sets the video's current timestamp to be at [position].
@@ -389,11 +389,6 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
 
   void _updatePosition(Duration position) {
     value = value.copyWith(position: position);
-  }
-
-  @override
-  void removeListener(VoidCallback listener) {
-    super.removeListener(listener);
   }
 }
 

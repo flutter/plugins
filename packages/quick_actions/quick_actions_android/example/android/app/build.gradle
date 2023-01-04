@@ -27,7 +27,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 def androidXTestVersion = '1.2.0'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
 
     lintOptions {
         disable 'InvalidPackage'

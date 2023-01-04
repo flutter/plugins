@@ -1,5 +1,6 @@
-## NEXT
+## 0.1.0+3
 
+* Changes XTypeGroup initialization from final to const.
 * Updates minimum Flutter version to 2.10.
 
 ## 0.1.0+2

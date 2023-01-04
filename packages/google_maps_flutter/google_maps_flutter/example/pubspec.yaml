@@ -7,7 +7,7 @@ environment:
   flutter: ">=2.10.0"
 
 dependencies:
-  cupertino_icons: ^0.1.0
+  cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
@@ -22,7 +22,8 @@ dependencies:
   google_maps_flutter_platform_interface: ^2.2.1
 
 dev_dependencies:
-  espresso: ^0.1.0+2
+  build_runner: ^2.1.10
+  espresso: ^0.2.0
   flutter_driver:
     sdk: flutter
   flutter_test:

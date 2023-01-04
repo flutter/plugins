@@ -1,3 +1,7 @@
+## 0.9.0+3
+
+* Changes XTypeGroup initialization from final to const.
+
 ## 0.9.0+2
 
 * Updates imports for `prefer_relative_imports`.

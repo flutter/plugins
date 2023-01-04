@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-// ignore_for_file: prefer_const_literals_to_create_immutables
-
 import 'package:file_selector_linux/file_selector_linux.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/services.dart';
@@ -32,18 +29,14 @@ void main() {
 
   group('#openFile', () {
     test('passes the accepted type groups correctly', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
         label: 'image',
         extensions: <String>['jpg'],
         mimeTypes: <String>['image/jpg'],
@@ -108,9 +101,7 @@ void main() {
     });
 
     test('throws for a type group that does not support Linux', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'images',
         webWildCards: <String>['images/*'],
       );
@@ -121,9 +112,7 @@ void main() {
     });
 
     test('passes a wildcard group correctly', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'any',
       );
 
@@ -150,18 +139,14 @@ void main() {
 
   group('#openFiles', () {
     test('passes the accepted type groups correctly', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
         label: 'image',
         extensions: <String>['jpg'],
         mimeTypes: <String>['image/jpg'],
@@ -226,9 +211,7 @@ void main() {
     });
 
     test('throws for a type group that does not support Linux', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'images',
         webWildCards: <String>['images/*'],
       );
@@ -239,9 +222,7 @@ void main() {
     });
 
     test('passes a wildcard group correctly', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'any',
       );
 
@@ -268,18 +249,14 @@ void main() {
 
   group('#getSavePath', () {
     test('passes the accepted type groups correctly', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'text',
         extensions: <String>['txt'],
         mimeTypes: <String>['text/plain'],
         macUTIs: <String>['public.text'],
       );
 
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup groupTwo = XTypeGroup(
+      const XTypeGroup groupTwo = XTypeGroup(
         label: 'image',
         extensions: <String>['jpg'],
         mimeTypes: <String>['image/jpg'],
@@ -345,9 +322,7 @@ void main() {
     });
 
     test('throws for a type group that does not support Linux', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'images',
         webWildCards: <String>['images/*'],
       );
@@ -358,9 +333,7 @@ void main() {
     });
 
     test('passes a wildcard group correctly', () async {
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_constructors
-      final XTypeGroup group = XTypeGroup(
+      const XTypeGroup group = XTypeGroup(
         label: 'any',
       );
 

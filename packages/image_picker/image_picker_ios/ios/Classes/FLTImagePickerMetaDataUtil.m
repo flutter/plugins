@@ -42,7 +42,7 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
 }
 
 + (NSDictionary *)getMetaDataFromImageData:(NSData *)imageData {
-  CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
+  CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
   NSDictionary *metadata =
       (NSDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
   CFRelease(source);

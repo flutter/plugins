@@ -1,3 +1,9 @@
+## NEXT
+
+* Updates code for new analysis options.
+* Re-enable XCUITests: testUserInterface.
+* Remove unnecessary `RunnerUITests` target from Podfile of the example app.
+
 ## 2.1.12
 
 * Updates imports for `prefer_relative_imports`.

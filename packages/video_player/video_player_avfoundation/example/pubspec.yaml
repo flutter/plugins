@@ -16,7 +16,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  video_player_platform_interface: ">=4.2.0 <6.0.0"
+  video_player_platform_interface: ">=4.2.0 <7.0.0"
 
 dev_dependencies:
   flutter_driver:

@@ -15,15 +15,9 @@ class OpenImagePage extends StatelessWidget {
   const OpenImagePage({Key? key}) : super(key: key);
 
   Future<void> _openImageFile(BuildContext context) async {
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
-    final XTypeGroup typeGroup = XTypeGroup(
+    const XTypeGroup typeGroup = XTypeGroup(
       label: 'images',
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_literals_to_create_immutables
       extensions: <String>['jpg', 'png'],
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_literals_to_create_immutables
       macUTIs: <String>['public.image'],
     );
     final XFile? file = await FileSelectorPlatform.instance

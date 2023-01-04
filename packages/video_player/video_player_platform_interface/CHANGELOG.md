@@ -2,6 +2,10 @@
 
 * Added support for picture in picture on iOS
 
+## 6.0.1
+
+* Fixes comment describing file URI construction.
+
 ## 6.0.0
 
 * **BREAKING CHANGE**: Removes `MethodChannelVideoPlayer`. The default

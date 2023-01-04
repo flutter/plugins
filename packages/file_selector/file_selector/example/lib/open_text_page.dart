@@ -12,12 +12,8 @@ class OpenTextPage extends StatelessWidget {
   const OpenTextPage({Key? key}) : super(key: key);
 
   Future<void> _openTextFile(BuildContext context) async {
-    // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-    // ignore: prefer_const_constructors
-    final XTypeGroup typeGroup = XTypeGroup(
+    const XTypeGroup typeGroup = XTypeGroup(
       label: 'text',
-      // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-      // ignore: prefer_const_literals_to_create_immutables
       extensions: <String>['txt', 'json'],
     );
     // This demonstrates using an initial directory for the prompt, which should

@@ -1,3 +1,15 @@
+## 2.3.2
+
+* Updates MethodChannelCamera to have startVideoRecording call the newer startVideoCapturing.
+
+## 2.3.1
+
+* Exports VideoCaptureOptions to allow dependencies to implement concurrent stream and record.
+
+## 2.3.0
+
+* Adds new capture method for a camera to allow concurrent streaming and recording.
+
 ## 2.2.2
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.

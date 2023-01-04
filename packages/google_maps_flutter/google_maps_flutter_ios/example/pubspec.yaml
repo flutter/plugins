@@ -7,7 +7,7 @@ environment:
   flutter: ">=2.10.0"
 
 dependencies:
-  cupertino_icons: ^0.1.0
+  cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1

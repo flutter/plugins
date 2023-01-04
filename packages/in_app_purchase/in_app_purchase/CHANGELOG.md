@@ -1,6 +1,15 @@
-## NEXT
+## 3.1.1
+
+* Adds screenshots to pubspec.yaml.
+
+## 3.1.0
+
+* Adds macOS as a supported platform.
+
+## 3.0.8
 
 * Updates minimum Flutter version to 2.10.
+* Bumps minimum in_app_purchase_android to 0.2.3.
 
 ## 3.0.7
 
