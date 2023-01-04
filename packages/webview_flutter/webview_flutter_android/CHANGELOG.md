@@ -1,6 +1,6 @@
 ## 3.2.0
 
-* Adds support for handling file selection.
+* Adds support for handling file selection. See `AndroidWebViewController.setOnShowFileSelector`.
 * Updates pigeon dev dependency to `4.2.14`.
 
 ## 3.1.1
