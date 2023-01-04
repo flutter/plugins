@@ -13,7 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:shared_preferences_macos/messages.g.dart';
 
-
 abstract class TestUserDefaultsApi {
   static const MessageCodec<Object?> codec = StandardMessageCodec();
 
@@ -29,7 +28,8 @@ abstract class TestUserDefaultsApi {
 
   void clear();
 
-  static void setup(TestUserDefaultsApi? api, {BinaryMessenger? binaryMessenger}) {
+  static void setup(TestUserDefaultsApi? api,
+      {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.UserDefaultsApi.remove', codec,
@@ -39,10 +39,11 @@ abstract class TestUserDefaultsApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.UserDefaultsApi.remove was null.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.remove was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
-          assert(arg_key != null, 'Argument for dev.flutter.pigeon.UserDefaultsApi.remove was null, expected non-null String.');
+          assert(arg_key != null,
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.remove was null, expected non-null String.');
           api.remove(arg_key!);
           return <Object?>[];
         });
@@ -57,12 +58,14 @@ abstract class TestUserDefaultsApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.UserDefaultsApi.setBool was null.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setBool was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
-          assert(arg_key != null, 'Argument for dev.flutter.pigeon.UserDefaultsApi.setBool was null, expected non-null String.');
+          assert(arg_key != null,
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setBool was null, expected non-null String.');
           final bool? arg_value = (args[1] as bool?);
-          assert(arg_value != null, 'Argument for dev.flutter.pigeon.UserDefaultsApi.setBool was null, expected non-null bool.');
+          assert(arg_value != null,
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setBool was null, expected non-null bool.');
           api.setBool(arg_key!, arg_value!);
           return <Object?>[];
         });
@@ -77,12 +80,14 @@ abstract class TestUserDefaultsApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.UserDefaultsApi.setDouble was null.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setDouble was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
-          assert(arg_key != null, 'Argument for dev.flutter.pigeon.UserDefaultsApi.setDouble was null, expected non-null String.');
+          assert(arg_key != null,
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setDouble was null, expected non-null String.');
           final double? arg_value = (args[1] as double?);
-          assert(arg_value != null, 'Argument for dev.flutter.pigeon.UserDefaultsApi.setDouble was null, expected non-null double.');
+          assert(arg_value != null,
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setDouble was null, expected non-null double.');
           api.setDouble(arg_key!, arg_value!);
           return <Object?>[];
         });
@@ -97,12 +102,14 @@ abstract class TestUserDefaultsApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.UserDefaultsApi.setValue was null.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setValue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
-          assert(arg_key != null, 'Argument for dev.flutter.pigeon.UserDefaultsApi.setValue was null, expected non-null String.');
+          assert(arg_key != null,
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setValue was null, expected non-null String.');
           final Object? arg_value = (args[1] as Object?);
-          assert(arg_value != null, 'Argument for dev.flutter.pigeon.UserDefaultsApi.setValue was null, expected non-null Object.');
+          assert(arg_value != null,
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setValue was null, expected non-null Object.');
           api.setValue(arg_key!, arg_value!);
           return <Object?>[];
         });
