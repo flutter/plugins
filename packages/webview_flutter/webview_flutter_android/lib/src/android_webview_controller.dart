@@ -74,6 +74,8 @@ class AndroidWebViewController extends PlatformWebViewController {
     _webView.settings.setUseWideViewPort(true);
     _webView.settings.setDisplayZoomControls(false);
     _webView.settings.setBuiltInZoomControls(true);
+
+    _webView.setWebChromeClient(_webChromeClient);
   }
 
   AndroidWebViewControllerCreationParams get _androidWebViewParams =>
@@ -88,6 +90,30 @@ class AndroidWebViewController extends PlatformWebViewController {
     // https://github.com/flutter/flutter/issues/108106
     useHybridComposition: true,
   );
+
+  late final android_webview.WebChromeClient _webChromeClient =
+      withWeakReferenceTo(this,
+          (WeakReference<AndroidWebViewController> weakReference) {
+    return _androidWebViewParams.androidWebViewProxy
+        .createAndroidWebChromeClient(
+      onProgressChanged: (android_webview.WebView webView, int progress) {
+        if (weakReference.target?._currentNavigationDelegate._onProgress !=
+            null) {
+          weakReference
+              .target!._currentNavigationDelegate._onProgress!(progress);
+        }
+      },
+      onShowFileChooser: (android_webview.WebView webView,
+          android_webview.FileChooserParams params) async {
+        if (weakReference.target?._onShowFileSelectorCallback != null) {
+          return weakReference.target!._onShowFileSelectorCallback!(
+            FileSelectorParams._fromFileChooserParams(params),
+          );
+        }
+        return <String>[];
+      },
+    );
+  });
 
   /// The native [android_webview.FlutterAssetManager] allows managing assets.
   late final android_webview.FlutterAssetManager _flutterAssetManager =
@@ -214,7 +240,6 @@ class AndroidWebViewController extends PlatformWebViewController {
     _currentNavigationDelegate = handler;
     handler.setOnLoadRequest(loadRequest);
     _webView.setWebViewClient(handler.androidWebViewClient);
-    _webView.setWebChromeClient(handler.androidWebChromeClient);
     _webView.setDownloadListener(handler.androidDownloadListener);
   }
 
@@ -314,35 +339,13 @@ class AndroidWebViewController extends PlatformWebViewController {
   /// Sets the callback that is invoked when the client should show a file
   /// selector.
   Future<void> setOnShowFileSelector(
-    Future<List<String>> Function(FileSelectorParams params)
-        onShowFileSelectorCallback,
-  ) async {
-    if (_currentNavigationDelegate != null) {
-      _currentNavigationDelegate._onShowFileSelectorCallback =
-          _onShowFileSelectorCallback;
-    } else {
-      _onShowFileSelectorCallback = onShowFileSelectorCallback;
-      _webView.setWebChromeClient(
-        android_webview.WebChromeClient(
-          onShowFileChooser: withWeakReferenceTo(
-            onShowFileSelectorCallback,
-            (
-              WeakReference<Future<List<String>> Function(FileSelectorParams)>
-                  weakReference,
-            ) {
-              return (
-                android_webview.WebView webView,
-                android_webview.FileChooserParams params,
-              ) {
-                return onShowFileSelectorCallback(
-                  FileSelectorParams._fromFileChooserParams(params),
-                );
-              };
-            },
-          ),
-        ),
-      );
-    }
+    Future<List<String>> Function(FileSelectorParams params)?
+        onShowFileSelector,
+  ) {
+    _onShowFileSelectorCallback = onShowFileSelector;
+    return _webChromeClient.setSynchronousReturnValueForOnShowFileChooser(
+      onShowFileSelector != null,
+    );
   }
 }
 
@@ -692,25 +695,6 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
     final WeakReference<AndroidNavigationDelegate> weakThis =
         WeakReference<AndroidNavigationDelegate>(this);
 
-    _webChromeClient = (this.params as AndroidNavigationDelegateCreationParams)
-        .androidWebViewProxy
-        .createAndroidWebChromeClient(
-      onProgressChanged: (android_webview.WebView webView, int progress) {
-        if (weakThis.target?._onProgress != null) {
-          weakThis.target!._onProgress!(progress);
-        }
-      },
-      onShowFileChooser: (android_webview.WebView webView,
-          android_webview.FileChooserParams params) async {
-        if (weakThis.target?._onShowFileSelectorCallback != null) {
-          return weakThis.target!._onShowFileSelectorCallback!(
-            FileSelectorParams._fromFileChooserParams(params),
-          );
-        }
-        return <String>[];
-      },
-    );
-
     _webViewClient = (this.params as AndroidNavigationDelegateCreationParams)
         .androidWebViewProxy
         .createAndroidWebViewClient(
@@ -792,11 +776,18 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
     );
   }
 
-  late final android_webview.WebChromeClient _webChromeClient;
+  AndroidNavigationDelegateCreationParams get _androidParams =>
+      params as AndroidNavigationDelegateCreationParams;
+
+  late final android_webview.WebChromeClient _webChromeClient =
+      _androidParams.androidWebViewProxy.createAndroidWebChromeClient();
 
   /// Gets the native [android_webview.WebChromeClient] that is bridged by this [AndroidNavigationDelegate].
   ///
   /// Used by the [AndroidWebViewController] to set the `android_webview.WebView.setWebChromeClient`.
+  @Deprecated(
+    'This value is not used by `AndroidWebViewController` and has no effect on the `WebView`.',
+  )
   android_webview.WebChromeClient get androidWebChromeClient =>
       _webChromeClient;
 
@@ -821,8 +812,6 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
   WebResourceErrorCallback? _onWebResourceError;
   NavigationRequestCallback? _onNavigationRequest;
   LoadRequestCallback? _onLoadRequest;
-  Future<List<String>> Function(FileSelectorParams params)?
-      _onShowFileSelectorCallback;
 
   void _handleNavigation(
     String url, {
