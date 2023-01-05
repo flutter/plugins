@@ -4,7 +4,8 @@
 
 import 'dart:async';
 
-import 'package:camera_platform_interface/camera_platform_interface.dart' show DeviceOrientationChangedEvent;
+import 'package:camera_platform_interface/camera_platform_interface.dart'
+    show DeviceOrientationChangedEvent;
 import 'package:flutter/services.dart';
 
 import 'android_camera_camerax_flutter_api_impls.dart';
@@ -18,23 +19,28 @@ class SystemServices {
   static final StreamController<bool> cameraPermissionsStreamController =
       StreamController<bool>.broadcast();
 
-  static final StreamController<DeviceOrientationChangedEvent> deviceOrientationChangedStreamController =
-    StreamController<DeviceOrientationChangedEvent>.broadcast();
+  static final StreamController<DeviceOrientationChangedEvent>
+      deviceOrientationChangedStreamController =
+      StreamController<DeviceOrientationChangedEvent>.broadcast();
 
-  static Future<bool> requestCameraPermissions(bool enableAudio, {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
+  static Future<bool> requestCameraPermissions(bool enableAudio,
+      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
     SystemServicesHostApiImpl api = SystemServicesHostApiImpl(
         binaryMessenger: binaryMessenger, instanceManager: instanceManager);
-    
+
     return api.requestCameraPermissionsFromInstance(enableAudio);
   }
 
-  static void startListeningForDeviceOrientationChange(bool isFrontFacing, int sensorOrientation, {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
+  static void startListeningForDeviceOrientationChange(
+      bool isFrontFacing, int sensorOrientation,
+      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
-    SystemServicesHostApi api = SystemServicesHostApi(
-        binaryMessenger: binaryMessenger);
-    
-    api.startListeningForDeviceOrientationChange(isFrontFacing, sensorOrientation);
+    SystemServicesHostApi api =
+        SystemServicesHostApi(binaryMessenger: binaryMessenger);
+
+    api.startListeningForDeviceOrientationChange(
+        isFrontFacing, sensorOrientation);
   }
 }
 
@@ -42,7 +48,7 @@ class SystemServices {
 class SystemServicesHostApiImpl extends SystemServicesHostApi {
   /// Creates a [SystemServicesHostApiImpl].
   SystemServicesHostApiImpl(
-    {this.binaryMessenger, InstanceManager? instanceManager})
+      {this.binaryMessenger, InstanceManager? instanceManager})
       : super(binaryMessenger: binaryMessenger) {
     this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
   }
@@ -55,17 +61,17 @@ class SystemServicesHostApiImpl extends SystemServicesHostApi {
 
   /// Maintains instances stored to communicate with native language objects.
   late final InstanceManager instanceManager;
-  
+
   Future<bool> requestCameraPermissionsFromInstance(bool enableAudio) async {
     requestCameraPermissions(enableAudio);
-    print('CAMILLE host api call is finished');
 
-  try {
-      await for (final bool result in SystemServices.cameraPermissionsStreamController.stream) {
-        print('CAMILLE result $result');
+    try {
+      await for (final bool result
+          in SystemServices.cameraPermissionsStreamController.stream) {
         return result;
       }
     } catch (e) {
+      // TODO(camsim99): Actually throw error here
       return false;
     }
     return false;
@@ -90,10 +96,15 @@ class SystemServicesFlutterApiImpl implements SystemServicesFlutterApi {
   final InstanceManager instanceManager;
 
   @override
-  void onCameraPermissionsRequestResult(String resultCode, String resultMessage) {
-    // TODO(camsim99): Actually decode and handle results here
-    print('CAMILLE: Value being added to stream!');
-    SystemServices.cameraPermissionsStreamController.add(true);
+  void onCameraPermissionsRequestResult(
+      String? errorCode, String? errorMessage) {
+    // TODO(camsim99): Expand on this to throw appropriate error.
+    bool result = false;
+    if (errorCode == null) {
+      result = true;
+    }
+
+    SystemServices.cameraPermissionsStreamController.add(result);
   }
 
   @override
@@ -102,11 +113,12 @@ class SystemServicesFlutterApiImpl implements SystemServicesFlutterApi {
     if (deviceOrientation == null) {
       return;
     }
-    SystemServices.deviceOrientationChangedStreamController.add(DeviceOrientationChangedEvent(deviceOrientation!));
+    SystemServices.deviceOrientationChangedStreamController
+        .add(DeviceOrientationChangedEvent(deviceOrientation!));
   }
 
   DeviceOrientation? getDeviceOrientation(String orientation) {
-    switch(orientation) {
+    switch (orientation) {
       case 'LANDSCAPE_LEFT':
         return DeviceOrientation.landscapeLeft;
       case 'LANDSCAPE_RIGHT':

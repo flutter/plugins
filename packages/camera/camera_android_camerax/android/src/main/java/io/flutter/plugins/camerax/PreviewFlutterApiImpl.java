@@ -17,7 +17,9 @@ public class PreviewFlutterApiImpl extends PreviewFlutterApi {
     this.instanceManager = instanceManager;
   }
 
-  void create(Preview preview, Long targetRotation, Map<String, Long> targetResolution, Reply<Void> reply) {
-    create(instanceManager.addHostCreatedInstance(preview), targetRotation, targetResolution, reply);
+  void create(
+      Preview preview, Long targetRotation, Map<String, Long> targetResolution, Reply<Void> reply) {
+    create(
+        instanceManager.addHostCreatedInstance(preview), targetRotation, targetResolution, reply);
   }
 }

@@ -692,7 +692,7 @@ class SystemServicesHostApi {
 
   static const MessageCodec<Object?> codec = _SystemServicesHostApiCodec();
 
-  Future<bool> requestCameraPermissions(bool arg_enableAudio) async {
+  Future<void> requestCameraPermissions(bool arg_enableAudio) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
@@ -709,13 +709,8 @@ class SystemServicesHostApi {
         message: error['message'] as String?,
         details: error['details'],
       );
-    } else if (replyMap['result'] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
     } else {
-      return (replyMap['result'] as bool?)!;
+      return;
     }
   }
 
@@ -748,7 +743,7 @@ class _SystemServicesFlutterApiCodec extends StandardMessageCodec {
 abstract class SystemServicesFlutterApi {
   static const MessageCodec<Object?> codec = _SystemServicesFlutterApiCodec();
 
-  void onCameraPermissionsRequestResult(String resultCode, String resultMessage);
+  void onCameraPermissionsRequestResult(String? errorCode, String? errorMessage);
   void onDeviceOrientationChanged(String orientation);
   static void setup(SystemServicesFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
     {
@@ -760,11 +755,9 @@ abstract class SystemServicesFlutterApi {
         channel.setMessageHandler((Object? message) async {
           assert(message != null, 'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onCameraPermissionsRequestResult was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_resultCode = (args[0] as String?);
-          assert(arg_resultCode != null, 'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onCameraPermissionsRequestResult was null, expected non-null String.');
-          final String? arg_resultMessage = (args[1] as String?);
-          assert(arg_resultMessage != null, 'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onCameraPermissionsRequestResult was null, expected non-null String.');
-          api.onCameraPermissionsRequestResult(arg_resultCode!, arg_resultMessage!);
+          final String? arg_errorCode = (args[0] as String?);
+          final String? arg_errorMessage = (args[1] as String?);
+          api.onCameraPermissionsRequestResult(arg_errorCode, arg_errorMessage);
           return;
         });
       }

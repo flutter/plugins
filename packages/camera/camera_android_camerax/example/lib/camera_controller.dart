@@ -160,7 +160,7 @@ class CameraValue {
 /// have state associated with them, to consolidate tracking of camera state
 /// outside of the overall example code.
 class CameraController extends ValueNotifier<CameraValue> {
-      /// Creates a new camera controller in an uninitialized state.
+  /// Creates a new camera controller in an uninitialized state.
   CameraController(
     this.description,
     this.resolutionPreset, {

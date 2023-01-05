@@ -5,8 +5,7 @@
 package io.flutter.plugins.camerax;
 
 import android.graphics.SurfaceTexture;
-import java.util.Arrays;
-import java.util.List;
+import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 import androidx.annotation.NonNull;
@@ -17,9 +16,10 @@ import androidx.camera.core.SurfaceRequest;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.PreviewHostApi;
 import io.flutter.view.TextureRegistry;
-import java.util.concurrent.Executors;
-import android.util.Log;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 public class PreviewHostApiImpl implements PreviewHostApi {
   private final BinaryMessenger binaryMessenger;
@@ -50,7 +50,10 @@ public class PreviewHostApiImpl implements PreviewHostApi {
       previewBuilder.setTargetRotation(rotation.intValue());
     }
     if (targetResolution != null) {
-      previewBuilder.setTargetResolution(new Size(((Number) targetResolution.get(RESOLUTION_WIDTH_KEY)).intValue(), ((Number) targetResolution.get(RESOLUTION_HEIGHT_KEY)).intValue()));
+      previewBuilder.setTargetResolution(
+          new Size(
+              ((Number) targetResolution.get(RESOLUTION_WIDTH_KEY)).intValue(),
+              ((Number) targetResolution.get(RESOLUTION_HEIGHT_KEY)).intValue()));
     }
     Preview preview = previewBuilder.build();
     Log.e("FLUTTER", "CAMILLE preview built with identifier " + identifier);
@@ -67,7 +70,8 @@ public class PreviewHostApiImpl implements PreviewHostApi {
         new Preview.SurfaceProvider() {
           @Override
           public void onSurfaceRequested(SurfaceRequest request) {
-            surfaceTexture.setDefaultBufferSize(request.getResolution().getWidth(), request.getResolution().getHeight());
+            surfaceTexture.setDefaultBufferSize(
+                request.getResolution().getWidth(), request.getResolution().getHeight());
             Surface flutterSurface = new Surface(surfaceTexture);
             request.provideSurface(
                 flutterSurface, Executors.newSingleThreadExecutor(), (result) -> {});

@@ -744,7 +744,7 @@ public class GeneratedCameraXLibrary {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface SystemServicesHostApi {
-    @NonNull Boolean requestCameraPermissions(@NonNull Boolean enableAudio);
+    void requestCameraPermissions(@NonNull Boolean enableAudio);
     void startListeningForDeviceOrientationChange(@NonNull Boolean isFrontFacing, @NonNull Long sensorOrientation);
 
     /** The codec used by SystemServicesHostApi. */
@@ -766,8 +766,8 @@ public class GeneratedCameraXLibrary {
               if (enableAudioArg == null) {
                 throw new NullPointerException("enableAudioArg unexpectedly null.");
               }
-              Boolean output = api.requestCameraPermissions(enableAudioArg);
-              wrapped.put("result", output);
+              api.requestCameraPermissions(enableAudioArg);
+              wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
@@ -826,10 +826,10 @@ public class GeneratedCameraXLibrary {
       return SystemServicesFlutterApiCodec.INSTANCE;
     }
 
-    public void onCameraPermissionsRequestResult(@NonNull String resultCodeArg, @NonNull String resultMessageArg, Reply<Void> callback) {
+    public void onCameraPermissionsRequestResult(@Nullable String errorCodeArg, @Nullable String errorMessageArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.SystemServicesFlutterApi.onCameraPermissionsRequestResult", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(resultCodeArg, resultMessageArg)), channelReply -> {
+      channel.send(new ArrayList<Object>(Arrays.asList(errorCodeArg, errorMessageArg)), channelReply -> {
         callback.reply(null);
       });
     }

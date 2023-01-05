@@ -65,7 +65,8 @@ class AndroidCameraCameraX extends CameraPlatform {
     bool enableAudio = false,
   }) async {
     // TODO(camism99): Properly request permissions here.
-    bool permissions = await SystemServices.requestCameraPermissions(enableAudio);
+    bool permissions =
+        await SystemServices.requestCameraPermissions(enableAudio);
 
     assert(permissions == true);
 
@@ -75,8 +76,10 @@ class AndroidCameraCameraX extends CameraPlatform {
     // Create Preview to set surface provider and gain access to Flutter
     // surface texture ID.
     int targetRotation = getTargetRotation(cameraDescription.sensorOrientation);
-    Map<String?, int?>? targetResolution = getTargetPreviewResolution(resolutionPreset);
-    preview = Preview(targetRotation: targetRotation, targetResolution: targetResolution);
+    Map<String?, int?>? targetResolution =
+        getTargetPreviewResolution(resolutionPreset);
+    preview = Preview(
+        targetRotation: targetRotation, targetResolution: targetResolution);
     int flutterSurfaceTextureId = await preview!.setSurfaceProvider();
 
     return flutterSurfaceTextureId;
@@ -113,14 +116,13 @@ class AndroidCameraCameraX extends CameraPlatform {
     bool focusPointSupported = false;
 
     cameraEventStreamController.add(CameraInitializedEvent(
-      cameraId,
-      previewWidth,
-      previewHeight,
-      exposureMode,
-      exposurePointSupported,
-      focusMode,
-      focusPointSupported
-    ));
+        cameraId,
+        previewWidth,
+        previewHeight,
+        exposureMode,
+        exposurePointSupported,
+        focusMode,
+        focusPointSupported));
   }
 
   /// Pause the active preview on the current frame for the selected camera.
@@ -141,19 +143,18 @@ class AndroidCameraCameraX extends CameraPlatform {
   @override
   Widget buildPreview(int cameraId) {
     return FutureBuilder<void>(
-      future: bindPreviewToLifecycle(),
-      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-          case ConnectionState.waiting:
-          case ConnectionState.active:
-            // TODO(camsim99): Determine what loading state should be.
-            return const Text('Loading camera preview...');
-          case ConnectionState.done:
+        future: bindPreviewToLifecycle(),
+        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              // TODO(camsim99): Determine what loading state should be.
+              return const Text('Loading camera preview...');
+            case ConnectionState.done:
               return Texture(textureId: cameraId);
-        }
-      }
-    );
+          }
+        });
   }
 
   // Callback methods:
@@ -173,14 +174,17 @@ class AndroidCameraCameraX extends CameraPlatform {
       return;
     }
 
-    print('BINDING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    print(
+        'BINDING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 
     if (_cameraSelector == null) {
-      int? lensFacing = getCameraSelectorLens(_cameraDescription!.lensDirection);
+      int? lensFacing =
+          getCameraSelectorLens(_cameraDescription!.lensDirection);
       _cameraSelector = CameraSelector(lensFacing: lensFacing!);
     }
 
-    _camera = await processCameraProvider!.bindToLifecycle(_cameraSelector!, <UseCase>[preview!]);
+    _camera = await processCameraProvider!
+        .bindToLifecycle(_cameraSelector!, <UseCase>[preview!]);
     _previewIsBound = true;
   }
 
@@ -188,9 +192,10 @@ class AndroidCameraCameraX extends CameraPlatform {
     if (!_previewIsBound) {
       return;
     }
-    print('PAUSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    print(
+        'PAUSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 
-     processCameraProvider!.unbind(<UseCase>[preview!]);
+    processCameraProvider!.unbind(<UseCase>[preview!]);
     _previewIsBound = false;
   }
 
@@ -229,7 +234,7 @@ class AndroidCameraCameraX extends CameraPlatform {
     if (resolution == null) {
       return null;
     }
-    
+
     // TODO(camsim99): Define constants for resolution height/width keys.
     switch (resolution) {
       case ResolutionPreset.low:

@@ -356,7 +356,7 @@ class _TestSystemServicesHostApiCodec extends StandardMessageCodec {
 abstract class TestSystemServicesHostApi {
   static const MessageCodec<Object?> codec = _TestSystemServicesHostApiCodec();
 
-  bool requestCameraPermissions(bool enableAudio);
+  void requestCameraPermissions(bool enableAudio);
   void startListeningForDeviceOrientationChange(bool isFrontFacing, int sensorOrientation);
   static void setup(TestSystemServicesHostApi? api, {BinaryMessenger? binaryMessenger}) {
     {
@@ -370,8 +370,8 @@ abstract class TestSystemServicesHostApi {
           final List<Object?> args = (message as List<Object?>?)!;
           final bool? arg_enableAudio = (args[0] as bool?);
           assert(arg_enableAudio != null, 'Argument for dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions was null, expected non-null bool.');
-          final bool output = api.requestCameraPermissions(arg_enableAudio!);
-          return <Object?, Object?>{'result': output};
+          api.requestCameraPermissions(arg_enableAudio!);
+          return <Object?, Object?>{};
         });
       }
     }

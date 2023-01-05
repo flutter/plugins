@@ -8,19 +8,20 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.SystemServicesFlutterApi;
 
 public class SystemServicesFlutterApiImpl extends SystemServicesFlutterApi {
-    public SystemServicesFlutterApiImpl(
-        BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
-      super(binaryMessenger);
-      this.instanceManager = instanceManager;
-    }
-  
-    private final InstanceManager instanceManager;
+  public SystemServicesFlutterApiImpl(
+      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+    super(binaryMessenger);
+    this.instanceManager = instanceManager;
+  }
 
-    public void onCameraPermissionsRequestResult(String resultCode, String resultMessage, Reply<Void> reply) {
-        super.onCameraPermissionsRequestResult(resultCode, resultMessage, reply);
-    }
+  private final InstanceManager instanceManager;
 
-    public void onDeviceOrientationChanged(String orientation, Reply<Void> reply) {
-        onDeviceOrientationChanged(orientation, reply);
-    }
+  public void onCameraPermissionsRequestResult(
+      String resultCode, String resultMessage, Reply<Void> reply) {
+    super.onCameraPermissionsRequestResult(resultCode, resultMessage, reply);
+  }
+
+  public void onDeviceOrientationChanged(String orientation, Reply<Void> reply) {
+    onDeviceOrientationChanged(orientation, reply);
+  }
 }

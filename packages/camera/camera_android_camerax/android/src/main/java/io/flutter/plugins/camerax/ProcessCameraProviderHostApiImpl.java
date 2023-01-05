@@ -21,7 +21,6 @@ import io.flutter.plugins.camerax.CameraPermissions.PermissionsRegistry;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderHostApi;
 import java.util.ArrayList;
 import java.util.List;
-import android.util.Log;
 
 public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHostApi {
   private final BinaryMessenger binaryMessenger;

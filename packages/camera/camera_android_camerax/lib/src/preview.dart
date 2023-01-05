@@ -171,7 +171,8 @@ class PreviewFlutterApiImpl extends PreviewFlutterApi {
   final InstanceManager instanceManager;
 
   @override
-  void create(int identifier, int? targetRotation, Map<String?, int?>? targetResolution) {
+  void create(int identifier, int? targetRotation,
+      Map<String?, int?>? targetResolution) {
     instanceManager.addHostCreatedInstance(
       Preview.detached(
           binaryMessenger: binaryMessenger,
