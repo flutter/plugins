@@ -5,7 +5,7 @@
 @import os.log;
 @import XCTest;
 @import CoreGraphics;
-#import <AVKit/AVKit.h>
+@import AVKit;
 
 @interface VideoPlayerUITests : XCTestCase
 @property(nonatomic, strong) XCUIApplication *app;
