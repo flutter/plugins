@@ -30,9 +30,9 @@ typedef LoadCallback = void Function(
 abstract class LoadConfig {
   external factory LoadConfig(
       {LoadCallback callback,
-        Function? onerror,
-        num? timeout,
-        Function? ontimeout});
+      Function? onerror,
+      num? timeout,
+      Function? ontimeout});
   external LoadCallback get callback;
   external set callback(LoadCallback v);
   external Function? get onerror;

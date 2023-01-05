@@ -126,12 +126,12 @@ abstract class CurrentUser {
 abstract class SigninOptions {
   external factory SigninOptions(
       {String app_package_name,
-        bool fetch_basic_profile,
-        String prompt,
-        String scope,
-        String /*'popup'|'redirect'*/ ux_mode,
-        String redirect_uri,
-        String login_hint});
+      bool fetch_basic_profile,
+      String prompt,
+      String scope,
+      String /*'popup'|'redirect'*/ ux_mode,
+      String redirect_uri,
+      String login_hint});
 
   /// The package name of the Android app to install over the air.
   /// See Android app installs from your web site:
@@ -183,8 +183,8 @@ abstract class SigninOptions {
 abstract class OfflineAccessOptions {
   external factory OfflineAccessOptions(
       {String scope,
-        String /*'select_account'|'consent'*/ prompt,
-        String app_package_name});
+      String /*'select_account'|'consent'*/ prompt,
+      String app_package_name});
   external String? get scope;
   external set scope(String? v);
   external String? /*'select_account'|'consent'*/ get prompt;
@@ -278,7 +278,6 @@ abstract class BasicProfile {
 @anonymous
 @JS()
 abstract class AuthResponse {
-
   external String? get access_token;
   external set access_token(String? v);
   external String? get id_token;
@@ -301,15 +300,15 @@ abstract class AuthResponse {
 abstract class AuthorizeConfig {
   external factory AuthorizeConfig(
       {String client_id,
-        String scope,
-        String response_type,
-        String prompt,
-        String cookie_policy,
-        String hosted_domain,
-        String login_hint,
-        String app_package_name,
-        String openid_realm,
-        bool include_granted_scopes});
+      String scope,
+      String response_type,
+      String prompt,
+      String cookie_policy,
+      String hosted_domain,
+      String login_hint,
+      String app_package_name,
+      String openid_realm,
+      bool include_granted_scopes});
   external String get client_id;
   external set client_id(String v);
   external String get scope;
@@ -338,14 +337,14 @@ abstract class AuthorizeConfig {
 abstract class AuthorizeResponse {
   external factory AuthorizeResponse(
       {String access_token,
-        String id_token,
-        String code,
-        String scope,
-        num expires_in,
-        num first_issued_at,
-        num expires_at,
-        String error,
-        String error_subtype});
+      String id_token,
+      String code,
+      String scope,
+      num expires_in,
+      num first_issued_at,
+      num expires_at,
+      String error,
+      String error_subtype});
   external String get access_token;
   external set access_token(String v);
   external String get id_token;
