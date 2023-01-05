@@ -70,7 +70,7 @@ class Preview extends UseCase {
     _api.setTargetRotationFromInstance(this, rotation);
   }
 
-  Future<List<int?>> getResolutionInfo() {
+  Future<Map<String?, int?>> getResolutionInfo() {
     return _api.getResolutionInfoFromInstance(this);
   }
 }
@@ -102,7 +102,6 @@ class PreviewHostApiImpl extends PreviewHostApi {
           instanceManager: instanceManager,
           targetRotation: original.targetRotation);
     });
-    print('CAMILLE: identifier $identifier created');
     create(identifier, targetRotation, targetResolution);
   }
 
@@ -136,7 +135,8 @@ class PreviewHostApiImpl extends PreviewHostApi {
     setTargetRotation(identifier, targetRotation);
   }
 
-  Future<List<int?>> getResolutionInfoFromInstance(Preview instance) async {
+  Future<Map<String?, int?>> getResolutionInfoFromInstance(
+      Preview instance) async {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (Preview original) {
@@ -146,9 +146,8 @@ class PreviewHostApiImpl extends PreviewHostApi {
           targetRotation: original.targetRotation);
     });
 
-    print('CAMILLE: get resolution info for identifier $identifier');
-
-    final List<int?> resolutionInfo = await getResolutionInfo(identifier);
+    final Map<String?, int?> resolutionInfo =
+        await getResolutionInfo(identifier);
     return resolutionInfo;
   }
 }

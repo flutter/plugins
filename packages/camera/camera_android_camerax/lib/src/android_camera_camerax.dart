@@ -70,9 +70,11 @@ class AndroidCameraCameraX extends CameraPlatform {
 
     // Start listening for device orientation changes
     // TODO(camsim99): Determine if this may be subject errors do to target camera not equalling actually used camera.
-    bool cameraIsFrontFacing = getCameraSelectorLens(cameraDescription!.lensDirection) == CameraSelector.LENS_FACING_FRONT;
+    bool cameraIsFrontFacing =
+        getCameraSelectorLens(cameraDescription!.lensDirection) ==
+            CameraSelector.LENS_FACING_FRONT;
     SystemServices.startListeningForDeviceOrientationChange(
-      cameraIsFrontFacing, cameraDescription.sensorOrientation);
+        cameraIsFrontFacing, cameraDescription.sensorOrientation);
 
     assert(permissions == true);
 
@@ -108,10 +110,11 @@ class AndroidCameraCameraX extends CameraPlatform {
 
     assert(preview != null);
     await bindPreviewToLifecycle();
-    // TODO(camsim99): Change this list to a map with keys and values.
-    List<int?> previewResolutionInfo = await preview!.getResolutionInfo();
-    double previewWidth = previewResolutionInfo[0]!.toDouble();
-    double previewHeight = previewResolutionInfo[1]!.toDouble();
+    // TODO(camsim99): Establish constants for the resolution info keys.
+    Map<String?, int?> previewResolutionInfo =
+        await preview!.getResolutionInfo();
+    double previewWidth = previewResolutionInfo['width']!.toDouble();
+    double previewHeight = previewResolutionInfo['height']!.toDouble();
     unbindPreviewToLifecycle();
 
     // Values set for testing purposes.

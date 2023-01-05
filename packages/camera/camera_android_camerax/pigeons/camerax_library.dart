@@ -87,7 +87,7 @@ abstract class PreviewHostApi {
 
   void setTargetRotation(int identifier, int targetRotation);
 
-  List<int> getResolutionInfo(int identifier);
+  Map<String, int> getResolutionInfo(int identifier);
 }
 
 @FlutterApi()

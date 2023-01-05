@@ -16,8 +16,7 @@ import androidx.camera.core.SurfaceRequest;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.PreviewHostApi;
 import io.flutter.view.TextureRegistry;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -88,10 +87,19 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   }
 
   @Override
-  public List<Long> getResolutionInfo(@NonNull Long identifier) {
+  public Map<String, Long> getResolutionInfo(@NonNull Long identifier) {
     Preview preview = (Preview) instanceManager.getInstance(identifier);
     Size resolution = preview.getResolutionInfo().getResolution();
 
-    return Arrays.asList(Long.valueOf(resolution.getWidth()), Long.valueOf(resolution.getHeight()));
+    // TODO(camsim99): Establish constants for keys.
+    // TODO(camsim99): Determine why the values are swapped.
+    Map<String, Long> doubleBraceMap =
+        new HashMap<String, Long>() {
+          {
+            put("height", Long.valueOf(resolution.getWidth()));
+            put("width", Long.valueOf(resolution.getHeight()));
+          }
+        };
+    return doubleBraceMap;
   }
 }
