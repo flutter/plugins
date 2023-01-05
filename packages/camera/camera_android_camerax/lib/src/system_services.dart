@@ -29,11 +29,6 @@ class SystemServices {
     return api.requestCameraPermissionsFromInstance(enableAudio);
   }
 
-  // static handleCameraPermissionsResult(String resultCode, String resultMessage) {
-  //   // TODO(camsim99): Actually handle camera permissions stuff here.
-  //   cameraPermissionsStreamController.add(true);
-  // }
-
   static void startListeningForDeviceOrientationChange(bool isFrontFacing, int sensorOrientation, {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
     SystemServicesHostApi api = SystemServicesHostApi(
@@ -62,10 +57,12 @@ class SystemServicesHostApiImpl extends SystemServicesHostApi {
   late final InstanceManager instanceManager;
   
   Future<bool> requestCameraPermissionsFromInstance(bool enableAudio) async {
-    await requestCameraPermissions(enableAudio);
+    requestCameraPermissions(enableAudio);
+    print('CAMILLE host api call is finished');
 
   try {
       await for (final bool result in SystemServices.cameraPermissionsStreamController.stream) {
+        print('CAMILLE result $result');
         return result;
       }
     } catch (e) {
@@ -95,6 +92,7 @@ class SystemServicesFlutterApiImpl implements SystemServicesFlutterApi {
   @override
   void onCameraPermissionsRequestResult(String resultCode, String resultMessage) {
     // TODO(camsim99): Actually decode and handle results here
+    print('CAMILLE: Value being added to stream!');
     SystemServices.cameraPermissionsStreamController.add(true);
   }
 

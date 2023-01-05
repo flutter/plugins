@@ -53,6 +53,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
       previewBuilder.setTargetResolution(new Size(((Number) targetResolution.get(RESOLUTION_WIDTH_KEY)).intValue(), ((Number) targetResolution.get(RESOLUTION_HEIGHT_KEY)).intValue()));
     }
     Preview preview = previewBuilder.build();
+    Log.e("FLUTTER", "CAMILLE preview built with identifier " + identifier);
     instanceManager.addDartCreatedInstance(preview, identifier);
   }
 

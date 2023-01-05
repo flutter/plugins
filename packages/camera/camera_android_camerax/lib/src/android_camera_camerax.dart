@@ -28,6 +28,8 @@ class AndroidCameraCameraX extends CameraPlatform {
   CameraSelector? _cameraSelector;
   ImageFormatGroup? _imageFormatGroup;
 
+  bool _previewIsBound = false;
+
   /// Registers this class as the default instance of [CameraPlatform].
   static void registerWith() {
     CameraPlatform.instance = AndroidCameraCameraX();
@@ -61,9 +63,8 @@ class AndroidCameraCameraX extends CameraPlatform {
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
   }) async {
-    // TODO(camism99): Request permissions here.
+    // TODO(camism99): Properly request permissions here.
     bool permissions = await SystemServices.requestCameraPermissions(enableAudio);
-    print('FINISHED');
 
     assert(permissions == true);
 
@@ -99,9 +100,11 @@ class AndroidCameraCameraX extends CameraPlatform {
     // TODO(camisim99): Determine each of these values dynamically.
     assert(preview != null);
     // TODO(camsim99): Change this list to a map with keys and values.
+    print('CAMILLE: Resolution info requested for $preview');
+    await bindPreviewToLifecycle();
     List<int?> previewResolutionInfo = await preview!.getResolutionInfo();
-    double previewWidth = previewResolutionInfo[0]! as double;
-    double previewHeight = previewResolutionInfo[1]! as double;
+    double previewWidth = previewResolutionInfo[0]!.toDouble();
+    double previewHeight = previewResolutionInfo[1]!.toDouble();
     ExposureMode exposureMode = ExposureMode.auto;
     FocusMode focusMode = FocusMode.auto;
     bool exposurePointSupported = false;
@@ -116,12 +119,14 @@ class AndroidCameraCameraX extends CameraPlatform {
       focusMode,
       focusPointSupported
     ));
+    print('CAMILLE, CAMERA INITIALIZED????!');
   }
 
   /// Pause the active preview on the current frame for the selected camera.
   @override
   Future<void> pausePreview(int cameraId) async {
     processCameraProvider!.unbind(<UseCase>[preview!]);
+    _previewIsBound = false;
   }
 
   /// Resume the paused preview for the selected camera.
@@ -129,6 +134,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   Future<void> resumePreview(int cameraId) async {
     Camera camera = await processCameraProvider!
         .bindToLifecycle(_cameraSelector!, <UseCase>[preview!]);
+    _previewIsBound = true;
   }
 
   /// Returns a widget showing a live camera preview.
@@ -163,9 +169,14 @@ class AndroidCameraCameraX extends CameraPlatform {
   }
 
   Future<void> bindPreviewToLifecycle() async {
+    if (_previewIsBound) {
+      return;
+    }
+
     int? lensFacing = getCameraSelectorLens(_cameraDescription!.lensDirection);
     _cameraSelector = CameraSelector(lensFacing: lensFacing!);
     _camera = await processCameraProvider!.bindToLifecycle(_cameraSelector!, <UseCase>[preview!]);
+    _previewIsBound = true;
   }
 
   // Helper methods for camera configurations exposed to Flutter apps:

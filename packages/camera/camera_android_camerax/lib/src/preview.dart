@@ -102,6 +102,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
           instanceManager: instanceManager,
           targetRotation: original.targetRotation);
     });
+    print('CAMILLE: identifier $identifier created');
     create(identifier, targetRotation, targetResolution);
   }
 
@@ -144,6 +145,8 @@ class PreviewHostApiImpl extends PreviewHostApi {
           instanceManager: instanceManager,
           targetRotation: original.targetRotation);
     });
+
+    print('CAMILLE: get resolution info for identifier $identifier');
 
     final List<int?> resolutionInfo = await getResolutionInfo(identifier);
     return resolutionInfo;

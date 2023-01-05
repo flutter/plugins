@@ -23,6 +23,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  video_player: ^2.4.10
 
 flutter:
   uses-material-design: true
