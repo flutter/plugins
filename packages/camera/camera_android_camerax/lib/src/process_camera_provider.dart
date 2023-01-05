@@ -54,11 +54,11 @@ class ProcessCameraProvider extends JavaObject {
   }
 
   void unbind(List<UseCase> useCases) {
-    return _api.unbindFromInstances(this, useCases);
+    _api.unbindFromInstances(this, useCases);
   }
 
   void unbindAll() {
-    return _api.unbindAllFromInstances(this);
+    _api.unbindAllFromInstances(this);
   }
 }
 

@@ -46,7 +46,7 @@ class Preview extends UseCase {
   late final PreviewHostApiImpl _api;
 
   /// Target rotation of the camera used for the preview stream.
-  final int? targetRotation;
+  int? targetRotation;
 
   /// Target resolution of the camera preview stream.
   ///
@@ -65,9 +65,9 @@ class Preview extends UseCase {
   }
 
   /// Reconfigures the preview stream to have the specified target rotation.
-  void setTargetRotation(int targetRotation) {
-    // TODO(camsim99): should this change targetRotation?
-    _api.setTargetRotationFromInstance(this, targetRotation);
+  void setTargetRotation(int rotation) {
+    targetRotation = rotation;
+    _api.setTargetRotationFromInstance(this, rotation);
   }
 
   Future<List<int?>> getResolutionInfo() {
