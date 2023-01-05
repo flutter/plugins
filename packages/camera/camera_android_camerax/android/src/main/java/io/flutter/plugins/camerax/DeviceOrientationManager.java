@@ -225,7 +225,6 @@ public class DeviceOrientationManager {
       DeviceOrientation previousOrientation,
       DeviceOrientationChangeCallback callback) {
     if (!newOrientation.equals(previousOrientation)) {
-      // TODO(camsim99): send off device orientation changed event
       callback.onChange(newOrientation.name());
     }
   }

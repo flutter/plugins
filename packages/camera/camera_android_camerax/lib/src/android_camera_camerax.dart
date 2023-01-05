@@ -68,6 +68,12 @@ class AndroidCameraCameraX extends CameraPlatform {
     bool permissions =
         await SystemServices.requestCameraPermissions(enableAudio);
 
+    // Start listening for device orientation changes
+    // TODO(camsim99): Determine if this may be subject errors do to target camera not equalling actually used camera.
+    bool cameraIsFrontFacing = getCameraSelectorLens(cameraDescription!.lensDirection) == CameraSelector.LENS_FACING_FRONT;
+    SystemServices.startListeningForDeviceOrientationChange(
+      cameraIsFrontFacing, cameraDescription.sensorOrientation);
+
     assert(permissions == true);
 
     _cameraDescription = cameraDescription;
@@ -174,9 +180,6 @@ class AndroidCameraCameraX extends CameraPlatform {
       return;
     }
 
-    print(
-        'BINDING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-
     if (_cameraSelector == null) {
       int? lensFacing =
           getCameraSelectorLens(_cameraDescription!.lensDirection);
@@ -192,8 +195,6 @@ class AndroidCameraCameraX extends CameraPlatform {
     if (!_previewIsBound) {
       return;
     }
-    print(
-        'PAUSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 
     processCameraProvider!.unbind(<UseCase>[preview!]);
     _previewIsBound = false;

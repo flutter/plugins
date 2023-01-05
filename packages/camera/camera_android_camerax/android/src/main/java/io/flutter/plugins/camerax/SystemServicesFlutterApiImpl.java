@@ -22,6 +22,6 @@ public class SystemServicesFlutterApiImpl extends SystemServicesFlutterApi {
   }
 
   public void onDeviceOrientationChanged(String orientation, Reply<Void> reply) {
-    onDeviceOrientationChanged(orientation, reply);
+    super.onDeviceOrientationChanged(orientation, reply);
   }
 }
