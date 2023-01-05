@@ -245,7 +245,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             IconButton(
               icon: const Icon(Icons.flash_on),
               color: Colors.blue,
-              onPressed: () {},
+              onPressed: () {}, //TODO(camsim99): Add functionality back here.
             ),
             // The exposure and focus mode are currently not supported on the web.
             ...!kIsWeb
@@ -253,12 +253,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                     IconButton(
                       icon: const Icon(Icons.exposure),
                       color: Colors.blue,
-                      onPressed: () {},
+                      onPressed: () {}, //TODO(camsim99): Add functionality back here.
                     ),
                     IconButton(
                       icon: const Icon(Icons.filter_center_focus),
                       color: Colors.blue,
-                      onPressed: () {},
+                      onPressed: () {}, //TODO(camsim99): Add functionality back here.
                     )
                   ]
                 : <Widget>[],
@@ -272,7 +272,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   ? Icons.screen_lock_rotation
                   : Icons.screen_rotation),
               color: Colors.blue,
-              onPressed: () {},
+              onPressed: () {}, //TODO(camsim99): Add functionality back here.
             ),
           ],
         ),
@@ -295,28 +295,28 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               color: controller?.value.flashMode == FlashMode.off
                   ? Colors.orange
                   : Colors.blue,
-              onPressed: () {},
+              onPressed: () {}, //TODO(camsim99): Add functionality back here.
             ),
             IconButton(
               icon: const Icon(Icons.flash_auto),
               color: controller?.value.flashMode == FlashMode.auto
                   ? Colors.orange
                   : Colors.blue,
-              onPressed: () {},
+              onPressed: () {}, //TODO(camsim99): Add functionality back here.
             ),
             IconButton(
               icon: const Icon(Icons.flash_on),
               color: controller?.value.flashMode == FlashMode.always
                   ? Colors.orange
                   : Colors.blue,
-              onPressed: () {},
+              onPressed: () {}, //TODO(camsim99): Add functionality back here.
             ),
             IconButton(
               icon: const Icon(Icons.highlight),
               color: controller?.value.flashMode == FlashMode.torch
                   ? Colors.orange
                   : Colors.blue,
-              onPressed: () {},
+              onPressed: () {}, //TODO(camsim99): Add functionality back here.
             ),
           ],
         ),
@@ -355,7 +355,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 children: <Widget>[
                   TextButton(
                     style: styleAuto,
-                    onPressed: () {},
+                    onPressed: () {}, //TODO(camsim99): Add functionality back here.
                     onLongPress: () {
                       if (controller != null) {
                         CameraPlatform.instance
@@ -367,12 +367,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   ),
                   TextButton(
                     style: styleLocked,
-                    onPressed: () {},
+                    onPressed: () {}, //TODO(camsim99): Add functionality back here.
                     child: const Text('LOCKED'),
                   ),
                   TextButton(
                     style: styleLocked,
-                    onPressed: () {},
+                    onPressed: () {}, //TODO(camsim99): Add functionality back here.
                     child: const Text('RESET OFFSET'),
                   ),
                 ],
@@ -435,7 +435,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 children: <Widget>[
                   TextButton(
                     style: styleAuto,
-                    onPressed: () {},
+                    onPressed: () {}, //TODO(camsim99): Add functionality back here.
                     onLongPress: () {
                       if (controller != null) {
                         CameraPlatform.instance
@@ -447,7 +447,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   ),
                   TextButton(
                     style: styleLocked,
-                    onPressed: () {},
+                    onPressed: () {}, //TODO(camsim99): Add functionality back here.
                     child: const Text('LOCKED'),
                   ),
                 ],
@@ -469,12 +469,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         IconButton(
           icon: const Icon(Icons.camera_alt),
           color: Colors.blue,
-          onPressed: () {},
+          onPressed: () {}, //TODO(camsim99): Add functionality back here.
         ),
         IconButton(
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
-          onPressed: () {},
+          onPressed: () {}, //TODO(camsim99): Add functionality back here.
         ),
         IconButton(
           icon: cameraController != null &&
@@ -483,12 +483,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ? const Icon(Icons.play_arrow)
               : const Icon(Icons.pause),
           color: Colors.blue,
-          onPressed: () {},
+          onPressed: () {}, //TODO(camsim99): Add functionality back here.
         ),
         IconButton(
           icon: const Icon(Icons.stop),
           color: Colors.red,
-          onPressed: () {},
+          onPressed: () {}, //TODO(camsim99): Add functionality back here.
         ),
         IconButton(
           icon: const Icon(Icons.pause_presentation),
