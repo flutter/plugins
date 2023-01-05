@@ -114,8 +114,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         (CameraSelector) instanceManager.getInstance(cameraSelectorIdentifier);
     UseCase[] useCases = new UseCase[useCaseIds.size()];
     for (int i = 0; i < useCaseIds.size(); i++) {
-      // TODO(camsim99): Cannot assume Preview here. Try casting to UseCase instead.
-      useCases[i] = (Preview) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
+      useCases[i] = (UseCase) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
     }
 
     if (lifecycleOwner != null) {
