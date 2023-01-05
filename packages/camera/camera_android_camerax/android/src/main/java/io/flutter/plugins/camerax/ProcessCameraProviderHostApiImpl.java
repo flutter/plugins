@@ -70,13 +70,9 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
           try {
             // Camera provider is now guaranteed to be available.
             ProcessCameraProvider processCameraProvider = processCameraProviderFuture.get();
-
-            // TODO(camsim99): Try removing this check to see if this fixes process camera provider hot restart problems.
-            if (!instanceManager.containsInstance(processCameraProvider)) {
-              final ProcessCameraProviderFlutterApiImpl flutterApi =
-                  new ProcessCameraProviderFlutterApiImpl(binaryMessenger, instanceManager);
-              flutterApi.create(processCameraProvider, reply -> {});
-            }
+            final ProcessCameraProviderFlutterApiImpl flutterApi =
+                new ProcessCameraProviderFlutterApiImpl(binaryMessenger, instanceManager);
+            flutterApi.create(processCameraProvider, reply -> {});
             result.success(instanceManager.getIdentifierForStrongReference(processCameraProvider));
           } catch (Exception e) {
             result.error(e);
