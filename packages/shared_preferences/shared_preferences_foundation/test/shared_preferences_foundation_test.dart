@@ -4,7 +4,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences_macos/shared_preferences_macos.dart';
+import 'package:shared_preferences_foundation/shared_preferences_foundation.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 import 'test_api.g.dart';
@@ -53,27 +53,27 @@ void main() {
   });
 
   test('registerWith', () {
-    SharedPreferencesMacOS.registerWith();
-    expect(
-        SharedPreferencesStorePlatform.instance, isA<SharedPreferencesMacOS>());
+    SharedPreferencesFoundation.registerWith();
+    expect(SharedPreferencesStorePlatform.instance,
+        isA<SharedPreferencesFoundation>());
   });
 
   test('remove', () async {
-    final SharedPreferencesMacOS plugin = SharedPreferencesMacOS();
+    final SharedPreferencesFoundation plugin = SharedPreferencesFoundation();
     api.items['flutter.hi'] = 'world';
     expect(await plugin.remove('flutter.hi'), isTrue);
     expect(api.items.containsKey('flutter.hi'), isFalse);
   });
 
   test('clear', () async {
-    final SharedPreferencesMacOS plugin = SharedPreferencesMacOS();
+    final SharedPreferencesFoundation plugin = SharedPreferencesFoundation();
     api.items['flutter.hi'] = 'world';
     expect(await plugin.clear(), isTrue);
     expect(api.items.containsKey('flutter.hi'), isFalse);
   });
 
   test('getAll', () async {
-    final SharedPreferencesMacOS plugin = SharedPreferencesMacOS();
+    final SharedPreferencesFoundation plugin = SharedPreferencesFoundation();
     api.items['flutter.aBool'] = true;
     api.items['flutter.aDouble'] = 3.14;
     api.items['flutter.anInt'] = 42;
@@ -90,7 +90,7 @@ void main() {
   });
 
   test('setValue', () async {
-    final SharedPreferencesMacOS plugin = SharedPreferencesMacOS();
+    final SharedPreferencesFoundation plugin = SharedPreferencesFoundation();
     expect(await plugin.setValue('Bool', 'flutter.Bool', true), isTrue);
     expect(api.items['flutter.Bool'], true);
     expect(await plugin.setValue('Double', 'flutter.Double', 1.5), isTrue);
@@ -107,7 +107,7 @@ void main() {
   });
 
   test('setValue with unsupported type', () {
-    final SharedPreferencesMacOS plugin = SharedPreferencesMacOS();
+    final SharedPreferencesFoundation plugin = SharedPreferencesFoundation();
     expect(() async {
       await plugin.setValue('Map', 'flutter.key', <String, String>{});
     }, throwsA(isA<PlatformException>()));

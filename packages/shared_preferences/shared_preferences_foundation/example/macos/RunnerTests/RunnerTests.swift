@@ -4,7 +4,7 @@
 
 import FlutterMacOS
 import XCTest
-@testable import shared_preferences_macos
+@testable import shared_preferences_foundation
 
 class RunnerTests: XCTestCase {
   func testSetAndGet() throws {

@@ -8,8 +8,8 @@ import 'messages.g.dart';
 
 typedef _Setter = Future<void> Function(String key, Object value);
 
-/// macOS implementation of shared_preferences.
-class SharedPreferencesMacOS extends SharedPreferencesStorePlatform {
+/// iOS and macOS implementation of shared_preferences.
+class SharedPreferencesFoundation extends SharedPreferencesStorePlatform {
   final UserDefaultsApi _api = UserDefaultsApi();
   late final Map<String, _Setter> _setters = <String, _Setter>{
     'Bool': (String key, Object value) {
@@ -32,7 +32,7 @@ class SharedPreferencesMacOS extends SharedPreferencesStorePlatform {
   /// Registers this class as the default instance of
   /// [SharedPreferencesStorePlatform].
   static void registerWith() {
-    SharedPreferencesStorePlatform.instance = SharedPreferencesMacOS();
+    SharedPreferencesStorePlatform.instance = SharedPreferencesFoundation();
   }
 
   @override

@@ -9,7 +9,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('SharedPreferencesMacOS', () {
+  group('SharedPreferencesFoundation', () {
     const Map<String, Object> kTestValues = <String, Object>{
       'flutter.String': 'hello world',
       'flutter.bool': true,

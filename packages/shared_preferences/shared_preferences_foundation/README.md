@@ -1,6 +1,6 @@
-# shared\_preferences\_macos
+# shared\_preferences\_foundation
 
-The macos implementation of [`shared_preferences`][1].
+The iOS and macOS implementation of [`shared_preferences`][1].
 
 ## Usage
 
