@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import FlutterMacOS
 import XCTest
+
+#if os(iOS)
+import Flutter
+#elseif os(macOS)
+import FlutterMacOS
+#endif
+
 @testable import shared_preferences_foundation
 
 class RunnerTests: XCTestCase {
