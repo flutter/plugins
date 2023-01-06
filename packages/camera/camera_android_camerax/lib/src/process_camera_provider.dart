@@ -5,10 +5,13 @@
 import 'package:flutter/services.dart';
 
 import 'android_camera_camerax_flutter_api_impls.dart';
+import 'camera.dart';
 import 'camera_info.dart';
+import 'camera_selector.dart';
 import 'camerax_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
+import 'use_case.dart';
 
 /// Provides an object to manage the camera.
 ///
@@ -41,6 +44,25 @@ class ProcessCameraProvider extends JavaObject {
   /// Retrieves the cameras available to the device.
   Future<List<CameraInfo>> getAvailableCameraInfos() {
     return _api.getAvailableCameraInfosFromInstances(this);
+  }
+
+  /// Binds the specified [UseCase]s to the lifecycle of the camera that it
+  /// returns.
+  Future<Camera> bindToLifecycle(
+      CameraSelector cameraSelector, List<UseCase> useCases) {
+    return _api.bindToLifecycleFromInstances(this, cameraSelector, useCases);
+  }
+
+  /// Unbinds specified [UseCase]s from the lifecycle of the camera that this
+  /// instance tracks.
+  void unbind(List<UseCase> useCases) {
+    _api.unbindFromInstances(this, useCases);
+  }
+
+  /// Unbinds all previously bound [UseCase]s from the lifecycle of the camera
+  /// that this tracks.
+  void unbindAll() {
+    _api.unbindAllFromInstances(this);
   }
 }
 
@@ -84,6 +106,65 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
         .map<CameraInfo>((int? id) =>
             instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo)
         .toList();
+  }
+
+  /// Binds the specified [UseCase]s to the lifecycle of the camera which
+  /// the provided [ProcessCameraProvider] instance tracks.
+  ///
+  /// The instance of the camera whose lifecycle the [UseCase]s are bound to
+  /// is returned.
+  Future<Camera> bindToLifecycleFromInstances(
+    ProcessCameraProvider instance,
+    CameraSelector cameraSelector,
+    List<UseCase> useCases,
+  ) async {
+    int? identifier = instanceManager.getIdentifier(instance);
+    identifier ??= instanceManager.addDartCreatedInstance(instance,
+        onCopy: (ProcessCameraProvider original) {
+      return ProcessCameraProvider.detached(
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+    });
+    final List<int> useCaseIds = (useCases.map<int>(
+        (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
+
+    final int cameraIdentifier = await bindToLifecycle(
+      identifier,
+      instanceManager.getIdentifier(cameraSelector)!,
+      useCaseIds,
+    );
+    return instanceManager.getInstanceWithWeakReference(cameraIdentifier)!
+        as Camera;
+  }
+
+  /// Unbinds specified [UseCase]s from the lifecycle of the camera which the
+  /// provided [ProcessCameraProvider] instance tracks.
+  void unbindFromInstances(
+    ProcessCameraProvider instance,
+    List<UseCase> useCases,
+  ) {
+    int? identifier = instanceManager.getIdentifier(instance);
+    identifier ??= instanceManager.addDartCreatedInstance(instance,
+        onCopy: (ProcessCameraProvider original) {
+      return ProcessCameraProvider.detached(
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+    });
+    final List<int> useCaseIds = (useCases.map<int>(
+        (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
+
+    unbind(identifier, useCaseIds);
+  }
+
+  /// Unbinds all previously bound [UseCase]s from the lifecycle of the camera
+  /// which the provided [ProcessCameraProvider] instance tracks.
+  void unbindAllFromInstances(ProcessCameraProvider instance) {
+    int? identifier = instanceManager.getIdentifier(instance);
+    identifier ??= instanceManager.addDartCreatedInstance(instance,
+        onCopy: (ProcessCameraProvider original) {
+      return ProcessCameraProvider.detached(
+          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
+    });
+
+    unbindAll(identifier);
   }
 }
 
