@@ -252,9 +252,22 @@ types (such as face scanning) and you want to support SDKs lower than Q,
 _do not_ call `getAvailableBiometrics`. Simply call `authenticate` with `biometricOnly: true`.
 This will return an error if there was no hardware available.
 
-Furthermore, you need to update the `AndroidManifest.xml` file with the 
-`Theme.AppCompat.Light` theme to be compatible with **Android version 8 and below**; 
-otherwise the app crashes for those versions.  
+#### Android theme
+
+On Android you need to update the `LaunchTheme` parent style with the `Theme.AppCompat.Light` theme to be compatible with **Android version 8 and below**; otherwise the app crashes for those versions. To do that go to `android > app > src > main > res > values > styles.xml` and look for the style with name `LaunchTheme` (Notice that `LaunchTheme` must be referenced in the `AndroidManifest.xml` file). Then, change the parent style with the new value and you should have set up something like this:
+
+```xml
+...
+<resources>
+  <style name="LaunchTheme" parent="Theme.AppCompat.Light">
+    ...
+  </style>
+  ...
+</resources>
+...
+```
+
+In case you don't have a `styles.xml` file for your Android project you can set up the Android theme directly on your `android > app > src > main > AndroidManifest.xml` file:
 
 ```xml
 ...
