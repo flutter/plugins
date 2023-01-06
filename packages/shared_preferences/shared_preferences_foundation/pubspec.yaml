@@ -12,6 +12,11 @@ flutter:
   plugin:
     implements: shared_preferences
     platforms:
+      # TODO(stuartmorgan): Add sharedDarwinSource to these once
+      # https://github.com/flutter/flutter/pull/115337 lands.
+      ios:
+        pluginClass: SharedPreferencesPlugin
+        dartPluginClass: SharedPreferencesFoundation
       macos:
         pluginClass: SharedPreferencesPlugin
         dartPluginClass: SharedPreferencesFoundation

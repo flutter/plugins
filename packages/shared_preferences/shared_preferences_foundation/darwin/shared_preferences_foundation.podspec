@@ -13,9 +13,10 @@ Wraps NSUserDefaults, providing a persistent store for simple key-value pairs.
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/shared_preferences/shared_preferences_foundation' }
   s.source_files = 'Classes/**/*'
-  s.dependency 'FlutterMacOS'
-
-  s.platform = :osx, '10.11'
+  s.ios.dependency 'Flutter'
+  s.osx.dependency 'FlutterMacOS'
+  s.ios.deployment_target = '9.0'
+  s.osx.deployment_target = '10.11'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
 
