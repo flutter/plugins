@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'camera.dart';
 import 'camera_info.dart';
 import 'camera_selector.dart';
 import 'camerax_library.pigeon.dart';
@@ -13,6 +14,7 @@ class AndroidCameraXCameraFlutterApis {
   /// Creates a [AndroidCameraXCameraFlutterApis].
   AndroidCameraXCameraFlutterApis({
     JavaObjectFlutterApiImpl? javaObjectFlutterApi,
+    CameraFlutterApiImpl? cameraFlutterApi,
     CameraInfoFlutterApiImpl? cameraInfoFlutterApi,
     CameraSelectorFlutterApiImpl? cameraSelectorFlutterApi,
     ProcessCameraProviderFlutterApiImpl? processCameraProviderFlutterApi,
@@ -25,6 +27,7 @@ class AndroidCameraXCameraFlutterApis {
         cameraSelectorFlutterApi ?? CameraSelectorFlutterApiImpl();
     this.processCameraProviderFlutterApi = processCameraProviderFlutterApi ??
         ProcessCameraProviderFlutterApiImpl();
+    this.cameraFlutterApi = cameraFlutterApi ?? CameraFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -48,6 +51,9 @@ class AndroidCameraXCameraFlutterApis {
   late final ProcessCameraProviderFlutterApiImpl
       processCameraProviderFlutterApi;
 
+  /// Flutter Api for [Camera].
+  late final CameraFlutterApiImpl cameraFlutterApi;
+
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
     if (!_haveBeenSetUp) {
@@ -55,6 +61,7 @@ class AndroidCameraXCameraFlutterApis {
       CameraInfoFlutterApi.setup(cameraInfoFlutterApi);
       CameraSelectorFlutterApi.setup(cameraSelectorFlutterApi);
       ProcessCameraProviderFlutterApi.setup(processCameraProviderFlutterApi);
+      CameraFlutterApi.setup(cameraFlutterApi);
       _haveBeenSetUp = true;
     }
   }
