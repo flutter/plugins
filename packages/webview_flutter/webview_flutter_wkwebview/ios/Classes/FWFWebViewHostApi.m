@@ -253,7 +253,7 @@
 
 - (void)reloadWebViewWithIdentifier:(nonnull NSNumber *)identifier
                               error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  if ([self webViewForIdentifier:identifier].URL == NULL && _previousUrlRequest != NULL) {
+  if ([self webViewForIdentifier:identifier].URL == nil && _previousUrlRequest != nil) {
     [[self webViewForIdentifier:identifier] loadRequest:_previousUrlRequest];
   } else {
     [[self webViewForIdentifier:identifier] reload];
