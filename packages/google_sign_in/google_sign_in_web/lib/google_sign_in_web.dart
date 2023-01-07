@@ -8,20 +8,18 @@ import 'dart:html' as html;
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:google_identity_services_web/id.dart';
+import 'package:google_identity_services_web/loader.dart' as loader;
+import 'package:google_identity_services_web/oauth2.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:js/js.dart';
+import 'package:js/js_util.dart';
 
-import 'src/js_interop/gapiauth2.dart' as auth2;
-import 'src/load_gapi.dart' as gapi;
-import 'src/utils.dart' show gapiUserToPluginUserData;
+import 'src/people.dart' as people;
+import 'src/utils.dart' as utils;
 
 const String _kClientIdMetaSelector = 'meta[name=google-signin-client_id]';
 const String _kClientIdAttributeName = 'content';
-
-/// This is only exposed for testing. It shouldn't be accessed by users of the
-/// plugin as it could break at any point.
-@visibleForTesting
-String gapiUrl = 'https://apis.google.com/js/platform.js';
 
 /// Implementation of the google_sign_in plugin for Web.
 class GoogleSignInPlugin extends GoogleSignInPlatform {
@@ -34,12 +32,36 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         .querySelector(_kClientIdMetaSelector)
         ?.getAttribute(_kClientIdAttributeName);
 
-    _isGapiInitialized = gapi.inject(gapiUrl).then((_) => gapi.init());
+    _isJsSdkLoaded = loader.loadWebSdk();
   }
 
-  late Future<void> _isGapiInitialized;
-  late Future<void> _isAuthInitialized;
+  late Future<void> _isJsSdkLoaded;
   bool _isInitCalled = false;
+
+  // The scopes initially requested by the developer.
+  //
+  // We store this because we might need to add more at `signIn`, if the user
+  // doesn't `silentSignIn`, we expand this list to consult the People API to
+  // return some basic Authentication information.
+  late List<String> _initialScopes;
+
+  // The Google Identity Services client for oauth requests.
+  late TokenClient _tokenClient;
+
+  // Streams of credential and token responses.
+  late StreamController<CredentialResponse> _credentialResponses;
+  late StreamController<TokenResponse> _tokenResponses;
+
+  // The last-seen credential and token responses
+  CredentialResponse? _lastCredentialResponse;
+  TokenResponse? _lastTokenResponse;
+
+  // If the user *authenticates* (signs in) through oauth2, the SDK doesn't return
+  // identity information anymore, so we synthesize it by calling the PeopleAPI
+  // (if needed)
+  //
+  // (This is a synthetic _lastCredentialResponse)
+  GoogleSignInUserData? _requestedUserData;
 
   // This method throws if init or initWithParams hasn't been called at some
   // point in the past. It is used by the [initialized] getter to ensure that
@@ -53,13 +75,15 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     }
   }
 
-  /// A future that resolves when both GAPI and Auth2 have been correctly initialized.
+  /// A future that resolves when the SDK has been correctly loaded.
   @visibleForTesting
   Future<void> get initialized {
     _assertIsInitCalled();
-    return Future.wait(<Future<void>>[_isGapiInitialized, _isAuthInitialized]);
+    return _isJsSdkLoaded;
+    // TODO: make _isInitCalled a future that resolves when `init` is called
   }
 
+  // Stores the clientId found in the DOM (if any).
   String? _autoDetectedClientId;
 
   /// Factory method that initializes the plugin with [GoogleSignInPlatform].
@@ -100,141 +124,257 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         'Check https://developers.google.com/identity/protocols/googlescopes '
         'for a list of valid OAuth 2.0 scopes.');
 
-    await _isGapiInitialized;
+    await _isJsSdkLoaded;
 
-    final auth2.GoogleAuth auth = auth2.init(auth2.ClientConfig(
-      hosted_domain: params.hostedDomain,
-      // The js lib wants a space-separated list of values
-      scope: params.scopes.join(' '),
+    // Preserve the requested scopes to use them later in the `signIn` method.
+    _initialScopes = List<String>.from(params.scopes);
+
+    // Configure the Streams of credential (authentication)
+    // and token (authorization) responses
+    _tokenResponses = StreamController<TokenResponse>.broadcast();
+    _credentialResponses = StreamController<CredentialResponse>.broadcast();
+    _tokenResponses.stream.listen((TokenResponse response) {
+      _lastTokenResponse = response;
+    }, onError: (Object error) {
+      _lastTokenResponse = null;
+    });
+    _credentialResponses.stream.listen((CredentialResponse response) {
+      _lastCredentialResponse = response;
+    }, onError: (Object error) {
+      _lastCredentialResponse = null;
+    });
+
+    // TODO: Expose some form of 'debug' mode from the plugin?
+    // TODO: Remove this before releasing.
+    id.setLogLevel('debug');
+
+    // Initialize `id` for the silent-sign in code.
+    final IdConfiguration idConfig = IdConfiguration(
       client_id: appClientId!,
-      plugin_name: 'dart-google_sign_in_web',
-    ));
+      callback: allowInterop(_onCredentialResponse),
+      cancel_on_tap_outside: false,
+      auto_select: true, // Attempt to sign-in silently.
+    );
+    id.initialize(idConfig);
 
-    final Completer<void> isAuthInitialized = Completer<void>();
-    _isAuthInitialized = isAuthInitialized.future;
+    // Create a Token Client for authorization calls.
+    final TokenClientConfig tokenConfig = TokenClientConfig(
+      client_id: appClientId,
+      hosted_domain: params.hostedDomain,
+      callback: allowInterop(_onTokenResponse),
+      error_callback: allowInterop(_onTokenError),
+      // `scope` will be modified in the `signIn` method
+      scope: ' ',
+    );
+    _tokenClient = oauth2.initTokenClient(tokenConfig);
+
     _isInitCalled = true;
+    return;
+  }
 
-    auth.then(allowInterop((auth2.GoogleAuth initializedAuth) {
-      // onSuccess
+  // Handle a "normal" credential (authentication) response.
+  //
+  // (Normal doesn't mean successful, this might contain `error` information.)
+  void _onCredentialResponse(CredentialResponse response) {
+    if (response.error != null) {
+      _credentialResponses.addError(response.error!);
+    } else {
+      _credentialResponses.add(response);
+    }
+  }
 
-      // TODO(ditman): https://github.com/flutter/flutter/issues/48528
-      // This plugin doesn't notify the app of external changes to the
-      // state of the authentication, i.e: if you logout elsewhere...
+  // Handle a "normal" token (authorization) response.
+  //
+  // (Normal doesn't mean successful, this might contain `error` information.)
+  void _onTokenResponse(TokenResponse response) {
+    if (response.error != null) {
+      _tokenResponses.addError(response.error!);
+    } else {
+      _tokenResponses.add(response);
+    }
+  }
 
-      isAuthInitialized.complete();
-    }), allowInterop((auth2.GoogleAuthInitFailureError reason) {
-      // onError
-      isAuthInitialized.completeError(PlatformException(
-        code: reason.error,
-        message: reason.details,
-        details:
-            'https://developers.google.com/identity/sign-in/web/reference#error_codes',
-      ));
-    }));
-
-    return _isAuthInitialized;
+  // Handle a "not-directly-related-to-authorization" error.
+  //
+  // Token clients have an additional `error_callback` for miscellaneous
+  // errors, like "popup couldn't open" or "popup closed by user".
+  void _onTokenError(Object? error) {
+    // This is handled in a funky (js_interop) way because of:
+    // https://github.com/dart-lang/sdk/issues/50899
+    _tokenResponses.addError(getProperty(error!, 'type'));
   }
 
   @override
   Future<GoogleSignInUserData?> signInSilently() async {
     await initialized;
 
-    return gapiUserToPluginUserData(
-        auth2.getAuthInstance()?.currentUser?.get());
+    final Completer<GoogleSignInUserData?> userDataCompleter =
+        Completer<GoogleSignInUserData?>();
+
+    // Ask the SDK to render the OneClick sign-in.
+    id.prompt(allowInterop((PromptMomentNotification moment) {
+      // Kick our handler to the bottom of the JS event queue, so the
+      // _credentialResponses stream has time to propagate its last
+      // value, so we can use _lastCredentialResponse in _onPromptMoment.
+      Future<void>.delayed(Duration.zero, () {
+        _onPromptMoment(moment, userDataCompleter);
+      });
+    }));
+
+    return userDataCompleter.future;
+  }
+
+  // Handles "prompt moments" of the OneClick card UI.
+  //
+  // See: https://developers.google.com/identity/gsi/web/guides/receive-notifications-prompt-ui-status
+  Future<void> _onPromptMoment(
+    PromptMomentNotification moment,
+    Completer<GoogleSignInUserData?> completer,
+  ) async {
+    if (completer.isCompleted) {
+      return; // Skip once the moment has been handled.
+    }
+
+    if (moment.isDismissedMoment() &&
+        moment.getDismissedReason() ==
+            MomentDismissedReason.credential_returned) {
+      // This could resolve with the returned credential, like so:
+      //
+      // completer.complete(
+      //   utils.gisResponsesToUserData(
+      //     _lastCredentialResponse,
+      //   ));
+      //
+      // But since the credential is not performing any authorization, and current
+      // apps expect that, we simulate a "failure" here.
+      //
+      // A successful `silentSignIn` however, will prevent an extra request later
+      // when requesting oauth2 tokens at `signIn`.
+      completer.complete(null);
+      return;
+    }
+
+    // In any other 'failed' moments, return null and add an error to the stream.
+    if (moment.isNotDisplayed() ||
+        moment.isSkippedMoment() ||
+        moment.isDismissedMoment()) {
+      final String reason = moment.getNotDisplayedReason()?.toString() ??
+          moment.getSkippedReason()?.toString() ??
+          moment.getDismissedReason()?.toString() ??
+          'silentSignIn failed.';
+
+      _credentialResponses.addError(reason);
+      completer.complete(null);
+    }
   }
 
   @override
   Future<GoogleSignInUserData?> signIn() async {
     await initialized;
+    final Completer<GoogleSignInUserData?> userDataCompleter =
+        Completer<GoogleSignInUserData?>();
+
     try {
-      return gapiUserToPluginUserData(await auth2.getAuthInstance()?.signIn());
-    } on auth2.GoogleAuthSignInError catch (reason) {
+      // This toggles a popup, so `signIn` *must* be called with
+      // user activation.
+      _tokenClient.requestAccessToken(OverridableTokenClientConfig(
+        scope: <String>[
+          ..._initialScopes,
+          // If the user hasn't gone through the auth process,
+          // the plugin will attempt to `requestUserData` after,
+          // so we need extra scopes to retrieve that info.
+          if (_lastCredentialResponse == null) ...people.scopes,
+        ].join(' '),
+      ));
+
+      // This stream is modified from _onTokenResponse and _onTokenError.
+      await _tokenResponses.stream.first;
+
+      // If the user hasn't authenticated, request their basic profile info
+      // from the People API.
+      //
+      // This synthetic response will *not* contain an `idToken` field.
+      if (_lastCredentialResponse == null && _requestedUserData == null) {
+        assert(_lastTokenResponse != null);
+        _requestedUserData = await people.requestUserData(
+          _lastTokenResponse!,
+          _lastCredentialResponse?.credential,
+        );
+      }
+      // Complete user data either with the _lastCredentialResponse seen,
+      // or the synthetic _requestedUserData from above.
+      userDataCompleter.complete(
+          utils.gisResponsesToUserData(_lastCredentialResponse) ??
+              _requestedUserData);
+    } catch (reason) {
       throw PlatformException(
-        code: reason.error,
-        message: 'Exception raised from GoogleAuth.signIn()',
+        code: reason.toString(),
+        message: 'Exception raised from signIn',
         details:
-            'https://developers.google.com/identity/sign-in/web/reference#error_codes_2',
+            'https://developers.google.com/identity/oauth2/web/guides/error',
       );
     }
+
+    return userDataCompleter.future;
   }
 
   @override
-  Future<GoogleSignInTokenData> getTokens(
-      {required String email, bool? shouldRecoverAuth}) async {
+  Future<GoogleSignInTokenData> getTokens({
+    required String email,
+    bool? shouldRecoverAuth,
+  }) async {
     await initialized;
 
-    final auth2.GoogleUser? currentUser =
-        auth2.getAuthInstance()?.currentUser?.get();
-    final auth2.AuthResponse? response = currentUser?.getAuthResponse();
-
-    return GoogleSignInTokenData(
-        idToken: response?.id_token, accessToken: response?.access_token);
+    return utils.gisResponsesToTokenData(
+      _lastCredentialResponse,
+      _lastTokenResponse,
+    );
   }
 
   @override
   Future<void> signOut() async {
     await initialized;
 
-    return auth2.getAuthInstance()?.signOut();
+    clearAuthCache();
+    id.disableAutoSelect();
   }
 
   @override
   Future<void> disconnect() async {
     await initialized;
 
-    final auth2.GoogleUser? currentUser =
-        auth2.getAuthInstance()?.currentUser?.get();
-
-    if (currentUser == null) {
-      return;
+    if (_lastTokenResponse != null) {
+      oauth2.revoke(_lastTokenResponse!.access_token);
     }
-
-    return currentUser.disconnect();
+    signOut();
   }
 
   @override
   Future<bool> isSignedIn() async {
     await initialized;
 
-    final auth2.GoogleUser? currentUser =
-        auth2.getAuthInstance()?.currentUser?.get();
-
-    if (currentUser == null) {
-      return false;
-    }
-
-    return currentUser.isSignedIn();
+    return _lastCredentialResponse != null || _requestedUserData != null;
   }
 
   @override
-  Future<void> clearAuthCache({required String token}) async {
+  Future<void> clearAuthCache({String token = 'unused_in_web'}) async {
     await initialized;
 
-    return auth2.getAuthInstance()?.disconnect();
+    _lastCredentialResponse = null;
+    _lastTokenResponse = null;
+    _requestedUserData = null;
   }
 
   @override
   Future<bool> requestScopes(List<String> scopes) async {
     await initialized;
 
-    final auth2.GoogleUser? currentUser =
-        auth2.getAuthInstance()?.currentUser?.get();
+    _tokenClient.requestAccessToken(OverridableTokenClientConfig(
+      scope: scopes.join(' '),
+    ));
 
-    if (currentUser == null) {
-      return false;
-    }
+    await _tokenResponses.stream.first;
 
-    final String grantedScopes = currentUser.getGrantedScopes() ?? '';
-    final Iterable<String> missingScopes =
-        scopes.where((String scope) => !grantedScopes.contains(scope));
-
-    if (missingScopes.isEmpty) {
-      return true;
-    }
-
-    final Object? response = await currentUser
-        .grant(auth2.SigninOptions(scope: missingScopes.join(' ')));
-
-    return response != null;
+    return oauth2.hasGrantedAllScopes(_lastTokenResponse!, scopes);
   }
 }

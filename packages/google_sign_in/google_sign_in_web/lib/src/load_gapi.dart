@@ -1,7 +1,7 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+/*
 @JS()
 library gapi_onload;
 
@@ -57,3 +57,4 @@ Future<void> init() {
   // After this resolves, we can use gapi.auth2!
   return gapiLoadCompleter.future;
 }
+*/
