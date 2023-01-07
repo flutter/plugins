@@ -371,6 +371,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
     _tokenClient.requestAccessToken(OverridableTokenClientConfig(
       scope: scopes.join(' '),
+      include_granted_scopes: true,
     ));
 
     await _tokenResponses.stream.first;
