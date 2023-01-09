@@ -13,7 +13,6 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformViewRegistry;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.CookieManagerHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
@@ -62,15 +61,15 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
    * won't react to changes in activity or context, unlike {@link WebViewFlutterPlugin}.
    */
   @SuppressWarnings({"unused", "deprecation"})
-  public static void registerWith(PluginRegistry.Registrar registrar) {
-    final WebViewFlutterPlugin plugin = new WebViewFlutterPlugin();
-    plugin.setUp(
-        registrar.messenger(),
-        registrar.platformViewRegistry(),
-        registrar.activity(),
-        registrar.view(),
-        new FlutterAssetManager.RegistrarFlutterAssetManager(
-            registrar.context().getAssets(), registrar));
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+    new WebViewFlutterPlugin()
+        .setUp(
+            registrar.messenger(),
+            registrar.platformViewRegistry(),
+            registrar.activity(),
+            registrar.view(),
+            new FlutterAssetManager.RegistrarFlutterAssetManager(
+                registrar.context().getAssets(), registrar));
   }
 
   private void setUp(
