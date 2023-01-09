@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.Preview;
 import androidx.camera.core.UseCase;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.content.ContextCompat;
@@ -95,7 +94,8 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
 
   /**
    * Binds specified {@code UseCase}s to the lifecycle of the {@code LifecycleOwner} that
-   * corresponds to this instance.
+   * corresponds to this instance and returns the instance of the {@code Camera} whose lifecycle
+   * that {@code LifecycleOwner} reflects.
    */
   @Override
   public Long bindToLifecycle(
@@ -111,20 +111,15 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
       useCases[i] = (UseCase) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
     }
 
-    if (lifecycleOwner != null) {
-      Camera camera =
-          processCameraProvider.bindToLifecycle(
-              (LifecycleOwner) lifecycleOwner, cameraSelector, useCases);
+    Camera camera =
+        processCameraProvider.bindToLifecycle(
+            (LifecycleOwner) lifecycleOwner, cameraSelector, useCases);
 
-      final CameraFlutterApiImpl camraFlutterApi =
-          new CameraFlutterApiImpl(binaryMessenger, instanceManager);
-      camraFlutterApi.create(camera, result -> {});
+    final CameraFlutterApiImpl camraFlutterApi =
+        new CameraFlutterApiImpl(binaryMessenger, instanceManager);
+    camraFlutterApi.create(camera, result -> {});
 
-      return instanceManager.getIdentifierForStrongReference(camera);
-    } else {
-      // TODO(camsim99): Throw error here?
-      return null;
-    }
+    return instanceManager.getIdentifierForStrongReference(camera);
   }
 
   @Override
@@ -133,7 +128,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         (ProcessCameraProvider) instanceManager.getInstance(identifier);
     UseCase[] useCases = new UseCase[useCaseIds.size()];
     for (int i = 0; i < useCaseIds.size(); i++) {
-      useCases[i] = (Preview) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
+      useCases[i] = (UseCase) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
     }
     processCameraProvider.unbind(useCases);
   }

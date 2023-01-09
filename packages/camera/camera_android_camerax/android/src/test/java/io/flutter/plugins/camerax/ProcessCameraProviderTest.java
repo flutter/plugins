@@ -13,8 +13,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import androidx.camera.core.Camera;
 import androidx.camera.core.CameraInfo;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.UseCase;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.test.core.app.ApplicationProvider;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -97,6 +101,58 @@ public class ProcessCameraProviderTest {
 
     assertEquals(processCameraProviderHostApi.getAvailableCameraInfos(0L), Arrays.asList(1L));
     verify(processCameraProvider).getAvailableCameraInfos();
+  }
+
+  @Test
+  public void bindToLifecycleTest() {
+    final ProcessCameraProviderHostApiImpl processCameraProviderHostApi =
+        new ProcessCameraProviderHostApiImpl(mockBinaryMessenger, testInstanceManager, context);
+    final Camera mockCamera = mock(Camera.class);
+    final CameraSelector mockCameraSelector = mock(CameraSelector.class);
+    final UseCase mockUseCase = mock(UseCase.class);
+    UseCase[] mockUseCases = new UseCase[] {mockUseCase};
+
+    LifecycleOwner mockLifecycleOwner = mock(LifecycleOwner.class);
+    processCameraProviderHostApi.setLifecycleOwner(mockLifecycleOwner);
+
+    testInstanceManager.addDartCreatedInstance(processCameraProvider, 0);
+    testInstanceManager.addDartCreatedInstance(mockCameraSelector, 1);
+    testInstanceManager.addDartCreatedInstance(mockUseCase, 2);
+    testInstanceManager.addDartCreatedInstance(mockCamera, 3);
+
+    when(processCameraProvider.bindToLifecycle(
+            mockLifecycleOwner, mockCameraSelector, mockUseCases))
+        .thenReturn(mockCamera);
+
+    assertEquals(
+        processCameraProviderHostApi.bindToLifecycle(0L, 1L, Arrays.asList(2L)), Long.valueOf(3));
+    verify(processCameraProvider)
+        .bindToLifecycle(mockLifecycleOwner, mockCameraSelector, mockUseCases);
+  }
+
+  @Test
+  public void unbindTest() {
+    final ProcessCameraProviderHostApiImpl processCameraProviderHostApi =
+        new ProcessCameraProviderHostApiImpl(mockBinaryMessenger, testInstanceManager, context);
+    final UseCase mockUseCase = mock(UseCase.class);
+    UseCase[] mockUseCases = new UseCase[] {mockUseCase};
+
+    testInstanceManager.addDartCreatedInstance(processCameraProvider, 0);
+    testInstanceManager.addDartCreatedInstance(mockUseCase, 1);
+
+    processCameraProviderHostApi.unbind(0L, Arrays.asList(1L));
+    verify(processCameraProvider).unbind(mockUseCases);
+  }
+
+  @Test
+  public void unbindAllTest() {
+    final ProcessCameraProviderHostApiImpl processCameraProviderHostApi =
+        new ProcessCameraProviderHostApiImpl(mockBinaryMessenger, testInstanceManager, context);
+
+    testInstanceManager.addDartCreatedInstance(processCameraProvider, 0);
+
+    processCameraProviderHostApi.unbindAll(0L);
+    verify(processCameraProvider).unbindAll();
   }
 
   @Test
