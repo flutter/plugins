@@ -9,13 +9,14 @@ import 'camerax_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
+/// The interface used to control the flow of data of use cases, control the
+/// camera, and publich the state of the camera.
+///
+/// See https://developer.android.com/reference/androidx/camera/core/Camera.
 class Camera extends JavaObject {
   /// Constructs a [Camera] that is not automatically attached to a native object.
-  Camera.detached(
-      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
-      : super.detached(
-            binaryMessenger: binaryMessenger,
-            instanceManager: instanceManager) {
+  Camera.detached({super.binaryMessenger, super.instanceManager})
+      : super.detached() {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
   }
 }

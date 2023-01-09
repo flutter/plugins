@@ -124,8 +124,9 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
       return ProcessCameraProvider.detached(
           binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     });
-    final List<int> useCaseIds = (useCases.map<int>(
-        (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
+    final List<int> useCaseIds = useCases
+        .map<int>((UseCase useCase) => instanceManager.getIdentifier(useCase)!)
+        .toList();
 
     final int cameraIdentifier = await bindToLifecycle(
       identifier,
@@ -148,8 +149,9 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
       return ProcessCameraProvider.detached(
           binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     });
-    final List<int> useCaseIds = (useCases.map<int>(
-        (UseCase useCase) => instanceManager.getIdentifier(useCase)!)).toList();
+    final List<int> useCaseIds = useCases
+        .map<int>((UseCase useCase) => instanceManager.getIdentifier(useCase)!)
+        .toList();
 
     unbind(identifier, useCaseIds);
   }
