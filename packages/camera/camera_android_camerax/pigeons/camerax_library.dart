@@ -70,3 +70,19 @@ abstract class ProcessCameraProviderHostApi {
 abstract class ProcessCameraProviderFlutterApi {
   void create(int identifier);
 }
+
+@HostApi(dartHostTestHandler: 'TestSystemServicesHostApi')
+abstract class SystemServicesHostApi {
+  void requestCameraPermissions(bool enableAudio);
+
+  void startListeningForDeviceOrientationChange(
+      bool isFrontFacing, int sensorOrientation);
+}
+
+@FlutterApi()
+abstract class SystemServicesFlutterApi {
+  void onCameraPermissionsRequestResult(
+      String? errorCode, String? errorMessage);
+
+  void onDeviceOrientationChanged(String orientation);
+}

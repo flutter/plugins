@@ -161,7 +161,6 @@ class InstanceManager {
     int identifier, {
     required T Function(T original) onCopy,
   }) {
-    assert(!containsIdentifier(identifier));
     assert(getIdentifier(instance) == null);
     assert(identifier >= 0);
     _addInstanceWithIdentifier(instance, identifier, onCopy: onCopy);
