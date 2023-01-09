@@ -17,7 +17,6 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
   private InstanceManager instanceManager;
   private FlutterPluginBinding pluginBinding;
   public ProcessCameraProviderHostApiImpl processCameraProviderHostApi;
-  public SystemServicesHostApiImpl systemServicesHostApi;
 
   /**
    * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
@@ -65,16 +64,10 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
     CameraAndroidCameraxPlugin plugin = new CameraAndroidCameraxPlugin();
-    plugin.setUp(
-        pluginBinding.getBinaryMessenger(),
-        pluginBinding.getApplicationContext(),
-        pluginBinding.getTextureRegistry());
+    plugin.setUp(pluginBinding.getBinaryMessenger(), pluginBinding.getApplicationContext());
     plugin.updateContext(pluginBinding.getApplicationContext());
     plugin.processCameraProviderHostApi.setLifecycleOwner(
         (LifecycleOwner) activityPluginBinding.getActivity());
-    plugin.systemServicesHostApi.setActivity(activityPluginBinding.getActivity());
-    plugin.systemServicesHostApi.setPermissionsRegistry(
-        activityPluginBinding::addRequestPermissionsResultListener);
   }
 
   @Override
