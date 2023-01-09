@@ -1,3 +1,7 @@
+## 2.4.1
+
+* Updates code for stricter lint checks.
+
 ## 2.4.0
 
 * Adds the ability to request a specific map renderer.
