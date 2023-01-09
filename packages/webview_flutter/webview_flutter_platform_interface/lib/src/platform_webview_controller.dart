@@ -26,7 +26,7 @@ abstract class PlatformWebViewController extends PlatformInterface {
       'A platform implementation for `webview_flutter` has not been set. Please '
       'ensure that an implementation of `WebViewPlatform` has been set to '
       '`WebViewPlatform.instance` before use. For unit testing, '
-      '`WebViewPlatform.instance` can be set with your own test implementation.'
+      '`WebViewPlatform.instance` can be set with your own test implementation.',
     );
     final PlatformWebViewController webViewControllerDelegate =
         WebViewPlatform.instance!.createPlatformWebViewController(params);
