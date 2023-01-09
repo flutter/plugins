@@ -1,6 +1,6 @@
-## 0.9.9+1
+## 0.9.10
 
-* Updates code for stricted type lint checks.
+* Remove usage of deprecated quiver Optional type.
 
 ## 0.9.9
 

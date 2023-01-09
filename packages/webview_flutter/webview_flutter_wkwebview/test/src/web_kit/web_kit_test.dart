@@ -577,6 +577,7 @@ void main() {
               allHttpHeaderFields: <String, String>{},
             ),
             targetFrame: WKFrameInfoData(isMainFrame: false),
+            navigationType: WKNavigationType.linkActivated,
           ),
         );
 
@@ -924,6 +925,7 @@ void main() {
               allHttpHeaderFields: <String, String>{},
             ),
             targetFrame: WKFrameInfoData(isMainFrame: false),
+            navigationType: WKNavigationType.linkActivated,
           ),
         );
 

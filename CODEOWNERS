@@ -45,7 +45,7 @@ packages/camera/camera_avfoundation/**                   @hellohuanlin
 packages/file_selector/file_selector_ios/**              @jmagman
 packages/google_maps_flutter/google_maps_flutter_ios/**  @cyanglaz
 packages/google_sign_in/google_sign_in_ios/**            @jmagman
-packages/image_picker/image_picker_ios/**                @cyanglaz
+packages/image_picker/image_picker_ios/**                @vashworth
 packages/in_app_purchase/in_app_purchase_storekit/**     @cyanglaz
 packages/ios_platform_images/ios/**                      @jmagman
 packages/local_auth/local_auth_ios/**                    @hellohuanlin

@@ -4,85 +4,55 @@
 
 import FlutterMacOS
 import XCTest
-import shared_preferences_macos
+@testable import shared_preferences_macos
 
 class RunnerTests: XCTestCase {
-  func testHandlesCommitNoOp() throws {
-    let plugin = SharedPreferencesPlugin()
-    let call = FlutterMethodCall(methodName: "commit", arguments: nil)
-    var called = false
-    plugin.handle(
-      call,
-      result: { (result: Any?) -> Void in
-        called = true
-        XCTAssert(result as? Bool == true)
-      })
-    XCTAssert(called)
-  }
-
   func testSetAndGet() throws {
     let plugin = SharedPreferencesPlugin()
-    let setCall = FlutterMethodCall(
-      methodName: "setInt",
-      arguments: [
-        "key": "flutter.foo",
-        "value": 42,
-      ])
-    plugin.handle(
-      setCall,
-      result: { (result: Any?) -> Void in
-        XCTAssert(result as? Bool == true)
-      })
 
-    var value: Int?
-    plugin.handle(
-      FlutterMethodCall(methodName: "getAll", arguments: nil),
-      result: { (result: Any?) -> Void in
-        if let prefs = result as? [String: Any] {
-          value = prefs["flutter.foo"] as? Int
-        }
-      })
-    XCTAssertEqual(value, 42)
+    plugin.setBool(key: "flutter.aBool", value: true)
+    plugin.setDouble(key: "flutter.aDouble", value: 3.14)
+    plugin.setValue(key: "flutter.anInt", value: 42)
+    plugin.setValue(key: "flutter.aString", value: "hello world")
+    plugin.setValue(key: "flutter.aStringList", value: ["hello", "world"])
+
+    let storedValues = plugin.getAll()
+    XCTAssertEqual(storedValues["flutter.aBool"] as? Bool, true)
+    XCTAssertEqual(storedValues["flutter.aDouble"] as! Double, 3.14, accuracy: 0.0001)
+    XCTAssertEqual(storedValues["flutter.anInt"] as? Int, 42)
+    XCTAssertEqual(storedValues["flutter.aString"] as? String, "hello world")
+    XCTAssertEqual(storedValues["flutter.aStringList"] as? Array<String>, ["hello", "world"])
+  }
+
+  func testRemove() throws {
+    let plugin = SharedPreferencesPlugin()
+    let testKey = "flutter.foo"
+    plugin.setValue(key: testKey, value: 42)
+
+    // Make sure there is something to remove, so the test can't pass due to a set failure.
+    let preRemovalValues = plugin.getAll()
+    XCTAssertEqual(preRemovalValues[testKey] as? Int, 42)
+
+    // Then verify that removing it works.
+    plugin.remove(key: testKey)
+
+    let finalValues = plugin.getAll()
+    XCTAssertNil(finalValues[testKey] as Any?)
   }
 
   func testClear() throws {
     let plugin = SharedPreferencesPlugin()
-    let setCall = FlutterMethodCall(
-      methodName: "setInt",
-      arguments: [
-        "key": "flutter.foo",
-        "value": 42,
-      ])
-    plugin.handle(setCall, result: { (result: Any?) -> Void in })
+    let testKey = "flutter.foo"
+    plugin.setValue(key: testKey, value: 42)
 
     // Make sure there is something to clear, so the test can't pass due to a set failure.
-    let getCall = FlutterMethodCall(methodName: "getAll", arguments: nil)
-    var value: Int?
-    plugin.handle(
-      getCall,
-      result: { (result: Any?) -> Void in
-        if let prefs = result as? [String: Any] {
-          value = prefs["flutter.foo"] as? Int
-        }
-      })
-    XCTAssertEqual(value, 42)
+    let preRemovalValues = plugin.getAll()
+    XCTAssertEqual(preRemovalValues[testKey] as? Int, 42)
 
-    // Clear the value.
-    plugin.handle(
-      FlutterMethodCall(methodName: "clear", arguments: nil),
-      result: { (result: Any?) -> Void in
-        XCTAssert(result as? Bool == true)
-      })
+    // Then verify that clearing works.
+    plugin.clear()
 
-    // Get the value again, which should clear |value|.
-    plugin.handle(
-      getCall,
-      result: { (result: Any?) -> Void in
-        if let prefs = result as? [String: Any] {
-          value = prefs["flutter.foo"] as? Int
-          XCTAssert(prefs.isEmpty)
-        }
-      })
-    XCTAssertEqual(value, nil)
+    let finalValues = plugin.getAll()
+    XCTAssertNil(finalValues[testKey] as Any?)
   }
 }

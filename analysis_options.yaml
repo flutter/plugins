@@ -81,7 +81,7 @@ linter:
     # - avoid_multiple_declarations_per_line # seems to be a stylistic choice we don't subscribe to
     - avoid_null_checks_in_equality_operators
     # - avoid_positional_boolean_parameters # would have been nice to enable this but by now there's too many places that break it
-    # - avoid_print # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - avoid_print
     # - avoid_private_typedef_functions # we prefer having typedef (discussion in https://github.com/flutter/flutter/pull/16356)
     - avoid_redundant_argument_values
     - avoid_relative_lib_imports
@@ -204,7 +204,7 @@ linter:
     - recursive_getters
     # - require_trailing_commas # blocked on https://github.com/dart-lang/sdk/issues/47441
     - secure_pubspec_urls
-     - sized_box_for_whitespace
+    - sized_box_for_whitespace
     # - sized_box_shrink_expand # not yet tested
     - slash_for_doc_comments
     - sort_child_properties_last

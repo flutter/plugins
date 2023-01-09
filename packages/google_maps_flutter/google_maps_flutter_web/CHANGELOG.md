@@ -1,6 +1,5 @@
-## 0.4.0+4
+## NEXT
 
-* Updates code for stricted type lint checks.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 0.4.0+3

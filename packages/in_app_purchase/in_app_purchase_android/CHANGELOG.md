@@ -1,7 +1,3 @@
-## 0.2.3+8
-
-* Updates code for stricted type lint checks.
-
 ## 0.2.3+7
 
 * Updates code for new analysis options.
