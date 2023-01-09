@@ -28,6 +28,7 @@ packages/**/*_web/**                                     @ditman
 
 # - Android
 packages/camera/camera_android/**                        @camsim99
+packages/camera/camera_android_camerax/**                @camsim99
 packages/espresso/**                                     @GaryQian
 packages/flutter_plugin_android_lifecycle/**             @GaryQian
 packages/google_maps_flutter/google_maps_flutter_android/**  @GaryQian
