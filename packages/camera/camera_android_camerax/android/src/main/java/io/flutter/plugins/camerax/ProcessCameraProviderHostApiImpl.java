@@ -145,7 +145,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
         (ProcessCameraProvider) instanceManager.getInstance(identifier);
     UseCase[] useCases = new UseCase[useCaseIds.size()];
     for (int i = 0; i < useCaseIds.size(); i++) {
-      useCases[i] = (Preview) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
+      useCases[i] = (UseCase) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
     }
 
     processCameraProvider.unbind(useCases);
