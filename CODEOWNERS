@@ -51,7 +51,7 @@ packages/ios_platform_images/ios/**                      @jmagman
 packages/local_auth/local_auth_ios/**                    @hellohuanlin
 packages/path_provider/path_provider_ios/**              @jmagman
 packages/quick_actions/quick_actions_ios/**              @hellohuanlin
-packages/shared_preferences/shared_preferences_ios/**    @cyanglaz
+packages/shared_preferences/shared_preferences_foundation/**  @cyanglaz
 packages/url_launcher/url_launcher_ios/**                @jmagman
 packages/video_player/video_player_avfoundation/**       @hellohuanlin
 packages/webview_flutter/webview_flutter_wkwebview/**    @cyanglaz
@@ -65,7 +65,6 @@ packages/url_launcher/url_launcher_linux/**              @cbracken
 # - macOS
 packages/file_selector/file_selector_macos/**            @cbracken
 packages/path_provider/path_provider_macos/**            @cbracken
-packages/shared_preferences/shared_preferences_macos/**  @cbracken
 packages/url_launcher/url_launcher_macos/**              @cbracken
 
 # - Windows

@@ -70,7 +70,7 @@ dependencies {
 
     // Assertions
     api 'androidx.test.ext:junit:1.1.3'
-    api 'androidx.test.ext:truth:1.4.0'
+    api 'androidx.test.ext:truth:1.5.0'
     api 'com.google.truth:truth:0.42'
 
     // Espresso dependencies

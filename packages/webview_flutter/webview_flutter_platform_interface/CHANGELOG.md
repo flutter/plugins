@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Improves error message when a platform interface class is used before `WebViewPlatform.instance` has been set.
+
 ## 2.0.0
 
 * **Breaking Change**: Releases new interface. See [documentation](https://pub.dev/documentation/webview_flutter_platform_interface/2.0.0/) and [design doc](https://flutter.dev/go/webview_flutter_4_interface)
