@@ -18,6 +18,69 @@ void main() {
     expect(WebViewPlatform.instance, isNull);
   });
 
+  // This test can only run while `WebViewPlatform.instance` is still null.
+  test(
+      'Interface classes throw assertion error when `WebViewPlatform.instance` is null',
+      () {
+    expect(
+      () => PlatformNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+      ),
+      throwsA(isA<AssertionError>().having(
+        (AssertionError error) => error.message,
+        'message',
+        'A platform implementation for `webview_flutter` has not been set. Please '
+            'ensure that an implementation of `WebViewPlatform` has been set to '
+            '`WebViewPlatform.instance` before use. For unit testing, '
+            '`WebViewPlatform.instance` can be set with your own test implementation.',
+      )),
+    );
+
+    expect(
+      () => PlatformWebViewController(
+        const PlatformWebViewControllerCreationParams(),
+      ),
+      throwsA(isA<AssertionError>().having(
+        (AssertionError error) => error.message,
+        'message',
+        'A platform implementation for `webview_flutter` has not been set. Please '
+            'ensure that an implementation of `WebViewPlatform` has been set to '
+            '`WebViewPlatform.instance` before use. For unit testing, '
+            '`WebViewPlatform.instance` can be set with your own test implementation.',
+      )),
+    );
+
+    expect(
+      () => PlatformWebViewCookieManager(
+        const PlatformWebViewCookieManagerCreationParams(),
+      ),
+      throwsA(isA<AssertionError>().having(
+        (AssertionError error) => error.message,
+        'message',
+        'A platform implementation for `webview_flutter` has not been set. Please '
+            'ensure that an implementation of `WebViewPlatform` has been set to '
+            '`WebViewPlatform.instance` before use. For unit testing, '
+            '`WebViewPlatform.instance` can be set with your own test implementation.',
+      )),
+    );
+
+    expect(
+      () => PlatformWebViewWidget(
+        PlatformWebViewWidgetCreationParams(
+          controller: MockWebViewControllerDelegate(),
+        ),
+      ),
+      throwsA(isA<AssertionError>().having(
+        (AssertionError error) => error.message,
+        'message',
+        'A platform implementation for `webview_flutter` has not been set. Please '
+            'ensure that an implementation of `WebViewPlatform` has been set to '
+            '`WebViewPlatform.instance` before use. For unit testing, '
+            '`WebViewPlatform.instance` can be set with your own test implementation.',
+      )),
+    );
+  });
+
   test('Cannot be implemented with `implements`', () {
     expect(() {
       WebViewPlatform.instance = ImplementsWebViewPlatform();

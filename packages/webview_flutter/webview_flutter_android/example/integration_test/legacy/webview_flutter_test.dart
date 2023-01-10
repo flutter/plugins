@@ -985,6 +985,11 @@ Future<void> main() async {
       final Map<String, dynamic> viewportRectRelativeToViewport =
           jsonDecode(viewportRectJSON) as Map<String, dynamic>;
 
+      num getDomRectComponent(
+          Map<String, dynamic> rectAsJson, String component) {
+        return rectAsJson[component]! as num;
+      }
+
       // Check that the input is originally outside of the viewport.
 
       final String initialInputClientRectJSON =
@@ -994,8 +999,9 @@ Future<void> main() async {
           jsonDecode(initialInputClientRectJSON) as Map<String, dynamic>;
 
       expect(
-          initialInputClientRectRelativeToViewport['bottom'] <=
-              viewportRectRelativeToViewport['bottom'],
+          getDomRectComponent(
+                  initialInputClientRectRelativeToViewport, 'bottom') <=
+              getDomRectComponent(viewportRectRelativeToViewport, 'bottom'),
           isFalse);
 
       await controller.runJavascript('inputEl.focus()');
@@ -1009,21 +1015,22 @@ Future<void> main() async {
           jsonDecode(lastInputClientRectJSON) as Map<String, dynamic>;
 
       expect(
-          lastInputClientRectRelativeToViewport['top'] >=
-              viewportRectRelativeToViewport['top'],
+          getDomRectComponent(lastInputClientRectRelativeToViewport, 'top') >=
+              getDomRectComponent(viewportRectRelativeToViewport, 'top'),
           isTrue);
       expect(
-          lastInputClientRectRelativeToViewport['bottom'] <=
-              viewportRectRelativeToViewport['bottom'],
+          getDomRectComponent(
+                  lastInputClientRectRelativeToViewport, 'bottom') <=
+              getDomRectComponent(viewportRectRelativeToViewport, 'bottom'),
           isTrue);
 
       expect(
-          lastInputClientRectRelativeToViewport['left'] >=
-              viewportRectRelativeToViewport['left'],
+          getDomRectComponent(lastInputClientRectRelativeToViewport, 'left') >=
+              getDomRectComponent(viewportRectRelativeToViewport, 'left'),
           isTrue);
       expect(
-          lastInputClientRectRelativeToViewport['right'] <=
-              viewportRectRelativeToViewport['right'],
+          getDomRectComponent(lastInputClientRectRelativeToViewport, 'right') <=
+              getDomRectComponent(viewportRectRelativeToViewport, 'right'),
           isTrue);
     });
   });

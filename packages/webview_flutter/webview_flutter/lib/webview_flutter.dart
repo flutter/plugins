@@ -20,6 +20,7 @@ export 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
         ProgressCallback,
         WebResourceError,
         WebResourceErrorCallback,
+        WebResourceErrorType,
         WebViewCookie,
         WebViewPlatform;
 

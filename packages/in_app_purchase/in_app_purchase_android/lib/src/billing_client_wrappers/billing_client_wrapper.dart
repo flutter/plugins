@@ -343,8 +343,12 @@ class BillingClient {
             (call.arguments as Map<dynamic, dynamic>).cast<String, dynamic>()));
         break;
       case _kOnBillingServiceDisconnected:
-        final int handle = call.arguments['handle'] as int;
-        await _callbacks[_kOnBillingServiceDisconnected]![handle]();
+        final int handle =
+            (call.arguments as Map<Object?, Object?>)['handle']! as int;
+        final List<OnBillingServiceDisconnected> onDisconnected =
+            _callbacks[_kOnBillingServiceDisconnected]!
+                .cast<OnBillingServiceDisconnected>();
+        onDisconnected[handle]();
         break;
     }
   }

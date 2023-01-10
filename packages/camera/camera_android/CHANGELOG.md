@@ -2,6 +2,10 @@
 
 * Allows camera to be switched while video recording.
 
+## 0.10.2+1
+
+* Updates code for stricter lint checks.
+
 ## 0.10.2
 
 * Remove usage of deprecated quiver Optional type.

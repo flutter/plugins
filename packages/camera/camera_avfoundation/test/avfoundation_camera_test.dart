@@ -478,6 +478,9 @@ void main() {
     test('Should fetch CameraDescription instances for available cameras',
         () async {
       // Arrange
+      // This deliberately uses 'dynamic' since that's what actual platform
+      // channel results will be, so using typed mock data could mask type
+      // handling bugs in the code under test.
       final List<dynamic> returnData = <dynamic>[
         <String, dynamic>{
           'name': 'Test 1',
@@ -504,11 +507,13 @@ void main() {
       ]);
       expect(cameras.length, returnData.length);
       for (int i = 0; i < returnData.length; i++) {
+        final Map<String, Object?> typedData =
+            (returnData[i] as Map<dynamic, dynamic>).cast<String, Object?>();
         final CameraDescription cameraDescription = CameraDescription(
-          name: returnData[i]['name']! as String,
+          name: typedData['name']! as String,
           lensDirection:
-              parseCameraLensDirection(returnData[i]['lensFacing']! as String),
-          sensorOrientation: returnData[i]['sensorOrientation']! as int,
+              parseCameraLensDirection(typedData['lensFacing']! as String),
+          sensorOrientation: typedData['sensorOrientation']! as int,
         );
         expect(cameras[i], cameraDescription);
       }

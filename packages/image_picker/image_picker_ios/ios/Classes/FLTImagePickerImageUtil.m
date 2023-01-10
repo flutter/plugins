@@ -116,7 +116,7 @@
                    maxWidth:(NSNumber *)maxWidth
                   maxHeight:(NSNumber *)maxHeight {
   NSMutableDictionary<NSString *, id> *options = [NSMutableDictionary dictionary];
-  options[(NSString *)kCGImageSourceShouldCache] = @(YES);
+  options[(NSString *)kCGImageSourceShouldCache] = @YES;
   options[(NSString *)kCGImageSourceTypeIdentifierHint] = (NSString *)kUTTypeGIF;
 
   CGImageSourceRef imageSource =

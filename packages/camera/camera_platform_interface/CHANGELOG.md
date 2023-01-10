@@ -1,6 +1,7 @@
 ## 2.3.3
 
 * Allows camera to be switched while video recording.
+* Updates code for stricter lint checks.
 
 ## 2.3.2
 
