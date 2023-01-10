@@ -27,4 +27,4 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.3.2
   path: ^1.8.0
-  pigeon: ^4.2.3
+  pigeon: ^5.0.0
