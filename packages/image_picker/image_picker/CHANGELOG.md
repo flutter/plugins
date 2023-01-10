@@ -1,3 +1,7 @@
+## 0.8.6+1
+
+* update image_picker_ios dependency to 0.8.6+5
+
 ## 0.8.6
 
 * Updates minimum Flutter version to 2.10.
