@@ -1,3 +1,11 @@
+## 0.10.1
+
+* Remove usage of deprecated quiver Optional type.
+
+## 0.10.0+5
+
+* Updates code for stricter lint checks.
+
 ## 0.10.0+4
 
 * Removes usage of `_ambiguate` method in example.

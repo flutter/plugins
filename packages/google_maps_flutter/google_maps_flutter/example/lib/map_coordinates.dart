@@ -72,7 +72,7 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
           // Add a block at the bottom of this list to allow validation that the visible region of the map
           // does not change when scrolled under the safe view on iOS.
           // https://github.com/flutter/flutter/issues/107913
-          Container(
+          const SizedBox(
             width: 300,
             height: 1000,
           ),

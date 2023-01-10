@@ -124,22 +124,26 @@ class InstanceManager {
   /// This method also expects the host `InstanceManager` to have a strong
   /// reference to the instance the identifier is associated with.
   T? getInstanceWithWeakReference<T extends Object>(int identifier) {
-    final Object? weakInstance = _weakInstances[identifier]?.target;
+    final T? weakInstance = _weakInstances[identifier]?.target as T?;
 
     if (weakInstance == null) {
-      final Object? strongInstance = _strongInstances[identifier];
+      final T? strongInstance = _strongInstances[identifier] as T?;
       if (strongInstance != null) {
-        final Object copy =
-            _copyCallbacks[identifier]!(strongInstance)! as Object;
+        // This cast is safe since it matches the argument type for
+        // _addInstanceWithIdentifier, which is the only place _copyCallbacks
+        // is populated.
+        final T Function(T) copyCallback =
+            _copyCallbacks[identifier]! as T Function(T);
+        final T copy = copyCallback(strongInstance);
         _identifiers[copy] = identifier;
-        _weakInstances[identifier] = WeakReference<Object>(copy);
+        _weakInstances[identifier] = WeakReference<T>(copy);
         _finalizer.attach(copy, identifier, detach: copy);
-        return copy as T;
+        return copy;
       }
-      return strongInstance as T?;
+      return strongInstance;
     }
 
-    return weakInstance as T;
+    return weakInstance;
   }
 
   /// Retrieves the identifier associated with instance.

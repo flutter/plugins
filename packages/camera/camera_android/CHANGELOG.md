@@ -1,3 +1,19 @@
+## 0.10.2+1
+
+* Updates code for stricter lint checks.
+
+## 0.10.2
+
+* Remove usage of deprecated quiver Optional type.
+
+## 0.10.1
+
+* Implements an option to also stream when recording a video.
+
+## 0.10.0+5
+
+* Fixes `ArrayIndexOutOfBoundsException` when the permission request is interrupted.
+
 ## 0.10.0+4
 
 * Upgrades `androidx.annotation` version to 1.5.0.

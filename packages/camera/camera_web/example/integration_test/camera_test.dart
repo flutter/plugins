@@ -1286,11 +1286,10 @@ void main() {
             capturedVideoPartTwo,
           ];
 
-          videoDataAvailableListener
-            ..call(FakeBlobEvent(capturedVideoPartOne))
-            ..call(FakeBlobEvent(capturedVideoPartTwo));
+          videoDataAvailableListener(FakeBlobEvent(capturedVideoPartOne));
+          videoDataAvailableListener(FakeBlobEvent(capturedVideoPartTwo));
 
-          videoRecordingStoppedListener.call(Event('stop'));
+          videoRecordingStoppedListener(Event('stop'));
 
           final XFile videoFile = await videoFileFuture;
 
@@ -1378,7 +1377,7 @@ void main() {
 
           when(() => mediaRecorder.state).thenReturn('recording');
 
-          videoDataAvailableListener.call(FakeBlobEvent(Blob(<Object>[])));
+          videoDataAvailableListener(FakeBlobEvent(Blob(<Object>[])));
 
           await Future<void>.microtask(() {});
 
@@ -1412,7 +1411,7 @@ void main() {
 
           await camera.startVideoRecording();
 
-          videoRecordingStoppedListener.call(Event('stop'));
+          videoRecordingStoppedListener(Event('stop'));
 
           await Future<void>.microtask(() {});
 
@@ -1435,7 +1434,7 @@ void main() {
 
           await camera.startVideoRecording();
 
-          videoRecordingStoppedListener.call(Event('stop'));
+          videoRecordingStoppedListener(Event('stop'));
 
           await Future<void>.microtask(() {});
 
@@ -1464,7 +1463,7 @@ void main() {
 
           await camera.startVideoRecording();
 
-          videoRecordingStoppedListener.call(Event('stop'));
+          videoRecordingStoppedListener(Event('stop'));
 
           await Future<void>.microtask(() {});
 
@@ -1588,8 +1587,8 @@ void main() {
             return finalVideo!;
           };
 
-          videoDataAvailableListener.call(FakeBlobEvent(Blob(<Object>[])));
-          videoRecordingStoppedListener.call(Event('stop'));
+          videoDataAvailableListener(FakeBlobEvent(Blob(<Object>[])));
+          videoRecordingStoppedListener(Event('stop'));
 
           expect(
             await streamQueue.next,
