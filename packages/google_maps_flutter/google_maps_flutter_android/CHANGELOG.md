@@ -1,6 +1,10 @@
-## 2.4.1
+## 2.4.2
 
 * Updates code for stricter lint checks.
+
+## 2.4.1
+
+* Update `androidx.test.espresso:espresso-core` to 3.5.1.
 
 ## 2.4.0
 

@@ -8,3 +8,8 @@
 
 # This is a permament entry, as it should never be a direct app dependency.
 - plugin_platform_interface
+# Temporarily excluded to avoid runtime conflicts with
+# shared_preferences_macos and _ios, which are still what shared_preferences
+# uses. This will be removed when the switch to shared_preferences_foundation
+# is complete. See https://github.com/flutter/flutter/issues/117941
+- shared_preferences_foundation
