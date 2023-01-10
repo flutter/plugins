@@ -37,10 +37,10 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
         activity,
         permissionsRegistry,
         enableAudio,
-        (String errCode, String errDesc) -> {
+        (String errorCode, String errDescription) -> {
           final SystemServicesFlutterApiImpl api =
               new SystemServicesFlutterApiImpl(binaryMessenger, instanceManager);
-          api.onCameraPermissionsRequestResult(errCode, errDesc, reply -> {});
+          api.onCameraPermissionsRequestResult(errorCode, errDescription, reply -> {});
         });
   }
 

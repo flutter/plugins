@@ -152,7 +152,7 @@ class InstanceManager {
   /// In other words, the host platform wants to add a new instance that
   /// represents an object on the host platform. Stored with [identifier].
   ///
-  /// Throws assertion error if the instance or its identifier has already been
+  /// Throws assertion error if the instance has already been
   /// added.
   ///
   /// Returns unique identifier of the [instance] added.

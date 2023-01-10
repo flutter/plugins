@@ -26,6 +26,22 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
+
+// TODO(camsim99): delete test comment
+class CameraPermissionsErrorData {
+  CameraPermissionsErrorData(this.errorCode, this.description);
+
+  String? errorCode;
+  String? description;
+}
+
+enum DeviceOrientation {
+  landscapeLeft,
+  landscapeRight,
+  portraitDown,
+  portraitUp,
+}
+
 @HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
 abstract class JavaObjectHostApi {
   void dispose(int identifier);
@@ -81,8 +97,7 @@ abstract class SystemServicesHostApi {
 
 @FlutterApi()
 abstract class SystemServicesFlutterApi {
-  void onCameraPermissionsRequestResult(
-      String? errorCode, String? errorMessage);
+  void onCameraPermissionsRequestResult(CameraPermissionsErrorData? error);
 
-  void onDeviceOrientationChanged(String orientation);
+  void onDeviceOrientationChanged(DeviceOrientation orientation);
 }
