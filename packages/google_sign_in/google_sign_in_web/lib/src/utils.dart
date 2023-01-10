@@ -7,7 +7,7 @@ import 'dart:html' as html;
 
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
-import 'generated/gapiauth2.dart' as auth2;
+import 'js_interop/gapiauth2.dart' as auth2;
 
 /// Injects a list of JS [libraries] as `script` tags into a [target] [html.HtmlElement].
 ///
