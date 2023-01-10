@@ -1,7 +1,11 @@
-## 0.2.3+7
+## 0.2.3+8
 
 * Updates Google Play Billing Library to 5.1.0.
 * Updates androidx.annotation to 1.5.0.
+
+## 0.2.3+7
+
+* Updates code for new analysis options.
 
 ## 0.2.3+6
 

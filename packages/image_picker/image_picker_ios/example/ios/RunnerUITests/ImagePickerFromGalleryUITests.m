@@ -59,41 +59,25 @@ const int kElementWaitingTime = 30;
   [self.app terminate];
 }
 
-- (void)testPickingFromGallery {
-  [self launchPickerAndPick];
-}
-
 - (void)testCancel {
-  [self launchPickerAndCancel];
-}
-
-- (void)launchPickerAndCancel {
   // Find and tap on the pick from gallery button.
-  NSPredicate *predicateToFindImageFromGalleryButton =
-      [NSPredicate predicateWithFormat:@"label == %@", @"image_picker_example_from_gallery"];
-
   XCUIElement *imageFromGalleryButton =
-      [self.app.otherElements elementMatchingPredicate:predicateToFindImageFromGalleryButton];
+      self.app.otherElements[@"image_picker_example_from_gallery"].firstMatch;
   if (![imageFromGalleryButton waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find image from gallery button with %@ seconds",
             @(kElementWaitingTime));
   }
 
-  XCTAssertTrue(imageFromGalleryButton.exists);
   [imageFromGalleryButton tap];
 
   // Find and tap on the `pick` button.
-  NSPredicate *predicateToFindPickButton =
-      [NSPredicate predicateWithFormat:@"label == %@", @"PICK"];
-
-  XCUIElement *pickButton = [self.app.buttons elementMatchingPredicate:predicateToFindPickButton];
+  XCUIElement *pickButton = self.app.buttons[@"PICK"].firstMatch;
   if (![pickButton waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find pick button with %@ seconds", @(kElementWaitingTime));
   }
 
-  XCTAssertTrue(pickButton.exists);
   [pickButton tap];
 
   // There is a known bug where the permission popups interruption won't get fired until a tap
@@ -101,61 +85,70 @@ const int kElementWaitingTime = 30;
   [self.app tap];
 
   // Find and tap on the `Cancel` button.
-  NSPredicate *predicateToFindCancelButton =
-      [NSPredicate predicateWithFormat:@"label == %@", @"Cancel"];
-
-  XCUIElement *cancelButton =
-      [self.app.buttons elementMatchingPredicate:predicateToFindCancelButton];
+  XCUIElement *cancelButton = self.app.buttons[@"Cancel"].firstMatch;
   if (![cancelButton waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find Cancel button with %@ seconds",
             @(kElementWaitingTime));
   }
 
-  XCTAssertTrue(cancelButton.exists);
   [cancelButton tap];
 
   // Find the "not picked image text".
-  XCUIElement *imageNotPickedText = [self.app.staticTexts
-      elementMatchingPredicate:[NSPredicate
-                                   predicateWithFormat:@"label == %@",
-                                                       @"You have not yet picked an image."]];
+  XCUIElement *imageNotPickedText =
+      self.app.staticTexts[@"You have not yet picked an image."].firstMatch;
   if (![imageNotPickedText waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find imageNotPickedText with %@ seconds",
             @(kElementWaitingTime));
   }
-
-  XCTAssertTrue(imageNotPickedText.exists);
 }
 
-- (void)launchPickerAndPick {
-  // Find and tap on the pick from gallery button.
-  NSPredicate *predicateToFindImageFromGalleryButton =
-      [NSPredicate predicateWithFormat:@"label == %@", @"image_picker_example_from_gallery"];
+- (void)testPickingFromGallery {
+  [self launchPickerAndPickWithMaxWidth:nil maxHeight:nil quality:nil];
+}
 
+- (void)testPickingWithContraintsFromGallery {
+  [self launchPickerAndPickWithMaxWidth:@200 maxHeight:@100 quality:@50];
+}
+
+- (void)launchPickerAndPickWithMaxWidth:(NSNumber *)maxWidth
+                              maxHeight:(NSNumber *)maxHeight
+                                quality:(NSNumber *)quality {
+  // Find and tap on the pick from gallery button.
   XCUIElement *imageFromGalleryButton =
-      [self.app.otherElements elementMatchingPredicate:predicateToFindImageFromGalleryButton];
+      self.app.otherElements[@"image_picker_example_from_gallery"].firstMatch;
   if (![imageFromGalleryButton waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find image from gallery button with %@ seconds",
             @(kElementWaitingTime));
   }
-
-  XCTAssertTrue(imageFromGalleryButton.exists);
   [imageFromGalleryButton tap];
 
-  // Find and tap on the `pick` button.
-  NSPredicate *predicateToFindPickButton =
-      [NSPredicate predicateWithFormat:@"label == %@", @"PICK"];
+  if (maxWidth != nil) {
+    XCUIElement *field = self.app.textFields[@"Enter maxWidth if desired"].firstMatch;
+    [field tap];
+    [field typeText:maxWidth.stringValue];
+  }
 
-  XCUIElement *pickButton = [self.app.buttons elementMatchingPredicate:predicateToFindPickButton];
+  if (maxHeight != nil) {
+    XCUIElement *field = self.app.textFields[@"Enter maxHeight if desired"].firstMatch;
+    [field tap];
+    [field typeText:maxHeight.stringValue];
+  }
+
+  if (quality != nil) {
+    XCUIElement *field = self.app.textFields[@"Enter quality if desired"].firstMatch;
+    [field tap];
+    [field typeText:quality.stringValue];
+  }
+
+  // Find and tap on the `pick` button.
+  XCUIElement *pickButton = self.app.buttons[@"PICK"].firstMatch;
   if (![pickButton waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find pick button with %@ seconds", @(kElementWaitingTime));
   }
-
-  XCTAssertTrue(pickButton.exists);
   [pickButton tap];
 
   // There is a known bug where the permission popups interruption won't get fired until a tap
@@ -167,8 +160,7 @@ const int kElementWaitingTime = 30;
   if (@available(iOS 14, *)) {
     aImage = [self.app.scrollViews.firstMatch.images elementBoundByIndex:1];
   } else {
-    XCUIElement *allPhotosCell = [self.app.cells
-        elementMatchingPredicate:[NSPredicate predicateWithFormat:@"label == %@", @"All Photos"]];
+    XCUIElement *allPhotosCell = self.app.cells[@"All Photos"].firstMatch;
     if (![allPhotosCell waitForExistenceWithTimeout:kElementWaitingTime]) {
       os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
       XCTFail(@"Failed due to not able to find \"All Photos\" cell with %@ seconds",
@@ -184,20 +176,14 @@ const int kElementWaitingTime = 30;
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find an image with %@ seconds", @(kElementWaitingTime));
   }
-  XCTAssertTrue(aImage.exists);
   [aImage tap];
 
   // Find the picked image.
-  NSPredicate *predicateToFindPickedImage =
-      [NSPredicate predicateWithFormat:@"label == %@", @"image_picker_example_picked_image"];
-
-  XCUIElement *pickedImage = [self.app.images elementMatchingPredicate:predicateToFindPickedImage];
+  XCUIElement *pickedImage = self.app.images[@"image_picker_example_picked_image"].firstMatch;
   if (![pickedImage waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find pickedImage with %@ seconds", @(kElementWaitingTime));
   }
-
-  XCTAssertTrue(pickedImage.exists);
 }
 
 @end

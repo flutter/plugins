@@ -25,7 +25,7 @@
 - (void)setBackgroundColorForViewWithIdentifier:(nonnull NSNumber *)identifier
                                         toValue:(nullable NSNumber *)color
                                           error:(FlutterError *_Nullable *_Nonnull)error {
-  if (!color) {
+  if (color == nil) {
     [[self viewForIdentifier:identifier] setBackgroundColor:nil];
   }
   int colorInt = color.intValue;

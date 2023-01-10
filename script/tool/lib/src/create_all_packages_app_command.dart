@@ -138,9 +138,6 @@ class CreateAllPackagesAppCommand extends PackageCommand {
       if (line.contains('defaultConfig {')) {
         newGradle.writeln('        multiDexEnabled true');
       } else if (line.contains('dependencies {')) {
-        newGradle.writeln(
-          "    implementation 'com.google.guava:guava:27.0.1-android'\n",
-        );
         // Tests for https://github.com/flutter/flutter/issues/43383
         newGradle.writeln(
           "    implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0-rc01'\n",
@@ -230,7 +227,7 @@ class CreateAllPackagesAppCommand extends PackageCommand {
 
   String _pubspecToString(Pubspec pubspec) {
     return '''
-### Generated file. Do not edit. Run `pub global run flutter_plugin_tools gen-pubspec` to update.
+### Generated file. Do not edit. Run `dart pub global run flutter_plugin_tools gen-pubspec` to update.
 name: ${pubspec.name}
 description: ${pubspec.description}
 publish_to: none
