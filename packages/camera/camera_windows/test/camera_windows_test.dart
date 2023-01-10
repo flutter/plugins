@@ -447,6 +447,15 @@ void main() {
         ]);
       });
 
+      test('capturing fails if trying to stream', () async {
+        // Act and Assert
+        expect(
+          () => plugin.startVideoCapturing(VideoCaptureOptions(cameraId,
+              streamCallback: (CameraImageData imageData) {})),
+          throwsA(isA<UnimplementedError>()),
+        );
+      });
+
       test('Should stop a video recording and return the file', () async {
         // Arrange
         final MethodChannelMock channel = MethodChannelMock(

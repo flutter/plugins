@@ -104,8 +104,8 @@ class FormatCommand extends PackageCommand {
     print('These files are not formatted correctly (see diff below):');
     LineSplitter.split(stdout).map((String line) => '  $line').forEach(print);
 
-    print('\nTo fix run "pub global activate flutter_plugin_tools && '
-        'pub global run flutter_plugin_tools format" or copy-paste '
+    print('\nTo fix run "dart pub global activate flutter_plugin_tools && '
+        'dart pub global run flutter_plugin_tools format" or copy-paste '
         'this command into your terminal:');
 
     final io.ProcessResult diff = await processRunner.run(
@@ -128,16 +128,11 @@ class FormatCommand extends PackageCommand {
     final Iterable<String> clangFiles = _getPathsWithExtensions(
         files, <String>{'.h', '.m', '.mm', '.cc', '.cpp'});
     if (clangFiles.isNotEmpty) {
-      final String clangFormat = getStringArg('clang-format');
-      if (!await _hasDependency(clangFormat)) {
-        printError('Unable to run "clang-format". Make sure that it is in your '
-            'path, or provide a full path with --clang-format.');
-        throw ToolExit(_exitDependencyMissing);
-      }
+      final String clangFormat = await _findValidClangFormat();
 
       print('Formatting .cc, .cpp, .h, .m, and .mm files...');
       final int exitCode = await _runBatched(
-          getStringArg('clang-format'), <String>['-i', '--style=file'],
+          clangFormat, <String>['-i', '--style=file'],
           files: clangFiles);
       if (exitCode != 0) {
         printError(
@@ -145,6 +140,26 @@ class FormatCommand extends PackageCommand {
         throw ToolExit(_exitClangFormatFailed);
       }
     }
+  }
+
+  Future<String> _findValidClangFormat() async {
+    final String clangFormatArg = getStringArg('clang-format');
+    if (await _hasDependency(clangFormatArg)) {
+      return clangFormatArg;
+    }
+
+    // There is a known issue where "chromium/depot_tools/clang-format"
+    // fails with "Problem while looking for clang-format in Chromium source tree".
+    // Loop through all "clang-format"s in PATH until a working one is found,
+    // for example "/usr/local/bin/clang-format" or a "brew" installed version.
+    for (final String clangFormatPath in await _whichAll('clang-format')) {
+      if (await _hasDependency(clangFormatPath)) {
+        return clangFormatPath;
+      }
+    }
+    printError('Unable to run "clang-format". Make sure that it is in your '
+        'path, or provide a full path with --clang-format.');
+    throw ToolExit(_exitDependencyMissing);
   }
 
   Future<void> _formatJava(
@@ -277,6 +292,26 @@ class FormatCommand extends PackageCommand {
       return false;
     }
     return true;
+  }
+
+  /// Returns all instances of [command] executable found on user path.
+  Future<List<String>> _whichAll(String command) async {
+    try {
+      final io.ProcessResult result =
+      await processRunner.run('which', <String>['-a', command]);
+
+      if (result.exitCode != 0) {
+        return <String>[];
+      }
+
+      final String stdout = result.stdout.trim() as String;
+      if (stdout.isEmpty) {
+        return <String>[];
+      }
+      return LineSplitter.split(stdout).toList();
+    } on io.ProcessException {
+      return <String>[];
+    }
   }
 
   /// Runs [command] on [arguments] on all of the files in [files], batched as

@@ -332,6 +332,44 @@ void main() {
         ]));
   });
 
+  test('falls back to working clang-format in the path', () async {
+    const List<String> files = <String>[
+      'linux/foo_plugin.cc',
+      'macos/Classes/Foo.h',
+    ];
+    final RepositoryPackage plugin = createFakePlugin(
+      'a_plugin',
+      packagesDir,
+      extraFiles: files,
+    );
+
+    processRunner.mockProcessesForExecutable['clang-format'] = <io.Process>[
+      MockProcess(exitCode: 1)
+    ];
+    processRunner.mockProcessesForExecutable['which'] = <io.Process>[
+      MockProcess(
+          stdout: '/usr/local/bin/clang-format\n/path/to/working-clang-format')
+    ];
+    processRunner.mockProcessesForExecutable['/usr/local/bin/clang-format'] =
+        <io.Process>[MockProcess(exitCode: 1)];
+    await runCapturingPrint(runner, <String>['format']);
+
+    expect(
+        processRunner.recordedCalls,
+        containsAll(<ProcessCall>[
+          const ProcessCall(
+              '/path/to/working-clang-format', <String>['--version'], null),
+          ProcessCall(
+              '/path/to/working-clang-format',
+              <String>[
+                '-i',
+                '--style=file',
+                ...getPackagesDirRelativePaths(plugin, files)
+              ],
+              packagesDir.path),
+        ]));
+  });
+
   test('honors --clang-format flag', () async {
     const List<String> files = <String>[
       'windows/foo_plugin.cpp',
