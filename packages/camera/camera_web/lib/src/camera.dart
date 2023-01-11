@@ -634,6 +634,7 @@ class Camera {
       final html.CanvasRenderingContext2D context = canvas.context2D;
       context.drawImageScaled(videoElement, 0, 0, width, height);
       imageData = context.getImageData(0, 0, width, height);
+      canvas.remove();
     }
     final ByteBuffer byteBuffer = imageData.data.buffer;
 
