@@ -280,7 +280,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> initialize() => _initializeWithDescription(description);
 
   /// Initializes the camera on the device with the specified description.
-  /// 
+  ///
   /// Throws a [CameraException] if the initialization fails.
   Future<void> _initializeWithDescription(CameraDescription description) async {
     if (_isDisposed) {
@@ -387,8 +387,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  /// Sets the description while the camera is recording.
-  /// 
+  /// Sets the description of the camera
+  ///
   /// Throws a [CameraException] if setting the description fails.
   Future<void> setDescription(CameraDescription description) async {
     if (value.isRecordingVideo) {
