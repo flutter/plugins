@@ -296,4 +296,22 @@ public class WebViewTest {
 
     assertFalse(destroyCalled[0]);
   }
+
+  @Test
+  public void destroyWebViewWhenDisposedFromJavaObjectHostApi() {
+    final boolean[] destroyCalled = {false};
+    final WebViewPlatformView webView =
+        new WebViewPlatformView(mockContext, null, null) {
+          @Override
+          public void destroy() {
+            destroyCalled[0] = true;
+          }
+        };
+
+    testInstanceManager.addDartCreatedInstance(webView, 0);
+    final JavaObjectHostApiImpl javaObjectHostApi = new JavaObjectHostApiImpl(testInstanceManager);
+    javaObjectHostApi.dispose(0L);
+
+    assertTrue(destroyCalled[0]);
+  }
 }
