@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
@@ -35,6 +36,8 @@ public class InstanceManager {
   // 0 <= n < 2^16.
   private static final long MIN_HOST_CREATED_IDENTIFIER = 65536;
   private static final long CLEAR_FINALIZED_WEAK_REFERENCES_INTERVAL = 30000;
+  private static final String TAG = "InstanceManager";
+  private static final String CLOSED_WARNING = "Method was called while the manager was closed.";
 
   /** Interface for listening when a weak reference of an instance is removed from the manager. */
   public interface FinalizationListener {
@@ -83,7 +86,10 @@ public class InstanceManager {
    */
   @Nullable
   public <T> T remove(long identifier) {
-    assertManagerIsNotClosed();
+    if (isClosed()) {
+      Log.w(TAG, CLOSED_WARNING);
+      return null;
+    }
     return (T) strongInstances.remove(identifier);
   }
 
@@ -100,6 +106,7 @@ public class InstanceManager {
   @Nullable
   public Long getIdentifierForStrongReference(Object instance) {
     if (isClosed()) {
+      Log.w(TAG, CLOSED_WARNING);
       return null;
     }
     final Long identifier = identifiers.get(instance);
@@ -120,7 +127,10 @@ public class InstanceManager {
    * @param identifier the identifier to be paired with instance. This value must be >= 0.
    */
   public void addDartCreatedInstance(Object instance, long identifier) {
-    assertManagerIsNotClosed();
+    if (isClosed()) {
+      Log.w(TAG, CLOSED_WARNING);
+      return;
+    }
     addInstance(instance, identifier);
   }
 
@@ -132,6 +142,7 @@ public class InstanceManager {
    */
   public long addHostCreatedInstance(Object instance) {
     if (isClosed()) {
+      Log.w(TAG, CLOSED_WARNING);
       return -1;
     }
     final long identifier = nextIdentifier++;
@@ -149,7 +160,10 @@ public class InstanceManager {
    */
   @Nullable
   public <T> T getInstance(long identifier) {
-    assertManagerIsNotClosed();
+    if (isClosed()) {
+      Log.w(TAG, CLOSED_WARNING);
+      return null;
+    }
     final WeakReference<T> instance = (WeakReference<T>) weakInstances.get(identifier);
     if (instance != null) {
       return instance.get();
@@ -166,6 +180,7 @@ public class InstanceManager {
    */
   public boolean containsInstance(Object instance) {
     if (isClosed()) {
+      Log.w(TAG, CLOSED_WARNING);
       return false;
     }
     return identifiers.containsKey(instance);
@@ -174,8 +189,7 @@ public class InstanceManager {
   /**
    * Closes the manager and releases resources.
    *
-   * <p>Calling a method after calling this one will throw an {@link AssertionError}. This method
-   * excluded.
+   * <p>Methods called after this one will be ignored and log a warning.
    */
   public void close() {
     handler.removeCallbacks(this::releaseAllFinalizedInstances);
@@ -218,11 +232,5 @@ public class InstanceManager {
     weakInstances.put(identifier, weakReference);
     weakReferencesToIdentifiers.put(weakReference, identifier);
     strongInstances.put(identifier, instance);
-  }
-
-  private void assertManagerIsNotClosed() {
-    if (isClosed) {
-      throw new AssertionError("Manager has already been closed.");
-    }
   }
 }

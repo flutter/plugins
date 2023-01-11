@@ -62,6 +62,16 @@ public class InstanceManagerTest {
   }
 
   @Test
+  public void removeReturnsNullWhenClosed() {
+    final Object object = new Object();
+    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager.addDartCreatedInstance(object, 0);
+    instanceManager.close();
+
+    assertNull(instanceManager.remove(0));
+  }
+
+  @Test
   public void getIdentifierForStrongReferenceReturnsNullWhenClosed() {
     final Object object = new Object();
     final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
@@ -77,6 +87,16 @@ public class InstanceManagerTest {
     instanceManager.close();
 
     assertEquals(instanceManager.addHostCreatedInstance(new Object()), -1L);
+  }
+
+  @Test
+  public void getInstanceReturnsNullWhenClosed() {
+    final Object object = new Object();
+    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager.addDartCreatedInstance(object, 0);
+    instanceManager.close();
+
+    assertNull(instanceManager.getInstance(0));
   }
 
   @Test
