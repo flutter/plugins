@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'process_camera_provider.dart';
+import 'camera_info.dart';
+import 'camera_selector.dart';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 
@@ -16,6 +19,47 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// Returns list of all available cameras and their descriptions.
   @override
   Future<List<CameraDescription>> availableCameras() async {
-    throw UnimplementedError('availableCameras() is not implemented.');
+    final List<CameraDescription> cameraDescriptions = <CameraDescription>[];
+
+    ProcessCameraProvider processCameraProvider =
+        await ProcessCameraProvider.getInstance();
+    final List<CameraInfo> cameraInfos =
+        await processCameraProvider!.getAvailableCameraInfos();
+
+    final CameraSelector backCameraSelector =
+        CameraSelector.getDefaultBackCamera();
+    final CameraSelector frontCameraSelector =
+        CameraSelector.getDefaultFrontCamera();
+
+    CameraLensDirection cameraLensDirection;
+    int cameraCount = 0;
+    int cameraSensorOrientation;
+    String cameraName;
+
+    for (final CameraInfo cameraInfo in cameraInfos) {
+      // Determine the lens direction by filtering the CameraInfo
+      // TODO(gmackall): replace this with call to CameraInfo.getLensFacing when changes containing that method are available
+      if ((await backCameraSelector.filter(<CameraInfo>[cameraInfo]))
+          .isNotEmpty) {
+        cameraLensDirection = CameraLensDirection.back;
+      } else if ((await frontCameraSelector.filter(<CameraInfo>[cameraInfo]))
+          .isNotEmpty) {
+        cameraLensDirection = CameraLensDirection.front;
+      } else {
+        //Skip this CameraInfo as its lens direction is unknown
+        continue;
+      }
+
+      cameraSensorOrientation = await cameraInfo.getSensorRotationDegrees();
+      cameraName = 'Camera $cameraCount';
+      cameraCount++;
+
+      cameraDescriptions.add(CameraDescription(
+          name: cameraName,
+          lensDirection: cameraLensDirection,
+          sensorOrientation: cameraSensorOrientation));
+    }
+
+    return cameraDescriptions;
   }
 }
