@@ -277,7 +277,12 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Initializes the camera on the device.
   ///
   /// Throws a [CameraException] if the initialization fails.
-  Future<void> initialize() async {
+  Future<void> initialize() => _initializeWithDescription(description);
+
+  /// Initializes the camera on the device with the specified description.
+  /// 
+  /// Throws a [CameraException] if the initialization fails.
+  Future<void> _initializeWithDescription(CameraDescription description) async {
     if (_isDisposed) {
       throw CameraException(
         'Disposed CameraController',
@@ -316,6 +321,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
       value = value.copyWith(
         isInitialized: true,
+        description: description,
         previewSize: await initializeCompleter.future
             .then((CameraInitializedEvent event) => Size(
                   event.previewWidth,
@@ -382,17 +388,15 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   /// Sets the description while the camera is recording.
-  Future<void> setDescriptionWhileRecording(
-      CameraDescription description) async {
-    if (!value.isRecordingVideo) {
-      throw CameraException(
-        'Video was not being recorded',
-        'setDescriptionWhileRecording was called while a video was not being recorded',
-      );
+  /// 
+  /// Throws a [CameraException] if setting the description fails.
+  Future<void> setDescription(CameraDescription description) async {
+    if (value.isRecordingVideo) {
+      await CameraPlatform.instance.setDescriptionWhileRecording(description);
+      value = value.copyWith(description: description);
+    } else {
+      await _initializeWithDescription(description);
     }
-
-    await CameraPlatform.instance.setDescriptionWhileRecording(description);
-    value = value.copyWith(description: description);
   }
 
   /// Captures an image and returns the file where it was saved.

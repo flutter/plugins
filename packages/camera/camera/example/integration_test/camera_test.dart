@@ -282,7 +282,7 @@ void main() {
 
     await controller.startVideoRecording();
     sleep(const Duration(milliseconds: 500));
-    await controller.setDescriptionWhileRecording(cameras[1]);
+    await controller.setDescription(cameras[1]);
     sleep(const Duration(milliseconds: 500));
 
     expect(controller.description, cameras[1]);
