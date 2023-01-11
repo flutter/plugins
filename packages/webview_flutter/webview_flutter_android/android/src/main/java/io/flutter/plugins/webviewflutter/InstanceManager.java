@@ -82,7 +82,8 @@ public class InstanceManager {
    *
    * @param identifier the identifier paired to an instance.
    * @param <T> the expected return type.
-   * @return the removed instance if the manager contains the given identifier, otherwise null.
+   * @return the removed instance if the manager contains the given identifier, otherwise null if
+   *     the manager doesn't contain the value or the manager is closed.
    */
   @Nullable
   public <T> T remove(long identifier) {
@@ -123,6 +124,8 @@ public class InstanceManager {
    * The Dart InstanceManager is considered the source of truth and has the capability to overwrite
    * stored pairs in response to hot restarts.
    *
+   * <p>If the manager is closed, the addition is ignored.
+   *
    * @param instance the instance to be stored.
    * @param identifier the identifier to be paired with instance. This value must be >= 0.
    */
@@ -156,7 +159,7 @@ public class InstanceManager {
    * @param identifier the identifier paired to an instance.
    * @param <T> the expected return type.
    * @return the instance associated with `identifier` if the manager contains the value, otherwise
-   *     null.
+   *     null if the manager doesn't contain the value or the manager is closed.
    */
   @Nullable
   public <T> T getInstance(long identifier) {
