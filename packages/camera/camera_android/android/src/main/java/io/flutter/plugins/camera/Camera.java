@@ -1097,8 +1097,7 @@ class Camera
   }
 
   public void startPreview() throws CameraAccessException, InterruptedException {
-    // if we are already recording, we are flipping the camera and must
-    // send it through the VideoRenderer to keep correct orientation.
+    // If recording is already in progress, the camera is being flipped, so send it through the VideoRenderer to keep the correct orientation.
     if (recordingVideo) {
       startPreviewWithVideoRendererStream();
     } else {
@@ -1133,8 +1132,8 @@ class Camera
 
     if (cameraProperties.getLensFacing() != initialCameraFacing) {
 
-      // If we are facing the opposite way than the initial recording,
-      // we need to flip 180 degrees.
+      // If the new camera is facing the opposite way than the initial recording,
+      // the rotation should be flipped 180 degrees.
       rotation = (rotation + 180) % 360;
     }
     videoRenderer.setRotation(rotation);

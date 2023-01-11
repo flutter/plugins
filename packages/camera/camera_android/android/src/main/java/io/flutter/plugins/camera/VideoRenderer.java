@@ -24,7 +24,20 @@ import android.view.Surface;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/** Renders video onto texture. */
+/**
+ * Renders video onto texture after performing a matrix rotation on each frame.
+ *
+ * <p>VideoRenderer is needed because when switching between cameras mid recording, the orientation
+ * of the recording from the new camera usually becomes flipped. MediaRecorder has
+ * setOrientationHint, but that cannot be called mid recording and therefore isn't useful. Android
+ * Camera2 has no setDisplayOrientation on the camera itself as it is supposed to 'just work' (see
+ * https://stackoverflow.com/questions/33479004/what-is-the-camera2-api-equivalent-of-setdisplayorientation).
+ * Therefore it cannot be used to set the camera's orientation either.
+ *
+ * <p>This leaves the solution to be routing the recording through a surface texture and performing
+ * a matrix transformation on it manually to get the correct orientation. This only happens when
+ * setDescription is called mid video recording.
+ */
 public class VideoRenderer {
 
   private static String TAG = "VideoRenderer";
