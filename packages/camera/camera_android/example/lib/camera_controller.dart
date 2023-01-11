@@ -204,7 +204,9 @@ class CameraController extends ValueNotifier<CameraValue> {
   int get cameraId => _cameraId;
 
   /// Initializes the camera on the device.
-  Future<void> initialize() async {
+  Future<void> initialize() => _initializeWithDescription(description);
+
+  Future<void> _initializeWithDescription(CameraDescription description) async {
     final Completer<CameraInitializedEvent> initializeCompleter =
         Completer<CameraInitializedEvent>();
 
@@ -236,6 +238,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     value = value.copyWith(
       isInitialized: true,
+      description: description,
       previewSize: await initializeCompleter.future
           .then((CameraInitializedEvent event) => Size(
                 event.previewWidth,
@@ -274,11 +277,14 @@ class CameraController extends ValueNotifier<CameraValue> {
     value = value.copyWith(isPreviewPaused: false);
   }
 
-  /// Sets the description while the camera is recording
-  Future<void> setDescriptionWhileRecording(
-      CameraDescription description) async {
-    await CameraPlatform.instance.setDescriptionWhileRecording(description);
-    value = value.copyWith(description: description);
+  /// Sets the description of the camera
+  Future<void> setDescription(CameraDescription description) async {
+    if (value.isRecordingVideo) {
+      await CameraPlatform.instance.setDescriptionWhileRecording(description);
+      value = value.copyWith(description: description);
+    } else {
+      await _initializeWithDescription(description);
+    }
   }
 
   /// Captures an image and returns the file where it was saved.
