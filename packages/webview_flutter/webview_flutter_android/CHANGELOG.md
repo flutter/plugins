@@ -1,6 +1,6 @@
 ## 3.1.2
 
-* Fixes crash when the Java `InstanceManager` was used after plugin was removed from engine.
+* Fixes crash when the Java `InstanceManager` was used after plugin was removed from the engine.
 
 ## 3.1.1
 
