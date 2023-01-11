@@ -1,4 +1,4 @@
-## 0.2.3_9
+## 0.2.3+9
 
 * Updates `androidx.test.espresso:espresso-core` to 3.5.1.
 
