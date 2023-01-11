@@ -64,7 +64,6 @@ class AndroidCameraCameraX extends CameraPlatform {
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
   }) async {
-    // TODO(camism99): Properly request permissions here.
     bool permissions =
         await SystemServices.requestCameraPermissions(enableAudio);
 
