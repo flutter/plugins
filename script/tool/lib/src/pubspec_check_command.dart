@@ -244,8 +244,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     required RepositoryPackage package,
   }) {
     if (_isImplementationPackage(package)) {
-      final String? implements =
-          pubspec.flutter!['plugin']!['implements'] as String?;
+      final YamlMap pluginSection = pubspec.flutter!['plugin'] as YamlMap;
+      final String? implements = pluginSection['implements'] as String?;
       final String expectedImplements = package.directory.parent.basename;
       if (implements == null) {
         return 'Missing "implements: $expectedImplements" in "plugin" section.';
@@ -265,19 +265,20 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     Pubspec pubspec, {
     required RepositoryPackage package,
   }) {
-    final dynamic platformsEntry = pubspec.flutter!['plugin']!['platforms'];
-    if (platformsEntry == null) {
+    final YamlMap pluginSection = pubspec.flutter!['plugin'] as YamlMap;
+    final YamlMap? platforms = pluginSection['platforms'] as YamlMap?;
+    if (platforms == null) {
       logWarning('Does not implement any platforms');
       return null;
     }
-    final YamlMap platforms = platformsEntry as YamlMap;
     final String packageName = package.directory.basename;
 
     // Validate that the default_package entries look correct (e.g., no typos).
     final Set<String> defaultPackages = <String>{};
-    for (final MapEntry<dynamic, dynamic> platformEntry in platforms.entries) {
+    for (final MapEntry<Object?, Object?> platformEntry in platforms.entries) {
+      final YamlMap platformDetails = platformEntry.value! as YamlMap;
       final String? defaultPackage =
-          platformEntry.value['default_package'] as String?;
+          platformDetails['default_package'] as String?;
       if (defaultPackage != null) {
         defaultPackages.add(defaultPackage);
         if (!defaultPackage.startsWith('${packageName}_')) {

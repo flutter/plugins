@@ -138,9 +138,6 @@ class CreateAllPackagesAppCommand extends PackageCommand {
       if (line.contains('defaultConfig {')) {
         newGradle.writeln('        multiDexEnabled true');
       } else if (line.contains('dependencies {')) {
-        newGradle.writeln(
-          "    implementation 'com.google.guava:guava:27.0.1-android'\n",
-        );
         // Tests for https://github.com/flutter/flutter/issues/43383
         newGradle.writeln(
           "    implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0-rc01'\n",
@@ -230,7 +227,7 @@ class CreateAllPackagesAppCommand extends PackageCommand {
 
   String _pubspecToString(Pubspec pubspec) {
     return '''
-### Generated file. Do not edit. Run `pub global run flutter_plugin_tools gen-pubspec` to update.
+### Generated file. Do not edit. Run `dart pub global run flutter_plugin_tools gen-pubspec` to update.
 name: ${pubspec.name}
 description: ${pubspec.description}
 publish_to: none
@@ -247,24 +244,23 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
 ###''';
   }
 
-  String _pubspecMapString(Map<String, dynamic> values) {
+  String _pubspecMapString(Map<String, Object?> values) {
     final StringBuffer buffer = StringBuffer();
 
-    for (final MapEntry<String, dynamic> entry in values.entries) {
+    for (final MapEntry<String, Object?> entry in values.entries) {
       buffer.writeln();
-      if (entry.value is VersionConstraint) {
-        String value = entry.value.toString();
+      final Object? entryValue = entry.value;
+      if (entryValue is VersionConstraint) {
+        String value = entryValue.toString();
         // Range constraints require quoting.
         if (value.startsWith('>') || value.startsWith('<')) {
           value = "'$value'";
         }
         buffer.write('  ${entry.key}: $value');
-      } else if (entry.value is SdkDependency) {
-        final SdkDependency dep = entry.value as SdkDependency;
-        buffer.write('  ${entry.key}: \n    sdk: ${dep.sdk}');
-      } else if (entry.value is PathDependency) {
-        final PathDependency dep = entry.value as PathDependency;
-        String depPath = dep.path;
+      } else if (entryValue is SdkDependency) {
+        buffer.write('  ${entry.key}: \n    sdk: ${entryValue.sdk}');
+      } else if (entryValue is PathDependency) {
+        String depPath = entryValue.path;
         if (path.style == p.Style.windows) {
           // Posix-style path separators are preferred in pubspec.yaml (and
           // using a consistent format makes unit testing simpler), so convert.
@@ -281,7 +277,7 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
         buffer.write('  ${entry.key}: \n    path: $depPath');
       } else {
         throw UnimplementedError(
-          'Not available for type: ${entry.value.runtimeType}',
+          'Not available for type: ${entryValue.runtimeType}',
         );
       }
     }

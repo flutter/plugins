@@ -56,8 +56,6 @@ void main() {
   Future<bool> testCaptureImageResolution(
       CameraController controller, ResolutionPreset preset) async {
     final Size expectedSize = presetExpectedSizes[preset]!;
-    print(
-        'Capturing photo at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
 
     // Take Picture
     final XFile file = await controller.takePicture();
@@ -102,8 +100,6 @@ void main() {
   Future<bool> testCaptureVideoResolution(
       CameraController controller, ResolutionPreset preset) async {
     final Size expectedSize = presetExpectedSizes[preset]!;
-    print(
-        'Capturing video at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
 
     // Take Video
     await controller.startVideoRecording();
@@ -253,4 +249,33 @@ void main() {
       expect(image.planes.length, 1);
     },
   );
+
+  testWidgets('Recording with video streaming', (WidgetTester tester) async {
+    final List<CameraDescription> cameras =
+        await CameraPlatform.instance.availableCameras();
+    if (cameras.isEmpty) {
+      return;
+    }
+
+    final CameraController controller = CameraController(
+      cameras[0],
+      ResolutionPreset.low,
+      enableAudio: false,
+    );
+
+    await controller.initialize();
+    await controller.prepareForVideoRecording();
+    final Completer<CameraImageData> completer = Completer<CameraImageData>();
+    await controller.startVideoRecording(
+        streamCallback: (CameraImageData image) {
+      if (!completer.isCompleted) {
+        completer.complete(image);
+      }
+    });
+    sleep(const Duration(milliseconds: 500));
+    await controller.stopVideoRecording();
+    await controller.dispose();
+
+    expect(await completer.future, isNotNull);
+  });
 }

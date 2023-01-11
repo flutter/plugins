@@ -426,7 +426,8 @@ void main() {
           name: consumeMethodName,
           value: buildBillingResultMap(expectedBillingResultForConsume),
           additionalStepBeforeReturn: (dynamic args) {
-            final String purchaseToken = args['purchaseToken'] as String;
+            final String purchaseToken =
+                (args as Map<Object?, Object?>)['purchaseToken']! as String;
             consumeCompleter.complete(purchaseToken);
           });
 
@@ -540,7 +541,8 @@ void main() {
           name: consumeMethodName,
           value: buildBillingResultMap(expectedBillingResultForConsume),
           additionalStepBeforeReturn: (dynamic args) {
-            final String purchaseToken = args['purchaseToken'] as String;
+            final String purchaseToken =
+                (args as Map<Object?, Object?>)['purchaseToken']! as String;
             consumeCompleter.complete(purchaseToken);
           });
 
@@ -617,7 +619,8 @@ void main() {
           name: consumeMethodName,
           value: buildBillingResultMap(expectedBillingResultForConsume),
           additionalStepBeforeReturn: (dynamic args) {
-            final String purchaseToken = args['purchaseToken'] as String;
+            final String purchaseToken =
+                (args as Map<Object?, Object?>)['purchaseToken']! as String;
             consumeCompleter.complete(purchaseToken);
           });
 
@@ -682,7 +685,8 @@ void main() {
           name: consumeMethodName,
           value: buildBillingResultMap(expectedBillingResultForConsume),
           additionalStepBeforeReturn: (dynamic args) {
-            final String purchaseToken = args['purchaseToken'] as String;
+            final String purchaseToken =
+                (args as Map<Object?, Object?>)['purchaseToken']! as String;
             consumeCompleter.complete(purchaseToken);
           });
 

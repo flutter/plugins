@@ -15,6 +15,12 @@ import 'image_picker_windows_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // Returns the captured type groups from a mock call result, assuming that
+  // exactly one call was made and only the type groups were captured.
+  List<XTypeGroup> capturedTypeGroups(VerificationResult result) {
+    return result.captured.single as List<XTypeGroup>;
+  }
+
   group('$ImagePickerWindows()', () {
     final ImagePickerWindows plugin = ImagePickerWindows();
     late MockFileSelectorPlatform mockFileSelectorPlatform;
@@ -42,12 +48,10 @@ void main() {
       test('pickImage passes the accepted type groups correctly', () async {
         await plugin.pickImage(source: ImageSource.gallery);
 
-        expect(
-            verify(mockFileSelectorPlatform.openFile(
-                    acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')))
-                .captured
-                .single[0]
-                .extensions,
+        final VerificationResult result = verify(
+            mockFileSelectorPlatform.openFile(
+                acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')));
+        expect(capturedTypeGroups(result)[0].extensions,
             ImagePickerWindows.imageFormats);
       });
 
@@ -60,12 +64,10 @@ void main() {
       test('getImage passes the accepted type groups correctly', () async {
         await plugin.getImage(source: ImageSource.gallery);
 
-        expect(
-            verify(mockFileSelectorPlatform.openFile(
-                    acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')))
-                .captured
-                .single[0]
-                .extensions,
+        final VerificationResult result = verify(
+            mockFileSelectorPlatform.openFile(
+                acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')));
+        expect(capturedTypeGroups(result)[0].extensions,
             ImagePickerWindows.imageFormats);
       });
 
@@ -78,12 +80,10 @@ void main() {
       test('getMultiImage passes the accepted type groups correctly', () async {
         await plugin.getMultiImage();
 
-        expect(
-            verify(mockFileSelectorPlatform.openFiles(
-                    acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')))
-                .captured
-                .single[0]
-                .extensions,
+        final VerificationResult result = verify(
+            mockFileSelectorPlatform.openFiles(
+                acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')));
+        expect(capturedTypeGroups(result)[0].extensions,
             ImagePickerWindows.imageFormats);
       });
     });
@@ -91,12 +91,10 @@ void main() {
       test('pickVideo passes the accepted type groups correctly', () async {
         await plugin.pickVideo(source: ImageSource.gallery);
 
-        expect(
-            verify(mockFileSelectorPlatform.openFile(
-                    acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')))
-                .captured
-                .single[0]
-                .extensions,
+        final VerificationResult result = verify(
+            mockFileSelectorPlatform.openFile(
+                acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')));
+        expect(capturedTypeGroups(result)[0].extensions,
             ImagePickerWindows.videoFormats);
       });
 
@@ -109,12 +107,10 @@ void main() {
       test('getVideo passes the accepted type groups correctly', () async {
         await plugin.getVideo(source: ImageSource.gallery);
 
-        expect(
-            verify(mockFileSelectorPlatform.openFile(
-                    acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')))
-                .captured
-                .single[0]
-                .extensions,
+        final VerificationResult result = verify(
+            mockFileSelectorPlatform.openFile(
+                acceptedTypeGroups: captureAnyNamed('acceptedTypeGroups')));
+        expect(capturedTypeGroups(result)[0].extensions,
             ImagePickerWindows.videoFormats);
       });
 

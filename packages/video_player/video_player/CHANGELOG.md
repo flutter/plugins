@@ -1,3 +1,11 @@
+## 2.4.10
+
+* Adds compatibilty with version 6.0 of the platform interface.
+
+## 2.4.9
+
+* Fixes file URI construction.
+
 ## 2.4.8
 
 * Updates code for new analysis options.
