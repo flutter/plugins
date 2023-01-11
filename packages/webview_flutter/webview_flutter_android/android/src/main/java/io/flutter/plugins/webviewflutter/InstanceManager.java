@@ -162,7 +162,7 @@ public class InstanceManager {
    *
    * @param instance the instance whose presence in this manager is to be tested.
    * @return whether this manager contains the given `instance`. If the manager is closed, returns
-   * `false`.
+   *     `false`.
    */
   public boolean containsInstance(Object instance) {
     if (isClosed()) {
