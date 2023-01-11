@@ -54,9 +54,8 @@ Future<void> _centerMyCurrentLocation(
 void _addMyLocationButton(gmaps.GMap map, GoogleMapController controller) {
   controller._myLocationButton = MyLocationButton();
   controller._myLocationButton?.addClickListener(
-    () async {
+    (_) async {
       controller._myLocationButton?.startAnimation();
-
       await _centerMyCurrentLocation(controller);
     },
   );
@@ -145,10 +144,8 @@ class MyLocationButton {
   HtmlElement get getButton => _controlDiv;
 
   /// Add click listener
-  void addClickListener(Function onLick) {
-    _btnChild.addEventListener('click', (_) {
-      onLick();
-    });
+  void addClickListener(EventListener? listener) {
+    _btnChild.addEventListener('click', listener);
   }
 
   /// Reset animation
