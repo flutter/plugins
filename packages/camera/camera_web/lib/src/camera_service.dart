@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:html' as html;
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
 // ignore: unnecessary_import
@@ -30,8 +29,6 @@ class CameraService {
   /// The utility to manipulate JavaScript interop objects.
   @visibleForTesting
   JsUtil jsUtil = JsUtil();
-
-  final html.FileReader _fileReader = html.FileReader();
 
   /// Returns a media stream associated with the camera device
   /// with [cameraId] and constrained by [options].
