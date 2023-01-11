@@ -416,31 +416,46 @@ gmaps.PolylineOptions _polylineOptionsFromPolyline(
 
 // Translates a [CameraUpdate] into operations on a [gmaps.GMap].
 void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
+  // Casts [value] to a JSON dictionary (string -> nullable object). [value]
+  // must be a non-null JSON dictionary.
+  Map<String, Object?> asJsonObject(dynamic value) {
+    return (value as Map<Object?, Object?>).cast<String, Object?>();
+  }
+
+  // Casts [value] to a JSON list. [value] must be a non-null JSON list.
+  List<Object?> asJsonList(dynamic value) {
+    return value as List<Object?>;
+  }
+
   final List<dynamic> json = update.toJson() as List<dynamic>;
   switch (json[0]) {
     case 'newCameraPosition':
-      map.heading = json[1]['bearing'] as num?;
-      map.zoom = json[1]['zoom'] as num?;
+      final Map<String, Object?> position = asJsonObject(json[1]);
+      final List<Object?> latLng = asJsonList(position['target']);
+      map.heading = position['bearing'] as num?;
+      map.zoom = position['zoom'] as num?;
       map.panTo(
-        gmaps.LatLng(
-          json[1]['target'][0] as num?,
-          json[1]['target'][1] as num?,
-        ),
+        gmaps.LatLng(latLng[0] as num?, latLng[1] as num?),
       );
-      map.tilt = json[1]['tilt'] as num?;
+      map.tilt = position['tilt'] as num?;
       break;
     case 'newLatLng':
-      map.panTo(gmaps.LatLng(json[1][0] as num?, json[1][1] as num?));
+      final List<Object?> latLng = asJsonList(json[1]);
+      map.panTo(gmaps.LatLng(latLng[0] as num?, latLng[1] as num?));
       break;
     case 'newLatLngZoom':
+      final List<Object?> latLng = asJsonList(json[1]);
       map.zoom = json[2] as num?;
-      map.panTo(gmaps.LatLng(json[1][0] as num?, json[1][1] as num?));
+      map.panTo(gmaps.LatLng(latLng[0] as num?, latLng[1] as num?));
       break;
     case 'newLatLngBounds':
+      final List<Object?> latLngPair = asJsonList(json[1]);
+      final List<Object?> latLng1 = asJsonList(latLngPair[0]);
+      final List<Object?> latLng2 = asJsonList(latLngPair[1]);
       map.fitBounds(
         gmaps.LatLngBounds(
-          gmaps.LatLng(json[1][0][0] as num?, json[1][0][1] as num?),
-          gmaps.LatLng(json[1][1][0] as num?, json[1][1][1] as num?),
+          gmaps.LatLng(latLng1[0] as num?, latLng1[1] as num?),
+          gmaps.LatLng(latLng2[0] as num?, latLng2[1] as num?),
         ),
       );
       // padding = json[2];
@@ -456,10 +471,11 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
       final int newZoomDelta =
           zoomDelta < 0 ? zoomDelta.floor() : zoomDelta.ceil();
       if (json.length == 3) {
+        final List<Object?> latLng = asJsonList(json[2]);
         // With focus
         try {
           focusLatLng =
-              _pixelToLatLng(map, json[2][0] as int, json[2][1] as int);
+              _pixelToLatLng(map, latLng[0]! as int, latLng[1]! as int);
         } catch (e) {
           // https://github.com/a14n/dart-google-maps/issues/87
           // print('Error computing new focus LatLng. JS Error: ' + e.toString());

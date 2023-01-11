@@ -1,3 +1,7 @@
+## 2.2.5
+
+* Updates code for stricter lint checks.
+
 ## 2.2.4
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.

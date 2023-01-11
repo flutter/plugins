@@ -234,7 +234,8 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
     }
 
     // Validate that the supported OS lists match.
-    final dynamic platformsEntry = pubspec.flutter!['plugin']!['platforms'];
+    final YamlMap pluginSection = pubspec.flutter!['plugin'] as YamlMap;
+    final dynamic platformsEntry = pluginSection['platforms'];
     if (platformsEntry == null) {
       logWarning('Plugin not support any platforms');
       return null;
