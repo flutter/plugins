@@ -276,8 +276,8 @@ public class VideoRenderer {
             configureOpenGL();
 
             try {
-              // continuously pull frames from input surface texture and use videoRenderer to modify
-              // to correct rotation
+              // Continuously pull frames from input surface texture and use videoRenderer to modify
+              // to correct rotation.
               while (!Thread.interrupted()) {
 
                 synchronized (surfaceTextureAvailableFrameLock) {

@@ -277,7 +277,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     value = value.copyWith(isPreviewPaused: false);
   }
 
-  /// Sets the description of the camera
+  /// Sets the description of the camera.
   Future<void> setDescription(CameraDescription description) async {
     if (value.isRecordingVideo) {
       await CameraPlatform.instance.setDescriptionWhileRecording(description);
