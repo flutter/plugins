@@ -269,7 +269,7 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('pausePreview() is not implemented.');
   }
 
-  /// Set the active camera while recording.
+  /// Sets the active camera while recording.
   Future<void> setDescriptionWhileRecording(CameraDescription description) {
     throw UnimplementedError(
         'setDescriptionWhileRecording() is not implemented.');

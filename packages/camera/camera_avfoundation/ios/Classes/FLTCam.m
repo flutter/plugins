@@ -170,21 +170,21 @@ NSString *const errorMethod = @"error";
 }
 
 - (AVCaptureConnection *)createConnection:(NSError **)error {
-  // setup input
+  // Setup video capture input.
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:error];
 
   if (*error) {
     return nil;
   }
 
-  // setup output
+  // Setup video capture output.
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
       @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)};
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
 
-  // setup connection
+  // Setup video capture connection.
   AVCaptureConnection *connection =
       [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
                                              output:_captureVideoOutput];
@@ -884,10 +884,10 @@ NSString *const errorMethod = @"error";
   AVCaptureConnection *oldConnection =
       [_captureVideoOutput connectionWithMediaType:AVMediaTypeVideo];
 
-  // stop video capture from old output
+  // Stop video capture from the old output.
   [_captureVideoOutput setSampleBufferDelegate:nil queue:nil];
 
-  // remove old connections
+  // Remove the old video capture connections.
   [_videoCaptureSession beginConfiguration];
   [_videoCaptureSession removeInput:_captureVideoInput];
   [_videoCaptureSession removeOutput:_captureVideoOutput];
@@ -899,12 +899,12 @@ NSString *const errorMethod = @"error";
     return;
   }
 
-  // keep orientation
+  // Keep the same orientation the old connections had.
   if (oldConnection && newConnection.isVideoOrientationSupported) {
     newConnection.videoOrientation = oldConnection.videoOrientation;
   }
 
-  // add new connections
+  // Add the new connections to the session.
   if (![_videoCaptureSession canAddInput:_captureVideoInput])
     [result sendErrorWithCode:@"VideoError" message:@"Unable switch video input" details:nil];
   [_videoCaptureSession addInputWithNoConnections:_captureVideoInput];
@@ -1160,7 +1160,7 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)setUpCaptureSessionForAudio {
-  // dont setup twice or we will lose the audio
+  // Don't setup audio twice or we will lose the audio.
   if (_isAudioSetup) {
     return;
   }
