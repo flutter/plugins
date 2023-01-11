@@ -95,11 +95,13 @@ public class InstanceManager {
    *
    * @param instance an instance that may be stored in the manager.
    * @return the identifier associated with `instance` if the manager contains the value, otherwise
-   *     null.
+   *     null if the manager doesn't contain the value or the manager is closed.
    */
   @Nullable
   public Long getIdentifierForStrongReference(Object instance) {
-    assertManagerIsNotClosed();
+    if (isClosed()) {
+      return null;
+    }
     final Long identifier = identifiers.get(instance);
     if (identifier != null) {
       strongInstances.put(identifier, instance);
@@ -126,10 +128,12 @@ public class InstanceManager {
    * Adds a new instance that was instantiated from the host platform.
    *
    * @param instance the instance to be stored.
-   * @return the unique identifier stored with instance.
+   * @return the unique identifier stored with instance. If the manager is closed, returns -1.
    */
   public long addHostCreatedInstance(Object instance) {
-    assertManagerIsNotClosed();
+    if (isClosed()) {
+      return -1;
+    }
     final long identifier = nextIdentifier++;
     addInstance(instance, identifier);
     return identifier;
@@ -157,10 +161,13 @@ public class InstanceManager {
    * Returns whether this manager contains the given `instance`.
    *
    * @param instance the instance whose presence in this manager is to be tested.
-   * @return whether this manager contains the given `instance`.
+   * @return whether this manager contains the given `instance`. If the manager is closed, returns
+   * `false`.
    */
   public boolean containsInstance(Object instance) {
-    assertManagerIsNotClosed();
+    if (isClosed()) {
+      return false;
+    }
     return identifiers.containsKey(instance);
   }
 
@@ -173,6 +180,19 @@ public class InstanceManager {
   public void close() {
     handler.removeCallbacks(this::releaseAllFinalizedInstances);
     isClosed = true;
+    identifiers.clear();
+    weakInstances.clear();
+    strongInstances.clear();
+    weakReferencesToIdentifiers.clear();
+  }
+
+  /**
+   * Whether the manager has released resources and is not longer usable.
+   *
+   * <p>See {@link #close()}.
+   */
+  public boolean isClosed() {
+    return isClosed;
   }
 
   private void releaseAllFinalizedInstances() {
