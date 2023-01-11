@@ -16,6 +16,7 @@ import 'android_proxy.dart';
 import 'android_webview.dart' as android_webview;
 import 'android_webview.dart';
 import 'instance_manager.dart';
+import 'platform_views_service_proxy.dart';
 import 'weak_reference_utils.dart';
 
 /// Object specifying creation parameters for creating a [AndroidWebViewController].
@@ -369,20 +370,28 @@ class AndroidWebViewWidgetCreationParams
     required super.controller,
     super.layoutDirection,
     super.gestureRecognizers,
+    this.displayWithHybridComposition = false,
     @visibleForTesting InstanceManager? instanceManager,
+    @visibleForTesting
+        this.platformViewsServiceProxy = const PlatformViewsServiceProxy(),
   }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Constructs a [WebKitWebViewWidgetCreationParams] using a
   /// [PlatformWebViewWidgetCreationParams].
   AndroidWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
     PlatformWebViewWidgetCreationParams params, {
-    InstanceManager? instanceManager,
+    bool displayWithHybridComposition = false,
+    @visibleForTesting InstanceManager? instanceManager,
+    @visibleForTesting PlatformViewsServiceProxy platformViewsServiceProxy =
+        const PlatformViewsServiceProxy(),
   }) : this(
           key: params.key,
           controller: params.controller,
           layoutDirection: params.layoutDirection,
           gestureRecognizers: params.gestureRecognizers,
+          displayWithHybridComposition: displayWithHybridComposition,
           instanceManager: instanceManager,
+          platformViewsServiceProxy: platformViewsServiceProxy,
         );
 
   /// Maintains instances used to communicate with the native objects they
@@ -392,6 +401,25 @@ class AndroidWebViewWidgetCreationParams
   /// outside of tests.
   @visibleForTesting
   final InstanceManager instanceManager;
+
+  /// Proxy that provides access to the platform views service.
+  ///
+  /// This service allows creating and controlling platform-specific views.
+  @visibleForTesting
+  final PlatformViewsServiceProxy platformViewsServiceProxy;
+
+  /// Whether the [WebView] will be displayed using the Hybrid Composition
+  /// PlatformView implementation.
+  ///
+  /// For most use cases, this flag should be set to false. Hybrid Composition
+  /// can have performance costs but doesn't have the limitation of rendering to
+  /// an Android SurfaceTexture. See
+  /// * https://flutter.dev/docs/development/platform-integration/platform-views#performance
+  /// * https://github.com/flutter/flutter/issues/104889
+  /// * https://github.com/flutter/flutter/issues/116954
+  ///
+  /// Defaults to false.
+  final bool displayWithHybridComposition;
 }
 
 /// An implementation of [PlatformWebViewWidget] with the Android WebView API.
@@ -411,30 +439,52 @@ class AndroidWebViewWidget extends PlatformWebViewWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformViewLink(
-        key: _androidParams.key,
+      key: _androidParams.key,
+      viewType: 'plugins.flutter.io/webview',
+      surfaceFactory: (
+        BuildContext context,
+        PlatformViewController controller,
+      ) {
+        return AndroidViewSurface(
+          controller: controller as AndroidViewController,
+          gestureRecognizers: _androidParams.gestureRecognizers,
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        );
+      },
+      onCreatePlatformView: (PlatformViewCreationParams params) {
+        return _initAndroidView(
+          params,
+          displayWithHybridComposition:
+              _androidParams.displayWithHybridComposition,
+        )
+          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+          ..create();
+      },
+    );
+  }
+
+  AndroidViewController _initAndroidView(
+    PlatformViewCreationParams params, {
+    required bool displayWithHybridComposition,
+  }) {
+    if (displayWithHybridComposition) {
+      return _androidParams.platformViewsServiceProxy.initExpensiveAndroidView(
+        id: params.id,
         viewType: 'plugins.flutter.io/webview',
-        surfaceFactory: (
-          BuildContext context,
-          PlatformViewController controller,
-        ) {
-          return AndroidViewSurface(
-            controller: controller as AndroidViewController,
-            gestureRecognizers: _androidParams.gestureRecognizers,
-            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-          );
-        },
-        onCreatePlatformView: (PlatformViewCreationParams params) {
-          return PlatformViewsService.initSurfaceAndroidView(
-            id: params.id,
-            viewType: 'plugins.flutter.io/webview',
-            layoutDirection: _androidParams.layoutDirection,
-            creationParams: _androidParams.instanceManager.getIdentifier(
-                (_androidParams.controller as AndroidWebViewController)
-                    ._webView),
-            creationParamsCodec: const StandardMessageCodec(),
-          )
-            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-            ..create();
-        });
+        layoutDirection: _androidParams.layoutDirection,
+        creationParams: _androidParams.instanceManager.getIdentifier(
+            (_androidParams.controller as AndroidWebViewController)._webView),
+        creationParamsCodec: const StandardMessageCodec(),
+      );
+    } else {
+      return _androidParams.platformViewsServiceProxy.initSurfaceAndroidView(
+        id: params.id,
+        viewType: 'plugins.flutter.io/webview',
+        layoutDirection: _androidParams.layoutDirection,
+        creationParams: _androidParams.instanceManager.getIdentifier(
+            (_androidParams.controller as AndroidWebViewController)._webView),
+        creationParamsCodec: const StandardMessageCodec(),
+      );
+    }
   }
 }

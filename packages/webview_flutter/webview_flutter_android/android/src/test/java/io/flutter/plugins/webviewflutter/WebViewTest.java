@@ -5,6 +5,8 @@
 package io.flutter.plugins.webviewflutter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -18,6 +20,7 @@ import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
 import java.util.HashMap;
+import java.util.Objects;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -261,5 +264,21 @@ public class WebViewTest {
 
     testHostApiImpl.setWebChromeClient(0L, 1L);
     verify(mockWebView).setWebChromeClient(mockWebChromeClient);
+  }
+
+  @Test
+  public void defaultWebChromeClientIsSecureWebChromeClient() {
+    final WebViewPlatformView webView = new WebViewPlatformView(mockContext, null, null);
+    assertTrue(
+        webView.getWebChromeClient() instanceof WebChromeClientHostApiImpl.SecureWebChromeClient);
+    assertFalse(
+        webView.getWebChromeClient() instanceof WebChromeClientHostApiImpl.WebChromeClientImpl);
+  }
+
+  @Test
+  public void defaultWebChromeClientDoesNotAttemptToCommunicateWithDart() {
+    final WebViewPlatformView webView = new WebViewPlatformView(mockContext, null, null);
+    // This shouldn't throw an Exception.
+    Objects.requireNonNull(webView.getWebChromeClient()).onProgressChanged(webView, 0);
   }
 }

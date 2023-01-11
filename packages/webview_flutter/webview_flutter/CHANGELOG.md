@@ -1,3 +1,7 @@
+## 4.0.1
+
+* Exposes `WebResourceErrorType` from platform interface.
+
 ## 4.0.0
 
 * **BREAKING CHANGE** Updates implementation to use the `2.0.0` release of

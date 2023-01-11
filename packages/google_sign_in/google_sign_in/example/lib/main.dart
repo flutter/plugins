@@ -86,12 +86,14 @@ class SignInDemoState extends State<SignInDemo> {
   String? _pickFirstNamedContact(Map<String, dynamic> data) {
     final List<dynamic>? connections = data['connections'] as List<dynamic>?;
     final Map<String, dynamic>? contact = connections?.firstWhere(
-      (dynamic contact) => contact['names'] != null,
+      (dynamic contact) => (contact as Map<Object?, dynamic>)['names'] != null,
       orElse: () => null,
     ) as Map<String, dynamic>?;
     if (contact != null) {
-      final Map<String, dynamic>? name = contact['names'].firstWhere(
-        (dynamic name) => name['displayName'] != null,
+      final List<dynamic> names = contact['names'] as List<dynamic>;
+      final Map<String, dynamic>? name = names.firstWhere(
+        (dynamic name) =>
+            (name as Map<Object?, dynamic>)['displayName'] != null,
         orElse: () => null,
       ) as Map<String, dynamic>?;
       if (name != null) {

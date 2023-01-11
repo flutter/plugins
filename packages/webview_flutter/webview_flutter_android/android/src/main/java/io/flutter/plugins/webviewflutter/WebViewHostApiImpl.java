@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
-import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
 import java.util.Map;
 import java.util.Objects;
 
@@ -80,7 +79,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   /** Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s. */
   public static class WebViewPlatformView extends WebView implements PlatformView {
     private WebViewClient currentWebViewClient;
-    private WebChromeClientImpl currentWebChromeClient;
+    private WebChromeClientHostApiImpl.SecureWebChromeClient currentWebChromeClient;
 
     /**
      * Creates a {@link WebViewPlatformView}.
@@ -91,9 +90,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
         Context context, BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
       super(context);
       currentWebViewClient = new WebViewClient();
-      currentWebChromeClient =
-          new WebChromeClientImpl(
-              new WebChromeClientFlutterApiImpl(binaryMessenger, instanceManager));
+      currentWebChromeClient = new WebChromeClientHostApiImpl.SecureWebChromeClient();
 
       setWebViewClient(currentWebViewClient);
       setWebChromeClient(currentWebChromeClient);
@@ -119,11 +116,20 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setWebChromeClient(WebChromeClient client) {
       super.setWebChromeClient(client);
-      if (!(client instanceof WebChromeClientImpl)) {
-        throw new AssertionError("Client must be a WebChromeClientImpl.");
+      if (!(client instanceof WebChromeClientHostApiImpl.SecureWebChromeClient)) {
+        throw new AssertionError("Client must be a SecureWebChromeClient.");
       }
-      currentWebChromeClient = (WebChromeClientImpl) client;
+      currentWebChromeClient = (WebChromeClientHostApiImpl.SecureWebChromeClient) client;
       currentWebChromeClient.setWebViewClient(currentWebViewClient);
+    }
+
+    // When running unit tests, the parent `WebView` class is replaced by a stub that returns null
+    // for every method. This is overridden so that this returns the current WebChromeClient during
+    // unit tests. This should only remain overridden as long as `setWebChromeClient` is overridden.
+    @Nullable
+    @Override
+    public WebChromeClient getWebChromeClient() {
+      return currentWebChromeClient;
     }
   }
 
@@ -135,7 +141,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public static class InputAwareWebViewPlatformView extends InputAwareWebView
       implements PlatformView {
     private WebViewClient currentWebViewClient;
-    private WebChromeClientImpl currentWebChromeClient;
+    private WebChromeClientHostApiImpl.SecureWebChromeClient currentWebChromeClient;
 
     /**
      * Creates a {@link InputAwareWebViewPlatformView}.
@@ -149,9 +155,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
         View containerView) {
       super(context, containerView);
       currentWebViewClient = new WebViewClient();
-      currentWebChromeClient =
-          new WebChromeClientImpl(
-              new WebChromeClientFlutterApiImpl(binaryMessenger, instanceManager));
+      currentWebChromeClient = new WebChromeClientHostApiImpl.SecureWebChromeClient();
 
       setWebViewClient(currentWebViewClient);
       setWebChromeClient(currentWebChromeClient);
@@ -198,10 +202,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setWebChromeClient(WebChromeClient client) {
       super.setWebChromeClient(client);
-      if (!(client instanceof WebChromeClientImpl)) {
-        throw new AssertionError("Client must be a WebChromeClientImpl.");
+      if (!(client instanceof WebChromeClientHostApiImpl.SecureWebChromeClient)) {
+        throw new AssertionError("Client must be a SecureWebChromeClient.");
       }
-      currentWebChromeClient = (WebChromeClientImpl) client;
+      currentWebChromeClient = (WebChromeClientHostApiImpl.SecureWebChromeClient) client;
       currentWebChromeClient.setWebViewClient(currentWebViewClient);
     }
   }

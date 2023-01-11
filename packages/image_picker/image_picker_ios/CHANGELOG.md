@@ -1,3 +1,15 @@
+## 0.8.6+5
+
+* Fixes crash when `imageQuality` is set.
+
+## 0.8.6+4
+
+* Fixes authorization status check for iOS14+ so it includes `PHAuthorizationStatusLimited`.
+
+## 0.8.6+3
+
+* Returns error on image load failure.
+
 ## 0.8.6+2
 
 * Fixes issue where selectable images of certain types (such as ProRAW images) could not be loaded.

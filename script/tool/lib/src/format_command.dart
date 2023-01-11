@@ -298,13 +298,13 @@ class FormatCommand extends PackageCommand {
   Future<List<String>> _whichAll(String command) async {
     try {
       final io.ProcessResult result =
-      await processRunner.run('which', <String>['-a', command]);
+          await processRunner.run('which', <String>['-a', command]);
 
       if (result.exitCode != 0) {
         return <String>[];
       }
 
-      final String stdout = result.stdout.trim() as String;
+      final String stdout = (result.stdout as String).trim();
       if (stdout.isEmpty) {
         return <String>[];
       }

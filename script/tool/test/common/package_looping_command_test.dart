@@ -110,8 +110,10 @@ void main() {
     final MockGitDir gitDir = MockGitDir();
     when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
         .thenAnswer((Invocation invocation) {
+      final List<String> arguments =
+          invocation.positionalArguments[0]! as List<String>;
       final MockProcessResult mockProcessResult = MockProcessResult();
-      if (invocation.positionalArguments[0][0] == 'diff') {
+      if (arguments[0] == 'diff') {
         when<String?>(mockProcessResult.stdout as String?)
             .thenReturn(gitDiffResponse);
       }
