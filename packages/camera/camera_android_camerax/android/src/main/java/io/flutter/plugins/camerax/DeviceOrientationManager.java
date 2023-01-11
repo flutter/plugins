@@ -24,7 +24,7 @@ import io.flutter.embedding.engine.systemchannels.PlatformChannel.DeviceOrientat
 public class DeviceOrientationManager {
 
   interface DeviceOrientationChangeCallback {
-    void onChange(String newOrientation);
+    void onChange(DeviceOrientation newOrientation);
   }
 
   private static final IntentFilter orientationIntentFilter =
@@ -225,7 +225,7 @@ public class DeviceOrientationManager {
       DeviceOrientation previousOrientation,
       DeviceOrientationChangeCallback callback) {
     if (!newOrientation.equals(previousOrientation)) {
-      callback.onChange(newOrientation.name());
+      callback.onChange(newOrientation);
     }
   }
 

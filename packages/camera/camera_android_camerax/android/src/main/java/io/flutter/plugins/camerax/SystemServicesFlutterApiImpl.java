@@ -16,11 +16,6 @@ public class SystemServicesFlutterApiImpl extends SystemServicesFlutterApi {
 
   private final InstanceManager instanceManager;
 
-  public void onCameraPermissionsRequestResult(
-      String resultCode, String resultMessage, Reply<Void> reply) {
-    super.onCameraPermissionsRequestResult(resultCode, resultMessage, reply);
-  }
-
   public void onDeviceOrientationChanged(String orientation, Reply<Void> reply) {
     super.onDeviceOrientationChanged(orientation, reply);
   }

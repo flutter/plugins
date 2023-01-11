@@ -26,20 +26,14 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
-
-// TODO(camsim99): delete test comment
 class CameraPermissionsErrorData {
-  CameraPermissionsErrorData(this.errorCode, this.description);
+  CameraPermissionsErrorData({
+    required this.errorCode,
+    required this.description,
+  });
 
-  String? errorCode;
-  String? description;
-}
-
-enum DeviceOrientation {
-  landscapeLeft,
-  landscapeRight,
-  portraitDown,
-  portraitUp,
+  String errorCode;
+  String description;
 }
 
 @HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
@@ -89,7 +83,8 @@ abstract class ProcessCameraProviderFlutterApi {
 
 @HostApi(dartHostTestHandler: 'TestSystemServicesHostApi')
 abstract class SystemServicesHostApi {
-  void requestCameraPermissions(bool enableAudio);
+  @async
+  CameraPermissionsErrorData? requestCameraPermissions(bool enableAudio);
 
   void startListeningForDeviceOrientationChange(
       bool isFrontFacing, int sensorOrientation);
@@ -97,7 +92,5 @@ abstract class SystemServicesHostApi {
 
 @FlutterApi()
 abstract class SystemServicesFlutterApi {
-  void onCameraPermissionsRequestResult(CameraPermissionsErrorData? error);
-
-  void onDeviceOrientationChanged(DeviceOrientation orientation);
+  void onDeviceOrientationChanged(String orientation);
 }
