@@ -25,12 +25,9 @@ const String MY_PROFILE = 'https://content-people.googleapis.com/v1/people/me'
 /// has consented to the `silentSignIn` flow.
 Future<GoogleSignInUserData?> requestUserData(
     TokenResponse tokenResponse, String? idToken) async {
-  print('[google_sign_in_web]: Attempting to fetch people/me PROFILE info.');
 
   // Request my profile from the People API...
   final Map<String, Object?> profile = await _get(tokenResponse, MY_PROFILE);
-
-  print('[google_sign_in_web]: Handling response $profile');
 
   // Now transform the JSON response into a GoogleSignInUserData...
   final String? userId = _extractId(profile);
