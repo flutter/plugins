@@ -520,8 +520,6 @@ class MethodChannelCamera extends CameraPlatform {
         return 'always';
       case FlashMode.torch:
         return 'torch';
-      default:
-        throw ArgumentError('Unknown FlashMode value');
     }
   }
 
@@ -540,8 +538,6 @@ class MethodChannelCamera extends CameraPlatform {
         return 'medium';
       case ResolutionPreset.low:
         return 'low';
-      default:
-        throw ArgumentError('Unknown ResolutionPreset value');
     }
   }
 
