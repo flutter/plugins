@@ -63,6 +63,7 @@ import io.flutter.plugins.camera.media.MediaRecorderBuilder;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -1149,22 +1150,31 @@ class Camera
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
           Image img = reader.acquireNextImage();
+
           // Use acquireNextImage since image reader is only for one image.
           if (img == null) return;
 
           List<Map<String, Object>> planes = new ArrayList<>();
           for (Image.Plane plane : img.getPlanes()) {
-            ByteBuffer buffer = plane.getBuffer();
+            Map<String, Object> yPlaneBuffer = new HashMap<>();
+            yPlaneBuffer.put("bytesPerPixel", plane.getPixelStride());
 
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes, 0, bytes.length);
-
-            Map<String, Object> planeBuffer = new HashMap<>();
-            planeBuffer.put("bytesPerRow", plane.getRowStride());
-            planeBuffer.put("bytesPerPixel", plane.getPixelStride());
-            planeBuffer.put("bytes", bytes);
-
-            planes.add(planeBuffer);
+            // Now process the plane byte data. We sometimes have to correct the luma channel (Y)
+            // because some devices have some kind of extra padding included. From testing it seems
+            // like we do not have to modify the U/V channels, just the Y channel for this case.
+            if (plane.getRowStride() != img.getWidth() && plane.getPixelStride() == 1) {
+              // There is some padding we have to handle
+              yPlaneBuffer.put("bytes", getPixels(plane.getBuffer(), img.getWidth(), img.getHeight(), plane.getRowStride(), plane.getPixelStride()));
+              yPlaneBuffer.put("bytesPerRow", Math.min(plane.getRowStride(), img.getWidth()));
+            } else {
+              // Just use the data as-is
+              ByteBuffer buffer = plane.getBuffer();
+              byte[] bytes = new byte[buffer.remaining()];
+              buffer.get(bytes, 0, bytes.length);
+              yPlaneBuffer.put("bytes", bytes);
+              yPlaneBuffer.put("bytesPerRow", plane.getRowStride());
+            }
+            planes.add(yPlaneBuffer);
           }
 
           Map<String, Object> imageBuffer = new HashMap<>();
@@ -1183,6 +1193,34 @@ class Camera
           img.close();
         },
         backgroundHandler);
+  }
+
+  // Adopted from:
+  // https://github.com/abrenoch/hyperion-android-grabber/blob/c2befd7501c72f93f5c022666266f67142fe8ba3/common/src/main/java/com/abrenoch/hyperiongrabber/common/HyperionScreenEncoder.java#L154-L177
+  //
+  // Will return a new byte buffer with padding accounted for.
+  private byte[] getPixels(ByteBuffer buffer, int width, int height, int rowStride, int pixelStride){
+    int rowPadding = rowStride - width * pixelStride;
+    int offset = 0;
+
+    ByteArrayOutputStream bao = new ByteArrayOutputStream(
+            width  * height  * 3
+    );
+
+    for (int y = 0, compareHeight = height - 1; y < height; y++, offset += rowPadding) {
+      if ( y > compareHeight) {
+        offset += width * pixelStride;
+        continue;
+      }
+
+      for (int x = 0, compareWidth = width - 1; x < width; x++, offset += pixelStride) {
+        if (x > compareWidth) continue;
+        if (offset > buffer.remaining()) continue;
+        bao.write(buffer.get(offset));
+      }
+    }
+
+    return bao.toByteArray();
   }
 
   private void closeCaptureSession() {
