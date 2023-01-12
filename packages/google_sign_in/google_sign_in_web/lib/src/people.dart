@@ -19,20 +19,23 @@ const String MY_PROFILE = 'https://content-people.googleapis.com/v1/people/me'
     '?sources=READ_SOURCE_TYPE_PROFILE'
     '&personFields=photos%2Cnames%2CemailAddresses';
 
-/// Requests user data from the People API.
+/// Requests user data from the People API using the given [tokenResponse].
+Future<GoogleSignInUserData?> requestUserData(TokenResponse tokenResponse) async {
+
+  // Request my profile from the People API.
+  final Map<String, Object?> person = await _get(tokenResponse, MY_PROFILE);
+
+  // Now transform the Person response into a GoogleSignInUserData.
+  return extractUserData(person);
+}
+
+/// Extracts user data from a Person resource.
 ///
-/// The `idToken` is an optional string that the plugin may have, if the user
-/// has consented to the `silentSignIn` flow.
-Future<GoogleSignInUserData?> requestUserData(
-    TokenResponse tokenResponse, String? idToken) async {
-
-  // Request my profile from the People API...
-  final Map<String, Object?> profile = await _get(tokenResponse, MY_PROFILE);
-
-  // Now transform the JSON response into a GoogleSignInUserData...
-  final String? userId = _extractId(profile);
-  final String? email = _extractField(
-    profile['emailAddresses'] as List<Object?>?,
+/// See: https://developers.google.com/people/api/rest/v1/people#Person
+GoogleSignInUserData? extractUserData(Map<String, Object?> json) {
+  final String? userId = extractUserId(json);
+  final String? email = extractPrimaryField(
+    json['emailAddresses'] as List<Object?>?,
     'value',
   );
 
@@ -42,25 +45,39 @@ Future<GoogleSignInUserData?> requestUserData(
   return GoogleSignInUserData(
     id: userId!,
     email: email!,
-    displayName: _extractField(
-      profile['names'] as List<Object?>?,
+    displayName: extractPrimaryField(
+      json['names'] as List<Object?>?,
       'displayName',
     ),
-    photoUrl: _extractField(
-      profile['photos'] as List<Object?>?,
+    photoUrl: extractPrimaryField(
+      json['photos'] as List<Object?>?,
       'url',
     ),
-    idToken: idToken,
+    // idToken: null, // Synthetic user data doesn't contain an idToken!
   );
 }
 
-/// Extracts the UserID
-String? _extractId(Map<String, Object?> profile) {
+/// Extracts the ID from a Person resource.
+///
+/// The User ID looks like this:
+/// {
+///   'resourceName': 'people/PERSON_ID',
+///   ...
+/// }
+String? extractUserId(Map<String, Object?> profile) {
   final String? resourceName = profile['resourceName'] as String?;
-  return resourceName?.substring(7);
+  return resourceName?.split('/').last;
 }
 
-String? _extractField(List<Object?>? values, String fieldName) {
+/// Extracts the [fieldName] marked as 'primary' from a list of [values].
+///
+/// Values can be one of:
+/// * `emailAddresses`
+/// * `names`
+/// * `photos`
+///
+/// From a Person object.
+String? extractPrimaryField(List<Object?>? values, String fieldName) {
   if (values != null) {
     for (final Object? value in values) {
       if (value != null && value is Map<String, Object?>) {
@@ -76,9 +93,9 @@ String? _extractField(List<Object?>? values, String fieldName) {
   return null;
 }
 
-/// Attempts to get a property of type `T` from a deeply nested object.
+/// Attempts to get the property in [path] of type `T` from a deeply nested [source].
 ///
-/// Returns `default` if the property is not found.
+/// Returns [default] if the property is not found.
 T _deepGet<T>(
   Map<String, Object?> source, {
   required List<String> path,

@@ -217,10 +217,7 @@ class GisSdkClient {
     // This synthetic response will *not* contain an `idToken` field.
     if (_lastCredentialResponse == null && _requestedUserData == null) {
       assert(_lastTokenResponse != null);
-      _requestedUserData = await people.requestUserData(
-        _lastTokenResponse!,
-        _lastCredentialResponse?.credential,
-      );
+      _requestedUserData = await people.requestUserData(_lastTokenResponse!);
     }
     // Complete user data either with the _lastCredentialResponse seen,
     // or the synthetic _requestedUserData from above.
