@@ -1,3 +1,7 @@
+## 2.4.11
+
+* Updates code for stricter lint checks.
+
 ## 2.4.10
 
 * Adds compatibilty with version 6.0 of the platform interface.

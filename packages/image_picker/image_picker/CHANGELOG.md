@@ -1,3 +1,7 @@
+## 0.8.6+1
+
+* Updates code for stricter lint checks.
+
 ## 0.8.6
 
 * Updates minimum Flutter version to 2.10.
