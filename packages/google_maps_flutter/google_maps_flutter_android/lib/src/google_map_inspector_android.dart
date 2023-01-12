@@ -82,6 +82,31 @@ class GoogleMapsInspectorAndroid extends GoogleMapsInspectorPlatform {
   }
 
   @override
+  Future<Heatmap?> getHeatmapInfo(HeatmapId heatmapId,
+      {required int mapId}) async {
+    final Map<String, Object?>? heatmapInfo = await _channelProvider(mapId)!
+        .invokeMapMethod<String, dynamic>(
+            'map#getHeatmapInfo', <String, String>{
+      'heatmapId': heatmapId.value,
+    });
+    if (heatmapInfo == null) {
+      return null;
+    }
+
+    return Heatmap(
+      heatmapId: heatmapId,
+      data: (heatmapInfo['data']! as List<Object?>)
+          .map(WeightedLatLng.fromJson)
+          .whereType<WeightedLatLng>()
+          .toList(),
+      gradient: HeatmapGradient.fromJson(heatmapInfo['gradient']),
+      maxIntensity: heatmapInfo['maxIntensity']! as double,
+      opacity: heatmapInfo['opacity']! as double,
+      radius: heatmapInfo['radius']! as int,
+    );
+  }
+
+  @override
   Future<bool> isCompassEnabled({required int mapId}) async {
     return (await _channelProvider(mapId)!
         .invokeMethod<bool>('map#isCompassEnabled'))!;

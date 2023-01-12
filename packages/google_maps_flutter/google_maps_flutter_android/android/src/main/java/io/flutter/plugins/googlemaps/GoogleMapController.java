@@ -379,7 +379,7 @@ final class GoogleMapController
           heatmapsController.addHeatmaps(heatmapsToAdd);
           List<Object> heatmapsToChange = call.argument("heatmapsToChange");
           heatmapsController.changeHeatmaps(heatmapsToChange);
-          List<Object> heatmapIdsToRemove = call.argument("heatmapIdsToRemove");
+          List<String> heatmapIdsToRemove = call.argument("heatmapIdsToRemove");
           heatmapsController.removeHeatmaps(heatmapIdsToRemove);
           result.success(null);
           break;
@@ -495,12 +495,17 @@ final class GoogleMapController
           result.success(null);
           break;
         }
-      case "map#getTileOverlayInfo":
-        {
-          String tileOverlayId = call.argument("tileOverlayId");
-          result.success(tileOverlaysController.getTileOverlayInfo(tileOverlayId));
-          break;
-        }
+      case "map#getTileOverlayInfo": {
+        String tileOverlayId = call.argument("tileOverlayId");
+        result.success(tileOverlaysController.getTileOverlayInfo(tileOverlayId));
+        break;
+      }
+      case "map#getHeatmapInfo":
+      {
+        String heatmapId = call.argument("heatmapId");
+        result.success(heatmapsController.getHeatmapInfo(heatmapId));
+        break;
+      }
       default:
         result.notImplemented();
     }

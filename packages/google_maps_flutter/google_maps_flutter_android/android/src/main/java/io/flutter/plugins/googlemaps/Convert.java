@@ -25,13 +25,19 @@ import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.SquareCap;
 import com.google.android.gms.maps.model.Tile;
 import com.google.maps.android.heatmaps.Gradient;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
+import com.google.maps.android.projection.SphericalMercatorProjection;
+
 import io.flutter.view.FlutterMain;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
@@ -230,6 +236,12 @@ class Convert {
   static WeightedLatLng toWeightedLatLng(Object o) {
     final List<?> data = toList(o);
     return new WeightedLatLng(toLatLng(data.get(0)), toDouble(data.get(1)));
+  }
+
+  private static final SphericalMercatorProjection sProjection =
+          new SphericalMercatorProjection(1);
+  static Object weightedLatLngToJson(WeightedLatLng weightedLatLng) {
+    return Arrays.asList(latLngToJson(sProjection.toLatLng(weightedLatLng.getPoint())), weightedLatLng.getIntensity());
   }
 
   static Point toPoint(Object o) {
@@ -629,6 +641,35 @@ class Convert {
     }
   }
 
+  static Map<String, Object> heatmapToJson(HeatmapTileProvider heatmap) throws NoSuchFieldException, IllegalAccessException {
+    final Field dataField = HeatmapTileProvider.class.getDeclaredField("mData");
+    final Field gradientField = HeatmapTileProvider.class.getDeclaredField("mGradient");
+    final Field maxIntensityField = HeatmapTileProvider.class.getDeclaredField("mCustomMaxIntensity");
+    final Field opacityField = HeatmapTileProvider.class.getDeclaredField("mOpacity");
+    final Field radiusField = HeatmapTileProvider.class.getDeclaredField("mRadius");
+
+    dataField.setAccessible(true);
+    gradientField.setAccessible(true);
+    maxIntensityField.setAccessible(true);
+    opacityField.setAccessible(true);
+    radiusField.setAccessible(true);
+
+    final List<WeightedLatLng> data = (List<WeightedLatLng>) dataField.get(heatmap);
+    final Gradient gradient = (Gradient) gradientField.get(heatmap);
+    final double maxIntensity = (double) maxIntensityField.get(heatmap);
+    final double opacity = (double) opacityField.get(heatmap);
+    final int radius = (int) radiusField.get(heatmap);
+
+    Map<String, Object> heatmapInfo = new HashMap<>();
+    heatmapInfo.put("data", Convert.weightedDataToJson(Objects.requireNonNull(data)));
+    heatmapInfo.put("gradient", gradientToJson(gradient));
+    heatmapInfo.put("maxIntensity", maxIntensityField.get(heatmap));
+    heatmapInfo.put("opacity", opacityField.get(heatmap));
+    heatmapInfo.put("radius", radiusField.get(heatmap));
+
+    return heatmapInfo;
+  }
+
   private static List<LatLng> toPoints(Object o) {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());
@@ -648,6 +689,15 @@ class Convert {
       weightedData.add(toWeightedLatLng(rawWeightedPoint));
     }
     return weightedData;
+  }
+
+  private static Object weightedDataToJson(List<WeightedLatLng> weightedData) {
+    final List<Object> data = new ArrayList<>(weightedData.size());
+
+    for (WeightedLatLng weightedLatLng : weightedData) {
+      data.add(weightedLatLngToJson(weightedLatLng));
+    }
+    return data;
   }
 
   private static Gradient toGradient(Object o) {
@@ -671,6 +721,14 @@ class Convert {
 
     return new Gradient(colors, startPoints, colorMapSize);
   }
+
+    private static Object gradientToJson(Gradient gradient) {
+        final Map<String, Object> data = new HashMap<>();
+        data.put("colors", gradient.mColors);
+        data.put("startPoints", gradient.mStartPoints);
+        data.put("colorMapSize", gradient.mColorMapSize);
+        return data;
+    }
 
   private static List<List<LatLng>> toHoles(Object o) {
     final List<?> data = toList(o);

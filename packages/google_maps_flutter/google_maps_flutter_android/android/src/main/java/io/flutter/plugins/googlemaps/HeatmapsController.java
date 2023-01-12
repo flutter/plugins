@@ -42,19 +42,31 @@ public class HeatmapsController {
     }
   }
 
-  void removeHeatmaps(List<Object> heatmapIdsToRemove) {
+  void removeHeatmaps(List<String> heatmapIdsToRemove) {
     if (heatmapIdsToRemove == null) {
       return;
     }
-    for (Object rawHeatmapId : heatmapIdsToRemove) {
-      if (rawHeatmapId == null) {
+    for (String heatmapId : heatmapIdsToRemove) {
+      if (heatmapId == null) {
         continue;
       }
-      String heatmapId = (String) rawHeatmapId;
-      final HeatmapController heatmapController = heatmapIdToController.remove(heatmapId);
-      if (heatmapController != null) {
-        heatmapController.remove();
-      }
+      removeHeatmap(heatmapId);
+    }
+  }
+
+  Map<String, Object> getHeatmapInfo(String heatmapId) {
+    if (heatmapId == null) {
+      return null;
+    }
+    HeatmapController heatmapController = heatmapIdToController.get(heatmapId);
+    if (heatmapController == null) {
+      return null;
+    }
+
+    try {
+      return heatmapController.getHeatmapInfo();
+    } catch (Exception e) {
+      return null;
     }
   }
 
