@@ -16,8 +16,10 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+  google_identity_services_web: ^0.2.0
   google_sign_in_platform_interface: ^2.2.0
   http: ^0.13.0
   integration_test:
     sdk: flutter
+  jose: ^0.3.3
   js: ^0.6.3
