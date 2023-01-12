@@ -91,16 +91,20 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
         as ProcessCameraProvider;
   }
 
-  /// Retrives the list of CameraInfos corresponding to the available cameras.
-  Future<List<CameraInfo>> getAvailableCameraInfosFromInstances(
-      ProcessCameraProvider instance) async {
+  int getProcessCameraProviderIdentifier(ProcessCameraProvider instance) {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (ProcessCameraProvider original) {
       return ProcessCameraProvider.detached(
           binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     });
+    return identifier;
+  }
 
+  /// Retrives the list of CameraInfos corresponding to the available cameras.
+  Future<List<CameraInfo>> getAvailableCameraInfosFromInstances(
+      ProcessCameraProvider instance) async {
+    int identifier = getProcessCameraProviderIdentifier(instance);
     final List<int?> cameraInfos = await getAvailableCameraInfos(identifier);
     return cameraInfos
         .map<CameraInfo>((int? id) =>
@@ -118,12 +122,7 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
     CameraSelector cameraSelector,
     List<UseCase> useCases,
   ) async {
-    int? identifier = instanceManager.getIdentifier(instance);
-    identifier ??= instanceManager.addDartCreatedInstance(instance,
-        onCopy: (ProcessCameraProvider original) {
-      return ProcessCameraProvider.detached(
-          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
-    });
+    int identifier = getProcessCameraProviderIdentifier(instance);
     final List<int> useCaseIds = useCases
         .map<int>((UseCase useCase) => instanceManager.getIdentifier(useCase)!)
         .toList();
@@ -143,12 +142,7 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
     ProcessCameraProvider instance,
     List<UseCase> useCases,
   ) {
-    int? identifier = instanceManager.getIdentifier(instance);
-    identifier ??= instanceManager.addDartCreatedInstance(instance,
-        onCopy: (ProcessCameraProvider original) {
-      return ProcessCameraProvider.detached(
-          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
-    });
+    int identifier = getProcessCameraProviderIdentifier(instance);
     final List<int> useCaseIds = useCases
         .map<int>((UseCase useCase) => instanceManager.getIdentifier(useCase)!)
         .toList();
@@ -159,13 +153,7 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
   /// Unbinds all previously bound [UseCase]s from the lifecycle of the camera
   /// which the provided [ProcessCameraProvider] instance tracks.
   void unbindAllFromInstances(ProcessCameraProvider instance) {
-    int? identifier = instanceManager.getIdentifier(instance);
-    identifier ??= instanceManager.addDartCreatedInstance(instance,
-        onCopy: (ProcessCameraProvider original) {
-      return ProcessCameraProvider.detached(
-          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
-    });
-
+    int identifier = getProcessCameraProviderIdentifier(instance);
     unbindAll(identifier);
   }
 }
