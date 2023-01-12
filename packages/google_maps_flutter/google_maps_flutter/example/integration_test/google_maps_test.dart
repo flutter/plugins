@@ -31,1136 +31,1136 @@ void main() {
   // This is useful for cases where the Maps SDK has some internally
   // asynchronous operation that we don't have visibility into (e.g., native UI
   // animations).
-  // Future<T?> waitForValueMatchingPredicate<T>(WidgetTester tester,
-  //     Future<T> Function() getValue, bool Function(T) predicate,
-  //     {int maxTries = 100}) async {
-  //   for (int i = 0; i < maxTries; i++) {
-  //     final T value = await getValue();
-  //     if (predicate(value)) {
-  //       return value;
-  //     }
-  //     await tester.pump();
-  //   }
-  //   return null;
-  // }
-
-  // testWidgets('testCompassToggle', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       compassEnabled: false,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool compassEnabled = await inspector.isCompassEnabled(mapId: mapId);
-  //   expect(compassEnabled, false);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   compassEnabled = await inspector.isCompassEnabled(mapId: mapId);
-  //   expect(compassEnabled, true);
-  // });
-
-  // testWidgets('testMapToolbarToggle', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       mapToolbarEnabled: false,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool mapToolbarEnabled = await inspector.isMapToolbarEnabled(mapId: mapId);
-  //   expect(mapToolbarEnabled, false);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   mapToolbarEnabled = await inspector.isMapToolbarEnabled(mapId: mapId);
-  //   expect(mapToolbarEnabled, Platform.isAndroid);
-  // });
-
-  // testWidgets('updateMinMaxZoomLevels', (WidgetTester tester) async {
-  //   // The behaviors of setting min max zoom level on iOS and Android are different.
-  //   // On iOS, when we get the min or max zoom level after setting the preference, the
-  //   // min and max will be exactly the same as the value we set; on Android however,
-  //   // the values we get do not equal to the value we set.
-  //   //
-  //   // Also, when we call zoomTo to set the zoom, on Android, it usually
-  //   // honors the preferences that we set and the zoom cannot pass beyond the boundary.
-  //   // On iOS, on the other hand, zoomTo seems to override the preferences.
-  //   //
-  //   // Thus we test iOS and Android a little differently here.
-  //   final Key key = GlobalKey();
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   const MinMaxZoomPreference initialZoomLevel = MinMaxZoomPreference(4, 8);
-  //   const MinMaxZoomPreference finalZoomLevel = MinMaxZoomPreference(6, 10);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       minMaxZoomPreference: initialZoomLevel,
-  //       onMapCreated: (GoogleMapController c) async {
-  //         controllerCompleter.complete(c);
-  //       },
-  //     ),
-  //   ));
-
-  //   final GoogleMapController controller = await controllerCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-
-  //   if (Platform.isIOS) {
-  //     final MinMaxZoomPreference zoomLevel =
-  //         await inspector.getMinMaxZoomLevels(mapId: controller.mapId);
-  //     expect(zoomLevel, equals(initialZoomLevel));
-  //   } else if (Platform.isAndroid) {
-  //     await controller.moveCamera(CameraUpdate.zoomTo(15));
-  //     await tester.pumpAndSettle();
-  //     double? zoomLevel = await controller.getZoomLevel();
-  //     expect(zoomLevel, equals(initialZoomLevel.maxZoom));
-
-  //     await controller.moveCamera(CameraUpdate.zoomTo(1));
-  //     await tester.pumpAndSettle();
-  //     zoomLevel = await controller.getZoomLevel();
-  //     expect(zoomLevel, equals(initialZoomLevel.minZoom));
-  //   }
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       minMaxZoomPreference: finalZoomLevel,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   if (Platform.isIOS) {
-  //     final MinMaxZoomPreference zoomLevel =
-  //         await inspector.getMinMaxZoomLevels(mapId: controller.mapId);
-  //     expect(zoomLevel, equals(finalZoomLevel));
-  //   } else {
-  //     await controller.moveCamera(CameraUpdate.zoomTo(15));
-  //     await tester.pumpAndSettle();
-  //     double? zoomLevel = await controller.getZoomLevel();
-  //     expect(zoomLevel, equals(finalZoomLevel.maxZoom));
-
-  //     await controller.moveCamera(CameraUpdate.zoomTo(1));
-  //     await tester.pumpAndSettle();
-  //     zoomLevel = await controller.getZoomLevel();
-  //     expect(zoomLevel, equals(finalZoomLevel.minZoom));
-  //   }
-  // });
-
-  // testWidgets('testZoomGesturesEnabled', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       zoomGesturesEnabled: false,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool zoomGesturesEnabled =
-  //       await inspector.areZoomGesturesEnabled(mapId: mapId);
-  //   expect(zoomGesturesEnabled, false);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   zoomGesturesEnabled = await inspector.areZoomGesturesEnabled(mapId: mapId);
-  //   expect(zoomGesturesEnabled, true);
-  // });
-
-  // testWidgets('testZoomControlsEnabled', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool zoomControlsEnabled =
-  //       await inspector.areZoomControlsEnabled(mapId: mapId);
-  //   expect(zoomControlsEnabled, !Platform.isIOS);
-
-  //   /// Zoom Controls functionality is not available on iOS at the moment.
-  //   if (Platform.isAndroid) {
-  //     await tester.pumpWidget(Directionality(
-  //       textDirection: TextDirection.ltr,
-  //       child: GoogleMap(
-  //         key: key,
-  //         initialCameraPosition: _kInitialCameraPosition,
-  //         zoomControlsEnabled: false,
-  //         onMapCreated: (GoogleMapController controller) {
-  //           fail('OnMapCreated should get called only once.');
-  //         },
-  //       ),
-  //     ));
-
-  //     zoomControlsEnabled =
-  //         await inspector.areZoomControlsEnabled(mapId: mapId);
-  //     expect(zoomControlsEnabled, false);
-  //   }
-  // });
-
-  // testWidgets('testLiteModeEnabled', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool liteModeEnabled = await inspector.isLiteModeEnabled(mapId: mapId);
-  //   expect(liteModeEnabled, false);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       liteModeEnabled: true,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   liteModeEnabled = await inspector.isLiteModeEnabled(mapId: mapId);
-  //   expect(liteModeEnabled, true);
-  // }, skip: !Platform.isAndroid);
-
-  // testWidgets('testRotateGesturesEnabled', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       rotateGesturesEnabled: false,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool rotateGesturesEnabled =
-  //       await inspector.areRotateGesturesEnabled(mapId: mapId);
-  //   expect(rotateGesturesEnabled, false);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   rotateGesturesEnabled =
-  //       await inspector.areRotateGesturesEnabled(mapId: mapId);
-  //   expect(rotateGesturesEnabled, true);
-  // });
-
-  // testWidgets('testTiltGesturesEnabled', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       tiltGesturesEnabled: false,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool tiltGesturesEnabled =
-  //       await inspector.areTiltGesturesEnabled(mapId: mapId);
-  //   expect(tiltGesturesEnabled, false);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   tiltGesturesEnabled = await inspector.areTiltGesturesEnabled(mapId: mapId);
-  //   expect(tiltGesturesEnabled, true);
-  // });
-
-  // testWidgets('testScrollGesturesEnabled', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       scrollGesturesEnabled: false,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool scrollGesturesEnabled =
-  //       await inspector.areScrollGesturesEnabled(mapId: mapId);
-  //   expect(scrollGesturesEnabled, false);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   scrollGesturesEnabled =
-  //       await inspector.areScrollGesturesEnabled(mapId: mapId);
-  //   expect(scrollGesturesEnabled, true);
-  // });
-
-  // testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
-  //   await tester.binding.setSurfaceSize(const Size(800, 600));
-
-  //   final Completer<GoogleMapController> mapControllerCompleter =
-  //       Completer<GoogleMapController>();
-  //   final Key key = GlobalKey();
-  //   await tester.pumpWidget(
-  //     Directionality(
-  //       textDirection: TextDirection.ltr,
-  //       child: GoogleMap(
-  //         key: key,
-  //         initialCameraPosition: _kInitialCameraPosition,
-  //         onMapCreated: (GoogleMapController controller) {
-  //           mapControllerCompleter.complete(controller);
-  //         },
-  //       ),
-  //     ),
-  //   );
-  //   final GoogleMapController mapController =
-  //       await mapControllerCompleter.future;
-
-  //   await tester.pumpAndSettle();
-
-  //   // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
-  //   // in `mapRendered`.
-  //   // https://github.com/flutter/flutter/issues/54758
-  //   await Future<void>.delayed(const Duration(seconds: 1));
-
-  //   final ScreenCoordinate coordinate =
-  //       await mapController.getScreenCoordinate(_kInitialCameraPosition.target);
-  //   final Rect rect = tester.getRect(find.byKey(key));
-  //   if (Platform.isIOS) {
-  //     // On iOS, the coordinate value from the GoogleMapSdk doesn't include the devicePixelRatio`.
-  //     // So we don't need to do the conversion like we did below for other platforms.
-  //     expect(coordinate.x, (rect.center.dx - rect.topLeft.dx).round());
-  //     expect(coordinate.y, (rect.center.dy - rect.topLeft.dy).round());
-  //   } else {
-  //     expect(
-  //         coordinate.x,
-  //         ((rect.center.dx - rect.topLeft.dx) *
-  //                 tester.binding.window.devicePixelRatio)
-  //             .round());
-  //     expect(
-  //         coordinate.y,
-  //         ((rect.center.dy - rect.topLeft.dy) *
-  //                 tester.binding.window.devicePixelRatio)
-  //             .round());
-  //   }
-  //   await tester.binding.setSurfaceSize(null);
-  // });
-
-  // testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final LatLngBounds zeroLatLngBounds = LatLngBounds(
-  //       southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
-
-  //   final Completer<GoogleMapController> mapControllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapControllerCompleter.complete(controller);
-  //       },
-  //     ),
-  //   ));
-  //   await tester.pumpAndSettle();
-
-  //   final GoogleMapController mapController =
-  //       await mapControllerCompleter.future;
-
-  //   // Wait for the visible region to be non-zero.
-  //   final LatLngBounds firstVisibleRegion =
-  //       await waitForValueMatchingPredicate<LatLngBounds>(
-  //               tester,
-  //               () => mapController.getVisibleRegion(),
-  //               (LatLngBounds bounds) => bounds != zeroLatLngBounds) ??
-  //           zeroLatLngBounds;
-  //   expect(firstVisibleRegion, isNot(zeroLatLngBounds));
-  //   expect(firstVisibleRegion.contains(_kInitialMapCenter), isTrue);
-
-  //   // Making a new `LatLngBounds` about (10, 10) distance south west to the `firstVisibleRegion`.
-  //   // The size of the `LatLngBounds` is 10 by 10.
-  //   final LatLng southWest = LatLng(firstVisibleRegion.southwest.latitude - 20,
-  //       firstVisibleRegion.southwest.longitude - 20);
-  //   final LatLng northEast = LatLng(firstVisibleRegion.southwest.latitude - 10,
-  //       firstVisibleRegion.southwest.longitude - 10);
-  //   final LatLng newCenter = LatLng(
-  //     (northEast.latitude + southWest.latitude) / 2,
-  //     (northEast.longitude + southWest.longitude) / 2,
-  //   );
-
-  //   expect(firstVisibleRegion.contains(northEast), isFalse);
-  //   expect(firstVisibleRegion.contains(southWest), isFalse);
-
-  //   final LatLngBounds latLngBounds =
-  //       LatLngBounds(southwest: southWest, northeast: northEast);
-
-  //   // TODO(iskakaushik): non-zero padding is needed for some device configurations
-  //   // https://github.com/flutter/flutter/issues/30575
-  //   const double padding = 0;
-  //   await mapController
-  //       .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
-  //   await tester.pumpAndSettle(const Duration(seconds: 3));
-
-  //   final LatLngBounds secondVisibleRegion =
-  //       await mapController.getVisibleRegion();
-
-  //   expect(secondVisibleRegion, isNot(zeroLatLngBounds));
-
-  //   expect(firstVisibleRegion, isNot(secondVisibleRegion));
-  //   expect(secondVisibleRegion.contains(newCenter), isTrue);
-  // });
-
-  // testWidgets('testTraffic', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       trafficEnabled: true,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool isTrafficEnabled = await inspector.isTrafficEnabled(mapId: mapId);
-  //   expect(isTrafficEnabled, true);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   isTrafficEnabled = await inspector.isTrafficEnabled(mapId: mapId);
-  //   expect(isTrafficEnabled, false);
-  // });
-
-  // testWidgets('testBuildings', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   final bool isBuildingsEnabled =
-  //       await inspector.areBuildingsEnabled(mapId: mapId);
-  //   expect(isBuildingsEnabled, true);
-  // });
-
-  // // Location button tests are skipped in Android because we don't have location permission to test.
-  // testWidgets('testMyLocationButtonToggle', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   bool myLocationButtonEnabled =
-  //       await inspector.isMyLocationButtonEnabled(mapId: mapId);
-  //   expect(myLocationButtonEnabled, true);
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       myLocationButtonEnabled: false,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         fail('OnMapCreated should get called only once.');
-  //       },
-  //     ),
-  //   ));
-
-  //   myLocationButtonEnabled =
-  //       await inspector.isMyLocationButtonEnabled(mapId: mapId);
-  //   expect(myLocationButtonEnabled, false);
-  // }, skip: Platform.isAndroid);
-
-  // testWidgets('testMyLocationButton initial value false',
-  //     (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       myLocationButtonEnabled: false,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   final bool myLocationButtonEnabled =
-  //       await inspector.isMyLocationButtonEnabled(mapId: mapId);
-  //   expect(myLocationButtonEnabled, false);
-  // }, skip: Platform.isAndroid);
-
-  // testWidgets('testMyLocationButton initial value true',
-  //     (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<int> mapIdCompleter = Completer<int>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         mapIdCompleter.complete(controller.mapId);
-  //       },
-  //     ),
-  //   ));
-
-  //   final int mapId = await mapIdCompleter.future;
-  //   final GoogleMapsInspectorPlatform inspector =
-  //       GoogleMapsInspectorPlatform.instance!;
-  //   final bool myLocationButtonEnabled =
-  //       await inspector.isMyLocationButtonEnabled(mapId: mapId);
-  //   expect(myLocationButtonEnabled, true);
-  // }, skip: Platform.isAndroid);
-
-  // testWidgets('testSetMapStyle valid Json String', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         controllerCompleter.complete(controller);
-  //       },
-  //     ),
-  //   ));
-
-  //   final GoogleMapController controller = await controllerCompleter.future;
-  //   const String mapStyle =
-  //       '[{"elementType":"geometry","stylers":[{"color":"#242f3e"}]}]';
-  //   await controller.setMapStyle(mapStyle);
-  // });
-
-  // testWidgets('testSetMapStyle invalid Json String',
-  //     (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         controllerCompleter.complete(controller);
-  //       },
-  //     ),
-  //   ));
-
-  //   final GoogleMapController controller = await controllerCompleter.future;
-
-  //   try {
-  //     await controller.setMapStyle('invalid_value');
-  //     fail('expected MapStyleException');
-  //   } on MapStyleException catch (e) {
-  //     expect(e.cause, isNotNull);
-  //   }
-  // });
-
-  // testWidgets('testSetMapStyle null string', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         controllerCompleter.complete(controller);
-  //       },
-  //     ),
-  //   ));
-
-  //   final GoogleMapController controller = await controllerCompleter.future;
-  //   await controller.setMapStyle(null);
-  // });
-
-  // testWidgets('testGetLatLng', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         controllerCompleter.complete(controller);
-  //       },
-  //     ),
-  //   ));
-
-  //   final GoogleMapController controller = await controllerCompleter.future;
-
-  //   await tester.pumpAndSettle();
-  //   // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
-  //   // in `mapRendered`.
-  //   // https://github.com/flutter/flutter/issues/54758
-  //   await Future<void>.delayed(const Duration(seconds: 1));
-
-  //   final LatLngBounds visibleRegion = await controller.getVisibleRegion();
-  //   final LatLng topLeft =
-  //       await controller.getLatLng(const ScreenCoordinate(x: 0, y: 0));
-  //   final LatLng northWest = LatLng(
-  //     visibleRegion.northeast.latitude,
-  //     visibleRegion.southwest.longitude,
-  //   );
-
-  //   expect(topLeft, northWest);
-  // });
-
-  // testWidgets('testGetZoomLevel', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         controllerCompleter.complete(controller);
-  //       },
-  //     ),
-  //   ));
-
-  //   final GoogleMapController controller = await controllerCompleter.future;
-
-  //   await tester.pumpAndSettle();
-  //   // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
-  //   // in `mapRendered`.
-  //   // https://github.com/flutter/flutter/issues/54758
-  //   await Future<void>.delayed(const Duration(seconds: 1));
-
-  //   double zoom = await controller.getZoomLevel();
-  //   expect(zoom, _kInitialZoomLevel);
-
-  //   await controller.moveCamera(CameraUpdate.zoomTo(7));
-  //   await tester.pumpAndSettle();
-  //   zoom = await controller.getZoomLevel();
-  //   expect(zoom, equals(7));
-  // });
-
-  // testWidgets('testScreenCoordinate', (WidgetTester tester) async {
-  //   final Key key = GlobalKey();
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       key: key,
-  //       initialCameraPosition: _kInitialCameraPosition,
-  //       onMapCreated: (GoogleMapController controller) {
-  //         controllerCompleter.complete(controller);
-  //       },
-  //     ),
-  //   ));
-  //   final GoogleMapController controller = await controllerCompleter.future;
-
-  //   await tester.pumpAndSettle();
-  //   // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
-  //   // in `mapRendered`.
-  //   // https://github.com/flutter/flutter/issues/54758
-  //   await Future<void>.delayed(const Duration(seconds: 1));
-
-  //   final LatLngBounds visibleRegion = await controller.getVisibleRegion();
-  //   final LatLng northWest = LatLng(
-  //     visibleRegion.northeast.latitude,
-  //     visibleRegion.southwest.longitude,
-  //   );
-  //   final ScreenCoordinate topLeft =
-  //       await controller.getScreenCoordinate(northWest);
-  //   expect(topLeft, const ScreenCoordinate(x: 0, y: 0));
-  // });
-
-  // testWidgets('testResizeWidget', (WidgetTester tester) async {
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-  //   final GoogleMap map = GoogleMap(
-  //     initialCameraPosition: _kInitialCameraPosition,
-  //     onMapCreated: (GoogleMapController controller) async {
-  //       controllerCompleter.complete(controller);
-  //     },
-  //   );
-  //   await tester.pumpWidget(Directionality(
-  //       textDirection: TextDirection.ltr,
-  //       child: MaterialApp(
-  //           home: Scaffold(
-  //               body: SizedBox(height: 100, width: 100, child: map)))));
-  //   final GoogleMapController controller = await controllerCompleter.future;
-
-  //   await tester.pumpWidget(Directionality(
-  //       textDirection: TextDirection.ltr,
-  //       child: MaterialApp(
-  //           home: Scaffold(
-  //               body: SizedBox(height: 400, width: 400, child: map)))));
-
-  //   await tester.pumpAndSettle();
-  //   // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
-  //   // in `mapRendered`.
-  //   // https://github.com/flutter/flutter/issues/54758
-  //   await Future<void>.delayed(const Duration(seconds: 1));
-
-  //   // Simple call to make sure that the app hasn't crashed.
-  //   final LatLngBounds bounds1 = await controller.getVisibleRegion();
-  //   final LatLngBounds bounds2 = await controller.getVisibleRegion();
-  //   expect(bounds1, bounds2);
-  // });
-
-  // testWidgets('testToggleInfoWindow', (WidgetTester tester) async {
-  //   const Marker marker = Marker(
-  //       markerId: MarkerId('marker'),
-  //       infoWindow: InfoWindow(title: 'InfoWindow'));
-  //   final Set<Marker> markers = <Marker>{marker};
-
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   await tester.pumpWidget(Directionality(
-  //     textDirection: TextDirection.ltr,
-  //     child: GoogleMap(
-  //       initialCameraPosition: const CameraPosition(target: LatLng(10.0, 15.0)),
-  //       markers: markers,
-  //       onMapCreated: (GoogleMapController googleMapController) {
-  //         controllerCompleter.complete(googleMapController);
-  //       },
-  //     ),
-  //   ));
-
-  //   final GoogleMapController controller = await controllerCompleter.future;
-
-  //   bool iwVisibleStatus =
-  //       await controller.isMarkerInfoWindowShown(marker.markerId);
-  //   expect(iwVisibleStatus, false);
-
-  //   await controller.showMarkerInfoWindow(marker.markerId);
-  //   // The Maps SDK doesn't always return true for whether it is shown
-  //   // immediately after showing it, so wait for it to report as shown.
-  //   iwVisibleStatus = await waitForValueMatchingPredicate<bool>(
-  //           tester,
-  //           () => controller.isMarkerInfoWindowShown(marker.markerId),
-  //           (bool visible) => visible) ??
-  //       false;
-  //   expect(iwVisibleStatus, true);
-
-  //   await controller.hideMarkerInfoWindow(marker.markerId);
-  //   iwVisibleStatus = await controller.isMarkerInfoWindowShown(marker.markerId);
-  //   expect(iwVisibleStatus, false);
-  // });
-
-  // testWidgets('fromAssetImage', (WidgetTester tester) async {
-  //   const double pixelRatio = 2;
-  //   const ImageConfiguration imageConfiguration =
-  //       ImageConfiguration(devicePixelRatio: pixelRatio);
-  //   final BitmapDescriptor mip = await BitmapDescriptor.fromAssetImage(
-  //       imageConfiguration, 'red_square.png');
-  //   final BitmapDescriptor scaled = await BitmapDescriptor.fromAssetImage(
-  //       imageConfiguration, 'red_square.png',
-  //       mipmaps: false);
-  //   expect((mip.toJson() as List<dynamic>)[2], 1);
-  //   expect((scaled.toJson() as List<dynamic>)[2], 2);
-  // });
-
-  // testWidgets('testTakeSnapshot', (WidgetTester tester) async {
-  //   final Completer<GoogleMapController> controllerCompleter =
-  //       Completer<GoogleMapController>();
-
-  //   await tester.pumpWidget(
-  //     Directionality(
-  //       textDirection: TextDirection.ltr,
-  //       child: GoogleMap(
-  //         initialCameraPosition: _kInitialCameraPosition,
-  //         onMapCreated: (GoogleMapController controller) {
-  //           controllerCompleter.complete(controller);
-  //         },
-  //       ),
-  //     ),
-  //   );
-
-  //   await tester.pumpAndSettle(const Duration(seconds: 3));
-
-  //   final GoogleMapController controller = await controllerCompleter.future;
-  //   final Uint8List? bytes = await controller.takeSnapshot();
-  //   expect(bytes?.isNotEmpty, true);
-  // },
-  //     // TODO(cyanglaz): un-skip the test when we can test this on CI with API key enabled.
-  //     // https://github.com/flutter/flutter/issues/57057
-  //     skip: Platform.isAndroid);
-
-  // testWidgets(
-  //   'set tileOverlay correctly',
-  //   (WidgetTester tester) async {
-  //     final Completer<int> mapIdCompleter = Completer<int>();
-  //     final TileOverlay tileOverlay1 = TileOverlay(
-  //       tileOverlayId: const TileOverlayId('tile_overlay_1'),
-  //       tileProvider: _DebugTileProvider(),
-  //       zIndex: 2,
-  //       transparency: 0.2,
-  //     );
-
-  //     final TileOverlay tileOverlay2 = TileOverlay(
-  //       tileOverlayId: const TileOverlayId('tile_overlay_2'),
-  //       tileProvider: _DebugTileProvider(),
-  //       zIndex: 1,
-  //       visible: false,
-  //       transparency: 0.3,
-  //       fadeIn: false,
-  //     );
-  //     await tester.pumpWidget(
-  //       Directionality(
-  //         textDirection: TextDirection.ltr,
-  //         child: GoogleMap(
-  //           initialCameraPosition: _kInitialCameraPosition,
-  //           tileOverlays: <TileOverlay>{tileOverlay1, tileOverlay2},
-  //           onMapCreated: (GoogleMapController controller) {
-  //             mapIdCompleter.complete(controller.mapId);
-  //           },
-  //         ),
-  //       ),
-  //     );
-  //     await tester.pumpAndSettle(const Duration(seconds: 3));
-
-  //     final int mapId = await mapIdCompleter.future;
-  //     final GoogleMapsInspectorPlatform inspector =
-  //         GoogleMapsInspectorPlatform.instance!;
-
-  //     final TileOverlay tileOverlayInfo1 = (await inspector
-  //         .getTileOverlayInfo(tileOverlay1.mapsId, mapId: mapId))!;
-  //     final TileOverlay tileOverlayInfo2 = (await inspector
-  //         .getTileOverlayInfo(tileOverlay2.mapsId, mapId: mapId))!;
-
-  //     expect(tileOverlayInfo1.visible, isTrue);
-  //     expect(tileOverlayInfo1.fadeIn, isTrue);
-  //     expect(
-  //         tileOverlayInfo1.transparency, moreOrLessEquals(0.2, epsilon: 0.001));
-  //     expect(tileOverlayInfo1.zIndex, 2);
-
-  //     expect(tileOverlayInfo2.visible, isFalse);
-  //     expect(tileOverlayInfo2.fadeIn, isFalse);
-  //     expect(
-  //         tileOverlayInfo2.transparency, moreOrLessEquals(0.3, epsilon: 0.001));
-  //     expect(tileOverlayInfo2.zIndex, 1);
-  //   },
-  // );
-
-  // testWidgets(
-  //   'update tileOverlays correctly',
-  //   (WidgetTester tester) async {
-  //     final Completer<int> mapIdCompleter = Completer<int>();
-  //     final Key key = GlobalKey();
-  //     final TileOverlay tileOverlay1 = TileOverlay(
-  //       tileOverlayId: const TileOverlayId('tile_overlay_1'),
-  //       tileProvider: _DebugTileProvider(),
-  //       zIndex: 2,
-  //       transparency: 0.2,
-  //     );
-
-  //     final TileOverlay tileOverlay2 = TileOverlay(
-  //       tileOverlayId: const TileOverlayId('tile_overlay_2'),
-  //       tileProvider: _DebugTileProvider(),
-  //       zIndex: 3,
-  //       transparency: 0.5,
-  //     );
-  //     await tester.pumpWidget(
-  //       Directionality(
-  //         textDirection: TextDirection.ltr,
-  //         child: GoogleMap(
-  //           key: key,
-  //           initialCameraPosition: _kInitialCameraPosition,
-  //           tileOverlays: <TileOverlay>{tileOverlay1, tileOverlay2},
-  //           onMapCreated: (GoogleMapController controller) {
-  //             mapIdCompleter.complete(controller.mapId);
-  //           },
-  //         ),
-  //       ),
-  //     );
-
-  //     final int mapId = await mapIdCompleter.future;
-  //     final GoogleMapsInspectorPlatform inspector =
-  //         GoogleMapsInspectorPlatform.instance!;
-
-  //     final TileOverlay tileOverlay1New = TileOverlay(
-  //       tileOverlayId: const TileOverlayId('tile_overlay_1'),
-  //       tileProvider: _DebugTileProvider(),
-  //       zIndex: 1,
-  //       visible: false,
-  //       transparency: 0.3,
-  //       fadeIn: false,
-  //     );
-
-  //     await tester.pumpWidget(
-  //       Directionality(
-  //         textDirection: TextDirection.ltr,
-  //         child: GoogleMap(
-  //           key: key,
-  //           initialCameraPosition: _kInitialCameraPosition,
-  //           tileOverlays: <TileOverlay>{tileOverlay1New},
-  //           onMapCreated: (GoogleMapController controller) {
-  //             fail('update: OnMapCreated should get called only once.');
-  //           },
-  //         ),
-  //       ),
-  //     );
-
-  //     await tester.pumpAndSettle(const Duration(seconds: 3));
-
-  //     final TileOverlay tileOverlayInfo1 = (await inspector
-  //         .getTileOverlayInfo(tileOverlay1.mapsId, mapId: mapId))!;
-  //     final TileOverlay? tileOverlayInfo2 =
-  //         await inspector.getTileOverlayInfo(tileOverlay2.mapsId, mapId: mapId);
-
-  //     expect(tileOverlayInfo1.visible, isFalse);
-  //     expect(tileOverlayInfo1.fadeIn, isFalse);
-  //     expect(
-  //         tileOverlayInfo1.transparency, moreOrLessEquals(0.3, epsilon: 0.001));
-  //     expect(tileOverlayInfo1.zIndex, 1);
-
-  //     expect(tileOverlayInfo2, isNull);
-  //   },
-  // );
-
-  // testWidgets(
-  //   'remove tileOverlays correctly',
-  //   (WidgetTester tester) async {
-  //     final Completer<int> mapIdCompleter = Completer<int>();
-  //     final Key key = GlobalKey();
-  //     final TileOverlay tileOverlay1 = TileOverlay(
-  //       tileOverlayId: const TileOverlayId('tile_overlay_1'),
-  //       tileProvider: _DebugTileProvider(),
-  //       zIndex: 2,
-  //       transparency: 0.2,
-  //     );
-
-  //     await tester.pumpWidget(
-  //       Directionality(
-  //         textDirection: TextDirection.ltr,
-  //         child: GoogleMap(
-  //           key: key,
-  //           initialCameraPosition: _kInitialCameraPosition,
-  //           tileOverlays: <TileOverlay>{tileOverlay1},
-  //           onMapCreated: (GoogleMapController controller) {
-  //             mapIdCompleter.complete(controller.mapId);
-  //           },
-  //         ),
-  //       ),
-  //     );
-
-  //     final int mapId = await mapIdCompleter.future;
-  //     final GoogleMapsInspectorPlatform inspector =
-  //         GoogleMapsInspectorPlatform.instance!;
-
-  //     await tester.pumpWidget(
-  //       Directionality(
-  //         textDirection: TextDirection.ltr,
-  //         child: GoogleMap(
-  //           key: key,
-  //           initialCameraPosition: _kInitialCameraPosition,
-  //           onMapCreated: (GoogleMapController controller) {
-  //             fail('OnMapCreated should get called only once.');
-  //           },
-  //         ),
-  //       ),
-  //     );
-
-  //     await tester.pumpAndSettle(const Duration(seconds: 3));
-  //     final TileOverlay? tileOverlayInfo1 =
-  //         await inspector.getTileOverlayInfo(tileOverlay1.mapsId, mapId: mapId);
-
-  //     expect(tileOverlayInfo1, isNull);
-  //   },
-  // );
+  Future<T?> waitForValueMatchingPredicate<T>(WidgetTester tester,
+      Future<T> Function() getValue, bool Function(T) predicate,
+      {int maxTries = 100}) async {
+    for (int i = 0; i < maxTries; i++) {
+      final T value = await getValue();
+      if (predicate(value)) {
+        return value;
+      }
+      await tester.pump();
+    }
+    return null;
+  }
+
+  testWidgets('testCompassToggle', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        compassEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool compassEnabled = await inspector.isCompassEnabled(mapId: mapId);
+    expect(compassEnabled, false);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    compassEnabled = await inspector.isCompassEnabled(mapId: mapId);
+    expect(compassEnabled, true);
+  });
+
+  testWidgets('testMapToolbarToggle', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        mapToolbarEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool mapToolbarEnabled = await inspector.isMapToolbarEnabled(mapId: mapId);
+    expect(mapToolbarEnabled, false);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    mapToolbarEnabled = await inspector.isMapToolbarEnabled(mapId: mapId);
+    expect(mapToolbarEnabled, Platform.isAndroid);
+  });
+
+  testWidgets('updateMinMaxZoomLevels', (WidgetTester tester) async {
+    // The behaviors of setting min max zoom level on iOS and Android are different.
+    // On iOS, when we get the min or max zoom level after setting the preference, the
+    // min and max will be exactly the same as the value we set; on Android however,
+    // the values we get do not equal to the value we set.
+    //
+    // Also, when we call zoomTo to set the zoom, on Android, it usually
+    // honors the preferences that we set and the zoom cannot pass beyond the boundary.
+    // On iOS, on the other hand, zoomTo seems to override the preferences.
+    //
+    // Thus we test iOS and Android a little differently here.
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    const MinMaxZoomPreference initialZoomLevel = MinMaxZoomPreference(4, 8);
+    const MinMaxZoomPreference finalZoomLevel = MinMaxZoomPreference(6, 10);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        minMaxZoomPreference: initialZoomLevel,
+        onMapCreated: (GoogleMapController c) async {
+          controllerCompleter.complete(c);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+
+    if (Platform.isIOS) {
+      final MinMaxZoomPreference zoomLevel =
+          await inspector.getMinMaxZoomLevels(mapId: controller.mapId);
+      expect(zoomLevel, equals(initialZoomLevel));
+    } else if (Platform.isAndroid) {
+      await controller.moveCamera(CameraUpdate.zoomTo(15));
+      await tester.pumpAndSettle();
+      double? zoomLevel = await controller.getZoomLevel();
+      expect(zoomLevel, equals(initialZoomLevel.maxZoom));
+
+      await controller.moveCamera(CameraUpdate.zoomTo(1));
+      await tester.pumpAndSettle();
+      zoomLevel = await controller.getZoomLevel();
+      expect(zoomLevel, equals(initialZoomLevel.minZoom));
+    }
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        minMaxZoomPreference: finalZoomLevel,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    if (Platform.isIOS) {
+      final MinMaxZoomPreference zoomLevel =
+          await inspector.getMinMaxZoomLevels(mapId: controller.mapId);
+      expect(zoomLevel, equals(finalZoomLevel));
+    } else {
+      await controller.moveCamera(CameraUpdate.zoomTo(15));
+      await tester.pumpAndSettle();
+      double? zoomLevel = await controller.getZoomLevel();
+      expect(zoomLevel, equals(finalZoomLevel.maxZoom));
+
+      await controller.moveCamera(CameraUpdate.zoomTo(1));
+      await tester.pumpAndSettle();
+      zoomLevel = await controller.getZoomLevel();
+      expect(zoomLevel, equals(finalZoomLevel.minZoom));
+    }
+  });
+
+  testWidgets('testZoomGesturesEnabled', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        zoomGesturesEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool zoomGesturesEnabled =
+        await inspector.areZoomGesturesEnabled(mapId: mapId);
+    expect(zoomGesturesEnabled, false);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    zoomGesturesEnabled = await inspector.areZoomGesturesEnabled(mapId: mapId);
+    expect(zoomGesturesEnabled, true);
+  });
+
+  testWidgets('testZoomControlsEnabled', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool zoomControlsEnabled =
+        await inspector.areZoomControlsEnabled(mapId: mapId);
+    expect(zoomControlsEnabled, !Platform.isIOS);
+
+    /// Zoom Controls functionality is not available on iOS at the moment.
+    if (Platform.isAndroid) {
+      await tester.pumpWidget(Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          key: key,
+          initialCameraPosition: _kInitialCameraPosition,
+          zoomControlsEnabled: false,
+          onMapCreated: (GoogleMapController controller) {
+            fail('OnMapCreated should get called only once.');
+          },
+        ),
+      ));
+
+      zoomControlsEnabled =
+          await inspector.areZoomControlsEnabled(mapId: mapId);
+      expect(zoomControlsEnabled, false);
+    }
+  });
+
+  testWidgets('testLiteModeEnabled', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool liteModeEnabled = await inspector.isLiteModeEnabled(mapId: mapId);
+    expect(liteModeEnabled, false);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        liteModeEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    liteModeEnabled = await inspector.isLiteModeEnabled(mapId: mapId);
+    expect(liteModeEnabled, true);
+  }, skip: !Platform.isAndroid);
+
+  testWidgets('testRotateGesturesEnabled', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        rotateGesturesEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool rotateGesturesEnabled =
+        await inspector.areRotateGesturesEnabled(mapId: mapId);
+    expect(rotateGesturesEnabled, false);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    rotateGesturesEnabled =
+        await inspector.areRotateGesturesEnabled(mapId: mapId);
+    expect(rotateGesturesEnabled, true);
+  });
+
+  testWidgets('testTiltGesturesEnabled', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        tiltGesturesEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool tiltGesturesEnabled =
+        await inspector.areTiltGesturesEnabled(mapId: mapId);
+    expect(tiltGesturesEnabled, false);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    tiltGesturesEnabled = await inspector.areTiltGesturesEnabled(mapId: mapId);
+    expect(tiltGesturesEnabled, true);
+  });
+
+  testWidgets('testScrollGesturesEnabled', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        scrollGesturesEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool scrollGesturesEnabled =
+        await inspector.areScrollGesturesEnabled(mapId: mapId);
+    expect(scrollGesturesEnabled, false);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    scrollGesturesEnabled =
+        await inspector.areScrollGesturesEnabled(mapId: mapId);
+    expect(scrollGesturesEnabled, true);
+  });
+
+  testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(800, 600));
+
+    final Completer<GoogleMapController> mapControllerCompleter =
+        Completer<GoogleMapController>();
+    final Key key = GlobalKey();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          key: key,
+          initialCameraPosition: _kInitialCameraPosition,
+          onMapCreated: (GoogleMapController controller) {
+            mapControllerCompleter.complete(controller);
+          },
+        ),
+      ),
+    );
+    final GoogleMapController mapController =
+        await mapControllerCompleter.future;
+
+    await tester.pumpAndSettle();
+
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    final ScreenCoordinate coordinate =
+        await mapController.getScreenCoordinate(_kInitialCameraPosition.target);
+    final Rect rect = tester.getRect(find.byKey(key));
+    if (Platform.isIOS) {
+      // On iOS, the coordinate value from the GoogleMapSdk doesn't include the devicePixelRatio`.
+      // So we don't need to do the conversion like we did below for other platforms.
+      expect(coordinate.x, (rect.center.dx - rect.topLeft.dx).round());
+      expect(coordinate.y, (rect.center.dy - rect.topLeft.dy).round());
+    } else {
+      expect(
+          coordinate.x,
+          ((rect.center.dx - rect.topLeft.dx) *
+                  tester.binding.window.devicePixelRatio)
+              .round());
+      expect(
+          coordinate.y,
+          ((rect.center.dy - rect.topLeft.dy) *
+                  tester.binding.window.devicePixelRatio)
+              .round());
+    }
+    await tester.binding.setSurfaceSize(null);
+  });
+
+  testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final LatLngBounds zeroLatLngBounds = LatLngBounds(
+        southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
+
+    final Completer<GoogleMapController> mapControllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          mapControllerCompleter.complete(controller);
+        },
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    final GoogleMapController mapController =
+        await mapControllerCompleter.future;
+
+    // Wait for the visible region to be non-zero.
+    final LatLngBounds firstVisibleRegion =
+        await waitForValueMatchingPredicate<LatLngBounds>(
+                tester,
+                () => mapController.getVisibleRegion(),
+                (LatLngBounds bounds) => bounds != zeroLatLngBounds) ??
+            zeroLatLngBounds;
+    expect(firstVisibleRegion, isNot(zeroLatLngBounds));
+    expect(firstVisibleRegion.contains(_kInitialMapCenter), isTrue);
+
+    // Making a new `LatLngBounds` about (10, 10) distance south west to the `firstVisibleRegion`.
+    // The size of the `LatLngBounds` is 10 by 10.
+    final LatLng southWest = LatLng(firstVisibleRegion.southwest.latitude - 20,
+        firstVisibleRegion.southwest.longitude - 20);
+    final LatLng northEast = LatLng(firstVisibleRegion.southwest.latitude - 10,
+        firstVisibleRegion.southwest.longitude - 10);
+    final LatLng newCenter = LatLng(
+      (northEast.latitude + southWest.latitude) / 2,
+      (northEast.longitude + southWest.longitude) / 2,
+    );
+
+    expect(firstVisibleRegion.contains(northEast), isFalse);
+    expect(firstVisibleRegion.contains(southWest), isFalse);
+
+    final LatLngBounds latLngBounds =
+        LatLngBounds(southwest: southWest, northeast: northEast);
+
+    // TODO(iskakaushik): non-zero padding is needed for some device configurations
+    // https://github.com/flutter/flutter/issues/30575
+    const double padding = 0;
+    await mapController
+        .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    final LatLngBounds secondVisibleRegion =
+        await mapController.getVisibleRegion();
+
+    expect(secondVisibleRegion, isNot(zeroLatLngBounds));
+
+    expect(firstVisibleRegion, isNot(secondVisibleRegion));
+    expect(secondVisibleRegion.contains(newCenter), isTrue);
+  });
+
+  testWidgets('testTraffic', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        trafficEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool isTrafficEnabled = await inspector.isTrafficEnabled(mapId: mapId);
+    expect(isTrafficEnabled, true);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    isTrafficEnabled = await inspector.isTrafficEnabled(mapId: mapId);
+    expect(isTrafficEnabled, false);
+  });
+
+  testWidgets('testBuildings', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    final bool isBuildingsEnabled =
+        await inspector.areBuildingsEnabled(mapId: mapId);
+    expect(isBuildingsEnabled, true);
+  });
+
+  // Location button tests are skipped in Android because we don't have location permission to test.
+  testWidgets('testMyLocationButtonToggle', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    bool myLocationButtonEnabled =
+        await inspector.isMyLocationButtonEnabled(mapId: mapId);
+    expect(myLocationButtonEnabled, true);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        myLocationButtonEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          fail('OnMapCreated should get called only once.');
+        },
+      ),
+    ));
+
+    myLocationButtonEnabled =
+        await inspector.isMyLocationButtonEnabled(mapId: mapId);
+    expect(myLocationButtonEnabled, false);
+  }, skip: Platform.isAndroid);
+
+  testWidgets('testMyLocationButton initial value false',
+      (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        myLocationButtonEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    final bool myLocationButtonEnabled =
+        await inspector.isMyLocationButtonEnabled(mapId: mapId);
+    expect(myLocationButtonEnabled, false);
+  }, skip: Platform.isAndroid);
+
+  testWidgets('testMyLocationButton initial value true',
+      (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<int> mapIdCompleter = Completer<int>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          mapIdCompleter.complete(controller.mapId);
+        },
+      ),
+    ));
+
+    final int mapId = await mapIdCompleter.future;
+    final GoogleMapsInspectorPlatform inspector =
+        GoogleMapsInspectorPlatform.instance!;
+    final bool myLocationButtonEnabled =
+        await inspector.isMyLocationButtonEnabled(mapId: mapId);
+    expect(myLocationButtonEnabled, true);
+  }, skip: Platform.isAndroid);
+
+  testWidgets('testSetMapStyle valid Json String', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+    const String mapStyle =
+        '[{"elementType":"geometry","stylers":[{"color":"#242f3e"}]}]';
+    await controller.setMapStyle(mapStyle);
+  });
+
+  testWidgets('testSetMapStyle invalid Json String',
+      (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    try {
+      await controller.setMapStyle('invalid_value');
+      fail('expected MapStyleException');
+    } on MapStyleException catch (e) {
+      expect(e.cause, isNotNull);
+    }
+  });
+
+  testWidgets('testSetMapStyle null string', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+    await controller.setMapStyle(null);
+  });
+
+  testWidgets('testGetLatLng', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    final LatLngBounds visibleRegion = await controller.getVisibleRegion();
+    final LatLng topLeft =
+        await controller.getLatLng(const ScreenCoordinate(x: 0, y: 0));
+    final LatLng northWest = LatLng(
+      visibleRegion.northeast.latitude,
+      visibleRegion.southwest.longitude,
+    );
+
+    expect(topLeft, northWest);
+  });
+
+  testWidgets('testGetZoomLevel', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    double zoom = await controller.getZoomLevel();
+    expect(zoom, _kInitialZoomLevel);
+
+    await controller.moveCamera(CameraUpdate.zoomTo(7));
+    await tester.pumpAndSettle();
+    zoom = await controller.getZoomLevel();
+    expect(zoom, equals(7));
+  });
+
+  testWidgets('testScreenCoordinate', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    final LatLngBounds visibleRegion = await controller.getVisibleRegion();
+    final LatLng northWest = LatLng(
+      visibleRegion.northeast.latitude,
+      visibleRegion.southwest.longitude,
+    );
+    final ScreenCoordinate topLeft =
+        await controller.getScreenCoordinate(northWest);
+    expect(topLeft, const ScreenCoordinate(x: 0, y: 0));
+  });
+
+  testWidgets('testResizeWidget', (WidgetTester tester) async {
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+    final GoogleMap map = GoogleMap(
+      initialCameraPosition: _kInitialCameraPosition,
+      onMapCreated: (GoogleMapController controller) async {
+        controllerCompleter.complete(controller);
+      },
+    );
+    await tester.pumpWidget(Directionality(
+        textDirection: TextDirection.ltr,
+        child: MaterialApp(
+            home: Scaffold(
+                body: SizedBox(height: 100, width: 100, child: map)))));
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    await tester.pumpWidget(Directionality(
+        textDirection: TextDirection.ltr,
+        child: MaterialApp(
+            home: Scaffold(
+                body: SizedBox(height: 400, width: 400, child: map)))));
+
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    // Simple call to make sure that the app hasn't crashed.
+    final LatLngBounds bounds1 = await controller.getVisibleRegion();
+    final LatLngBounds bounds2 = await controller.getVisibleRegion();
+    expect(bounds1, bounds2);
+  });
+
+  testWidgets('testToggleInfoWindow', (WidgetTester tester) async {
+    const Marker marker = Marker(
+        markerId: MarkerId('marker'),
+        infoWindow: InfoWindow(title: 'InfoWindow'));
+    final Set<Marker> markers = <Marker>{marker};
+
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        initialCameraPosition: const CameraPosition(target: LatLng(10.0, 15.0)),
+        markers: markers,
+        onMapCreated: (GoogleMapController googleMapController) {
+          controllerCompleter.complete(googleMapController);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    bool iwVisibleStatus =
+        await controller.isMarkerInfoWindowShown(marker.markerId);
+    expect(iwVisibleStatus, false);
+
+    await controller.showMarkerInfoWindow(marker.markerId);
+    // The Maps SDK doesn't always return true for whether it is shown
+    // immediately after showing it, so wait for it to report as shown.
+    iwVisibleStatus = await waitForValueMatchingPredicate<bool>(
+            tester,
+            () => controller.isMarkerInfoWindowShown(marker.markerId),
+            (bool visible) => visible) ??
+        false;
+    expect(iwVisibleStatus, true);
+
+    await controller.hideMarkerInfoWindow(marker.markerId);
+    iwVisibleStatus = await controller.isMarkerInfoWindowShown(marker.markerId);
+    expect(iwVisibleStatus, false);
+  });
+
+  testWidgets('fromAssetImage', (WidgetTester tester) async {
+    const double pixelRatio = 2;
+    const ImageConfiguration imageConfiguration =
+        ImageConfiguration(devicePixelRatio: pixelRatio);
+    final BitmapDescriptor mip = await BitmapDescriptor.fromAssetImage(
+        imageConfiguration, 'red_square.png');
+    final BitmapDescriptor scaled = await BitmapDescriptor.fromAssetImage(
+        imageConfiguration, 'red_square.png',
+        mipmaps: false);
+    expect((mip.toJson() as List<dynamic>)[2], 1);
+    expect((scaled.toJson() as List<dynamic>)[2], 2);
+  });
+
+  testWidgets('testTakeSnapshot', (WidgetTester tester) async {
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: _kInitialCameraPosition,
+          onMapCreated: (GoogleMapController controller) {
+            controllerCompleter.complete(controller);
+          },
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+    final Uint8List? bytes = await controller.takeSnapshot();
+    expect(bytes?.isNotEmpty, true);
+  },
+      // TODO(cyanglaz): un-skip the test when we can test this on CI with API key enabled.
+      // https://github.com/flutter/flutter/issues/57057
+      skip: Platform.isAndroid);
+
+  testWidgets(
+    'set tileOverlay correctly',
+    (WidgetTester tester) async {
+      final Completer<int> mapIdCompleter = Completer<int>();
+      final TileOverlay tileOverlay1 = TileOverlay(
+        tileOverlayId: const TileOverlayId('tile_overlay_1'),
+        tileProvider: _DebugTileProvider(),
+        zIndex: 2,
+        transparency: 0.2,
+      );
+
+      final TileOverlay tileOverlay2 = TileOverlay(
+        tileOverlayId: const TileOverlayId('tile_overlay_2'),
+        tileProvider: _DebugTileProvider(),
+        zIndex: 1,
+        visible: false,
+        transparency: 0.3,
+        fadeIn: false,
+      );
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            initialCameraPosition: _kInitialCameraPosition,
+            tileOverlays: <TileOverlay>{tileOverlay1, tileOverlay2},
+            onMapCreated: (GoogleMapController controller) {
+              mapIdCompleter.complete(controller.mapId);
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      final int mapId = await mapIdCompleter.future;
+      final GoogleMapsInspectorPlatform inspector =
+          GoogleMapsInspectorPlatform.instance!;
+
+      final TileOverlay tileOverlayInfo1 = (await inspector
+          .getTileOverlayInfo(tileOverlay1.mapsId, mapId: mapId))!;
+      final TileOverlay tileOverlayInfo2 = (await inspector
+          .getTileOverlayInfo(tileOverlay2.mapsId, mapId: mapId))!;
+
+      expect(tileOverlayInfo1.visible, isTrue);
+      expect(tileOverlayInfo1.fadeIn, isTrue);
+      expect(
+          tileOverlayInfo1.transparency, moreOrLessEquals(0.2, epsilon: 0.001));
+      expect(tileOverlayInfo1.zIndex, 2);
+
+      expect(tileOverlayInfo2.visible, isFalse);
+      expect(tileOverlayInfo2.fadeIn, isFalse);
+      expect(
+          tileOverlayInfo2.transparency, moreOrLessEquals(0.3, epsilon: 0.001));
+      expect(tileOverlayInfo2.zIndex, 1);
+    },
+  );
+
+  testWidgets(
+    'update tileOverlays correctly',
+    (WidgetTester tester) async {
+      final Completer<int> mapIdCompleter = Completer<int>();
+      final Key key = GlobalKey();
+      final TileOverlay tileOverlay1 = TileOverlay(
+        tileOverlayId: const TileOverlayId('tile_overlay_1'),
+        tileProvider: _DebugTileProvider(),
+        zIndex: 2,
+        transparency: 0.2,
+      );
+
+      final TileOverlay tileOverlay2 = TileOverlay(
+        tileOverlayId: const TileOverlayId('tile_overlay_2'),
+        tileProvider: _DebugTileProvider(),
+        zIndex: 3,
+        transparency: 0.5,
+      );
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            tileOverlays: <TileOverlay>{tileOverlay1, tileOverlay2},
+            onMapCreated: (GoogleMapController controller) {
+              mapIdCompleter.complete(controller.mapId);
+            },
+          ),
+        ),
+      );
+
+      final int mapId = await mapIdCompleter.future;
+      final GoogleMapsInspectorPlatform inspector =
+          GoogleMapsInspectorPlatform.instance!;
+
+      final TileOverlay tileOverlay1New = TileOverlay(
+        tileOverlayId: const TileOverlayId('tile_overlay_1'),
+        tileProvider: _DebugTileProvider(),
+        zIndex: 1,
+        visible: false,
+        transparency: 0.3,
+        fadeIn: false,
+      );
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            tileOverlays: <TileOverlay>{tileOverlay1New},
+            onMapCreated: (GoogleMapController controller) {
+              fail('update: OnMapCreated should get called only once.');
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      final TileOverlay tileOverlayInfo1 = (await inspector
+          .getTileOverlayInfo(tileOverlay1.mapsId, mapId: mapId))!;
+      final TileOverlay? tileOverlayInfo2 =
+          await inspector.getTileOverlayInfo(tileOverlay2.mapsId, mapId: mapId);
+
+      expect(tileOverlayInfo1.visible, isFalse);
+      expect(tileOverlayInfo1.fadeIn, isFalse);
+      expect(
+          tileOverlayInfo1.transparency, moreOrLessEquals(0.3, epsilon: 0.001));
+      expect(tileOverlayInfo1.zIndex, 1);
+
+      expect(tileOverlayInfo2, isNull);
+    },
+  );
+
+  testWidgets(
+    'remove tileOverlays correctly',
+    (WidgetTester tester) async {
+      final Completer<int> mapIdCompleter = Completer<int>();
+      final Key key = GlobalKey();
+      final TileOverlay tileOverlay1 = TileOverlay(
+        tileOverlayId: const TileOverlayId('tile_overlay_1'),
+        tileProvider: _DebugTileProvider(),
+        zIndex: 2,
+        transparency: 0.2,
+      );
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            tileOverlays: <TileOverlay>{tileOverlay1},
+            onMapCreated: (GoogleMapController controller) {
+              mapIdCompleter.complete(controller.mapId);
+            },
+          ),
+        ),
+      );
+
+      final int mapId = await mapIdCompleter.future;
+      final GoogleMapsInspectorPlatform inspector =
+          GoogleMapsInspectorPlatform.instance!;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            onMapCreated: (GoogleMapController controller) {
+              fail('OnMapCreated should get called only once.');
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+      final TileOverlay? tileOverlayInfo1 =
+          await inspector.getTileOverlayInfo(tileOverlay1.mapsId, mapId: mapId);
+
+      expect(tileOverlayInfo1, isNull);
+    },
+  );
 
   /// Account for double precision inaccuracies introduced by the platform.
   List<WeightedLatLng> roundHeatmapData(List<WeightedLatLng> data) {
