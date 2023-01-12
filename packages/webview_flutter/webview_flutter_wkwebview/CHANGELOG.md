@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Updates code for stricter lint checks.
+
 ## 3.0.1
 
 * Adds support for retrieving navigation type with internal class.

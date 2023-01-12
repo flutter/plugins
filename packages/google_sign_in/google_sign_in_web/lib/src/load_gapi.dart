@@ -10,7 +10,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:js/js.dart';
 
-import 'generated/gapi.dart' as gapi;
+import 'js_interop/gapi.dart' as gapi;
 import 'utils.dart' show injectJSLibraries;
 
 @JS()
