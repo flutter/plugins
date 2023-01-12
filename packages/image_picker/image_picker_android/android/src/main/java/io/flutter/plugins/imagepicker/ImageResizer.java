@@ -33,8 +33,10 @@ class ImageResizer {
       @Nullable Double maxWidth,
       @Nullable Double maxHeight,
       @Nullable Integer imageQuality) {
-    Bitmap bmp = decodeFile(imagePath);
-    if (bmp == null) {
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    decodeFile(imagePath, options);
+    if (options.outWidth == -1 || options.outHeight == -1) {
       return null;
     }
     boolean shouldScale =
@@ -45,7 +47,9 @@ class ImageResizer {
     try {
       String[] pathParts = imagePath.split("/");
       String imageName = pathParts[pathParts.length - 1];
-      File file = resizedImage(bmp, maxWidth, maxHeight, imageQuality, imageName);
+      options.inSampleSize = calculateInSampleSize(options, maxWidth.intValue(), maxHeight.intValue());
+      options.inJustDecodeBounds = false;
+      File file = resizedImage(decodeFile(imagePath, options), maxWidth, maxHeight, imageQuality, imageName);
       copyExif(imagePath, file.getPath());
       return file.getPath();
     } catch (IOException e) {
@@ -120,8 +124,8 @@ class ImageResizer {
     exifDataCopier.copyExif(filePathOri, filePathDest);
   }
 
-  private Bitmap decodeFile(String path) {
-    return BitmapFactory.decodeFile(path);
+  private Bitmap decodeFile(String path, @Nullable BitmapFactory.Options opts) {
+    return BitmapFactory.decodeFile(path, opts);
   }
 
   private Bitmap createScaledBitmap(Bitmap bmp, int width, int height, boolean filter) {
@@ -130,6 +134,21 @@ class ImageResizer {
 
   private boolean isImageQualityValid(Integer imageQuality) {
     return imageQuality != null && imageQuality > 0 && imageQuality < 100;
+  }
+
+  private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    final int height = options.outHeight;
+    final int width = options.outWidth;
+    int inSampleSize = 1;
+    if (height > reqHeight || width > reqWidth) {
+      final int halfHeight = height / 2;
+      final int halfWidth = width / 2;
+      while ((halfHeight / inSampleSize) >= reqHeight
+          && (halfWidth / inSampleSize) >= reqWidth) {
+        inSampleSize *= 2;
+      }
+    }
+    return inSampleSize;
   }
 
   private File createImageOnExternalDirectory(String name, Bitmap bitmap, int imageQuality)
