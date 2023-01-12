@@ -232,11 +232,11 @@ void main() {
         ]));
   });
 
-  test('fails if files are changed with --fail-on-change', () async {
+  test('fails if READMEs are changed with --fail-on-change', () async {
     createFakePlugin('a_plugin', packagesDir,
         extraFiles: <String>[kReadmeExcerptConfigPath]);
 
-    const String changedFilePath = 'packages/a_plugin/linux/foo_plugin.cc';
+    const String changedFilePath = 'packages/a_plugin/README.md';
     processRunner.mockProcessesForExecutable['git'] = <io.Process>[
       MockProcess(stdout: changedFilePath),
     ];
@@ -253,6 +253,27 @@ void main() {
         output,
         containsAllInOrder(<Matcher>[
           contains('README.md is out of sync with its source excerpts'),
+          contains('Snippets are out of sync in the following files: '
+              'packages/a_plugin/README.md'),
+        ]));
+  });
+
+  test('passes if unrelated files are changed with --fail-on-change', () async {
+    createFakePlugin('a_plugin', packagesDir,
+        extraFiles: <String>[kReadmeExcerptConfigPath]);
+
+    const String changedFilePath = 'packages/a_plugin/linux/CMakeLists.txt';
+    processRunner.mockProcessesForExecutable['git'] = <io.Process>[
+      MockProcess(stdout: changedFilePath),
+    ];
+
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['update-excerpts', '--fail-on-change']);
+
+    expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Ran for 1 package(s)'),
         ]));
   });
 
