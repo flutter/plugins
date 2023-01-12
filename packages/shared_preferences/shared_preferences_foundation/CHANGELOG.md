@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Updates code for stricter lint checks.
+
 ## 2.1.0
 
 * Renames the package previously published as

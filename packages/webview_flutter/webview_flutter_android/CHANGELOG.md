@@ -1,3 +1,7 @@
+## 3.1.2
+
+* Updates code for stricter lint checks.
+
 ## 3.1.1
 
 * Fixes bug where a `AndroidNavigationDelegate` was required to load a request.
