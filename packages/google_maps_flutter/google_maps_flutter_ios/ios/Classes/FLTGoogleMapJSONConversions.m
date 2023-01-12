@@ -26,6 +26,15 @@
                          alpha:((float)((value & 0xFF000000) >> 24)) / 255.0];
 }
 
++ (NSNumber *)rgbaFromColor:(UIColor *)color {
+  CGFloat red, green, blue, alpha;
+  [color getRed:&red green:&green blue:&blue alpha:&alpha];
+  unsigned long value = ((unsigned long)(alpha * 255) << 24) |
+                        ((unsigned long)(red * 255) << 16) | ((unsigned long)(green * 255) << 8) |
+                        ((unsigned long)(blue * 255));
+  return @(value);
+}
+
 + (NSArray<CLLocation *> *)pointsFromLatLongs:(NSArray *)data {
   NSMutableArray *points = [[NSMutableArray alloc] init];
   for (unsigned i = 0; i < [data count]; i++) {
@@ -154,7 +163,7 @@
 
 + (NSArray *)arrayFromWeightedLatLng:(GMUWeightedLatLng *)weightedLatLng {
   return @[
-    [FLTGoogleMapJSONConversions arrayFromLocation:weightedLatLng.coordinate],
+    @[@(weightedLatLng.point.x), @(weightedLatLng.point.y)],
     @(weightedLatLng.intensity)
   ];
 }
@@ -202,7 +211,7 @@
   return @{
     @"colors" : colorCodes,
     @"startPoints" : gradient.startPoints,
-    @"colorMapSize" : @(gradient.colorMapSize)
+    @"colorMapSize" : @(gradient.mapSize)
   };
 }
 

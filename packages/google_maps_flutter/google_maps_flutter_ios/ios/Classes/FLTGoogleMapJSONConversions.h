@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (CGPoint)pointFromArray:(NSArray *)array;
 + (NSArray *)arrayFromLocation:(CLLocationCoordinate2D)location;
 + (UIColor *)colorFromRGBA:(NSNumber *)data;
++ (NSNumber *)rgbaFromColor:(UIColor *)color;
 + (NSArray<CLLocation *> *)pointsFromLatLongs:(NSArray *)data;
 + (NSArray<NSArray<CLLocation *> *> *)holesFromPointsArray:(NSArray *)data;
 + (nullable NSDictionary<NSString *, id> *)dictionaryFromPosition:
