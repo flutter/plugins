@@ -47,9 +47,12 @@ class ImageResizer {
     try {
       String[] pathParts = imagePath.split("/");
       String imageName = pathParts[pathParts.length - 1];
-      options.inSampleSize = calculateInSampleSize(options, maxWidth.intValue(), maxHeight.intValue());
+      options.inSampleSize = 
+          calculateInSampleSize(options, maxWidth.intValue(), maxHeight.intValue());
       options.inJustDecodeBounds = false;
-      File file = resizedImage(decodeFile(imagePath, options), maxWidth, maxHeight, imageQuality, imageName);
+      File file = 
+          resizedImage(
+              decodeFile(imagePath, options), maxWidth, maxHeight, imageQuality, imageName);
       copyExif(imagePath, file.getPath());
       return file.getPath();
     } catch (IOException e) {
@@ -143,8 +146,7 @@ class ImageResizer {
     if (height > reqHeight || width > reqWidth) {
       final int halfHeight = height / 2;
       final int halfWidth = width / 2;
-      while ((halfHeight / inSampleSize) >= reqHeight
-          && (halfWidth / inSampleSize) >= reqWidth) {
+      while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
         inSampleSize *= 2;
       }
     }
