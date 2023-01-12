@@ -1,4 +1,4 @@
-## 0.8.5+4
+## 0.8.5+5
 
 * Improves Bitmap resizing on Android.
 
