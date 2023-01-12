@@ -349,4 +349,9 @@ class HeatmapGradientColor {
 
   @override
   int get hashCode => Object.hash(color, startPoint);
+
+  @override
+  String toString() {
+    return '${objectRuntimeType(this, 'HeatmapGradientColor')}($color, $startPoint)';
+  }
 }

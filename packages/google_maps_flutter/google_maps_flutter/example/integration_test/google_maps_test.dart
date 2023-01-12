@@ -1180,19 +1180,41 @@ void main() {
     return (opacity * 10).round() / 10;
   }
 
-  void testHeatmapEquality(Heatmap heatmap1, Heatmap heatmap2) {
-    expect(roundHeatmapData(heatmap2.data), heatmap1.data);
-    // Web only
-    // expect(heatmapInfo2.dissipating, heatmap1.dissipating),
-    expect(heatmap2.gradient, heatmap1.gradient);
-    if (Platform.isAndroid) {
-      expect(heatmap2.maxIntensity, heatmap1.maxIntensity);
+  /// Account for double precision inaccuracies introduced by the platform.
+  HeatmapGradient? roundHeatmapGradient(HeatmapGradient? gradient) {
+    if (gradient == null) {
+      return null;
     }
-    expect(roundHeatmapOpacity(heatmap2.opacity), heatmap1.opacity);
-    expect(heatmap2.radius, heatmap1.radius);
+
+    final List<HeatmapGradientColor> newColors = <HeatmapGradientColor>[];
+    for (final HeatmapGradientColor color in gradient.colors) {
+      newColors.add(
+        color.copyWith(startPointParam: (color.startPoint * 10).round() / 10),
+      );
+    }
+
+    return HeatmapGradient(newColors, colorMapSize: gradient.colorMapSize);
+  }
+
+  void testHeatmapEquality(Heatmap heatmap1, Heatmap heatmap2) {
+    expect(roundHeatmapData(heatmap1.data), roundHeatmapData(heatmap2.data));
+    // Web only
+    // expect(heatmap1.dissipating, heatmap2.dissipating),
+    expect(
+      roundHeatmapGradient(heatmap1.gradient),
+      roundHeatmapGradient(heatmap2.gradient),
+    );
+    if (Platform.isAndroid) {
+      expect(heatmap1.maxIntensity, heatmap2.maxIntensity);
+    }
+    expect(
+      roundHeatmapOpacity(heatmap1.opacity),
+      roundHeatmapOpacity(heatmap2.opacity),
+    );
+    expect(heatmap1.radius, heatmap2.radius);
     if (Platform.isIOS) {
-      expect(heatmap2.minimumZoomIntensity, heatmap1.minimumZoomIntensity);
-      expect(heatmap2.maximumZoomIntensity, heatmap1.maximumZoomIntensity);
+      expect(heatmap1.minimumZoomIntensity, heatmap2.minimumZoomIntensity);
+      expect(heatmap1.maximumZoomIntensity, heatmap2.maximumZoomIntensity);
     }
   }
 
