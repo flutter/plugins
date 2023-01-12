@@ -6,8 +6,8 @@ package io.flutter.plugins.imagepicker;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.util.Log;
-import android.util.Size;
 import androidx.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -48,13 +48,13 @@ class ImageResizer {
     try {
       String[] pathParts = imagePath.split("/");
       String imageName = pathParts[pathParts.length - 1];
-      Size size =
+      Point size =
           calculateSize(
               Double.valueOf(options.outWidth),
               Double.valueOf(options.outHeight),
               maxWidth,
               maxHeight);
-      options.inSampleSize = calculateInSampleSize(options, size.getWidth(), size.getHeight());
+      options.inSampleSize = calculateInSampleSize(options, size.x, size.y);
       options.inJustDecodeBounds = false;
       File file =
           resizedImage(
@@ -76,14 +76,14 @@ class ImageResizer {
       imageQuality = 100;
     }
 
-    Size size = calculateSize(originalWidth, originalHeight, maxWidth, maxHeight);
-    Bitmap scaledBmp = createScaledBitmap(bmp, size.getWidth(), size.getHeight(), false);
+    Point size = calculateSize(originalWidth, originalHeight, maxWidth, maxHeight);
+    Bitmap scaledBmp = createScaledBitmap(bmp, size.x, size.y, false);
     File file =
         createImageOnExternalDirectory("/scaled_" + outputImageName, scaledBmp, imageQuality);
     return file;
   }
 
-  private Size calculateSize(
+  private Point calculateSize(
       Double originalWidth, Double originalHeight, Double maxWidth, Double maxHeight) {
     boolean hasMaxWidth = maxWidth != null;
     boolean hasMaxHeight = maxHeight != null;
@@ -120,7 +120,7 @@ class ImageResizer {
       }
     }
 
-    return new Size(width.intValue(), height.intValue());
+    return new Point(width.intValue(), height.intValue());
   }
 
   private File createFile(File externalFilesDirectory, String child) {
