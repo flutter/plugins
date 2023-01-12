@@ -5,39 +5,41 @@
 import FlutterMacOS
 import Foundation
 
-public class PathProviderPlugin: NSObject, FlutterPlugin {
+public class PathProviderPlugin: NSObject, FlutterPlugin, PathProviderApi {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(
-      name: "plugins.flutter.io/path_provider_macos",
-      binaryMessenger: registrar.messenger)
     let instance = PathProviderPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
+    PathProviderApiSetup.setUp(binaryMessenger: registrar.messenger, api: instance)
   }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch call.method {
-    case "getTemporaryDirectory":
-      result(getDirectory(ofType: FileManager.SearchPathDirectory.cachesDirectory))
-    case "getApplicationDocumentsDirectory":
-      result(getDirectory(ofType: FileManager.SearchPathDirectory.documentDirectory))
-    case "getApplicationSupportDirectory":
-      var path = getDirectory(ofType: FileManager.SearchPathDirectory.applicationSupportDirectory)
+  func getDirectoryPath(type: DirectoryType) -> String? {
+    var path = getDirectory(ofType: fileManagerDirectoryForType(type))
+    if type == .applicationSupport {
       if let basePath = path {
         let basePathURL = URL.init(fileURLWithPath: basePath)
         path = basePathURL.appendingPathComponent(Bundle.main.bundleIdentifier!).path
       }
-      result(path)
-    case "getLibraryDirectory":
-      result(getDirectory(ofType: FileManager.SearchPathDirectory.libraryDirectory))
-    case "getDownloadsDirectory":
-      result(getDirectory(ofType: FileManager.SearchPathDirectory.downloadsDirectory))
-    default:
-      result(FlutterMethodNotImplemented)
     }
+    return path
   }
 }
 
-/// Returns the user-domain director of the given type.
+/// Returns the FileManager constant corresponding to the given type.
+private func fileManagerDirectoryForType(_ type: DirectoryType) -> FileManager.SearchPathDirectory {
+  switch type {
+    case .applicationDocuments:
+      return FileManager.SearchPathDirectory.documentDirectory
+    case .applicationSupport:
+      return FileManager.SearchPathDirectory.applicationSupportDirectory
+    case .downloads:
+      return FileManager.SearchPathDirectory.downloadsDirectory
+    case .library:
+      return FileManager.SearchPathDirectory.libraryDirectory
+    case .temp:
+      return FileManager.SearchPathDirectory.cachesDirectory
+  }
+}
+
+/// Returns the user-domain directory of the given type.
 private func getDirectory(ofType directory: FileManager.SearchPathDirectory) -> String? {
   let paths = NSSearchPathForDirectoriesInDomains(
     directory,
