@@ -1,6 +1,10 @@
 ## 0.4.1
 
 * Adds support for heatmap layers.
+
+## 0.4.0+4
+
+* Updates code for stricter lint checks.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 0.4.0+3

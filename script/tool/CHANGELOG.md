@@ -1,3 +1,8 @@
+## 0.13.2+1
+
+* Replaces deprecated `flutter format` with `dart format` in `format`
+  implementation.
+
 ## 0.13.2
 
 * Falls back to other executables in PATH when `clang-format` does not run.
