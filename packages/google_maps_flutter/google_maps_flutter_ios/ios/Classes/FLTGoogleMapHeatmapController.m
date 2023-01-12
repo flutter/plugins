@@ -95,7 +95,7 @@
   // The map must be set each time for options to update
   [self setMap];
 }
-- (NSDictionary *)serializeHeatmapOptions {
+- (NSDictionary *)getHeatmapInfo {
   NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
   options[@"data"] = [FLTGoogleMapJSONConversions arrayFromWeightedData:_heatmapTileLayer.weightedData];
   options[@"gradient"] = [FLTGoogleMapJSONConversions dictionaryFromGradient:_heatmapTileLayer.gradient];
@@ -162,8 +162,11 @@
   }
   return _heatmapIdToController[identifier] != nil;
 }
-- (NSDictionary *)serializeHeatmapWithIdentifier:(NSString *)identifier {
-    return [_heatmapIdToController[identifier] serializeHeatmapOptions];
+- (nullable NSDictionary *)heatmapInfoWithIdentifier:(NSString *)identifier {
+  if (self.heatmapIdToController[identifier] == nil) {
+    return nil;
+  }
+  return [self.heatmapIdToController[identifier] getHeatmapInfo];
 }
 + (NSString *)getHeatmapIdentifier:(NSDictionary *)heatmap {
   return heatmap[@"heatmapId"];

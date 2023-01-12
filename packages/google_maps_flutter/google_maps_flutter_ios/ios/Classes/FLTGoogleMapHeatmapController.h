@@ -6,6 +6,8 @@
 #import <GoogleMaps/GoogleMaps.h>
 @import GoogleMapsUtils;
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Defines heatmap controllable by Flutter.
 @interface FLTGoogleMapHeatmapController : NSObject
 - (instancetype)initWithHeatmapTileLayer:(GMUHeatmapTileLayer *)heatmapTileLayer
@@ -21,5 +23,7 @@
 - (void)changeHeatmaps:(NSArray *)heatmapsToChange;
 - (void)removeHeatmapsWithIdentifiers:(NSArray *)identifiers;
 - (bool)hasHeatmapWithIdentifier:(NSString *)identifier;
-- (NSDictionary *)serializeHeatmapWithIdentifier:(NSString *)identifier;
+- (nullable NSDictionary *)heatmapInfoWithIdentifier:(NSString *)identifier;
 @end
+
+NS_ASSUME_NONNULL_END

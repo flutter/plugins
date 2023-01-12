@@ -115,4 +115,13 @@ abstract class GoogleMapsInspectorPlatform extends PlatformInterface {
       {required int mapId}) {
     throw UnimplementedError('getTileOverlayInfo() has not been implemented.');
   }
+
+  /// Returns information about the heatmap with the given ID.
+  ///
+  /// The returned object will be synthesized from platform data, so will not
+  /// be the same Dart object as the original [Heatmap] provided to the
+  /// platform interface with that ID, and not all fields will be populated.
+  Future<Heatmap?> getHeatmapInfo(HeatmapId heatmapId, {required int mapId}) {
+    throw UnimplementedError('getHeatmapInfo() has not been implemented.');
+  }
 }

@@ -350,15 +350,6 @@
       [_heatmapsController removeHeatmapsWithIdentifiers:heatmapIdsToRemove];
     }
     result(nil);
-  } else if ([call.method isEqualToString:@"heatmaps#get"]) {
-      id heatmapId = call.arguments;
-      if ([heatmapId isKindOfClass:[NSString class]] && [_heatmapsController hasHeatmapWithIdentifier:heatmapId]) {
-        result([_heatmapsController serializeHeatmapWithIdentifier:heatmapId]);
-      } else {
-        result([FlutterError errorWithCode:@"Invalid heatmapId"
-                                     message:@"getHeatmap called with invalid heatmapId"
-                                     details:nil]);
-      }
   } else if ([call.method isEqualToString:@"tileOverlays#update"]) {
     id tileOverlaysToAdd = call.arguments[@"tileOverlaysToAdd"];
     if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {
@@ -423,7 +414,10 @@
   } else if ([call.method isEqualToString:@"map#getTileOverlayInfo"]) {
     NSString *rawTileOverlayId = call.arguments[@"tileOverlayId"];
     result([self.tileOverlaysController tileOverlayInfoWithIdentifier:rawTileOverlayId]);
-  } else {
+  } else if ([call.method isEqualToString:@"map#getHeatmapInfo"]) {
+      NSString *rawHeatmapId = call.arguments[@"heatmapId"];
+      result([self.heatmapsController heatmapInfoWithIdentifier:rawHeatmapId]);
+ } else {
     result(FlutterMethodNotImplemented);
   }
 }

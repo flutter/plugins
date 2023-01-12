@@ -82,6 +82,27 @@ class GoogleMapsInspectorIOS extends GoogleMapsInspectorPlatform {
   }
 
   @override
+  Future<Heatmap?> getHeatmapInfo(HeatmapId heatmapId,
+      {required int mapId}) async {
+    final Map<String, Object?>? heatmapInfo = await _channelProvider(mapId)!
+        .invokeMapMethod<String, dynamic>(
+            'map#getHeatmapInfo', <String, String>{
+      'tileOverlayId': heatmapId.value,
+    });
+    if (heatmapInfo == null) {
+      return null;
+    }
+    return TileOverlay(
+      tileOverlayId: tileOverlayId,
+      fadeIn: tileInfo['fadeIn']! as bool,
+      transparency: tileInfo['transparency']! as double,
+      visible: tileInfo['visible']! as bool,
+      // Android and iOS return different types.
+      zIndex: (tileInfo['zIndex']! as num).toInt(),
+    );
+  }
+
+  @override
   Future<bool> isCompassEnabled({required int mapId}) async {
     return (await _channelProvider(mapId)!
         .invokeMethod<bool>('map#isCompassEnabled'))!;
