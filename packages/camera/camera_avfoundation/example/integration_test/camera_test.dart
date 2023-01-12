@@ -222,6 +222,27 @@ void main() {
     expect(controller.description, cameras[1]);
   });
 
+  testWidgets('Set description', (WidgetTester tester) async {
+    final List<CameraDescription> cameras =
+        await CameraPlatform.instance.availableCameras();
+    if (cameras.length < 2) {
+      return;
+    }
+
+    final CameraController controller = CameraController(
+      cameras[0],
+      ResolutionPreset.low,
+      enableAudio: false,
+    );
+
+    await controller.initialize();
+    sleep(const Duration(milliseconds: 500));
+    await controller.setDescription(cameras[1]);
+    sleep(const Duration(milliseconds: 500));
+
+    expect(controller.description, cameras[1]);
+  });
+
   /// Start streaming with specifying the ImageFormatGroup.
   Future<CameraImageData> startStreaming(List<CameraDescription> cameras,
       ImageFormatGroup? imageFormatGroup) async {

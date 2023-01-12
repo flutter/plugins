@@ -117,8 +117,7 @@ class FakeController extends ValueNotifier<CameraValue>
   Future<void> resumePreview() async {}
 
   @override
-  Future<void> setDescription(
-      CameraDescription description) async {}
+  Future<void> setDescription(CameraDescription description) async {}
 
   @override
   CameraDescription get description => value.description;
