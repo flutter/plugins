@@ -92,13 +92,18 @@ class GoogleMapsInspectorIOS extends GoogleMapsInspectorPlatform {
     if (heatmapInfo == null) {
       return null;
     }
-    return TileOverlay(
-      tileOverlayId: tileOverlayId,
-      fadeIn: tileInfo['fadeIn']! as bool,
-      transparency: tileInfo['transparency']! as double,
-      visible: tileInfo['visible']! as bool,
-      // Android and iOS return different types.
-      zIndex: (tileInfo['zIndex']! as num).toInt(),
+
+    return Heatmap(
+      heatmapId: heatmapId,
+      data: (heatmapInfo['data']! as List<Object>)
+          .map(WeightedLatLng.fromJson)
+          .whereType<WeightedLatLng>()
+          .toList(),
+      gradient: HeatmapGradient.fromJson(heatmapInfo['gradient']),
+      opacity: heatmapInfo['opacity']! as double,
+      radius: heatmapInfo['radius']! as int,
+      minimumZoomIntensity: heatmapInfo['minimumZoomIntensity']! as int,
+      maximumZoomIntensity: heatmapInfo['maximumZoomIntensity']! as int,
     );
   }
 

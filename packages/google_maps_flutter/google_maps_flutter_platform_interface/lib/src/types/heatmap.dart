@@ -266,6 +266,29 @@ class HeatmapGradient {
     return json;
   }
 
+  /// Initialize a [HeatmapGradient] from a JSON object.
+  static HeatmapGradient? fromJson(Object? json) {
+    if (json == null) {
+      return null;
+    }
+    assert(json is Map);
+    final Map<String, Object?> map = json as Map<String, Object?>;
+    final List<Color> colors = (map['colors']! as List<Object?>)
+        .whereType<int>()
+        .map((int e) => Color(e))
+        .toList();
+    final List<double> startPoints =
+        (map['startPoints']! as List<Object?>).whereType<double>().toList();
+    final List<HeatmapGradientColor> gradientColors = <HeatmapGradientColor>[];
+    for (int i = 0; i < colors.length; i++) {
+      gradientColors.add(HeatmapGradientColor(colors[i], startPoints[i]));
+    }
+    return HeatmapGradient(
+      gradientColors,
+      colorMapSize: map['colorMapSize'] as int? ?? 256,
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
