@@ -28,9 +28,7 @@ import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.google.maps.android.projection.SphericalMercatorProjection;
-
 import io.flutter.view.FlutterMain;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -238,10 +236,12 @@ class Convert {
     return new WeightedLatLng(toLatLng(data.get(0)), toDouble(data.get(1)));
   }
 
-  private static final SphericalMercatorProjection sProjection =
-          new SphericalMercatorProjection(1);
+  private static final SphericalMercatorProjection sProjection = new SphericalMercatorProjection(1);
+
   static Object weightedLatLngToJson(WeightedLatLng weightedLatLng) {
-    return Arrays.asList(latLngToJson(sProjection.toLatLng(weightedLatLng.getPoint())), weightedLatLng.getIntensity());
+    return Arrays.asList(
+        latLngToJson(sProjection.toLatLng(weightedLatLng.getPoint())),
+        weightedLatLng.getIntensity());
   }
 
   static Point toPoint(Object o) {
@@ -641,10 +641,12 @@ class Convert {
     }
   }
 
-  static Map<String, Object> heatmapToJson(HeatmapTileProvider heatmap) throws NoSuchFieldException, IllegalAccessException {
+  static Map<String, Object> heatmapToJson(HeatmapTileProvider heatmap)
+      throws NoSuchFieldException, IllegalAccessException {
     final Field dataField = HeatmapTileProvider.class.getDeclaredField("mData");
     final Field gradientField = HeatmapTileProvider.class.getDeclaredField("mGradient");
-    final Field maxIntensityField = HeatmapTileProvider.class.getDeclaredField("mCustomMaxIntensity");
+    final Field maxIntensityField =
+        HeatmapTileProvider.class.getDeclaredField("mCustomMaxIntensity");
     final Field opacityField = HeatmapTileProvider.class.getDeclaredField("mOpacity");
     final Field radiusField = HeatmapTileProvider.class.getDeclaredField("mRadius");
 
@@ -722,13 +724,13 @@ class Convert {
     return new Gradient(colors, startPoints, colorMapSize);
   }
 
-    private static Object gradientToJson(Gradient gradient) {
-        final Map<String, Object> data = new HashMap<>();
-        data.put("colors", gradient.mColors);
-        data.put("startPoints", gradient.mStartPoints);
-        data.put("colorMapSize", gradient.mColorMapSize);
-        return data;
-    }
+  private static Object gradientToJson(Gradient gradient) {
+    final Map<String, Object> data = new HashMap<>();
+    data.put("colors", gradient.mColors);
+    data.put("startPoints", gradient.mStartPoints);
+    data.put("colorMapSize", gradient.mColorMapSize);
+    return data;
+  }
 
   private static List<List<LatLng>> toHoles(Object o) {
     final List<?> data = toList(o);

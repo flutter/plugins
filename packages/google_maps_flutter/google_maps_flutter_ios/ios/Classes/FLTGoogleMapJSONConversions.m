@@ -29,9 +29,8 @@
 + (NSNumber *)rgbaFromColor:(UIColor *)color {
   CGFloat red, green, blue, alpha;
   [color getRed:&red green:&green blue:&blue alpha:&alpha];
-  unsigned long value = ((unsigned long)(alpha * 255) << 24) |
-                        ((unsigned long)(red * 255) << 16) | ((unsigned long)(green * 255) << 8) |
-                        ((unsigned long)(blue * 255));
+  unsigned long value = ((unsigned long)(alpha * 255) << 24) | ((unsigned long)(red * 255) << 16) |
+                        ((unsigned long)(green * 255) << 8) | ((unsigned long)(blue * 255));
   return @(value);
 }
 
@@ -162,10 +161,9 @@
 }
 
 + (NSArray *)arrayFromWeightedLatLng:(GMUWeightedLatLng *)weightedLatLng {
-    GMSMapPoint point ={weightedLatLng.point.x, weightedLatLng.point.y};
+  GMSMapPoint point = {weightedLatLng.point.x, weightedLatLng.point.y};
   return @[
-      [FLTGoogleMapJSONConversions arrayFromLocation:GMSUnproject(point)],
-    @(weightedLatLng.intensity)
+    [FLTGoogleMapJSONConversions arrayFromLocation:GMSUnproject(point)], @(weightedLatLng.intensity)
   ];
 }
 

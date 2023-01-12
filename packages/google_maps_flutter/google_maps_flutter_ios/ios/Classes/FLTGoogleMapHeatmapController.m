@@ -97,8 +97,10 @@
 }
 - (NSDictionary *)getHeatmapInfo {
   NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
-  options[@"data"] = [FLTGoogleMapJSONConversions arrayFromWeightedData:_heatmapTileLayer.weightedData];
-  options[@"gradient"] = [FLTGoogleMapJSONConversions dictionaryFromGradient:_heatmapTileLayer.gradient];
+  options[@"data"] =
+      [FLTGoogleMapJSONConversions arrayFromWeightedData:_heatmapTileLayer.weightedData];
+  options[@"gradient"] =
+      [FLTGoogleMapJSONConversions dictionaryFromGradient:_heatmapTileLayer.gradient];
   options[@"opacity"] = @(_heatmapTileLayer.opacity);
   options[@"radius"] = @(_heatmapTileLayer.radius);
   options[@"minimumZoomIntensity"] = @(_heatmapTileLayer.minimumZoomIntensity);

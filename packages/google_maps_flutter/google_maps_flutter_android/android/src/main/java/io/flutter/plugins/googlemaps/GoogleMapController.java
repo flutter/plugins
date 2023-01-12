@@ -495,17 +495,18 @@ final class GoogleMapController
           result.success(null);
           break;
         }
-      case "map#getTileOverlayInfo": {
-        String tileOverlayId = call.argument("tileOverlayId");
-        result.success(tileOverlaysController.getTileOverlayInfo(tileOverlayId));
-        break;
-      }
+      case "map#getTileOverlayInfo":
+        {
+          String tileOverlayId = call.argument("tileOverlayId");
+          result.success(tileOverlaysController.getTileOverlayInfo(tileOverlayId));
+          break;
+        }
       case "map#getHeatmapInfo":
-      {
-        String heatmapId = call.argument("heatmapId");
-        result.success(heatmapsController.getHeatmapInfo(heatmapId));
-        break;
-      }
+        {
+          String heatmapId = call.argument("heatmapId");
+          result.success(heatmapsController.getHeatmapInfo(heatmapId));
+          break;
+        }
       default:
         result.notImplemented();
     }

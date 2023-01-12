@@ -415,9 +415,9 @@
     NSString *rawTileOverlayId = call.arguments[@"tileOverlayId"];
     result([self.tileOverlaysController tileOverlayInfoWithIdentifier:rawTileOverlayId]);
   } else if ([call.method isEqualToString:@"map#getHeatmapInfo"]) {
-      NSString *rawHeatmapId = call.arguments[@"heatmapId"];
-      result([self.heatmapsController heatmapInfoWithIdentifier:rawHeatmapId]);
- } else {
+    NSString *rawHeatmapId = call.arguments[@"heatmapId"];
+    result([self.heatmapsController heatmapInfoWithIdentifier:rawHeatmapId]);
+  } else {
     result(FlutterMethodNotImplemented);
   }
 }
