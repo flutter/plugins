@@ -1161,6 +1161,130 @@ void main() {
       expect(tileOverlayInfo1, isNull);
     },
   );
+
+  testWidgets(
+    'set heatmap correctly',
+    (WidgetTester tester) async {
+      final Completer<int> mapIdCompleter = Completer<int>();
+      final Heatmap heatmap1 = Heatmap(
+        heatmapId: const HeatmapId('heatmap_1'),
+        data: const <WeightedLatLng>[
+          WeightedLatLng(
+            LatLng(0, 0),
+            weight: 2,
+          ),
+          WeightedLatLng(
+            LatLng(1, 1),
+            weight: 2,
+          ),
+        ],
+        dissipating: false,
+        gradient: HeatmapGradient(
+          const <HeatmapGradientColor>[
+            HeatmapGradientColor(
+              Color(0x00000000),
+              0.0,
+            ),
+            HeatmapGradientColor(
+              Color(0x00000000),
+              1.0,
+            ),
+          ],
+        ),
+        maxIntensity: 1,
+        opacity: 1,
+        radius: 10,
+        minimumZoomIntensity: 1,
+        maximumZoomIntensity: 2,
+      );
+
+      final Heatmap heatmap2 = Heatmap(
+        heatmapId: const HeatmapId('heatmap_2'),
+        data: const <WeightedLatLng>[
+          WeightedLatLng(
+            LatLng(1, 1),
+            weight: 3,
+          ),
+          WeightedLatLng(
+            LatLng(2, 2),
+            weight: 4,
+          ),
+        ],
+        dissipating: false,
+        gradient: HeatmapGradient(
+          const <HeatmapGradientColor>[
+            HeatmapGradientColor(
+              Color(0x00000000),
+              2.0,
+            ),
+            HeatmapGradientColor(
+              Color(0x00000000),
+              3.0,
+            ),
+          ],
+        ),
+        maxIntensity: 2,
+        opacity: 0.5,
+        radius: 15,
+        minimumZoomIntensity: 2,
+        maximumZoomIntensity: 3,
+      );
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            initialCameraPosition: _kInitialCameraPosition,
+            heatmaps: <Heatmap>{heatmap1, heatmap2},
+            onMapCreated: (GoogleMapController controller) {
+              mapIdCompleter.complete(controller.mapId);
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      final int mapId = await mapIdCompleter.future;
+      final GoogleMapsInspectorPlatform inspector =
+          GoogleMapsInspectorPlatform.instance!;
+
+      final Heatmap heatmapInfo1 =
+          (await inspector.getHeatmapInfo(heatmap1.mapsId, mapId: mapId))!;
+      final Heatmap heatmapInfo2 =
+          (await inspector.getHeatmapInfo(heatmap2.mapsId, mapId: mapId))!;
+
+      expect(heatmapInfo1.data, heatmap1.data);
+      // Web only
+      // expect(heatmapInfo1.dissipating, heatmap1.dissipating);
+      expect(heatmapInfo1.gradient, heatmap1.gradient);
+      if (Platform.isAndroid) {
+        expect(heatmapInfo1.maxIntensity, heatmap1.maxIntensity);
+      }
+      expect(heatmapInfo1.opacity, heatmap1.opacity);
+      expect(heatmapInfo1.radius, heatmap1.radius);
+      if (Platform.isIOS) {
+        expect(
+            heatmapInfo1.minimumZoomIntensity, heatmap1.minimumZoomIntensity);
+        expect(
+            heatmapInfo1.maximumZoomIntensity, heatmap1.maximumZoomIntensity);
+      }
+
+      expect(heatmapInfo2.data, heatmap2.data);
+      // Web only
+      // expect(heatmapInfo2.dissipating, heatmap2.dissipating);
+      expect(heatmapInfo2.gradient, heatmap2.gradient);
+      if (Platform.isAndroid) {
+        expect(heatmapInfo2.maxIntensity, heatmap2.maxIntensity);
+      }
+      expect(heatmapInfo2.opacity, heatmap2.opacity);
+      expect(heatmapInfo2.radius, heatmap2.radius);
+      if (Platform.isIOS) {
+        expect(
+            heatmapInfo2.minimumZoomIntensity, heatmap2.minimumZoomIntensity);
+        expect(
+            heatmapInfo2.maximumZoomIntensity, heatmap2.maximumZoomIntensity);
+      }
+    },
+  );
 }
 
 class _DebugTileProvider implements TileProvider {
