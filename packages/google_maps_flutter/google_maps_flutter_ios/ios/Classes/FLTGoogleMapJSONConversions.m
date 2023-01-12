@@ -162,8 +162,9 @@
 }
 
 + (NSArray *)arrayFromWeightedLatLng:(GMUWeightedLatLng *)weightedLatLng {
+    GMSMapPoint point ={weightedLatLng.point.x, weightedLatLng.point.y};
   return @[
-    @[@(weightedLatLng.point.x), @(weightedLatLng.point.y)],
+      [FLTGoogleMapJSONConversions arrayFromLocation:GMSUnproject(point)],
     @(weightedLatLng.intensity)
   ];
 }

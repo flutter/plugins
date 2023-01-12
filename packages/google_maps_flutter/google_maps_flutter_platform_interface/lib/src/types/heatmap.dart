@@ -272,7 +272,7 @@ class HeatmapGradient {
       return null;
     }
     assert(json is Map);
-    final Map<String, Object?> map = json as Map<String, Object?>;
+    final Map<String, Object?> map = (json as Map<Object?, Object?>).cast();
     final List<Color> colors = (map['colors']! as List<Object?>)
         .whereType<int>()
         .map((int e) => Color(e))

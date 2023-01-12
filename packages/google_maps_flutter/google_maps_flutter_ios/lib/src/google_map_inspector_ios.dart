@@ -87,7 +87,7 @@ class GoogleMapsInspectorIOS extends GoogleMapsInspectorPlatform {
     final Map<String, Object?>? heatmapInfo = await _channelProvider(mapId)!
         .invokeMapMethod<String, dynamic>(
             'map#getHeatmapInfo', <String, String>{
-      'tileOverlayId': heatmapId.value,
+      'heatmapId': heatmapId.value,
     });
     if (heatmapInfo == null) {
       return null;
@@ -95,7 +95,7 @@ class GoogleMapsInspectorIOS extends GoogleMapsInspectorPlatform {
 
     return Heatmap(
       heatmapId: heatmapId,
-      data: (heatmapInfo['data']! as List<Object>)
+      data: (heatmapInfo['data']! as List<Object?>)
           .map(WeightedLatLng.fromJson)
           .whereType<WeightedLatLng>()
           .toList(),
