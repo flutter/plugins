@@ -1280,12 +1280,119 @@ void main() {
           GoogleMapsInspectorPlatform.instance!;
 
       final Heatmap heatmapInfo1 =
-          (await inspector.getHeatmapInfo(const HeatmapId('heatmap_1'), mapId: mapId))!;
+          (await inspector.getHeatmapInfo(heatmap1.mapsId, mapId: mapId))!;
       final Heatmap heatmapInfo2 =
-          (await inspector.getHeatmapInfo(const HeatmapId('heatmap_2'), mapId: mapId))!;
+          (await inspector.getHeatmapInfo(heatmap2.mapsId, mapId: mapId))!;
 
       testHeatmapEquality(heatmap1, heatmapInfo1);
       testHeatmapEquality(heatmap2, heatmapInfo2);
+    },
+  );
+
+  testWidgets(
+    'update heatmaps correctly',
+    (WidgetTester tester) async {
+      final Completer<int> mapIdCompleter = Completer<int>();
+      final Key key = GlobalKey();
+      final Heatmap heatmap1 = Heatmap(
+        heatmapId: const HeatmapId('heatmap_1'),
+        data: const <WeightedLatLng>[
+          WeightedLatLng(LatLng(37.782, -122.447)),
+          WeightedLatLng(LatLng(37.782, -122.445)),
+          WeightedLatLng(LatLng(37.782, -122.443)),
+          WeightedLatLng(LatLng(37.782, -122.441)),
+          WeightedLatLng(LatLng(37.782, -122.439)),
+          WeightedLatLng(LatLng(37.782, -122.437)),
+          WeightedLatLng(LatLng(37.782, -122.435)),
+          WeightedLatLng(LatLng(37.785, -122.447)),
+          WeightedLatLng(LatLng(37.785, -122.445)),
+          WeightedLatLng(LatLng(37.785, -122.443)),
+          WeightedLatLng(LatLng(37.785, -122.441)),
+          WeightedLatLng(LatLng(37.785, -122.439)),
+          WeightedLatLng(LatLng(37.785, -122.437)),
+          WeightedLatLng(LatLng(37.785, -122.435), weight: 2)
+        ],
+        dissipating: false,
+        gradient: HeatmapGradient(
+          const <HeatmapGradientColor>[
+            HeatmapGradientColor(
+              Color.fromARGB(255, 0, 255, 255),
+              0.2,
+            ),
+            HeatmapGradientColor(
+              Color.fromARGB(255, 0, 63, 255),
+              0.4,
+            ),
+            HeatmapGradientColor(
+              Color.fromARGB(255, 0, 0, 191),
+              0.6,
+            ),
+            HeatmapGradientColor(
+              Color.fromARGB(255, 63, 0, 91),
+              0.8,
+            ),
+            HeatmapGradientColor(
+              Color.fromARGB(255, 255, 0, 0),
+              1,
+            ),
+          ],
+        ),
+        maxIntensity: 1,
+        opacity: 0.5,
+        radius: 40,
+        minimumZoomIntensity: 1,
+        maximumZoomIntensity: 20,
+      );
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            heatmaps: <Heatmap>{heatmap1},
+            onMapCreated: (GoogleMapController controller) {
+              mapIdCompleter.complete(controller.mapId);
+            },
+          ),
+        ),
+      );
+
+      final int mapId = await mapIdCompleter.future;
+      final GoogleMapsInspectorPlatform inspector =
+          GoogleMapsInspectorPlatform.instance!;
+
+      final Heatmap heatmap1New = heatmap1.copyWith(
+        dataParam: heatmap1.data.sublist(5),
+        dissipatingParam: !heatmap1.dissipating,
+        gradientParam: heatmap1.gradient,
+        maxIntensityParam: heatmap1.maxIntensity! + 1,
+        opacityParam: heatmap1.opacity - 0.1,
+        radiusParam: heatmap1.radius + 1,
+        minimumZoomIntensityParam: heatmap1.minimumZoomIntensity + 1,
+        maximumZoomIntensityParam: heatmap1.maximumZoomIntensity + 1,
+      );
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            heatmaps: <Heatmap>{heatmap1New},
+            onMapCreated: (GoogleMapController controller) {
+              fail('update: OnMapCreated should get called only once.');
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      final Heatmap heatmapInfo1 =
+          (await inspector.getHeatmapInfo(heatmap1.mapsId, mapId: mapId))!;
+
+      testHeatmapEquality(heatmap1New, heatmapInfo1);
     },
   );
 }
