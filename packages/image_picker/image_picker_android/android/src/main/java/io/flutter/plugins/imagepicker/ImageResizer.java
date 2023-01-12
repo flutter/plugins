@@ -47,10 +47,10 @@ class ImageResizer {
     try {
       String[] pathParts = imagePath.split("/");
       String imageName = pathParts[pathParts.length - 1];
-      options.inSampleSize = 
+      options.inSampleSize =
           calculateInSampleSize(options, maxWidth.intValue(), maxHeight.intValue());
       options.inJustDecodeBounds = false;
-      File file = 
+      File file =
           resizedImage(
               decodeFile(imagePath, options), maxWidth, maxHeight, imageQuality, imageName);
       copyExif(imagePath, file.getPath());
