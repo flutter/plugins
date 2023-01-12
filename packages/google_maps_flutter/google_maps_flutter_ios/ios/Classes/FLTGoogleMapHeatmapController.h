@@ -21,4 +21,5 @@
 - (void)changeHeatmaps:(NSArray *)heatmapsToChange;
 - (void)removeHeatmapsWithIdentifiers:(NSArray *)identifiers;
 - (bool)hasHeatmapWithIdentifier:(NSString *)identifier;
+- (NSDictionary *)serializeHeatmapWithIdentifier:(NSString *)identifier;
 @end

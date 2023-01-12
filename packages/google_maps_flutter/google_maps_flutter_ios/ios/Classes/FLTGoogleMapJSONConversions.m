@@ -152,6 +152,13 @@
                intensity:[data[1] doubleValue]];
 }
 
++ (NSArray *)arrayFromWeightedLatLng:(GMUWeightedLatLng *)weightedLatLng {
+  return @[
+    [FLTGoogleMapJSONConversions arrayFromLocation:weightedLatLng.coordinate],
+    @(weightedLatLng.intensity)
+  ];
+}
+
 + (NSArray<GMUWeightedLatLng *> *)weightedDataFromArray:(NSArray *)data {
   NSMutableArray<GMUWeightedLatLng *> *weightedData = [[NSMutableArray alloc] init];
   for (NSArray *latLng in data) {
@@ -162,6 +169,15 @@
   }
 
   return weightedData;
+}
+
++ (NSArray *)arrayFromWeightedData:(NSArray<GMUWeightedLatLng *> *)weightedData {
+  NSMutableArray *data = [[NSMutableArray alloc] init];
+  for (GMUWeightedLatLng *weightedLatLng in weightedData) {
+    [data addObject:[FLTGoogleMapJSONConversions arrayFromWeightedLatLng:weightedLatLng]];
+  }
+
+  return data;
 }
 
 + (GMUGradient *)gradientFromDictionary:(NSDictionary *)data {
@@ -175,6 +191,19 @@
   return [[GMUGradient alloc] initWithColors:colors
                                  startPoints:data[@"startPoints"]
                                 colorMapSize:[data[@"colorMapSize"] intValue]];
+}
+
++ (NSDictionary *)dictionaryFromGradient:(GMUGradient *)gradient {
+  NSMutableArray<NSNumber *> *colorCodes = [[NSMutableArray alloc] init];
+  for (UIColor *color in gradient.colors) {
+    [colorCodes addObject:[FLTGoogleMapJSONConversions rgbaFromColor:color]];
+  }
+
+  return @{
+    @"colors" : colorCodes,
+    @"startPoints" : gradient.startPoints,
+    @"colorMapSize" : @(gradient.colorMapSize)
+  };
 }
 
 @end

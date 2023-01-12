@@ -95,6 +95,16 @@
   // The map must be set each time for options to update
   [self setMap];
 }
+- (NSDictionary *)serializeHeatmapOptions {
+  NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
+  options[@"data"] = [FLTGoogleMapJSONConversions arrayFromWeightedData:_heatmapTileLayer.weightedData];
+  options[@"gradient"] = [FLTGoogleMapJSONConversions dictionaryFromGradient:_heatmapTileLayer.gradient];
+  options[@"opacity"] = @(_heatmapTileLayer.opacity);
+  options[@"radius"] = @(_heatmapTileLayer.radius);
+  options[@"minimumZoomIntensity"] = @(_heatmapTileLayer.minimumZoomIntensity);
+  options[@"maximumZoomIntensity"] = @(_heatmapTileLayer.maximumZoomIntensity);
+  return options;
+}
 @end
 
 @interface FLTHeatmapsController ()
@@ -151,6 +161,9 @@
     return NO;
   }
   return _heatmapIdToController[identifier] != nil;
+}
+- (NSDictionary *)serializeHeatmapWithIdentifier:(NSString *)identifier {
+    return [_heatmapIdToController[identifier] serializeHeatmapOptions];
 }
 + (NSString *)getHeatmapIdentifier:(NSDictionary *)heatmap {
   return heatmap[@"heatmapId"];

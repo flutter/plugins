@@ -350,6 +350,15 @@
       [_heatmapsController removeHeatmapsWithIdentifiers:heatmapIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"heatmaps#get"]) {
+      id heatmapId = call.arguments;
+      if ([heatmapId isKindOfClass:[NSString class]] && [_heatmapsController hasHeatmapWithIdentifier:heatmapId]) {
+        result([_heatmapsController serializeHeatmapWithIdentifier:heatmapId]);
+      } else {
+        result([FlutterError errorWithCode:@"Invalid heatmapId"
+                                     message:@"getHeatmap called with invalid heatmapId"
+                                     details:nil]);
+      }
   } else if ([call.method isEqualToString:@"tileOverlays#update"]) {
     id tileOverlaysToAdd = call.arguments[@"tileOverlaysToAdd"];
     if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {
