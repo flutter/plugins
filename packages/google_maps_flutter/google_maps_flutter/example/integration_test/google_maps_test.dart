@@ -1170,7 +1170,7 @@ void main() {
                 (e.point.latitude * 1000).round() / 1000,
                 (e.point.longitude * 1000).round() / 1000,
               ),
-             weight:  e.weight,
+              weight: e.weight,
             ))
         .toList();
   }
@@ -1180,93 +1180,93 @@ void main() {
     return (opacity * 10).round() / 10;
   }
 
+  void testHeatmapEquality(Heatmap heatmap1, Heatmap heatmap2) {
+    expect(roundHeatmapData(heatmap2.data), heatmap1.data);
+    // Web only
+    // expect(heatmapInfo2.dissipating, heatmap1.dissipating),
+    expect(heatmap2.gradient, heatmap1.gradient);
+    if (Platform.isAndroid) {
+      expect(heatmap2.maxIntensity, heatmap1.maxIntensity);
+    }
+    expect(roundHeatmapOpacity(heatmap2.opacity), heatmap1.opacity);
+    expect(heatmap2.radius, heatmap1.radius);
+    if (Platform.isIOS) {
+      expect(heatmap2.minimumZoomIntensity, heatmap1.minimumZoomIntensity);
+      expect(heatmap2.maximumZoomIntensity, heatmap1.maximumZoomIntensity);
+    }
+  }
+
   testWidgets(
     'set heatmap correctly',
     (WidgetTester tester) async {
       final Completer<int> mapIdCompleter = Completer<int>();
       final Heatmap heatmap1 = Heatmap(
-          heatmapId: const HeatmapId('test'),
-          data: const <WeightedLatLng>[
-            WeightedLatLng(LatLng(37.782, -122.447)),
-            WeightedLatLng(LatLng(37.782, -122.445)),
-            WeightedLatLng(LatLng(37.782, -122.443)),
-            WeightedLatLng(LatLng(37.782, -122.441)),
-            WeightedLatLng(LatLng(37.782, -122.439)),
-            WeightedLatLng(LatLng(37.782, -122.437)),
-            WeightedLatLng(LatLng(37.782, -122.435)),
-            WeightedLatLng(LatLng(37.785, -122.447)),
-            WeightedLatLng(LatLng(37.785, -122.445)),
-            WeightedLatLng(LatLng(37.785, -122.443)),
-            WeightedLatLng(LatLng(37.785, -122.441)),
-            WeightedLatLng(LatLng(37.785, -122.439)),
-            WeightedLatLng(LatLng(37.785, -122.437)),
-            WeightedLatLng(LatLng(37.785, -122.435))
+        heatmapId: const HeatmapId('heatmap_1'),
+        data: const <WeightedLatLng>[
+          WeightedLatLng(LatLng(37.782, -122.447)),
+          WeightedLatLng(LatLng(37.782, -122.445)),
+          WeightedLatLng(LatLng(37.782, -122.443)),
+          WeightedLatLng(LatLng(37.782, -122.441)),
+          WeightedLatLng(LatLng(37.782, -122.439)),
+          WeightedLatLng(LatLng(37.782, -122.437)),
+          WeightedLatLng(LatLng(37.782, -122.435)),
+          WeightedLatLng(LatLng(37.785, -122.447)),
+          WeightedLatLng(LatLng(37.785, -122.445)),
+          WeightedLatLng(LatLng(37.785, -122.443)),
+          WeightedLatLng(LatLng(37.785, -122.441)),
+          WeightedLatLng(LatLng(37.785, -122.439)),
+          WeightedLatLng(LatLng(37.785, -122.437)),
+          WeightedLatLng(LatLng(37.785, -122.435), weight: 2)
+        ],
+        dissipating: false,
+        gradient: HeatmapGradient(
+          const <HeatmapGradientColor>[
+            HeatmapGradientColor(
+              Color.fromARGB(255, 0, 255, 255),
+              0.2,
+            ),
+            HeatmapGradientColor(
+              Color.fromARGB(255, 0, 63, 255),
+              0.4,
+            ),
+            HeatmapGradientColor(
+              Color.fromARGB(255, 0, 0, 191),
+              0.6,
+            ),
+            HeatmapGradientColor(
+              Color.fromARGB(255, 63, 0, 91),
+              0.8,
+            ),
+            HeatmapGradientColor(
+              Color.fromARGB(255, 255, 0, 0),
+              1,
+            ),
           ],
-          gradient: HeatmapGradient(
-            const <HeatmapGradientColor>[
-              HeatmapGradientColor(
-                Color.fromARGB(255, 0, 255, 255),
-                0.2,
-              ),
-              HeatmapGradientColor(
-                Color.fromARGB(255, 0, 63, 255),
-                0.4,
-              ),
-              HeatmapGradientColor(
-                Color.fromARGB(255, 0, 0, 191),
-                0.6,
-              ),
-              HeatmapGradientColor(
-                Color.fromARGB(255, 63, 0, 91),
-                0.8,
-              ),
-              HeatmapGradientColor(
-                Color.fromARGB(255, 255, 0, 0),
-                1,
-              ),
-            ],
-          ),
-          maxIntensity: 1,
-          // Radius behaves differently on web and Android/iOS.
-          radius: 40);
+        ),
+        maxIntensity: 1,
+        opacity: 0.5,
+        radius: 40,
+        minimumZoomIntensity: 1,
+        maximumZoomIntensity: 20,
+      );
+      final Heatmap heatmap2 = Heatmap(
+        heatmapId: const HeatmapId('heatmap_2'),
+        data: heatmap1.data,
+        dissipating: heatmap1.dissipating,
+        gradient: heatmap1.gradient,
+        maxIntensity: heatmap1.maxIntensity,
+        opacity: heatmap1.opacity - 0.1,
+        radius: heatmap1.radius,
+        minimumZoomIntensity: heatmap1.minimumZoomIntensity,
+        maximumZoomIntensity: heatmap1.maximumZoomIntensity,
+      );
 
-      // final Heatmap heatmap2 = Heatmap(
-      //   heatmapId: const HeatmapId('heatmap_2'),
-      //   data: const <WeightedLatLng>[
-      //     WeightedLatLng(
-      //       LatLng(1, 1),
-      //       weight: 3,
-      //     ),
-      //     WeightedLatLng(
-      //       LatLng(2, 2),
-      //       weight: 4,
-      //     ),
-      //   ],
-      //   dissipating: false,
-      //   gradient: HeatmapGradient(
-      //     const <HeatmapGradientColor>[
-      //       HeatmapGradientColor(
-      //         Color(0x00000000),
-      //         2.0,
-      //       ),
-      //       HeatmapGradientColor(
-      //         Color(0x00000000),
-      //         3.0,
-      //       ),
-      //     ],
-      //   ),
-      //   maxIntensity: 2,
-      //   opacity: 0.5,
-      //   radius: 15,
-      //   minimumZoomIntensity: 2,
-      //   maximumZoomIntensity: 3,
-      // );
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: GoogleMap(
             initialCameraPosition: _kInitialCameraPosition,
-            heatmaps: <Heatmap>{heatmap1},
+            heatmaps: <Heatmap>{heatmap1, heatmap2},
             onMapCreated: (GoogleMapController controller) {
               mapIdCompleter.complete(controller.mapId);
             },
@@ -1280,41 +1280,12 @@ void main() {
           GoogleMapsInspectorPlatform.instance!;
 
       final Heatmap heatmapInfo1 =
-          (await inspector.getHeatmapInfo(heatmap1.mapsId, mapId: mapId))!;
-      // final Heatmap heatmapInfo2 =
-      //     (await inspector.getHeatmapInfo(heatmap2.mapsId, mapId: mapId))!;
+          (await inspector.getHeatmapInfo(const HeatmapId('heatmap_1'), mapId: mapId))!;
+      final Heatmap heatmapInfo2 =
+          (await inspector.getHeatmapInfo(const HeatmapId('heatmap_2'), mapId: mapId))!;
 
-      expect(roundHeatmapData(heatmapInfo1.data), heatmap1.data);
-      // Web only
-      // expect(heatmapInfo1.dissipating, heatmap1.dissipating);
-      expect(heatmapInfo1.gradient, heatmap1.gradient);
-      if (Platform.isAndroid) {
-        expect(heatmapInfo1.maxIntensity, heatmap1.maxIntensity);
-      }
-      expect(roundHeatmapOpacity(heatmapInfo1.opacity), heatmap1.opacity);
-      expect(heatmapInfo1.radius, heatmap1.radius);
-      if (Platform.isIOS) {
-        expect(
-            heatmapInfo1.minimumZoomIntensity, heatmap1.minimumZoomIntensity);
-        expect(
-            heatmapInfo1.maximumZoomIntensity, heatmap1.maximumZoomIntensity);
-      }
-
-      // expect(heatmapInfo2.data, heatmap2.data);
-      // // Web only
-      // // expect(heatmapInfo2.dissipating, heatmap2.dissipating);
-      // expect(heatmapInfo2.gradient, heatmap2.gradient);
-      // if (Platform.isAndroid) {
-      //   expect(heatmapInfo2.maxIntensity, heatmap2.maxIntensity);
-      // }
-      // expect(heatmapInfo2.opacity, heatmap2.opacity);
-      // expect(heatmapInfo2.radius, heatmap2.radius);
-      // if (Platform.isIOS) {
-      //   expect(
-      //       heatmapInfo2.minimumZoomIntensity, heatmap2.minimumZoomIntensity);
-      //   expect(
-      //       heatmapInfo2.maximumZoomIntensity, heatmap2.maximumZoomIntensity);
-      // }
+      testHeatmapEquality(heatmap1, heatmapInfo1);
+      testHeatmapEquality(heatmap2, heatmapInfo2);
     },
   );
 }
