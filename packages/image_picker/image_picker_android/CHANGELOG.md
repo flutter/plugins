@@ -1,5 +1,9 @@
 ## 0.8.5+4
 
+* Improves Bitmap resizing on Android.
+
+## 0.8.5+4
+
 * Fixes null cast exception when restoring a cancelled selection.
 
 ## 0.8.5+3
