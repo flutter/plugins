@@ -8,14 +8,14 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
-import 'package:flutter_plugin_tools/src/lint_podspecs_command.dart';
+import 'package:flutter_plugin_tools/src/podspec_check_command.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  group('$LintPodspecsCommand', () {
+  group('PodspecCheckCommand', () {
     FileSystem fileSystem;
     late Directory packagesDir;
     late CommandRunner<void> runner;
@@ -28,14 +28,14 @@ void main() {
 
       mockPlatform = MockPlatform(isMacOS: true);
       processRunner = RecordingProcessRunner();
-      final LintPodspecsCommand command = LintPodspecsCommand(
+      final PodspecCheckCommand command = PodspecCheckCommand(
         packagesDir,
         processRunner: processRunner,
         platform: mockPlatform,
       );
 
       runner =
-          CommandRunner<void>('podspec_test', 'Test for $LintPodspecsCommand');
+          CommandRunner<void>('podspec_test', 'Test for $PodspecCheckCommand');
       runner.addCommand(command);
     });
 
@@ -46,7 +46,7 @@ void main() {
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
-          runner, <String>['podspecs'], errorHandler: (Error e) {
+          runner, <String>['podspec-check'], errorHandler: (Error e) {
         commandError = e;
       });
 
@@ -80,7 +80,7 @@ void main() {
       ];
 
       final List<String> output =
-          await runCapturingPrint(runner, <String>['podspecs']);
+          await runCapturingPrint(runner, <String>['podspec-check']);
 
       expect(
         processRunner.recordedCalls,
@@ -134,7 +134,7 @@ void main() {
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
-          runner, <String>['podspecs'], errorHandler: (Error e) {
+          runner, <String>['podspec-check'], errorHandler: (Error e) {
         commandError = e;
       });
 
@@ -160,7 +160,7 @@ void main() {
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
-          runner, <String>['podspecs'], errorHandler: (Error e) {
+          runner, <String>['podspec-check'], errorHandler: (Error e) {
         commandError = e;
       });
 
@@ -189,7 +189,7 @@ void main() {
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
-          runner, <String>['podspecs'], errorHandler: (Error e) {
+          runner, <String>['podspec-check'], errorHandler: (Error e) {
         commandError = e;
       });
 
@@ -210,7 +210,7 @@ void main() {
       createFakePlugin('plugin1', packagesDir);
 
       final List<String> output =
-          await runCapturingPrint(runner, <String>['podspecs']);
+          await runCapturingPrint(runner, <String>['podspec-check']);
 
       expect(
           output,

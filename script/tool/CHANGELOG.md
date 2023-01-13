@@ -1,3 +1,9 @@
+## 0.13.3
+
+* Renames `podspecs` to `podspec-check`. The old name will continue to work.
+* Adds validation of the Swift-in-Obj-C-projects workaround in the podspecs of
+  iOS plugin implementations that use Swift.
+
 ## 0.13.2+1
 
 * Replaces deprecated `flutter format` with `dart format` in `format`

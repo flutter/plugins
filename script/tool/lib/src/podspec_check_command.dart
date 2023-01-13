@@ -20,19 +20,19 @@ const int _exitPodNotInstalled = 3;
 /// Lint the CocoaPod podspecs and run unit tests.
 ///
 /// See https://guides.cocoapods.org/terminal/commands.html#pod_lib_lint.
-class LintPodspecsCommand extends PackageLoopingCommand {
+class PodspecCheckCommand extends PackageLoopingCommand {
   /// Creates an instance of the linter command.
-  LintPodspecsCommand(
+  PodspecCheckCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
   }) : super(packagesDir, processRunner: processRunner, platform: platform);
 
   @override
-  final String name = 'podspecs';
+  final String name = 'podspec-check';
 
   @override
-  List<String> get aliases => <String>['podspec'];
+  List<String> get aliases => <String>['podspec', 'podspecs'];
 
   @override
   final String description =
