@@ -88,7 +88,7 @@ class PodspecCheckCommand extends PackageLoopingCommand {
           printError('$path is missing seach path configuration. Any iOS '
               'plugin implementation that contains Swift implementation code '
               'needs to contain the following:\n\n'
-              '${workaroundBlock}\n'
+              '$workaroundBlock\n'
               'For more details, see https://github.com/flutter/flutter/issues/118418.');
           errors.add(podspec.basename);
         }
