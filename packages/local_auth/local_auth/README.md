@@ -254,7 +254,7 @@ This will return an error if there was no hardware available.
 
 #### Android theme
 
-On Android you need to update the `LaunchTheme` parent style with the `Theme.AppCompat.Light` theme to be compatible with **Android version 8 and below**; otherwise the app crashes for those versions. To do that go to `android > app > src > main > res > values > styles.xml` and look for the style with name `LaunchTheme` (Notice that `LaunchTheme` must be referenced in the `AndroidManifest.xml` file). Then, change the parent style with the new value and you should have set up something like this:
+On Android, ensure that the `LaunchTheme` of your app has a parent style with the `Theme.AppCompat.Light` theme; otherwise the app may crash. To do that go to `android > app > src > main > res > values > styles.xml` and look for the style with name `LaunchTheme` (Notice that `LaunchTheme` must be referenced in the `AndroidManifest.xml` file). Then, change the parent style with the new value and you should have set up something like this:
 
 ```xml
 ...
