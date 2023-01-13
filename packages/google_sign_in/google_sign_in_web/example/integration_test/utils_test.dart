@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_identity_services_web/id.dart';
+import 'package:google_identity_services_web/oauth2.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:google_sign_in_web/src/utils.dart';
 import 'package:integration_test/integration_test.dart';
@@ -16,6 +17,28 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('gisResponsesToTokenData', () {
+    testWidgets('null objects -> no problem', (WidgetTester tester) async {
+      final GoogleSignInTokenData tokens = gisResponsesToTokenData(null, null);
+      expect(tokens.accessToken, isNull);
+      expect(tokens.idToken, isNull);
+      expect(tokens.serverAuthCode, isNull);
+    });
+
+    testWidgets('non-null objects are correctly used', (WidgetTester tester) async {
+      const String expectedIdToken = 'some-value-for-testing';
+      const String expectedAccessToken = 'another-value-for-testing';
+
+      final CredentialResponse credential = jsifyAs<CredentialResponse>(<String, Object?>{
+        'credential': expectedIdToken,
+      });
+      final TokenResponse token = jsifyAs<TokenResponse>(<String, Object?> {
+        'access_token': expectedAccessToken,
+      });
+      final GoogleSignInTokenData tokens = gisResponsesToTokenData(credential, token);
+      expect(tokens.accessToken, expectedAccessToken);
+      expect(tokens.idToken, expectedIdToken);
+      expect(tokens.serverAuthCode, isNull);
+    });
 
   });
 
