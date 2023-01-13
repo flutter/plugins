@@ -59,6 +59,7 @@ import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
 import io.flutter.plugins.camera.features.sensororientation.DeviceOrientationManager;
 import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
+import io.flutter.plugins.camera.media.ImageStreamReader;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
@@ -136,7 +137,7 @@ class Camera
   private CameraDeviceWrapper cameraDevice;
   private CameraCaptureSession captureSession;
   private ImageReader pictureImageReader;
-  private ImageReader imageStreamReader;
+  private ImageStreamReader imageStreamReader;
   /** {@link CaptureRequest.Builder} for the camera preview */
   private CaptureRequest.Builder previewRequestBuilder;
 
@@ -304,12 +305,11 @@ class Camera
       Log.w(TAG, "The selected imageFormatGroup is not supported by Android. Defaulting to yuv420");
       imageFormat = ImageFormat.YUV_420_888;
     }
-    imageStreamReader =
-        ImageReader.newInstance(
+    imageStreamReader = new ImageStreamReader(
             resolutionFeature.getPreviewSize().getWidth(),
             resolutionFeature.getPreviewSize().getHeight(),
-            imageFormat,
-            1);
+            imageFormat
+            );
 
     // Open the camera.
     CameraManager cameraManager = CameraUtils.getCameraManager(activity);
@@ -1141,79 +1141,13 @@ class Camera
 
           @Override
           public void onCancel(Object o) {
-            imageStreamReader.setOnImageAvailableListener(null, backgroundHandler);
+            imageStreamReader.removeListener(backgroundHandler);
           }
         });
   }
 
   private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
-    imageStreamReader.setOnImageAvailableListener(
-        reader -> {
-          Image img = reader.acquireNextImage();
-
-          // Use acquireNextImage since image reader is only for one image.
-          if (img == null) return;
-
-
-          List<Map<String, Object>> planes = new ArrayList<>();
-          for (int i=0; i<img.getPlanes().length; i++) {
-            // Current plane
-            Image.Plane plane = img.getPlanes()[i];
-
-            // The metadata to be returned to dart
-            Map<String, Object> planeBuffer = new HashMap<>();
-            planeBuffer.put("bytesPerPixel", plane.getPixelStride());
-
-            // Sometimes YUV420 has additional padding that must be removed. This is only the case if we are
-            // streaming YUV420, the row stride does not match the image width, and the pixel stride is 1.
-            if (reader.getImageFormat() == ImageFormat.YUV_420_888 &&
-                    plane.getRowStride() != img.getWidth() &&
-                    plane.getPixelStride() == 1) {
-              // The ordering of planes is guaranteed by Android. It always goes Y, U, V.
-              int planeWidth;
-              int planeHeight;
-              if (i == 0) {
-                // Y is the image size
-                planeWidth = img.getWidth();
-                planeHeight = img.getHeight();
-              } else {
-                // U and V are guaranteed to be the same size and are half of the image height/width
-                // in YUV420
-                planeWidth = img.getWidth() / 2;
-                planeHeight = img.getHeight() / 2;
-              }
-
-              planeBuffer.put("bytes", removePlaneBufferPadding(plane, planeWidth, planeHeight));
-
-              // Make sure the bytesPerRow matches the image width now that we've removed the padding
-              planeBuffer.put("bytesPerRow", img.getWidth());
-            } else {
-              // Just use the data as-is
-              ByteBuffer buffer = plane.getBuffer();
-              byte[] bytes = new byte[buffer.remaining()];
-              buffer.get(bytes, 0, bytes.length);
-              planeBuffer.put("bytes", bytes);
-              planeBuffer.put("bytesPerRow", plane.getRowStride());
-            }
-            planes.add(planeBuffer);
-          }
-
-          Map<String, Object> imageBuffer = new HashMap<>();
-          imageBuffer.put("width", img.getWidth());
-          imageBuffer.put("height", img.getHeight());
-          imageBuffer.put("format", img.getFormat());
-          imageBuffer.put("planes", planes);
-          imageBuffer.put("lensAperture", this.captureProps.getLastLensAperture());
-          imageBuffer.put("sensorExposureTime", this.captureProps.getLastSensorExposureTime());
-          Integer sensorSensitivity = this.captureProps.getLastSensorSensitivity();
-          imageBuffer.put(
-              "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
-
-          final Handler handler = new Handler(Looper.getMainLooper());
-          handler.post(() -> imageStreamSink.success(imageBuffer));
-          img.close();
-        },
-        backgroundHandler);
+    imageStreamReader.subscribeListener(this.captureProps, imageStreamSink, backgroundHandler);
   }
 
   // Copyright (c) 2019 Dmitry Gordin
