@@ -1154,27 +1154,48 @@ class Camera
           // Use acquireNextImage since image reader is only for one image.
           if (img == null) return;
 
-          List<Map<String, Object>> planes = new ArrayList<>();
-          for (Image.Plane plane : img.getPlanes()) {
-            Map<String, Object> yPlaneBuffer = new HashMap<>();
-            yPlaneBuffer.put("bytesPerPixel", plane.getPixelStride());
 
-            // Now process the plane byte data. We sometimes have to correct the luma channel (Y)
-            // because some devices have some kind of extra padding included. From testing it seems
-            // like we do not have to modify the U/V channels, just the Y channel for this case.
-            if (plane.getRowStride() != img.getWidth() && plane.getPixelStride() == 1) {
-              // There is some padding we have to handle
-              yPlaneBuffer.put("bytes", getPixels(plane.getBuffer(), img.getWidth(), img.getHeight(), plane.getRowStride(), plane.getPixelStride()));
-              yPlaneBuffer.put("bytesPerRow", Math.min(plane.getRowStride(), img.getWidth()));
+          List<Map<String, Object>> planes = new ArrayList<>();
+          for (int i=0; i<img.getPlanes().length; i++) {
+            // Current plane
+            Image.Plane plane = img.getPlanes()[i];
+
+            // The metadata to be returned to dart
+            Map<String, Object> planeBuffer = new HashMap<>();
+            planeBuffer.put("bytesPerPixel", plane.getPixelStride());
+
+            // Sometimes YUV420 has additional padding that must be removed. This is only the case if we are
+            // streaming YUV420, the row stride does not match the image width, and the pixel stride is 1.
+            if (reader.getImageFormat() == ImageFormat.YUV_420_888 &&
+                    plane.getRowStride() != img.getWidth() &&
+                    plane.getPixelStride() == 1) {
+              // The ordering of planes is guaranteed by Android. It always goes Y, U, V.
+              int planeWidth;
+              int planeHeight;
+              if (i == 0) {
+                // Y is the image size
+                planeWidth = img.getWidth();
+                planeHeight = img.getHeight();
+              } else {
+                // U and V are guaranteed to be the same size and are half of the image height/width
+                // in YUV420
+                planeWidth = img.getWidth() / 2;
+                planeHeight = img.getHeight() / 2;
+              }
+
+              planeBuffer.put("bytes", removePlaneBufferPadding(plane, planeWidth, planeHeight));
+
+              // Make sure the bytesPerRow matches the image width now that we've removed the padding
+              planeBuffer.put("bytesPerRow", img.getWidth());
             } else {
               // Just use the data as-is
               ByteBuffer buffer = plane.getBuffer();
               byte[] bytes = new byte[buffer.remaining()];
               buffer.get(bytes, 0, bytes.length);
-              yPlaneBuffer.put("bytes", bytes);
-              yPlaneBuffer.put("bytesPerRow", plane.getRowStride());
+              planeBuffer.put("bytes", bytes);
+              planeBuffer.put("bytesPerRow", plane.getRowStride());
             }
-            planes.add(yPlaneBuffer);
+            planes.add(planeBuffer);
           }
 
           Map<String, Object> imageBuffer = new HashMap<>();
@@ -1195,32 +1216,36 @@ class Camera
         backgroundHandler);
   }
 
-  // Adopted from:
-  // https://github.com/abrenoch/hyperion-android-grabber/blob/c2befd7501c72f93f5c022666266f67142fe8ba3/common/src/main/java/com/abrenoch/hyperiongrabber/common/HyperionScreenEncoder.java#L154-L177
+  // Copyright (c) 2019 Dmitry Gordin
+  // Based on:
+  // https://github.com/gordinmitya/yuv2buf/blob/master/yuv2buf/src/main/java/ru/gordinmitya/yuv2buf/Yuv.java
   //
-  // Will return a new byte buffer with padding accounted for.
-  private byte[] getPixels(ByteBuffer buffer, int width, int height, int rowStride, int pixelStride){
-    int rowPadding = rowStride - width * pixelStride;
-    int offset = 0;
-
-    ByteArrayOutputStream bao = new ByteArrayOutputStream(
-            width  * height  * 3
-    );
-
-    for (int y = 0, compareHeight = height - 1; y < height; y++, offset += rowPadding) {
-      if ( y > compareHeight) {
-        offset += width * pixelStride;
-        continue;
-      }
-
-      for (int x = 0, compareWidth = width - 1; x < width; x++, offset += pixelStride) {
-        if (x > compareWidth) continue;
-        if (offset > buffer.remaining()) continue;
-        bao.write(buffer.get(offset));
-      }
+  // Will remove the padding from a given image plane and return the fixed buffer.
+  private static byte[] removePlaneBufferPadding(Image.Plane plane, int planeWidth, int planeHeight) {
+    if (plane.getPixelStride() != 1) {
+      throw new IllegalArgumentException("it's only valid to remove padding when pixelStride == 1");
     }
 
-    return bao.toByteArray();
+    ByteBuffer dst =  ByteBuffer.allocate(planeWidth * planeHeight);
+    ByteBuffer src = plane.getBuffer();
+    int rowStride = plane.getRowStride();
+    ByteBuffer row;
+    for (int i = 0; i < planeHeight; i++) {
+      row = clipBuffer(src, i * rowStride, planeWidth);
+      dst.put(row);
+    }
+
+    return dst.array();
+  }
+
+  // Copyright (c) 2019 Dmitry Gordin
+  // Based on:
+  // https://github.com/gordinmitya/yuv2buf/blob/master/yuv2buf/src/main/java/ru/gordinmitya/yuv2buf/Yuv.java
+  private static ByteBuffer clipBuffer(ByteBuffer buffer, int start, int size) {
+    ByteBuffer duplicate = buffer.duplicate();
+    duplicate.position(start);
+    duplicate.limit(start + size);
+    return duplicate.slice();
   }
 
   private void closeCaptureSession() {
