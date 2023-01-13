@@ -254,6 +254,164 @@ void main() {
           ));
     });
 
+    test('fails if an iOS Swift plugin is missing the search paths workaround',
+        () async {
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['ios/Classes/SomeSwift.swift']);
+      _writeFakePodspec(plugin, 'ios');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['podspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains(r'''
+  s.xcconfig = {
+    'LIBRARY_SEARCH_PATHS' => '$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)/ $(SDKROOT)/usr/lib/swift',
+    'LD_RUNPATH_SEARCH_PATHS' => '/usr/lib/swift',
+  }'''),
+              contains('The following packages had errors:'),
+              contains('plugin1:\n'
+                  '    plugin1.podspec')
+            ],
+          ));
+    });
+
+    test(
+        'fails if a shared-source Swift plugin is missing the search paths workaround',
+        () async {
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['darwin/Classes/SomeSwift.swift']);
+      _writeFakePodspec(plugin, 'darwin');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['podspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains(r'''
+  s.xcconfig = {
+    'LIBRARY_SEARCH_PATHS' => '$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)/ $(SDKROOT)/usr/lib/swift',
+    'LD_RUNPATH_SEARCH_PATHS' => '/usr/lib/swift',
+  }'''),
+              contains('The following packages had errors:'),
+              contains('plugin1:\n'
+                  '    plugin1.podspec')
+            ],
+          ));
+    });
+
+    test('does not require the search paths workaround for macOS plugins',
+        () async {
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['macos/Classes/SomeSwift.swift']);
+      _writeFakePodspec(plugin, 'macos');
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['podspec-check']);
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('Ran for 1 package(s)'),
+            ],
+          ));
+    });
+
+    test('does not require the search paths workaround for ObjC iOS plugins',
+        () async {
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>[
+            'ios/Classes/SomeObjC.h',
+            'ios/Classes/SomeObjC.m'
+          ]);
+      _writeFakePodspec(plugin, 'ios');
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['podspec-check']);
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('Ran for 1 package(s)'),
+            ],
+          ));
+    });
+
+    test('passes if the search paths workaround is present', () async {
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['ios/Classes/SomeSwift.swift']);
+      _writeFakePodspec(plugin, 'ios', includeSwiftWorkaround: true);
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['podspec-check']);
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('Ran for 1 package(s)'),
+            ],
+          ));
+    });
+
+    test('passes if the search paths workaround is present for iOS only',
+        () async {
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['ios/Classes/SomeSwift.swift']);
+      _writeFakePodspec(plugin, 'ios',
+          includeSwiftWorkaround: true, scopeSwiftWorkaround: true);
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['podspec-check']);
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('Ran for 1 package(s)'),
+            ],
+          ));
+    });
+
+    test('does not require the search paths workaround for Swift example code',
+        () async {
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
+        'ios/Classes/SomeObjC.h',
+        'ios/Classes/SomeObjC.m',
+        'example/ios/Runner/AppDelegate.swift',
+      ]);
+      _writeFakePodspec(plugin, 'ios');
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['podspec-check']);
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('Ran for 1 package(s)'),
+            ],
+          ));
+    });
+
     test('skips when there are no podspecs', () async {
       createFakePlugin('plugin1', packagesDir);
 
