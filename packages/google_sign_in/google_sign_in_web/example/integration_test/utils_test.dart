@@ -11,7 +11,8 @@ import 'package:google_sign_in_platform_interface/google_sign_in_platform_interf
 import 'package:google_sign_in_web/src/utils.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:jose/jose.dart';
-import 'package:js/js_util.dart' as js_util;
+
+import 'src/jsify_as.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +40,6 @@ void main() {
       expect(tokens.idToken, expectedIdToken);
       expect(tokens.serverAuthCode, isNull);
     });
-
   });
 
   group('gisResponsesToUserData', () {
@@ -90,14 +90,10 @@ CredentialResponse createJwt(Map<String, Object?>? claims) {
     }), algorithm: 'HS256'); // bogus crypto, don't use this for prod!
     builder.setProtectedHeader('typ', 'JWT');
     credential = builder.build().toCompactSerialization();
-
+    // ignore:avoid_print
     print('Generated JWT: $credential');
   }
   return jsifyAs<CredentialResponse>(<String, Object?>{
     'credential': credential,
   });
-}
-
-T jsifyAs<T>(Map<String, Object?> data) {
-  return js_util.jsify(data) as T;
 }
