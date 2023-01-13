@@ -14,6 +14,54 @@ import 'package:test/test.dart';
 import 'mocks.dart';
 import 'util.dart';
 
+/// Adds a fake podspec to [plugin]'s [platform] directory.
+///
+/// If [includeSwiftWorkaround] is set, the xcconfig additions to make Swift
+/// libraries work in apps that have no Swift will be included. If
+/// [scopeSwiftWorkaround] is set, it will be specific to the iOS configuration.
+void _writeFakePodspec(RepositoryPackage plugin, String platform,
+    {bool includeSwiftWorkaround = false, bool scopeSwiftWorkaround = false}) {
+  final String pluginName = plugin.directory.basename;
+  final File file = plugin.directory
+      .childDirectory(platform)
+      .childFile('$pluginName.podspec');
+  final String swiftWorkaround = includeSwiftWorkaround
+      ? '''
+  s.${scopeSwiftWorkaround ? 'ios.' : ''}xcconfig = {
+     'LIBRARY_SEARCH_PATHS' => '\$(TOOLCHAIN_DIR)/usr/lib/swift/\$(PLATFORM_NAME)/ \$(SDKROOT)/usr/lib/swift',
+     'LD_RUNPATH_SEARCH_PATHS' => '/usr/lib/swift',
+  }
+'''
+      : '';
+  file.createSync(recursive: true);
+  file.writeAsStringSync('''
+#
+# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
+#
+Pod::Spec.new do |s|
+  s.name             = 'shared_preferences_foundation'
+  s.version          = '0.0.1'
+  s.summary          = 'iOS and macOS implementation of the shared_preferences plugin.'
+  s.description      = <<-DESC
+Wraps NSUserDefaults, providing a persistent store for simple key-value pairs.
+                       DESC
+  s.homepage         = 'https://github.com/flutter/plugins/tree/main/packages/shared_preferences/shared_preferences_foundation'
+  s.license          = { :type => 'BSD', :file => '../LICENSE' }
+  s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/shared_preferences/shared_preferences_foundation' }
+  s.source_files = 'Classes/**/*'
+  s.ios.dependency 'Flutter'
+  s.osx.dependency 'FlutterMacOS'
+  s.ios.deployment_target = '9.0'
+  s.osx.deployment_target = '10.11'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
+  $swiftWorkaround
+  s.swift_version = '5.0'
+
+end
+''');
+}
+
 void main() {
   group('PodspecCheckCommand', () {
     FileSystem fileSystem;
@@ -69,10 +117,10 @@ void main() {
         'plugin1',
         packagesDir,
         extraFiles: <String>[
-          'ios/plugin1.podspec',
           'bogus.dart', // Ignore non-podspecs.
         ],
       );
+      _writeFakePodspec(plugin, 'ios');
 
       processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
         MockProcess(stdout: 'Foo', stderr: 'Bar'),
@@ -124,8 +172,8 @@ void main() {
     });
 
     test('fails if pod is missing', () async {
-      createFakePlugin('plugin1', packagesDir,
-          extraFiles: <String>['plugin1.podspec']);
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir);
+      _writeFakePodspec(plugin, 'ios');
 
       // Simulate failure from `which pod`.
       processRunner.mockProcessesForExecutable['which'] = <io.Process>[
@@ -150,8 +198,8 @@ void main() {
     });
 
     test('fails if linting as a framework fails', () async {
-      createFakePlugin('plugin1', packagesDir,
-          extraFiles: <String>['plugin1.podspec']);
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir);
+      _writeFakePodspec(plugin, 'ios');
 
       // Simulate failure from `pod`.
       processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
@@ -178,8 +226,8 @@ void main() {
     });
 
     test('fails if linting as a static library fails', () async {
-      createFakePlugin('plugin1', packagesDir,
-          extraFiles: <String>['plugin1.podspec']);
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir);
+      _writeFakePodspec(plugin, 'ios');
 
       // Simulate failure from the second call to `pod`.
       processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
