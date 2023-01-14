@@ -1,3 +1,7 @@
+## 3.1.2
+
+* Fixes bug where an `AndroidWebViewController` couldn't be reused with a new `WebViewWidget`.
+
 ## 3.1.1
 
 * Fixes bug where a `AndroidNavigationDelegate` was required to load a request.
