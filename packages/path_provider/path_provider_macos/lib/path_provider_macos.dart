@@ -4,16 +4,13 @@
 
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:flutter/services.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+
+import 'messages.g.dart';
 
 /// The macOS implementation of [PathProviderPlatform].
 class PathProviderMacOS extends PathProviderPlatform {
-  /// The method channel used to interact with the native platform.
-  @visibleForTesting
-  MethodChannel methodChannel =
-      const MethodChannel('plugins.flutter.io/path_provider_macos');
+  final PathProviderApi _pathProvider = PathProviderApi();
 
   /// Registers this class as the default instance of [PathProviderPlatform]
   static void registerWith() {
@@ -22,13 +19,13 @@ class PathProviderMacOS extends PathProviderPlatform {
 
   @override
   Future<String?> getTemporaryPath() {
-    return methodChannel.invokeMethod<String>('getTemporaryDirectory');
+    return _pathProvider.getDirectoryPath(DirectoryType.temp);
   }
 
   @override
   Future<String?> getApplicationSupportPath() async {
-    final String? path = await methodChannel
-        .invokeMethod<String>('getApplicationSupportDirectory');
+    final String? path =
+        await _pathProvider.getDirectoryPath(DirectoryType.applicationSupport);
     if (path != null) {
       // Ensure the directory exists before returning it, for consistency with
       // other platforms.
@@ -39,13 +36,12 @@ class PathProviderMacOS extends PathProviderPlatform {
 
   @override
   Future<String?> getLibraryPath() {
-    return methodChannel.invokeMethod<String>('getLibraryDirectory');
+    return _pathProvider.getDirectoryPath(DirectoryType.library);
   }
 
   @override
   Future<String?> getApplicationDocumentsPath() {
-    return methodChannel
-        .invokeMethod<String>('getApplicationDocumentsDirectory');
+    return _pathProvider.getDirectoryPath(DirectoryType.applicationDocuments);
   }
 
   @override
@@ -67,6 +63,6 @@ class PathProviderMacOS extends PathProviderPlatform {
 
   @override
   Future<String?> getDownloadsPath() {
-    return methodChannel.invokeMethod<String>('getDownloadsDirectory');
+    return _pathProvider.getDirectoryPath(DirectoryType.downloads);
   }
 }
