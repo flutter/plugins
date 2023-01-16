@@ -13,9 +13,9 @@ API_AVAILABLE(ios(14))
 @interface FLTPHPickerSaveImageToPathOperation ()
 
 @property(strong, nonatomic) PHPickerResult *result;
-@property(strong, nonatomic) NSNumber *maxHeight;
-@property(strong, nonatomic) NSNumber *maxWidth;
-@property(strong, nonatomic) NSNumber *desiredImageQuality;
+@property(assign, nonatomic) NSNumber *maxHeight;
+@property(assign, nonatomic) NSNumber *maxWidth;
+@property(assign, nonatomic) NSNumber *desiredImageQuality;
 @property(assign, nonatomic) BOOL requestFullMetadata;
 
 @end
@@ -175,7 +175,7 @@ API_AVAILABLE(ios(14))
     NSString *savedPath =
         [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
                                                         image:localImage
-                                                 imageQuality:self.desiredImageQuality];
+                                                 imageQuality: @0.5];
     [self completeOperationWithPath:savedPath error:nil];
   }
 }
