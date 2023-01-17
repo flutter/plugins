@@ -82,9 +82,11 @@ public class ImageResizerTest {
 
   @Test
   public void onResizeImageIfNeeded_WhenResizeIsNotNecessary_ShouldOnlyQueryBitmap() {
-    try (MockedStatic<BitmapFactory> theMock = mockStatic(BitmapFactory.class, Mockito.CALLS_REAL_METHODS)) {
+    try (MockedStatic<BitmapFactory> theMock =
+        mockStatic(BitmapFactory.class, Mockito.CALLS_REAL_METHODS)) {
       String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, null);
-      ArgumentCaptor<BitmapFactory.Options> argument = ArgumentCaptor.forClass(BitmapFactory.Options.class);
+      ArgumentCaptor<BitmapFactory.Options> argument =
+          ArgumentCaptor.forClass(BitmapFactory.Options.class);
       theMock.verify(() -> BitmapFactory.decodeFile(anyString(), argument.capture()));
       BitmapFactory.Options capturedOptions = argument.getValue();
       assertTrue(capturedOptions.inJustDecodeBounds);
@@ -93,9 +95,11 @@ public class ImageResizerTest {
 
   @Test
   public void onResizeImageIfNeeded_WhenResizeIsNecessary_ShouldAllocateBitmap() {
-    try (MockedStatic<BitmapFactory> theMock = mockStatic(BitmapFactory.class, Mockito.CALLS_REAL_METHODS)) {
+    try (MockedStatic<BitmapFactory> theMock =
+        mockStatic(BitmapFactory.class, Mockito.CALLS_REAL_METHODS)) {
       String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), 50.0, 50.0, null);
-      ArgumentCaptor<BitmapFactory.Options> argument = ArgumentCaptor.forClass(BitmapFactory.Options.class);
+      ArgumentCaptor<BitmapFactory.Options> argument =
+          ArgumentCaptor.forClass(BitmapFactory.Options.class);
       theMock.verify(() -> BitmapFactory.decodeFile(anyString(), argument.capture()), times(2));
       List<BitmapFactory.Options> capturedOptions = argument.getAllValues();
       assertTrue(capturedOptions.get(0).inJustDecodeBounds);
