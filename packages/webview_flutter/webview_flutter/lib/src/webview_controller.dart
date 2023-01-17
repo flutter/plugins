@@ -14,8 +14,14 @@ import 'navigation_delegate.dart';
 /// Controls a WebView provided by the host platform.
 ///
 /// Pass this to a [WebViewWidget] to display the WebView.
+///
+/// ## Platform-Specific Features
+/// {@macro webview_flutter.WebViewController.fromPlatformCreationParams}
 class WebViewController {
   /// Constructs a [WebViewController].
+  ///
+  /// See [WebViewController.fromPlatformCreationParams] for setting parameters
+  /// for a specific platform.
   WebViewController()
       : this.fromPlatformCreationParams(
           const PlatformWebViewControllerCreationParams(),
@@ -23,6 +29,34 @@ class WebViewController {
 
   /// Constructs a [WebViewController] from creation params for a specific
   /// platform.
+  ///
+  /// {@template webview_flutter.WebViewCookieManager.fromPlatformCreationParams}
+  /// Below is an example of setting platform specific parameters for iOS and
+  /// Android:
+  ///
+  /// ```dart
+  /// PlatformWebViewControllerCreationParams params =
+  ///     const PlatformWebViewControllerCreationParams();
+  ///
+  /// if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+  ///   params = WebKitWebViewControllerCreationParams
+  ///       .fromPlatformWebViewControllerCreationParams(
+  ///     params,
+  ///     allowsInlineMediaPlayback: true,
+  ///   );
+  /// } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+  ///   params = AndroidWebViewControllerCreationParams
+  ///       .fromPlatformWebViewControllerCreationParams(
+  ///     params,
+  ///   );
+  /// }
+  ///
+  /// final WebViewController webViewController =
+  ///     WebViewController.fromPlatformCreationParams(
+  ///   params,
+  /// );
+  /// ```
+  /// {@endtemplate}
   WebViewController.fromPlatformCreationParams(
     PlatformWebViewControllerCreationParams params,
   ) : this.fromPlatform(PlatformWebViewController(params));

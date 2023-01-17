@@ -10,8 +10,14 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'webview_controller.dart';
 
 /// Displays a native WebView as a Widget.
+///
+/// ## Platform-Specific Features
+/// {@macro webview_flutter.WebViewWidget.fromPlatformCreationParams}
 class WebViewWidget extends StatelessWidget {
   /// Constructs a [WebViewWidget].
+  ///
+  /// See [WebViewWidget.fromPlatformCreationParams] for setting parameters for
+  /// a specific platform.
   WebViewWidget({
     Key? key,
     required WebViewController controller,
@@ -27,8 +33,41 @@ class WebViewWidget extends StatelessWidget {
           ),
         );
 
-  /// Constructs a [WebViewWidget] from creation params for a specific
-  /// platform.
+  /// Constructs a [WebViewWidget] from creation params for a specific platform.
+  ///
+  /// {@template webview_flutter.WebViewWidget.fromPlatformCreationParams}
+  /// Below is an example of setting platform specific parameters for iOS and
+  /// Android:
+  ///
+  /// ```dart
+  /// final WebViewController controller = WebViewController();
+  ///
+  /// PlatformWebViewWidgetCreationParams params =
+  ///     PlatformWebViewWidgetCreationParams(
+  ///   controller: controller.platform,
+  ///   layoutDirection: TextDirection.ltr,
+  ///   gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+  /// );
+  ///
+  /// if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+  ///   params = WebKitWebViewWidgetCreationParams
+  ///       .fromPlatformWebViewWidgetCreationParams(
+  ///     params,
+  ///   );
+  /// } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+  ///   params = AndroidWebViewWidgetCreationParams
+  ///       .fromPlatformWebViewWidgetCreationParams(
+  ///     params,
+  ///     displayWithHybridComposition: true,
+  ///   );
+  /// }
+  ///
+  /// final WebViewWidget webViewWidget =
+  ///     WebViewWidget.fromPlatformCreationParams(
+  ///   params: params,
+  /// );
+  /// ```
+  /// {@endtemplate}
   WebViewWidget.fromPlatformCreationParams({
     Key? key,
     required PlatformWebViewWidgetCreationParams params,

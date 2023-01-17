@@ -9,6 +9,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -161,6 +163,27 @@ Page resource error:
 
   @override
   Widget build(BuildContext context) {
+PlatformWebViewControllerCreationParams params =
+    const PlatformWebViewControllerCreationParams();
+
+if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+  params = WebKitWebViewControllerCreationParams
+      .fromPlatformWebViewControllerCreationParams(
+    params,
+    allowsInlineMediaPlayback: true,
+  );
+} else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+  params = AndroidWebViewControllerCreationParams
+      .fromPlatformWebViewControllerCreationParams(
+    params,
+  );
+}
+
+final WebViewController webViewController =
+    WebViewController.fromPlatformCreationParams(
+  params,
+);
+
     return Scaffold(
       backgroundColor: Colors.green,
       appBar: AppBar(
