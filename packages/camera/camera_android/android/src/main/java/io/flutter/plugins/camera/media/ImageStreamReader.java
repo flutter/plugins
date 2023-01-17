@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.view.Surface;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -15,32 +16,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.Log;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;
 
 // Wraps an ImageReader to allow for testing of the image handler.
 public class ImageStreamReader {
-    // The actual im
     private final ImageReader imageReader;
+    private final ImageStreamReaderUtils imageStreamReaderUtils;
 
     /**
      * Creates a new instance of the {@link ImageStreamReader}.
      *
-     * @param width is the integer width of the image stream (preview image)
-     * @param height is the integer height of the image stream (preview image)
-     * @param imageFormatGroup is the integer image format group, as a valid {@link ImageFormat}.
+     * @param imageReader is the image reader that will receive frames
+     * @param imageStreamReaderUtils is an instance of {@link ImageStreamReaderUtils}
      */
-    public ImageStreamReader(
-            int width,
-            int height,
-            int imageFormatGroup
-    ) {
-        this.imageReader = ImageReader.newInstance(
-                width,
-                height,
-                imageFormatGroup,
-                1
-        );
+    @VisibleForTesting
+    public ImageStreamReader(ImageReader imageReader, ImageStreamReaderUtils imageStreamReaderUtils) {
+        this.imageReader = imageReader;
+        this.imageStreamReaderUtils = imageStreamReaderUtils;
+    }
+
+    /**
+     * Creates a new instance of the {@link ImageStreamReader}.
+     *
+     * @param imageReader is the image reader that will receive frames
+     */
+    public ImageStreamReader(ImageReader imageReader) {
+        this.imageReader = imageReader;
+        this.imageStreamReaderUtils = new ImageStreamReaderUtils();
     }
 
     /**
@@ -52,12 +56,15 @@ public class ImageStreamReader {
      * @param captureProps is the capture props from the camera class as {@link CameraCaptureProperties}
      * @param imageStreamSink is the image stream sink from dart as a dart {@link EventChannel.EventSink}
      */
-    private static void onImageAvailable(
+    @VisibleForTesting
+    public void onImageAvailable(
             @NonNull Image image,
             int imageFormat,
             CameraCaptureProperties captureProps,
             EventChannel.EventSink imageStreamSink
     ) {
+        Log.i("flutter", "Image planes: " + image.getPlanes().length);
+
         List<Map<String, Object>> planes = new ArrayList<>();
         for (int i=0; i<image.getPlanes().length; i++) {
             // Current plane
@@ -86,7 +93,7 @@ public class ImageStreamReader {
                     planeHeight = image.getHeight() / 2;
                 }
 
-                planeBuffer.put("bytes", removePlaneBufferPadding(plane, planeWidth, planeHeight));
+                planeBuffer.put("bytes", imageStreamReaderUtils.removePlaneBufferPadding(plane, planeWidth, planeHeight));
 
                 // Make sure the bytesPerRow matches the image width now that we've removed the padding
                 planeBuffer.put("bytesPerRow", image.getWidth());
@@ -115,52 +122,6 @@ public class ImageStreamReader {
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.post(() -> imageStreamSink.success(imageBuffer));
         image.close();
-    }
-
-    /**
-     * Copyright (c) 2019 Dmitry Gordin
-     * Based on:
-     * https://github.com/gordinmitya/yuv2buf/blob/master/yuv2buf/src/main/java/ru/gordinmitya/yuv2buf/Yuv.java
-     *
-     * Will remove the padding from a given image plane and return the fixed buffer.
-     *
-     * @param plane is the image plane (buffer) that will be processed as an {@link Image.Plane}
-     * @param planeWidth is the width of the plane as an int
-     * @param planeHeight is the height of the plane as an int
-     */
-    private static byte[] removePlaneBufferPadding(Image.Plane plane, int planeWidth, int planeHeight) {
-        if (plane.getPixelStride() != 1) {
-            throw new IllegalArgumentException("it's only valid to remove padding when pixelStride == 1");
-        }
-
-        ByteBuffer dst =  ByteBuffer.allocate(planeWidth * planeHeight);
-        ByteBuffer src = plane.getBuffer();
-        int rowStride = plane.getRowStride();
-        ByteBuffer row;
-        for (int i = 0; i < planeHeight; i++) {
-            row = clipBuffer(src, i * rowStride, planeWidth);
-            dst.put(row);
-        }
-
-        return dst.array();
-    }
-
-    /**
-     * Copyright (c) 2019 Dmitry Gordin
-     * Based on:
-     * https://github.com/gordinmitya/yuv2buf/blob/master/yuv2buf/src/main/java/ru/gordinmitya/yuv2buf/Yuv.java
-     *
-     * Copies part of a buffer to a new buffer, used to trim the padding.
-     *
-     * @param buffer is the source buffer to be modified as a {@link ByteBuffer}
-     * @param start is the starting offset to read from as an int
-     * @param size is the length of data to read as an int
-     */
-    private static ByteBuffer clipBuffer(ByteBuffer buffer, int start, int size) {
-        ByteBuffer duplicate = buffer.duplicate();
-        duplicate.position(start);
-        duplicate.limit(start + size);
-        return duplicate.slice();
     }
 
     /**
