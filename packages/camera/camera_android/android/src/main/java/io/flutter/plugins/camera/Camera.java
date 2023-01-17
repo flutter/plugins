@@ -34,9 +34,21 @@ import android.util.Log;
 import android.util.Size;
 import android.view.Display;
 import android.view.Surface;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Executors;
+
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
@@ -64,17 +76,6 @@ import io.flutter.plugins.camera.media.MediaRecorderBuilder;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.Executors;
 
 @FunctionalInterface
 interface ErrorCallback {
@@ -1149,38 +1150,6 @@ class Camera
 
   private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
     imageStreamReader.subscribeListener(this.captureProps, imageStreamSink, backgroundHandler);
-  }
-
-  // Copyright (c) 2019 Dmitry Gordin
-  // Based on:
-  // https://github.com/gordinmitya/yuv2buf/blob/master/yuv2buf/src/main/java/ru/gordinmitya/yuv2buf/Yuv.java
-  //
-  // Will remove the padding from a given image plane and return the fixed buffer.
-  private static byte[] removePlaneBufferPadding(Image.Plane plane, int planeWidth, int planeHeight) {
-    if (plane.getPixelStride() != 1) {
-      throw new IllegalArgumentException("it's only valid to remove padding when pixelStride == 1");
-    }
-
-    ByteBuffer dst =  ByteBuffer.allocate(planeWidth * planeHeight);
-    ByteBuffer src = plane.getBuffer();
-    int rowStride = plane.getRowStride();
-    ByteBuffer row;
-    for (int i = 0; i < planeHeight; i++) {
-      row = clipBuffer(src, i * rowStride, planeWidth);
-      dst.put(row);
-    }
-
-    return dst.array();
-  }
-
-  // Copyright (c) 2019 Dmitry Gordin
-  // Based on:
-  // https://github.com/gordinmitya/yuv2buf/blob/master/yuv2buf/src/main/java/ru/gordinmitya/yuv2buf/Yuv.java
-  private static ByteBuffer clipBuffer(ByteBuffer buffer, int start, int size) {
-    ByteBuffer duplicate = buffer.duplicate();
-    duplicate.position(start);
-    duplicate.limit(start + size);
-    return duplicate.slice();
   }
 
   private void closeCaptureSession() {

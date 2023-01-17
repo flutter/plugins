@@ -6,6 +6,7 @@ package io.flutter.plugins.camera.features.zoomlevel;
 
 import android.graphics.Rect;
 import android.hardware.camera2.CaptureRequest;
+
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 

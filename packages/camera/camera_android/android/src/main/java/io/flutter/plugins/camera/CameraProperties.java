@@ -12,6 +12,7 @@ import android.os.Build.VERSION_CODES;
 import android.util.Range;
 import android.util.Rational;
 import android.util.Size;
+
 import androidx.annotation.RequiresApi;
 
 /** An interface allowing access to the different characteristics of the device's camera. */

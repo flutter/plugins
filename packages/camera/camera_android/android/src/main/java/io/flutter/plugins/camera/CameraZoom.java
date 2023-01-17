@@ -5,6 +5,7 @@
 package io.flutter.plugins.camera;
 
 import android.graphics.Rect;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;

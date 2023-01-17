@@ -5,8 +5,10 @@
 package io.flutter.plugins.camera;
 
 import android.media.Image;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

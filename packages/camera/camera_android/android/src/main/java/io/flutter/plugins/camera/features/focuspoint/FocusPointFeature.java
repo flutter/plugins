@@ -7,7 +7,9 @@ package io.flutter.plugins.camera.features.focuspoint;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;
+
 import androidx.annotation.NonNull;
+
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.CameraRegionUtils;
