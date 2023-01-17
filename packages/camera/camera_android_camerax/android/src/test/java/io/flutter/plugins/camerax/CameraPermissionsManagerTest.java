@@ -10,11 +10,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.pm.PackageManager;
-import io.flutter.plugins.camerax.CameraPermissions.CameraRequestPermissionsListener;
-import io.flutter.plugins.camerax.CameraPermissions.ResultCallback;
+import io.flutter.plugins.camerax.CameraPermissionsManager.CameraRequestPermissionsListener;
+import io.flutter.plugins.camerax.CameraPermissionsManager.ResultCallback;
 import org.junit.Test;
 
-public class CameraPermissionsTest {
+public class CameraPermissionsManagerTest {
   @Test
   public void listener_respondsOnce() {
     final int[] calledCounter = {0};
