@@ -1,3 +1,7 @@
+## 5.4.3
+
+* Updates code for stricter lint checks.
+
 ## 5.4.2
 
 * Updates minimum Flutter version to 2.10.

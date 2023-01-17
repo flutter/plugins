@@ -44,11 +44,13 @@ class PubVersionFinder {
           result: PubVersionFinderResult.fail,
           httpResponse: response);
     }
-    final List<Version> versions =
-        (json.decode(response.body)['versions'] as List<dynamic>)
-            .map<Version>((final dynamic versionString) =>
-                Version.parse(versionString as String))
-            .toList();
+    final Map<Object?, Object?> responseBody =
+        json.decode(response.body) as Map<Object?, Object?>;
+    final List<Version> versions = (responseBody['versions']! as List<Object?>)
+        .cast<String>()
+        .map<Version>(
+            (final String versionString) => Version.parse(versionString))
+        .toList();
 
     return PubVersionFinderResponse(
         versions: versions,
