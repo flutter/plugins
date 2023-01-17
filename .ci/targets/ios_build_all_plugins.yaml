@@ -3,9 +3,9 @@ tasks:
     script: .ci/scripts/prepare_tool.sh
   - name: create all_plugins app
     script: .ci/scripts/create_all_plugins_app.sh
-  - name: build all_plugins for macOS debug
+  - name: build all_plugins for iOS debug
     script: .ci/scripts/build_all_plugins.sh
-    args: ["macos", "debug"]
-  - name: build all_plugins for macOS release
+    args: ["ios", "debug", "--no-codesign"]
+  - name: build all_plugins for iOS release
     script: .ci/scripts/build_all_plugins.sh
-    args: ["macos", "release"]
+    args: ["ios", "release", "--no-codesign"]

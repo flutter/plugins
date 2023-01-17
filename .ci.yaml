@@ -25,6 +25,17 @@ platform_properties:
         ]
       device_type: none
       os: Windows
+  mac_arm64:
+    properties:
+      dependencies: >-
+        [
+          {"dependency": "xcode", "version": "14a5294e"},
+          {"dependency": "gems", "version": "v3.3.14"}
+        ]
+      os: Mac-12
+      device_type: none
+      cpu: arm64
+      xcode: 14a5294e # xcode 14.0 beta 5
   mac_x64:
     properties:
       dependencies: >-
@@ -36,7 +47,7 @@ platform_properties:
       device_type: none
       cpu: x86
       xcode: 14a5294e # xcode 14.0 beta 5
-      
+
 
 targets:
   ### iOS+macOS tasks ***
@@ -74,7 +85,30 @@ targets:
       channel: stable
 
   ### iOS tasks ###
-  # TODO(stuartmorgan): Swap this and ios-build_all_plugins once simulator
+  # TODO(stuartmorgan): Swap this ios_platform_tests_* once simulator
+  # tests are reliable on the ARM infrastructure. See discussion at
+  # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
+  - name: Mac_arm64 ios_build_all_plugins master
+    bringup: true
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: ios_build_all_plugins.yaml
+      channel: master
+
+  - name: Mac_arm64 ios_build_all_plugins stable
+    bringup: true
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: ios_build_all_plugins.yaml
+      channel: stable
+
+  # TODO(stuartmorgan): Swap this and ios_build_all_plugins once simulator
   # tests are reliable on the ARM infrastructure. See discussion at
   # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
   - name: Mac_x64 ios_platform_tests_1_of_4 master
