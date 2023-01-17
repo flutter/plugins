@@ -55,7 +55,7 @@ class PublishCheckCommand extends PackageLoopingCommand {
 
   @override
   final String description =
-      'Checks to make sure that a plugin *could* be published.';
+      'Checks to make sure that a package *could* be published.';
 
   final PubVersionFinder _pubVersionFinder;
 
@@ -130,7 +130,23 @@ class PublishCheckCommand extends PackageLoopingCommand {
     }
   }
 
+  // Run `dart pub get` on the examples of [package].
+  Future<void> _fetchExampleDeps(RepositoryPackage package) async {
+    for (final RepositoryPackage example in package.getExamples()) {
+      await processRunner.runAndStream(
+        'dart',
+        <String>['pub', 'get'],
+        workingDir: example.directory,
+      );
+    }
+  }
+
   Future<bool> _hasValidPublishCheckRun(RepositoryPackage package) async {
+    // `pub publish` does not do `dart pub get` inside `example` directories
+    // of a package (but they're part of the analysis output!).
+    // Issue: https://github.com/flutter/flutter/issues/113788
+    await _fetchExampleDeps(package);
+
     print('Running pub publish --dry-run:');
     final io.Process process = await processRunner.start(
       flutterCommand,

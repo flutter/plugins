@@ -1,3 +1,8 @@
+## 2.0.14
+
+* Fixes typo in `SharedPreferencesAndroid` docs.
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
 ## 2.0.13
 
 * Updates gradle to 7.2.2.

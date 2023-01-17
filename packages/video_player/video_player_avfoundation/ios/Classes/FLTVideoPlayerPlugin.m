@@ -36,7 +36,11 @@
 @interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer *player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput *videoOutput;
-/// An invisible player layer used to access the pixel buffers in protected video streams in iOS 16.
+// This is to fix 2 bugs: 1. blank video for encrypted video streams on iOS 16
+// (https://github.com/flutter/flutter/issues/111457) and 2. swapped width and height for some video
+// streams (not just iOS 16).  (https://github.com/flutter/flutter/issues/109116).
+// An invisible AVPlayerLayer is used to overwrite the protection of pixel buffers in those streams
+// for issue #1, and restore the correct width and height for issue #2.
 @property(readonly, nonatomic) AVPlayerLayer *playerLayer;
 @property(readonly, nonatomic) CADisplayLink *displayLink;
 @property(nonatomic) FlutterEventChannel *eventChannel;
@@ -134,17 +138,13 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   return degrees;
 };
 
-NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
-  for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
-    if ([scene isKindOfClass:UIWindowScene.class]) {
-      for (UIWindow *window in ((UIWindowScene *)scene).windows) {
-        if (window.isKeyWindow) {
-          return window.rootViewController;
-        }
-      }
-    }
-  }
-  return nil;
+NS_INLINE UIViewController *rootViewController() {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  // TODO: (hellohuanlin) Provide a non-deprecated codepath. See
+  // https://github.com/flutter/flutter/issues/104117
+  return UIApplication.sharedApplication.keyWindow.rootViewController;
+#pragma clang diagnostic pop
 }
 
 - (AVMutableVideoComposition *)getVideoCompositionWithTransform:(CGAffineTransform)transform
@@ -242,13 +242,13 @@ NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
 
-  // This is to fix a bug (https://github.com/flutter/flutter/issues/111457) in iOS 16 with blank
-  // video for encrypted video streams. An invisible AVPlayerLayer is used to overwrite the
-  // protection of pixel buffers in those streams.
-  if (@available(iOS 16.0, *)) {
-    _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
-    [rootViewController().view.layer addSublayer:_playerLayer];
-  }
+  // This is to fix 2 bugs: 1. blank video for encrypted video streams on iOS 16
+  // (https://github.com/flutter/flutter/issues/111457) and 2. swapped width and height for some
+  // video streams (not just iOS 16).  (https://github.com/flutter/flutter/issues/109116). An
+  // invisible AVPlayerLayer is used to overwrite the protection of pixel buffers in those streams
+  // for issue #1, and restore the correct width and height for issue #2.
+  _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
+  [rootViewController().view.layer addSublayer:_playerLayer];
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
@@ -481,9 +481,7 @@ NS_INLINE UIViewController *rootViewController() API_AVAILABLE(ios(16.0)) {
 /// so the channel is going to die or is already dead.
 - (void)disposeSansEventChannel {
   _disposed = YES;
-  if (@available(iOS 16.0, *)) {
-    [_playerLayer removeFromSuperlayer];
-  }
+  [_playerLayer removeFromSuperlayer];
   [_displayLink invalidate];
   AVPlayerItem *currentItem = self.player.currentItem;
   [currentItem removeObserver:self forKeyPath:@"status"];

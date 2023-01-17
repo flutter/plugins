@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:yaml/yaml.dart';
 
 import 'core.dart';
+import 'repository_package.dart';
 
 /// Possible plugin support options for a platform.
 enum PlatformSupport {

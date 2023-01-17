@@ -40,7 +40,7 @@ void main() {
       runner.addCommand(command);
     });
 
-    void _writeJavaTestFile(RepositoryPackage plugin, String relativeFilePath,
+    void writeJavaTestFile(RepositoryPackage plugin, String relativeFilePath,
         {String runnerClass = 'FlutterTestRunner'}) {
       childFileWithSubcomponents(
               plugin.directory, p.posix.split(relativeFilePath))
@@ -67,7 +67,7 @@ public class MainActivityTest {
         'example/android/gradlew',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -97,7 +97,7 @@ public class MainActivityTest {
         'example/android/gradlew',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['firebase-test-lab']);
@@ -120,7 +120,7 @@ public class MainActivityTest {
         'example/android/gradlew',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin1, javaTestFileRelativePath);
+      writeJavaTestFile(plugin1, javaTestFileRelativePath);
       final RepositoryPackage plugin2 =
           createFakePlugin('plugin2', packagesDir, extraFiles: <String>[
         'test/plugin_test.dart',
@@ -128,7 +128,7 @@ public class MainActivityTest {
         'example/android/gradlew',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin2, javaTestFileRelativePath);
+      writeJavaTestFile(plugin2, javaTestFileRelativePath);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
@@ -207,7 +207,7 @@ public class MainActivityTest {
         'example/android/gradlew',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
@@ -286,7 +286,7 @@ public class MainActivityTest {
             ],
           ]);
       for (final String example in examples) {
-        _writeJavaTestFile(
+        writeJavaTestFile(
             plugin, 'example/$example/$javaTestFileExampleRelativePath');
       }
 
@@ -347,7 +347,7 @@ public class MainActivityTest {
         'example/android/gradlew',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
         MockProcess(), // auth
@@ -393,7 +393,7 @@ public class MainActivityTest {
         'example/android/gradlew',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
         MockProcess(), // auth
@@ -460,7 +460,7 @@ public class MainActivityTest {
         'example/android/gradlew',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -501,7 +501,7 @@ public class MainActivityTest {
         javaTestFileRelativePath,
       ]);
       // Use the wrong @RunWith annotation.
-      _writeJavaTestFile(plugin, javaTestFileRelativePath,
+      writeJavaTestFile(plugin, javaTestFileRelativePath,
           runnerClass: 'AndroidJUnit4.class');
 
       Error? commandError;
@@ -565,7 +565,7 @@ public class MainActivityTest {
         'example/integration_test/foo_test.dart',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
@@ -628,7 +628,7 @@ public class MainActivityTest {
         'example/integration_test/foo_test.dart',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       processRunner.mockProcessesForExecutable['flutter'] = <Process>[
         MockProcess(exitCode: 1) // flutter build
@@ -663,7 +663,7 @@ public class MainActivityTest {
         'example/integration_test/foo_test.dart',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       final String gradlewPath = plugin
           .getExamples()
@@ -704,7 +704,7 @@ public class MainActivityTest {
         'example/integration_test/foo_test.dart',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       final String gradlewPath = plugin
           .getExamples()
@@ -750,7 +750,7 @@ public class MainActivityTest {
         'example/android/gradlew',
         javaTestFileRelativePath,
       ]);
-      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+      writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       await runCapturingPrint(runner, <String>[
         'firebase-test-lab',

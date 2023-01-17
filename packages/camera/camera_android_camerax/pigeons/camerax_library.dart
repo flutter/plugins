@@ -45,3 +45,28 @@ abstract class CameraInfoHostApi {
 abstract class CameraInfoFlutterApi {
   void create(int identifier);
 }
+
+@HostApi(dartHostTestHandler: 'TestCameraSelectorHostApi')
+abstract class CameraSelectorHostApi {
+  void create(int identifier, int? lensFacing);
+
+  List<int> filter(int identifier, List<int> cameraInfoIds);
+}
+
+@FlutterApi()
+abstract class CameraSelectorFlutterApi {
+  void create(int identifier, int? lensFacing);
+}
+
+@HostApi(dartHostTestHandler: 'TestProcessCameraProviderHostApi')
+abstract class ProcessCameraProviderHostApi {
+  @async
+  int getInstance();
+
+  List<int> getAvailableCameraInfos(int identifier);
+}
+
+@FlutterApi()
+abstract class ProcessCameraProviderFlutterApi {
+  void create(int identifier);
+}

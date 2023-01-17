@@ -44,10 +44,16 @@ void main() {
     });
 
     test('publish check all packages', () async {
-      final RepositoryPackage plugin1 =
-          createFakePlugin('plugin_tools_test_package_a', packagesDir);
-      final RepositoryPackage plugin2 =
-          createFakePlugin('plugin_tools_test_package_b', packagesDir);
+      final RepositoryPackage plugin1 = createFakePlugin(
+        'plugin_tools_test_package_a',
+        packagesDir,
+        examples: <String>[],
+      );
+      final RepositoryPackage plugin2 = createFakePlugin(
+        'plugin_tools_test_package_b',
+        packagesDir,
+        examples: <String>[],
+      );
 
       await runCapturingPrint(runner, <String>['publish-check']);
 
@@ -63,6 +69,49 @@ void main() {
                 const <String>['pub', 'publish', '--', '--dry-run'],
                 plugin2.path),
           ]));
+    });
+
+    test('publish prepares dependencies of examples (when present)', () async {
+      final RepositoryPackage plugin1 = createFakePlugin(
+        'plugin_tools_test_package_a',
+        packagesDir,
+        examples: <String>['example1', 'example2'],
+      );
+      final RepositoryPackage plugin2 = createFakePlugin(
+        'plugin_tools_test_package_b',
+        packagesDir,
+        examples: <String>[],
+      );
+
+      await runCapturingPrint(runner, <String>['publish-check']);
+
+      // For plugin1, these are the expected pub get calls that will happen
+      final Iterable<ProcessCall> pubGetCalls =
+          plugin1.getExamples().map((RepositoryPackage example) {
+        return ProcessCall(
+          'dart',
+          const <String>['pub', 'get'],
+          example.path,
+        );
+      });
+
+      expect(pubGetCalls, hasLength(2));
+      expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          // plugin1 has 2 examples, so there's some 'dart pub get' calls.
+          ...pubGetCalls,
+          ProcessCall(
+              'flutter',
+              const <String>['pub', 'publish', '--', '--dry-run'],
+              plugin1.path),
+          // plugin2 has no examples, so there's no extra 'dart pub get' calls.
+          ProcessCall(
+              'flutter',
+              const <String>['pub', 'publish', '--', '--dry-run'],
+              plugin2.path),
+        ]),
+      );
     });
 
     test('fail on negative test', () async {

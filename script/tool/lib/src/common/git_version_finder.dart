@@ -88,7 +88,8 @@ class GitVersionFinder {
     if (fileContent.trim().isEmpty) {
       return null;
     }
-    final String? versionString = loadYaml(fileContent)['version'] as String?;
+    final YamlMap fileYaml = loadYaml(fileContent) as YamlMap;
+    final String? versionString = fileYaml['version'] as String?;
     return versionString == null ? null : Version.parse(versionString);
   }
 
@@ -103,7 +104,7 @@ class GitVersionFinder {
         <String>['merge-base', '--fork-point', 'FETCH_HEAD', 'HEAD'],
         throwOnError: false);
     final String stdout = (baseShaFromMergeBase.stdout as String? ?? '').trim();
-    final String stderr = (baseShaFromMergeBase.stdout as String? ?? '').trim();
+    final String stderr = (baseShaFromMergeBase.stderr as String? ?? '').trim();
     if (stderr.isNotEmpty || stdout.isEmpty) {
       baseShaFromMergeBase = await baseGitDir
           .runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);

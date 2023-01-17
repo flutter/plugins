@@ -1,3 +1,16 @@
+## 2.4.10
+
+* Adds compatibilty with version 6.0 of the platform interface.
+
+## 2.4.9
+
+* Fixes file URI construction.
+
+## 2.4.8
+
+* Updates code for new analysis options.
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
 ## 2.4.7
 
 * Updates README via code excerpts.

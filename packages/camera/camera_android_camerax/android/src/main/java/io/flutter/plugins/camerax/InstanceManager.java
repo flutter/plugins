@@ -122,11 +122,16 @@ public class InstanceManager {
   /**
    * Adds a new instance that was instantiated from the host platform.
    *
+   * <p>If an instance has already been added, the identifier of the instance will be returned.
+   *
    * @param instance the instance to be stored.
    * @return the unique identifier stored with instance.
    */
   public long addHostCreatedInstance(Object instance) {
     assertManagerIsNotClosed();
+    if (containsInstance(instance)) {
+      return getIdentifierForStrongReference(instance);
+    }
     final long identifier = nextIdentifier++;
     addInstance(instance, identifier);
     return identifier;

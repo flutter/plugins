@@ -16,32 +16,32 @@ void main() {
 
   // Since onTap/DragEnd events happen asynchronously, we need to store when the event
   // is fired. We use a completer so the test can wait for the future to be completed.
-  late Completer<bool> _methodCalledCompleter;
+  late Completer<bool> methodCalledCompleter;
 
-  /// This is the future value of the [_methodCalledCompleter]. Reinitialized
+  /// This is the future value of the [methodCalledCompleter]. Reinitialized
   /// in the [setUp] method, and completed (as `true`) by [onTap] and [onDragEnd]
   /// when those methods are called from the MarkerController.
   late Future<bool> methodCalled;
 
   void onTap() {
-    _methodCalledCompleter.complete(true);
+    methodCalledCompleter.complete(true);
   }
 
   void onDragStart(gmaps.LatLng _) {
-    _methodCalledCompleter.complete(true);
+    methodCalledCompleter.complete(true);
   }
 
   void onDrag(gmaps.LatLng _) {
-    _methodCalledCompleter.complete(true);
+    methodCalledCompleter.complete(true);
   }
 
   void onDragEnd(gmaps.LatLng _) {
-    _methodCalledCompleter.complete(true);
+    methodCalledCompleter.complete(true);
   }
 
   setUp(() {
-    _methodCalledCompleter = Completer<bool>();
-    methodCalled = _methodCalledCompleter.future;
+    methodCalledCompleter = Completer<bool>();
+    methodCalled = methodCalledCompleter.future;
   });
 
   group('MarkerController', () {

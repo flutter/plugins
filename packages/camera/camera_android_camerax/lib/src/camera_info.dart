@@ -20,9 +20,7 @@ class CameraInfo extends JavaObject {
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager) {
     _api = CameraInfoHostApiImpl(
-      binaryMessenger: binaryMessenger,
-      instanceManager: instanceManager,
-    );
+        binaryMessenger: binaryMessenger, instanceManager: instanceManager);
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
   }
 
@@ -36,23 +34,18 @@ class CameraInfo extends JavaObject {
 /// Host API implementation of [CameraInfo].
 class CameraInfoHostApiImpl extends CameraInfoHostApi {
   /// Constructs a [CameraInfoHostApiImpl].
-  CameraInfoHostApiImpl({
-    this.binaryMessenger,
-    InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
-        super(binaryMessenger: binaryMessenger);
-
-  /// Sends binary data across the Flutter platform barrier.
-  ///
-  /// If it is null, the default BinaryMessenger will be used which routes to
-  /// the host platform.
-  final BinaryMessenger? binaryMessenger;
+  CameraInfoHostApiImpl(
+      {super.binaryMessenger, InstanceManager? instanceManager}) {
+    this.instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+  }
 
   /// Maintains instances stored to communicate with native language objects.
-  final InstanceManager instanceManager;
+  late final InstanceManager instanceManager;
 
   /// Gets sensor orientation degrees of [CameraInfo].
-  Future<int> getSensorRotationDegreesFromInstance(CameraInfo instance) async {
+  Future<int> getSensorRotationDegreesFromInstance(
+    CameraInfo instance,
+  ) async {
     final int sensorRotationDegrees = await getSensorRotationDegrees(
         instanceManager.getIdentifier(instance)!);
     return sensorRotationDegrees;

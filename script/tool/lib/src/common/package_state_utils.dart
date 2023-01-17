@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/git_version_finder.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
+import 'git_version_finder.dart';
 import 'repository_package.dart';
 
 /// The state of a package on disk relative to git state.
@@ -107,9 +107,12 @@ Future<PackageChangeState> checkPackageChangeState(
 
 bool _isTestChange(List<String> pathComponents) {
   return pathComponents.contains('test') ||
+      pathComponents.contains('integration_test') ||
       pathComponents.contains('androidTest') ||
       pathComponents.contains('RunnerTests') ||
-      pathComponents.contains('RunnerUITests');
+      pathComponents.contains('RunnerUITests') ||
+      // Pigeon's custom platform tests.
+      pathComponents.first == 'platform_tests';
 }
 
 // True if the given file is an example file other than the one that will be
@@ -161,7 +164,7 @@ bool _isUnpublishedExampleChange(
   return exampleComponents.first.toLowerCase() != 'readme.md';
 }
 
-// True if the change is only relevant to people working on the plugin.
+// True if the change is only relevant to people working on the package.
 Future<bool> _isDevChange(List<String> pathComponents,
     {GitVersionFinder? git, String? repoPath}) async {
   return _isTestChange(pathComponents) ||
@@ -173,8 +176,23 @@ Future<bool> _isDevChange(List<String> pathComponents,
       pathComponents.first == 'run_tests.sh' ||
       // Ignoring lints doesn't affect clients.
       pathComponents.contains('lint-baseline.xml') ||
+      // Example build files are very unlikely to be interesting to clients.
+      _isExampleBuildFile(pathComponents) ||
+      // Test-only gradle depenedencies don't affect clients.
       await _isGradleTestDependencyChange(pathComponents,
           git: git, repoPath: repoPath);
+}
+
+bool _isExampleBuildFile(List<String> pathComponents) {
+  if (!pathComponents.contains('example')) {
+    return false;
+  }
+  return pathComponents.contains('gradle-wrapper.properties') ||
+      pathComponents.contains('gradle.properties') ||
+      pathComponents.contains('build.gradle') ||
+      pathComponents.contains('Runner.xcodeproj') ||
+      pathComponents.contains('CMakeLists.txt') ||
+      pathComponents.contains('pubspec.yaml');
 }
 
 Future<bool> _isGradleTestDependencyChange(List<String> pathComponents,

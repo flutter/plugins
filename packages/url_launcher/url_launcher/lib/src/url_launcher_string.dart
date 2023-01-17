@@ -30,7 +30,7 @@ Future<bool> launchUrlString(
     throw ArgumentError.value(urlString, 'urlString',
         'To use an in-app web view, you must provide an http(s) URL.');
   }
-  return await UrlLauncherPlatform.instance.launchUrl(
+  return UrlLauncherPlatform.instance.launchUrl(
     urlString,
     LaunchOptions(
       mode: convertLaunchMode(mode),
@@ -53,5 +53,5 @@ Future<bool> launchUrlString(
 /// others will immediately fail if the URL can't be parsed according to the
 /// official standards that define URL formats.
 Future<bool> canLaunchUrlString(String urlString) async {
-  return await UrlLauncherPlatform.instance.canLaunch(urlString);
+  return UrlLauncherPlatform.instance.canLaunch(urlString);
 }

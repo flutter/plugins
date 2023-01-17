@@ -7,9 +7,9 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../store_kit_wrappers.dart';
 import '../channel.dart';
 import '../in_app_purchase_storekit_platform.dart';
 
@@ -245,11 +245,13 @@ class SKPaymentQueueWrapper {
         }
       case 'shouldAddStorePayment':
         {
+          final Map<Object?, Object?> arguments =
+              call.arguments as Map<Object?, Object?>;
           final SKPaymentWrapper payment = SKPaymentWrapper.fromJson(
-              (call.arguments['payment'] as Map<dynamic, dynamic>)
+              (arguments['payment']! as Map<dynamic, dynamic>)
                   .cast<String, dynamic>());
           final SKProductWrapper product = SKProductWrapper.fromJson(
-              (call.arguments['product'] as Map<dynamic, dynamic>)
+              (arguments['product']! as Map<dynamic, dynamic>)
                   .cast<String, dynamic>());
           return Future<void>(() {
             if (observer.shouldAddStorePayment(
@@ -290,12 +292,14 @@ class SKPaymentQueueWrapper {
     final SKPaymentQueueDelegateWrapper delegate = _paymentQueueDelegate!;
     switch (call.method) {
       case 'shouldContinueTransaction':
+        final Map<Object?, Object?> arguments =
+            call.arguments as Map<Object?, Object?>;
         final SKPaymentTransactionWrapper transaction =
             SKPaymentTransactionWrapper.fromJson(
-                (call.arguments['transaction'] as Map<dynamic, dynamic>)
+                (arguments['transaction']! as Map<dynamic, dynamic>)
                     .cast<String, dynamic>());
         final SKStorefrontWrapper storefront = SKStorefrontWrapper.fromJson(
-            (call.arguments['storefront'] as Map<dynamic, dynamic>)
+            (arguments['storefront']! as Map<dynamic, dynamic>)
                 .cast<String, dynamic>());
         return delegate.shouldContinueTransaction(transaction, storefront);
       case 'shouldShowPriceConsent':
@@ -405,7 +409,8 @@ class SKPaymentWrapper {
       'applicationUsername': applicationUsername,
       'requestData': requestData,
       'quantity': quantity,
-      'simulatesAskToBuyInSandbox': simulatesAskToBuyInSandbox
+      'simulatesAskToBuyInSandbox': simulatesAskToBuyInSandbox,
+      'paymentDiscount': paymentDiscount?.toMap(),
     };
   }
 

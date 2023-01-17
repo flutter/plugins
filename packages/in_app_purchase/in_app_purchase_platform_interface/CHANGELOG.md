@@ -1,5 +1,6 @@
-## NEXT
+## 1.3.2
 
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 * Removes unnecessary imports.
 

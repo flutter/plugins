@@ -18,7 +18,7 @@ import 'package:test/test.dart';
 
 import '../mocks.dart';
 import '../util.dart';
-import 'plugin_command_test.mocks.dart';
+import 'package_command_test.mocks.dart';
 
 // Constants for colorized output start and end.
 const String _startElapsedTimeColor = '\x1B[90m';
@@ -110,8 +110,10 @@ void main() {
     final MockGitDir gitDir = MockGitDir();
     when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
         .thenAnswer((Invocation invocation) {
+      final List<String> arguments =
+          invocation.positionalArguments[0]! as List<String>;
       final MockProcessResult mockProcessResult = MockProcessResult();
-      if (invocation.positionalArguments[0][0] == 'diff') {
+      if (arguments[0] == 'diff') {
         when<String?>(mockProcessResult.stdout as String?)
             .thenReturn(gitDiffResponse);
       }
@@ -143,7 +145,7 @@ void main() {
     runner = CommandRunner<void>('test_package_looping_command',
         'Test for base package looping functionality');
     runner.addCommand(command);
-    return await runCapturingPrint(
+    return runCapturingPrint(
       runner,
       <String>[command.name, ...arguments],
       errorHandler: errorHandler,
@@ -373,9 +375,10 @@ void main() {
 
     test('skips unsupported Dart versions when requested', () async {
       final RepositoryPackage excluded = createFakePackage(
-          'excluded_package', packagesDir, dartConstraint: '>=2.17.0 <3.0.0');
-      final RepositoryPackage included = createFakePackage(
-          'a_package', packagesDir);
+          'excluded_package', packagesDir,
+          dartConstraint: '>=2.17.0 <3.0.0');
+      final RepositoryPackage included =
+          createFakePackage('a_package', packagesDir);
 
       final TestPackageLoopingCommand command = createTestCommand(
           packageLoopingType: PackageLoopingType.includeAllSubpackages,
@@ -406,8 +409,7 @@ void main() {
       createFakePlugin('package_a', packagesDir);
       createFakePackage('package_b', packagesDir);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand();
+      final TestPackageLoopingCommand command = createTestCommand();
       final List<String> output = await runCommand(command);
 
       const String separator =
@@ -440,8 +442,7 @@ void main() {
       createFakePlugin('package_a', packagesDir);
       createFakePackage('package_b', packagesDir);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand();
+      final TestPackageLoopingCommand command = createTestCommand();
       final List<String> output =
           await runCommand(command, arguments: <String>['--log-timing']);
 
@@ -783,8 +784,7 @@ void main() {
 
       createFakePackage('package_f', packagesDir);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand();
+      final TestPackageLoopingCommand command = createTestCommand();
       final List<String> output = await runCommand(command);
 
       expect(
@@ -809,8 +809,7 @@ void main() {
     test('prints exclusions as skips in long-form run summary', () async {
       createFakePackage('package_a', packagesDir);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand();
+      final TestPackageLoopingCommand command = createTestCommand();
       final List<String> output =
           await runCommand(command, arguments: <String>['--exclude=package_a']);
 

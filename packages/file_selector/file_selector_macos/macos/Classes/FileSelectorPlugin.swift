@@ -40,7 +40,7 @@ protocol ViewProvider {
   var view: NSView? { get }
 }
 
-public class FileSelectorPlugin: NSObject, FlutterPlugin {
+public class FileSelectorPlugin: NSObject, FlutterPlugin, FileSelectorApi {
   private let viewProvider: ViewProvider
   private let panelController: PanelController
 
@@ -49,13 +49,10 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
   private let saveMethod = "getSavePath"
 
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(
-      name: "plugins.flutter.io/file_selector_macos",
-      binaryMessenger: registrar.messenger)
     let instance = FileSelectorPlugin(
       viewProvider: DefaultViewProvider(registrar: registrar),
       panelController: DefaultPanelController())
-    registrar.addMethodCallDelegate(instance, channel: channel)
+    FileSelectorApiSetup.setUp(binaryMessenger: registrar.messenger, api: instance)
   }
 
   init(viewProvider: ViewProvider, panelController: PanelController) {
@@ -63,30 +60,20 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
     self.panelController = panelController
   }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    let arguments = (call.arguments ?? [:]) as! [String: Any]
-    switch call.method {
-    case openMethod,
-         openDirectoryMethod:
-      let choosingDirectory = call.method == openDirectoryMethod
-      let panel = NSOpenPanel()
-      configure(panel: panel, with: arguments)
-      configure(openPanel: panel, with: arguments, choosingDirectory: choosingDirectory)
-      panelController.display(panel, for: viewProvider.view?.window) { (selection: [URL]?) in
-        if (choosingDirectory) {
-          result(selection?.first?.path)
-        } else {
-          result(selection?.map({ item in item.path }))
-        }
-      }
-    case saveMethod:
-      let panel = NSSavePanel()
-      configure(panel: panel, with: arguments)
-      panelController.display(panel, for: viewProvider.view?.window) { (selection: URL?) in
-        result(selection?.path)
-      }
-    default:
-      result(FlutterMethodNotImplemented)
+  func displayOpenPanel(options: OpenPanelOptions, completion: @escaping ([String?]) -> Void) {
+
+    let panel = NSOpenPanel()
+    configure(openPanel: panel, with: options)
+    panelController.display(panel, for: viewProvider.view?.window) { (selection: [URL]?) in
+      completion(selection?.map({ item in item.path }) ?? [])
+    }
+  }
+
+  func displaySavePanel(options: SavePanelOptions, completion: @escaping (String?) -> Void) {
+    let panel = NSSavePanel()
+    configure(panel: panel, with: options)
+    panelController.display(panel, for: viewProvider.view?.window) { (selection: URL?) in
+      completion(selection?.path)
     }
   }
 
@@ -94,28 +81,25 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
   /// - Parameters:
   ///   - panel: The panel to configure.
   ///   - arguments: The arguments dictionary from a FlutterMethodCall to this plugin.
-  private func configure(panel: NSSavePanel, with arguments: [String: Any]) {
-    if let initialDirectory = getNonNullStringValue(for: "initialDirectory", from: arguments) {
-      panel.directoryURL = URL(fileURLWithPath: initialDirectory)
+  private func configure(panel: NSSavePanel, with options: SavePanelOptions) {
+    if let directoryPath = options.directoryPath {
+      panel.directoryURL = URL(fileURLWithPath: directoryPath)
     }
-    if let suggestedName = getNonNullStringValue(for: "suggestedName", from: arguments) {
+    if let suggestedName = options.nameFieldStringValue {
       panel.nameFieldStringValue = suggestedName
     }
-    if let confirmButtonText = getNonNullStringValue(for: "confirmButtonText", from: arguments) {
-      panel.prompt = confirmButtonText
+    if let prompt = options.prompt {
+      panel.prompt = prompt
     }
 
-    let acceptedTypes = getNonNullValue(
-      for: "acceptedTypes",
-      from: arguments
-    ) as! [String: Any]?
-    if let acceptedTypes = acceptedTypes {
+    if let acceptedTypes = options.allowedFileTypes {
       var allowedTypes: [String] = []
-      let extensions = getNonNullStringArrayValue(for: "extensions", from: acceptedTypes)
-      let UTIs = getNonNullStringArrayValue(for: "UTIs", from: acceptedTypes)
-      allowedTypes.append(contentsOf: extensions)
-      allowedTypes.append(contentsOf: UTIs)
-      // TODO: Add support for mimeTypes in macOS 11+.
+      // The array values are non-null by convention even though Pigeon can't currently express
+      // that via the types; see messages.dart.
+      allowedTypes.append(contentsOf: acceptedTypes.extensions.map({ $0! }))
+      allowedTypes.append(contentsOf: acceptedTypes.utis.map({ $0! }))
+      // TODO: Add support for mimeTypes in macOS 11+. See
+      // https://github.com/flutter/flutter/issues/117843
 
       if !allowedTypes.isEmpty {
         panel.allowedFileTypes = allowedTypes
@@ -130,13 +114,12 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
   ///   - choosingDirectory: True if the panel should allow choosing directories rather than files.
   private func configure(
     openPanel panel: NSOpenPanel,
-    with arguments: [String: Any],
-    choosingDirectory: Bool
+    with options: OpenPanelOptions
   ) {
-    panel.allowsMultipleSelection =
-      getNonNullValue(for: "multiple", from: arguments) as! Bool? ?? false
-    panel.canChooseDirectories = choosingDirectory;
-    panel.canChooseFiles = !choosingDirectory;
+    configure(panel: panel, with: options.baseOptions)
+    panel.allowsMultipleSelection = options.allowsMultipleSelection
+    panel.canChooseDirectories = options.canChooseDirectories;
+    panel.canChooseFiles = options.canChooseFiles;
   }
 }
 
@@ -187,32 +170,4 @@ private class DefaultViewProvider: ViewProvider {
       registrar.view
     }
   }
-}
-
-/// Returns the value for the given key from the provided dictionary, unless the value is NSNull
-/// in which case it returns nil.
-/// - Parameters:
-///   - key: The key to get a value for.
-///   - dictionary: The dictionary to get the value from.
-/// - Returns: The value, or nil for NSNull.
-private func getNonNullValue(for key: String, from dictionary: [String: Any]) -> Any? {
-  let value = dictionary[key];
-  return value is NSNull ? nil : value;
-}
-
-/// A convenience wrapper for getNonNullValue for string values.
-private func getNonNullStringValue(for key: String, from dictionary: [String: Any]) -> String? {
-  return getNonNullValue(for: key, from: dictionary) as! String?
-}
-
-/// A convenience wrapper for getNonNullValue for array-of-string values.
-/// - Parameters:
-///   - key: The key to get a value for.
-///   - dictionary: The dictionary to get the value from.
-/// - Returns: The value, or an empty array for nil for NSNull.
-private func getNonNullStringArrayValue(
-  for key: String,
-  from dictionary: [String: Any]
-) -> [String] {
-  return getNonNullValue(for: key, from: dictionary) as! [String]? ?? []
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/services.dart';
-import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'local_auth_platform_interface.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/local_auth');
 

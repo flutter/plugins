@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:7.3.1'
     }
 }
 
@@ -29,6 +29,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
+        // TODO(stuartmorgan): Enable when gradle is updated.
+        // disable 'AndroidGradlePluginVersion'
         disable 'InvalidPackage'
         disable 'GradleDependency'
         baseline file("lint-baseline.xml")
@@ -68,14 +70,14 @@ dependencies {
 
     // Assertions
     api 'androidx.test.ext:junit:1.1.3'
-    api 'androidx.test.ext:truth:1.4.0'
+    api 'androidx.test.ext:truth:1.5.0'
     api 'com.google.truth:truth:0.42'
 
     // Espresso dependencies
     api 'androidx.test.espresso:espresso-core:3.1.0'
     api 'androidx.test.espresso:espresso-contrib:3.1.0'
     api 'androidx.test.espresso:espresso-intents:3.1.0'
-    api 'androidx.test.espresso:espresso-accessibility:3.1.0'
+    api 'androidx.test.espresso:espresso-accessibility:3.5.1'
     api 'androidx.test.espresso:espresso-web:3.1.0'
     api 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
 
@@ -83,7 +85,7 @@ dependencies {
     // or "androidTestImplementation", depending on whether you want the
     // dependency to appear on your APK's compile classpath or the test APK
     // classpath.
-    api 'androidx.test.espresso:espresso-idling-resource:3.1.0'
+    api 'androidx.test.espresso:espresso-idling-resource:3.5.1'
 }
 
 

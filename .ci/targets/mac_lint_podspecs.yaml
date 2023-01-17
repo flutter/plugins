@@ -1,0 +1,6 @@
+tasks:
+  - name: prepare tool
+    script: .ci/scripts/prepare_tool.sh
+  - name: validate iOS and macOS podspecs
+    script: script/tool_runner.sh
+    args: ["podspec-check"]

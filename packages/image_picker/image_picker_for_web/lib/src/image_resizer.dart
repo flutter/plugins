@@ -7,8 +7,9 @@ import 'dart:html' as html;
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:image_picker_for_web/src/image_resizer_utils.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+
+import 'image_resizer_utils.dart';
 
 /// Helper class that resizes images.
 class ImageResizer {

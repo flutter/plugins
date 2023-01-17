@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:image_picker_platform_interface/src/types/types.dart';
+import 'types.dart';
 
 /// Specifies options for picking a single image from the device's camera or gallery.
 class ImagePickerOptions {

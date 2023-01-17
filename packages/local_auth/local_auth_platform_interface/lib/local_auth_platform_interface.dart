@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:local_auth_platform_interface/default_method_channel_platform.dart';
-import 'package:local_auth_platform_interface/types/types.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+import 'default_method_channel_platform.dart';
+import 'types/types.dart';
 
 export 'package:local_auth_platform_interface/types/types.dart';
 
