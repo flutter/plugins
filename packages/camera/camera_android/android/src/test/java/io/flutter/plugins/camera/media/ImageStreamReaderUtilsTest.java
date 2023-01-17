@@ -6,15 +6,12 @@ package io.flutter.plugins.camera.media;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import android.media.Image;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
