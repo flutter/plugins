@@ -8,9 +8,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Log;
-
 import java.util.HashMap;
-
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 

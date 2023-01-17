@@ -8,9 +8,7 @@ import android.media.CamcorderProfile;
 import android.media.EncoderProfiles;
 import android.media.MediaRecorder;
 import android.os.Build;
-
 import androidx.annotation.NonNull;
-
 import java.io.IOException;
 
 public class MediaRecorderBuilder {

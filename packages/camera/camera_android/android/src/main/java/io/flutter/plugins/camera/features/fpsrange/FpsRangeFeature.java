@@ -7,7 +7,6 @@ package io.flutter.plugins.camera.features.fpsrange;
 import android.hardware.camera2.CaptureRequest;
 import android.os.Build;
 import android.util.Range;
-
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 

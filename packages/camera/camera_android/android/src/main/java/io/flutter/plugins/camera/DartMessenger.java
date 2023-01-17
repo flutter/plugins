@@ -6,13 +6,10 @@ package io.flutter.plugins.camera;
 
 import android.os.Handler;
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;

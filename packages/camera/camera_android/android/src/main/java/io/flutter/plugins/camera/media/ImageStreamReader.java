@@ -6,16 +6,13 @@ import android.media.ImageReader;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Surface;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import io.flutter.Log;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;

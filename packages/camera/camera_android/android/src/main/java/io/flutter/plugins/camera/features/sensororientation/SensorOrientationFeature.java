@@ -7,9 +7,7 @@ package io.flutter.plugins.camera.features.sensororientation;
 import android.app.Activity;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
-
 import androidx.annotation.NonNull;
-
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.DartMessenger;

@@ -13,10 +13,8 @@ import android.content.res.Configuration;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel.DeviceOrientation;
 import io.flutter.plugins.camera.DartMessenger;

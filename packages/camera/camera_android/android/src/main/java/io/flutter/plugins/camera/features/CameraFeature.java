@@ -5,9 +5,7 @@
 package io.flutter.plugins.camera.features;
 
 import android.hardware.camera2.CaptureRequest;
-
 import androidx.annotation.NonNull;
-
 import io.flutter.plugins.camera.CameraProperties;
 
 /**
