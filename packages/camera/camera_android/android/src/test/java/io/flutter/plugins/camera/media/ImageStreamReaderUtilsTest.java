@@ -54,8 +54,8 @@ public class ImageStreamReaderUtilsTest {
     }
 
     // Values here are taken from a Pixel 6 which does not add any padding.
-    // We would expect that this code would not remove any data in the event
-    // the plane row stride equals the image width.
+    // In the event we pass a buffer with no padding, the returned buffer
+    // should be identical to the source one because nothing is trimmed.
     @Test
     public void removePlaneBufferPadding_doesNothingIfThereIsNoPadding() {
         Image.Plane planeY = mock(Image.Plane.class);
