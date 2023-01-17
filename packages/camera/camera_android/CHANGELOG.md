@@ -1,3 +1,8 @@
+## 0.10.2+2
+
+* Fixes zoom computation for virtual cameras hiding physical cameras in Android 11+.
+* Removes the unused CameraZoom class from the codebase. 
+
 ## 0.10.2+1
 
 * Updates code for stricter lint checks.
