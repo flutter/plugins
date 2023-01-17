@@ -223,7 +223,7 @@ targets:
     timeout: 30
     properties:
       add_recipes_cq: "true"
-      target_file: build_all_plugins.yaml
+      target_file: windows_build_all_plugins.yaml
       channel: master
       version_file: flutter_master.version
       dependencies: >
@@ -236,7 +236,7 @@ targets:
     timeout: 30
     properties:
       add_recipes_cq: "true"
-      target_file: build_all_plugins.yaml
+      target_file: windows_build_all_plugins.yaml
       channel: stable
       version_file: flutter_stable.version
       dependencies: >
