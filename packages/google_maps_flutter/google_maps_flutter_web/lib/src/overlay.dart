@@ -38,6 +38,8 @@ class TileOverlayController {
 
       // Using img lets us take advantage of native decoding.
       final String src = Url.createObjectUrl(Blob(<dynamic>[tile.data]));
+      // Spurious linter warning in legacy analyzer. (google/pedantic#83)
+      // ignore: unsafe_html
       img.src = src;
       await img.decode();
       img.hidden = false;
