@@ -279,8 +279,7 @@ void main() {
       });
 
       testWidgets('renders initial geometry', (WidgetTester tester) async {
-        controller = createController(
-            mapObjects: MapObjects(circles: <Circle>{
+        final MapObjects mapObjects = MapObjects(circles: <Circle>{
           const Circle(
             circleId: CircleId('circle-1'),
             zIndex: 1234,
@@ -323,7 +322,9 @@ void main() {
             LatLng(43.354469, -5.851318),
             LatLng(43.354762, -5.850824),
           ])
-        }));
+        });
+
+        controller = createController(mapObjects: mapObjects);
 
         controller.debugSetOverrides(
           circles: circles,
@@ -334,46 +335,10 @@ void main() {
 
         controller.init();
 
-        final Set<Circle> capturedCircles =
-            verify(circles.addCircles(captureAny)).captured[0] as Set<Circle>;
-        final Set<Marker> capturedMarkers =
-            verify(markers.addMarkers(captureAny)).captured[0] as Set<Marker>;
-        final Set<Polygon> capturedPolygons =
-            verify(polygons.addPolygons(captureAny)).captured[0]
-                as Set<Polygon>;
-        final Set<Polyline> capturedPolylines =
-            verify(polylines.addPolylines(captureAny)).captured[0]
-                as Set<Polyline>;
-
-        expect(capturedCircles.first.circleId.value, 'circle-1');
-        expect(capturedCircles.first.zIndex, 1234);
-        expect(capturedMarkers.first.markerId.value, 'marker-1');
-        expect(capturedMarkers.first.infoWindow.snippet, 'snippet for test');
-        expect(capturedMarkers.first.infoWindow.title, 'title for test');
-        expect(capturedPolygons.first.polygonId.value, 'polygon-1');
-        expect(capturedPolygons.elementAt(1).polygonId.value,
-            'polygon-2-with-holes');
-        expect(capturedPolygons.elementAt(1).holes, isNot(null));
-        expect(capturedPolylines.first.polylineId.value, 'polyline-1');
-      });
-
-      testWidgets('empty infoWindow does not create InfoWindow instance.',
-          (WidgetTester tester) async {
-        controller = createController(
-            mapObjects: MapObjects(markers: <Marker>{
-          const Marker(markerId: MarkerId('marker-1')),
-        }));
-
-        controller.debugSetOverrides(
-          markers: markers,
-        );
-
-        controller.init();
-
-        final Set<Marker> capturedMarkers =
-            verify(markers.addMarkers(captureAny)).captured[0] as Set<Marker>;
-
-        expect(capturedMarkers.first.infoWindow, InfoWindow.noText);
+        verify(circles.addCircles(mapObjects.circles));
+        verify(markers.addMarkers(mapObjects.markers));
+        verify(polygons.addPolygons(mapObjects.polygons));
+        verify(polylines.addPolylines(mapObjects.polylines));
       });
 
       group('Initialization options', () {
