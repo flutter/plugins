@@ -18,14 +18,14 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('gisResponsesToTokenData', () {
-    testWidgets('null objects -> no problem', (WidgetTester tester) async {
+    testWidgets('null objects -> no problem', (_) async {
       final GoogleSignInTokenData tokens = gisResponsesToTokenData(null, null);
       expect(tokens.accessToken, isNull);
       expect(tokens.idToken, isNull);
       expect(tokens.serverAuthCode, isNull);
     });
 
-    testWidgets('non-null objects are correctly used', (WidgetTester tester) async {
+    testWidgets('non-null objects are correctly used', (_) async {
       const String expectedIdToken = 'some-value-for-testing';
       const String expectedAccessToken = 'another-value-for-testing';
 
@@ -43,7 +43,7 @@ void main() {
   });
 
   group('gisResponsesToUserData', () {
-    testWidgets('happy case', (WidgetTester tester) async {
+    testWidgets('happy case', (_) async {
       final CredentialResponse response = createJwt(<String, Object?>{
         'email': 'test@example.com',
         'sub': '123456',
@@ -60,16 +60,16 @@ void main() {
       expect(data.idToken, response.credential);
     });
 
-    testWidgets('null response -> null', (WidgetTester tester) async {
+    testWidgets('null response -> null', (_) async {
       expect(gisResponsesToUserData(null), isNull);
     });
 
-    testWidgets('null response.credential -> null', (WidgetTester tester) async {
+    testWidgets('null response.credential -> null', (_) async {
       final CredentialResponse response = createJwt(null);
       expect(gisResponsesToUserData(response), isNull);
     });
 
-    testWidgets('invalid payload -> null', (WidgetTester tester) async {
+    testWidgets('invalid payload -> null', (_) async {
       final CredentialResponse response = jsifyAs<CredentialResponse>(<String, Object?>{
         'credential': 'some-bogus.thing-that-is-not.valid-jwt',
       });
