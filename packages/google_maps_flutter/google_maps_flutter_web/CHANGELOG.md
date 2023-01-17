@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Initial support for custom overlays. [#98596](https://github.com/flutter/flutter/issues/98596).
+
 ## 0.4.0+4
 
 * Updates code for stricter lint checks.
