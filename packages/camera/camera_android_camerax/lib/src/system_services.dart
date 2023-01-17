@@ -13,22 +13,28 @@ import 'camerax_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
+/// Utility class that offers access to Android system services needed for
+/// camera usage.
 class SystemServices {
-  static final StreamController<bool> cameraPermissionsStreamController =
-      StreamController<bool>.broadcast();
-
+  /// Stream that emits the device orientation whenever it is changed/
+  ///
+  /// Values may start being added to the stream once
+  /// `startListeningForDeviceOrientationChange(...)` is called.
   static final StreamController<DeviceOrientationChangedEvent>
       deviceOrientationChangedStreamController =
       StreamController<DeviceOrientationChangedEvent>.broadcast();
 
+  /// Requests permission to access the camera and audio if specified.
   static Future<void> requestCameraPermissions(bool enableAudio,
       {BinaryMessenger? binaryMessenger}) {
     SystemServicesHostApiImpl api =
         SystemServicesHostApiImpl(binaryMessenger: binaryMessenger);
 
-    return api.requestCameraPermissionsFromInstance(enableAudio);
+    return api.requestCameraPermissions(enableAudio);
   }
 
+  /// Requests that [deviceOrientationChangedStreamController] start
+  /// emitting values for any change in device orientation.
   static void startListeningForDeviceOrientationChange(
       bool isFrontFacing, int sensorOrientation,
       {BinaryMessenger? binaryMessenger}) {
@@ -53,7 +59,11 @@ class SystemServicesHostApiImpl extends SystemServicesHostApi {
   /// the host platform.
   final BinaryMessenger? binaryMessenger;
 
-  Future<void> requestCameraPermissionsFromInstance(bool enableAudio) async {
+  /// Requests permission to access the camera and audio if specified.
+  ///
+  /// Will complete normally if permissions are successfully granted; otherwise,
+  /// will throw a [CameraException].
+  Future<void> requestCameraPermissions(bool enableAudio) async {
     CameraPermissionsErrorData? error =
         await requestCameraPermissions(enableAudio);
 

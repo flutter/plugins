@@ -48,13 +48,12 @@ public class DeviceOrientationManager {
     this.deviceOrientationChangeCallback = callback;
   }
 
-  // TODO(camsim99): Fix docs.
   /**
    * Starts listening to the device's sensors or UI for orientation updates.
    *
-   * <p>When orientation information is updated the new orientation is send to the client using the
-   * {@link DartMessenger}. This latest value can also be retrieved through the {@link
-   * #getVideoOrientation()} accessor.
+   * <p>When orientation information is updated, the callback method of the {@link
+   * DeviceOrientationChangeCallback} is called with the new orientation. This latest value can also
+   * be retrieved through the {@link #getVideoOrientation()} accessor.
    *
    * <p>If the device's ACCELEROMETER_ROTATION setting is enabled the {@link
    * DeviceOrientationManager} will report orientation updates based on the sensor information. If

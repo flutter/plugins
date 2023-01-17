@@ -39,6 +39,12 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
     this.permissionsRegistry = permissionsRegistry;
   }
 
+  /**
+   * Requests camera permissions using an instance of a {@link CameraPermissionsManager}.
+   *
+   * <p>Will result with {@code null} if permissions were approved or there were no errors;
+   * otherwise, it will result with the error data explaining what went wrong.
+   */
   @Override
   public void requestCameraPermissions(
       Boolean enableAudio, Result<CameraPermissionsErrorData> result) {
@@ -63,6 +69,13 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
         });
   }
 
+  /**
+   * Starts listening for device orientation changes using an instace of a {@link
+   * DeviceOrientationManager}.
+   *
+   * <p>Whenever a change in device orientation is detected by the {@code DeviceOrientationManager},
+   * the {@link SystemServicesFlutterApi} will be used to notify the Dart side.
+   */
   @Override
   public void startListeningForDeviceOrientationChange(
       Boolean isFrontFacing, Long sensorOrientation) {
