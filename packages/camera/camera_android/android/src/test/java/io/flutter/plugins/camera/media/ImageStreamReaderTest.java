@@ -4,20 +4,14 @@
 
 package io.flutter.plugins.camera.media;
 
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.ImageFormat;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.CaptureResult;
 import android.media.Image;
 import android.media.ImageReader;
 
@@ -30,7 +24,6 @@ import java.nio.ByteBuffer;
 
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;
-import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 
 @RunWith(RobolectricTestRunner.class)
 public class ImageStreamReaderTest {
