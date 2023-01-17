@@ -1,3 +1,7 @@
+## 0.10.3
+
+* Adds logic to remove buffer padding in YUV frames on some devices / resolutions.
+
 ## 0.10.2+1
 
 * Updates code for stricter lint checks.
