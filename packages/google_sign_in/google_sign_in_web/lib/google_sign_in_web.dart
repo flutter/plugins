@@ -6,15 +6,19 @@ import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_identity_services_web/loader.dart' as loader;
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
 import 'src/gis_client.dart';
 
-const String _kClientIdMetaSelector = 'meta[name=google-signin-client_id]';
-const String _kClientIdAttributeName = 'content';
+/// The `name` of the meta-tag to define a ClientID in HTML.
+const String clientIdMetaName = 'google-signin-client_id';
+/// The selector used to find the meta-tag that defines a ClientID in HTML.
+const String clientIdMetaSelector = 'meta[name=$clientIdMetaName]';
+/// The attribute name that stores the Client ID in the meta-tag that defines a Client ID in HTML.
+const String clientIdAttributeName = 'content';
 
 /// Implementation of the google_sign_in plugin for Web.
 class GoogleSignInPlugin extends GoogleSignInPlatform {
@@ -22,12 +26,18 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   /// background.
   ///
   /// The plugin is completely initialized when [initialized] completed.
-  GoogleSignInPlugin() {
-    _autoDetectedClientId = html
-        .querySelector(_kClientIdMetaSelector)
-        ?.getAttribute(_kClientIdAttributeName);
+  GoogleSignInPlugin({
+    @visibleForTesting bool debugOverrideLoader = false
+  }) {
+    autoDetectedClientId = html
+        .querySelector(clientIdMetaSelector)
+        ?.getAttribute(clientIdAttributeName);
 
-    _isJsSdkLoaded = loader.loadWebSdk();
+    if (debugOverrideLoader) {
+      _isJsSdkLoaded = Future<bool>.value(true);
+    } else {
+      _isJsSdkLoaded = loader.loadWebSdk();
+    }
   }
 
   late Future<void> _isJsSdkLoaded;
@@ -55,8 +65,9 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     return _isJsSdkLoaded;
   }
 
-  // Stores the clientId found in the DOM (if any).
-  String? _autoDetectedClientId;
+  /// Stores the client ID if it was set in a meta-tag of the page.
+  @visibleForTesting
+  late String? autoDetectedClientId;
 
   /// Factory method that initializes the plugin with [GoogleSignInPlatform].
   static void registerWith(Registrar registrar) {
@@ -82,7 +93,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   Future<void> initWithParams(SignInInitParameters params, {
     @visibleForTesting GisSdkClient? overrideClient,
   }) async {
-    final String? appClientId = params.clientId ?? _autoDetectedClientId;
+    final String? appClientId = params.clientId ?? autoDetectedClientId;
     assert(
         appClientId != null,
         'ClientID not set. Either set it on a '
