@@ -196,28 +196,6 @@ void main() {
       });
     });
 
-    group('Noop methods:', () {
-      const int mapId = 0;
-      setUp(() {
-        plugin.debugSetMapById(<int, GoogleMapController>{mapId: controller});
-      });
-      // Options
-      testWidgets('updateTileOverlays', (WidgetTester tester) async {
-        final Future<void> update = plugin.updateTileOverlays(
-          mapId: mapId,
-          newTileOverlays: <TileOverlay>{},
-        );
-        expect(update, completion(null));
-      });
-      testWidgets('updateTileOverlays', (WidgetTester tester) async {
-        final Future<void> update = plugin.clearTileCache(
-          const TileOverlayId('any'),
-          mapId: mapId,
-        );
-        expect(update, completion(null));
-      });
-    });
-
     // These methods only pass-through values from the plugin to the controller
     // so we verify them all together here...
     group('Pass-through methods:', () {
@@ -274,6 +252,24 @@ void main() {
         await plugin.updateCircles(expectedUpdates, mapId: mapId);
 
         verify(controller.updateCircles(expectedUpdates));
+      });
+      // Tile Overlays
+      testWidgets('updateTileOverlays', (WidgetTester tester) async {
+        final Set<TileOverlay> expectedOverlays = <TileOverlay>{
+          const TileOverlay(tileOverlayId: TileOverlayId('overlay'))
+        };
+
+        await plugin.updateTileOverlays(
+            newTileOverlays: expectedOverlays, mapId: mapId);
+
+        verify(controller.updateTileOverlays(expectedOverlays));
+      });
+      testWidgets('clearTileCache', (WidgetTester tester) async {
+        const TileOverlayId tileOverlayId = TileOverlayId('Dory');
+
+        await plugin.clearTileCache(tileOverlayId, mapId: mapId);
+
+        verify(controller.clearTileCache(tileOverlayId));
       });
       // Camera
       testWidgets('animateCamera', (WidgetTester tester) async {
