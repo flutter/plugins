@@ -56,7 +56,7 @@ class GoogleMapController {
   final Set<Polyline> _polylines;
   final Set<Circle> _circles;
   Set<TileOverlay> _tileOverlays;
-  // The configuraiton passed by the user, before converting to gmaps.
+  // The configuration passed by the user, before converting to gmaps.
   // Caching this allows us to re-create the map faithfully when needed.
   MapConfiguration _lastMapConfiguration = const MapConfiguration();
   List<gmaps.MapTypeStyle> _lastStyles = const <gmaps.MapTypeStyle>[];
