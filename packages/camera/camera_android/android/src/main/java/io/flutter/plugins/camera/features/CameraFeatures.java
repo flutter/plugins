@@ -5,11 +5,9 @@
 package io.flutter.plugins.camera.features;
 
 import android.app.Activity;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.DartMessenger;
 import io.flutter.plugins.camera.features.autofocus.AutoFocusFeature;

@@ -5,7 +5,6 @@
 package io.flutter.plugins.camera.features.zoomlevel;
 
 import android.graphics.Rect;
-
 import androidx.annotation.NonNull;
 import androidx.core.math.MathUtils;
 

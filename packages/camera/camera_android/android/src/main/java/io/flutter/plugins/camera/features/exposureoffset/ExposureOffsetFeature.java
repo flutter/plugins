@@ -6,9 +6,7 @@ package io.flutter.plugins.camera.features.exposureoffset;
 
 import android.hardware.camera2.CaptureRequest;
 import android.util.Range;
-
 import androidx.annotation.NonNull;
-
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
