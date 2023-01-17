@@ -72,6 +72,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
             ProcessCameraProvider processCameraProvider = processCameraProviderFuture.get();
             final ProcessCameraProviderFlutterApiImpl flutterApi =
                 new ProcessCameraProviderFlutterApiImpl(binaryMessenger, instanceManager);
+            // TODO(camsim99): Test if this needs containsinstance test
             flutterApi.create(processCameraProvider, reply -> {});
             result.success(instanceManager.getIdentifierForStrongReference(processCameraProvider));
           } catch (Exception e) {
@@ -129,10 +130,15 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
           processCameraProvider.bindToLifecycle(
               (LifecycleOwner) lifecycleOwner, cameraSelector, useCases);
 
-      final CameraFlutterApiImpl camraFlutterApi =
-          new CameraFlutterApiImpl(binaryMessenger, instanceManager);
-      camraFlutterApi.create(camera, result -> {});
+      // if (!instanceManager.containsInstance(camera)) {
+        final CameraFlutterApiImpl camraFlutterApi =
+        new CameraFlutterApiImpl(binaryMessenger, instanceManager);
+        System.out.println("CREATE CAMERA BEING CALLED FROM JAVA -------------------------------");
+        camraFlutterApi.create(camera, result -> {});
+      // }
 
+      System.out.println("CAMERA JAVA IDENTIFIER: --------------------------------------------------------");
+      System.out.println(instanceManager.getIdentifierForStrongReference(camera));
       return instanceManager.getIdentifierForStrongReference(camera);
     } else {
       return null;

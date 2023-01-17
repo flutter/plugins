@@ -594,26 +594,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await cameraController.initialize();
-      await Future.wait(<Future<Object?>>[
-        // The exposure mode is currently not supported on the web.
-        ...!kIsWeb
-            ? <Future<Object?>>[
-                CameraPlatform.instance
-                    .getMinExposureOffset(cameraController.cameraId)
-                    .then(
-                        (double value) => _minAvailableExposureOffset = value),
-                CameraPlatform.instance
-                    .getMaxExposureOffset(cameraController.cameraId)
-                    .then((double value) => _maxAvailableExposureOffset = value)
-              ]
-            : <Future<Object?>>[],
-        CameraPlatform.instance
-            .getMaxZoomLevel(cameraController.cameraId)
-            .then((double value) => _maxAvailableZoom = value),
-        CameraPlatform.instance
-            .getMinZoomLevel(cameraController.cameraId)
-            .then((double value) => _minAvailableZoom = value),
-      ]);
     } on CameraException catch (e) {
       switch (e.code) {
         case 'CameraAccessDenied':

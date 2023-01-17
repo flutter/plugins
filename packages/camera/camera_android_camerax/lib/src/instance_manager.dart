@@ -161,6 +161,17 @@ class InstanceManager {
     int identifier, {
     required T Function(T original) onCopy,
   }) {
+    print('----------------------------------------------------------------------');
+    print(identifier);
+    print(instance);
+    print(containsIdentifier(identifier));
+    print(getInstanceWithWeakReference(identifier));
+    print(getIdentifier(instance));
+    print('----------------------------------------------------------------------');
+    // if (getInstanceWithWeakReference(identifier) == instance) {
+    //   return;
+    // }
+    assert(!containsIdentifier(identifier));
     assert(getIdentifier(instance) == null);
     assert(identifier >= 0);
     _addInstanceWithIdentifier(instance, identifier, onCopy: onCopy);
@@ -192,6 +203,7 @@ class InstanceManager {
     do {
       identifier = _nextIdentifier;
       _nextIdentifier = (_nextIdentifier + 1) % _maxDartCreatedIdentifier;
+      print('NEXT IDENTIFIER: $_nextIdentifier --------------------------------------');
     } while (containsIdentifier(identifier));
     return identifier;
   }

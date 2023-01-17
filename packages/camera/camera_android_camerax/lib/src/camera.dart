@@ -82,6 +82,7 @@ class CameraFlutterApiImpl implements CameraFlutterApi {
 
   @override
   void create(int identifier) {
+    print('CREATE FOR CAMERA CALLED ------------------------------------------');
     instanceManager.addHostCreatedInstance(
       Camera.detached(
           binaryMessenger: binaryMessenger, instanceManager: instanceManager),

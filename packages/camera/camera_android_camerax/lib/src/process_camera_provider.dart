@@ -50,6 +50,7 @@ class ProcessCameraProvider extends JavaObject {
   /// returns.
   Future<Camera> bindToLifecycle(
       CameraSelector cameraSelector, List<UseCase> useCases) {
+    print('BIND TO LIFECYCLE CALLED ---------------------------------------------------------');
     return _api.bindToLifecycleFromInstances(this, cameraSelector, useCases);
   }
 
@@ -127,6 +128,7 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
       instanceManager.getIdentifier(cameraSelector)!,
       useCaseIds,
     );
+    print('CAMERA IDENTIFIER RETRIEVED $cameraIdentifier --------------------------------');
     return instanceManager.getInstanceWithWeakReference(cameraIdentifier)!
         as Camera;
   }

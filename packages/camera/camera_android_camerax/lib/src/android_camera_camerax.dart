@@ -89,7 +89,7 @@ class AndroidCameraCameraX extends CameraPlatform {
         targetRotation: targetRotation, targetResolution: targetResolution);
     int flutterSurfaceTextureId = await preview!.setSurfaceProvider();
 
-    return flutterSurfaceTextureId;
+    return 0;
   }
 
   /// Initializes the camera on the device.
@@ -190,6 +190,7 @@ class AndroidCameraCameraX extends CameraPlatform {
 
     _camera = await processCameraProvider!
         .bindToLifecycle(_cameraSelector!, <UseCase>[preview!]);
+    print('$_camera -------------------------------------------------- HAS BEEN BOUND');
     _previewIsBound = true;
   }
 
