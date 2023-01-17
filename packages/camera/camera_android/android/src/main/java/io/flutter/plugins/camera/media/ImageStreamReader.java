@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import io.flutter.Log;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;
 
@@ -60,8 +59,6 @@ public class ImageStreamReader {
             CameraCaptureProperties captureProps,
             EventChannel.EventSink imageStreamSink
     ) {
-        Log.i("flutter", "Image planes: " + image.getPlanes().length);
-
         List<Map<String, Object>> planes = new ArrayList<>();
         for (int i=0; i<image.getPlanes().length; i++) {
             // Current plane
