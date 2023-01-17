@@ -230,11 +230,11 @@ Future<void> pumpCenteredMap(
 /// This depends in `package:google_maps_flutter` to work.
 class CenteredMap extends StatelessWidget {
   const CenteredMap({
+    super.key,
     required this.initialCamera,
     required this.size,
     required this.onMapCreated,
-    Key? key,
-  }) : super(key: key);
+  });
 
   /// A function that receives the [GoogleMapController] of the Map widget once initialized.
   final void Function(GoogleMapController)? onMapCreated;
