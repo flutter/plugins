@@ -5,6 +5,11 @@
 package io.flutter.plugins.camera.features;
 
 import android.app.Activity;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.DartMessenger;
 import io.flutter.plugins.camera.features.autofocus.AutoFocusFeature;
@@ -19,9 +24,6 @@ import io.flutter.plugins.camera.features.resolution.ResolutionFeature;
 import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
 import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * These are all of our available features in the camera. Used in the Camera to access all features

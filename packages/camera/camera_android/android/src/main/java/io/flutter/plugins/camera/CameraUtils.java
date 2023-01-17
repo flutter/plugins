@@ -10,11 +10,13 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
-import io.flutter.embedding.engine.systemchannels.PlatformChannel;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 
 /** Provides various utilities for camera. */
 public final class CameraUtils {
