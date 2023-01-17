@@ -146,11 +146,6 @@ class CameraValue {
   ///
   /// Explicitly specified fields get the specified value, all other fields get
   /// the same value of the current object.
-  ///
-  /// Nullable orientations ([lockedCaptureOrientation], [recordingOrientation],
-  /// and [previewPauseOrientation]) default to current object's value if
-  /// specified as null. To have specified orientations explicitly interpreted,
-  /// set [clearNullOrientationsFlag] to true.
   CameraValue copyWith({
     bool? isInitialized,
     bool? isRecordingVideo,
@@ -169,7 +164,6 @@ class CameraValue {
     DeviceOrientation? recordingOrientation,
     bool? isPreviewPaused,
     DeviceOrientation? previewPauseOrientation,
-    bool clearNullOrientationsFlag = false,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -186,16 +180,12 @@ class CameraValue {
           exposurePointSupported ?? this.exposurePointSupported,
       focusPointSupported: focusPointSupported ?? this.focusPointSupported,
       deviceOrientation: deviceOrientation ?? this.deviceOrientation,
-      lockedCaptureOrientation: clearNullOrientationsFlag
-          ? lockedCaptureOrientation
-          : lockedCaptureOrientation ?? this.lockedCaptureOrientation,
-      recordingOrientation: clearNullOrientationsFlag
-          ? recordingOrientation
-          : recordingOrientation ?? this.recordingOrientation,
+      lockedCaptureOrientation:
+          lockedCaptureOrientation ?? this.lockedCaptureOrientation,
+      recordingOrientation: recordingOrientation ?? this.recordingOrientation,
       isPreviewPaused: isPreviewPaused ?? this.isPreviewPaused,
-      previewPauseOrientation: clearNullOrientationsFlag
-          ? previewPauseOrientation
-          : previewPauseOrientation ?? this.previewPauseOrientation,
+      previewPauseOrientation:
+          previewPauseOrientation ?? this.previewPauseOrientation,
     );
   }
 
@@ -377,11 +367,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       await CameraPlatform.instance.resumePreview(_cameraId);
-      value = value.copyWith(
-          isPreviewPaused: false,
-          lockedCaptureOrientation: value.lockedCaptureOrientation,
-          recordingOrientation: value.recordingOrientation,
-          clearNullOrientationsFlag: true);
+      value = value.copyWith(isPreviewPaused: false);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -533,12 +519,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     try {
       final XFile file =
           await CameraPlatform.instance.stopVideoRecording(_cameraId);
-      value = value.copyWith(
-        isRecordingVideo: false,
-        lockedCaptureOrientation: value.lockedCaptureOrientation,
-        previewPauseOrientation: value.previewPauseOrientation,
-        clearNullOrientationsFlag: true,
-      );
+      value = value.copyWith(isRecordingVideo: false);
       return file;
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -776,11 +757,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> unlockCaptureOrientation() async {
     try {
       await CameraPlatform.instance.unlockCaptureOrientation(_cameraId);
-      value = value.copyWith(
-        recordingOrientation: value.recordingOrientation,
-        previewPauseOrientation: value.previewPauseOrientation,
-        clearNullOrientationsFlag: true,
-      );
+      value = value.copyWith();
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

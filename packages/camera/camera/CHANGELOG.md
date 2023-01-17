@@ -1,6 +1,6 @@
-## 0.10.2
+## 0.10.3
 
-* Adds option to `CameraValue`s `copyWith` method to explicitly interpret optional orientation values.
+* Adds back use of Optional type.
 
 ## 0.10.1
 

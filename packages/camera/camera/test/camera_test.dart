@@ -359,85 +359,6 @@ void main() {
           )));
     });
 
-    test(
-        'stopVideoRecording() throws $CameraException when not recording video',
-        () async {
-      final CameraController cameraController = CameraController(
-          const CameraDescription(
-              name: 'cam',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 90),
-          ResolutionPreset.max);
-
-      await cameraController.initialize();
-
-      cameraController.value =
-          cameraController.value.copyWith(isRecordingVideo: false);
-
-      expect(
-          cameraController.stopVideoRecording(),
-          throwsA(isA<CameraException>().having(
-            (CameraException error) => error.description,
-            'No video is recording',
-            'stopVideoRecording was called when no video is recording.',
-          )));
-    });
-
-    test('stopVideoRecording() calls $CameraPlatform', () async {
-      final CameraController cameraController = CameraController(
-          const CameraDescription(
-              name: 'cam',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 90),
-          ResolutionPreset.max);
-
-      await cameraController.initialize();
-
-      cameraController.value =
-          cameraController.value.copyWith(isRecordingVideo: true);
-
-      when(CameraPlatform.instance
-              .stopVideoRecording(cameraController.cameraId))
-          .thenAnswer((_) => Future<XFile>.value(XFile('bar/foo.mpeg')));
-
-      await cameraController.stopVideoRecording();
-
-      expect(cameraController.value.recordingOrientation, equals(null));
-
-      verify(CameraPlatform.instance
-              .stopVideoRecording(cameraController.cameraId))
-          .called(1);
-    });
-
-    test('stopVideoRecording() throws $CameraException on $PlatformException',
-        () async {
-      final CameraController cameraController = CameraController(
-          const CameraDescription(
-              name: 'cam',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 90),
-          ResolutionPreset.max);
-
-      await cameraController.initialize();
-      cameraController.value =
-          cameraController.value.copyWith(isRecordingVideo: true);
-
-      when(CameraPlatform.instance
-              .stopVideoRecording(cameraController.cameraId))
-          .thenThrow(CameraException(
-        'foo',
-        'bar',
-      ));
-
-      expect(
-          cameraController.stopVideoRecording(),
-          throwsA(isA<CameraException>().having(
-            (CameraException error) => error.description,
-            'foo',
-            'bar',
-          )));
-    });
-
     test('getMaxZoomLevel() throws $CameraException when uninitialized',
         () async {
       final CameraController cameraController = CameraController(
@@ -1321,7 +1242,6 @@ void main() {
       verify(CameraPlatform.instance.resumePreview(cameraController.cameraId))
           .called(1);
       expect(cameraController.value.isPreviewPaused, equals(false));
-      expect(cameraController.value.previewPauseOrientation, equals(null));
     });
 
     test('resumePreview() does not call $CameraPlatform when not paused',
@@ -1536,12 +1456,6 @@ class MockCameraPlatform extends Mock
   Future<XFile> startVideoRecording(int cameraId,
           {Duration? maxVideoDuration}) =>
       Future<XFile>.value(mockVideoRecordingXFile);
-
-  @override
-  Future<XFile> stopVideoRecording(int cameraId) async => super.noSuchMethod(
-        Invocation.method(#stopVideoRecording, <Object?>[cameraId]),
-        returnValue: Future<XFile>.value(mockVideoRecordingXFile),
-      ) as Future<XFile>;
 
   @override
   Future<void> lockCaptureOrientation(

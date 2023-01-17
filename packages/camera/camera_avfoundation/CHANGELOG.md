@@ -1,6 +1,6 @@
 ## 0.9.11
 
-* Adds option to `CameraValue`s `copyWith` method to explicitly interpret optional orientation values.
+* Adds back use of Optional type defined in the app-facing package.
 
 ## 0.9.10
 
