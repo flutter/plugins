@@ -79,7 +79,9 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   }
 
   @override
-  Future<void> initWithParams(SignInInitParameters params) async {
+  Future<void> initWithParams(SignInInitParameters params, {
+    @visibleForTesting GisSdkClient? overrideClient,
+  }) async {
     final String? appClientId = params.clientId ?? _autoDetectedClientId;
     assert(
         appClientId != null,
@@ -98,21 +100,13 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
     await _isJsSdkLoaded;
 
-    final GisSdkClient gisClient = GisSdkClient(
+    _gisClient = overrideClient ?? GisSdkClient(
       clientId: appClientId!,
       hostedDomain: params.hostedDomain,
       initialScopes: List<String>.from(params.scopes),
       // *TODO(dit): Remove this before releasing.
       loggingEnabled: true,
     );
-
-    return initWithClient(gisClient);
-  }
-
-  /// Initializes the plugin with a pre-made [GisSdkClient], that can be overridden from tests.
-  @visibleForTesting
-  Future<void> initWithClient(GisSdkClient gisClient) async {
-    _gisClient = gisClient;
 
     _isInitCalled = true;
   }

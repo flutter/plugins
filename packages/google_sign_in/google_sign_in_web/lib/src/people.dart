@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:google_identity_services_web/oauth2.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:http/http.dart' as http;
@@ -20,10 +21,13 @@ const String MY_PROFILE = 'https://content-people.googleapis.com/v1/people/me'
     '&personFields=photos%2Cnames%2CemailAddresses';
 
 /// Requests user data from the People API using the given [tokenResponse].
-Future<GoogleSignInUserData?> requestUserData(TokenResponse tokenResponse) async {
-
+Future<GoogleSignInUserData?> requestUserData(TokenResponse tokenResponse, {
+  @visibleForTesting http.Client? overrideClient,
+}) async {
   // Request my profile from the People API.
-  final Map<String, Object?> person = await _get(tokenResponse, MY_PROFILE);
+  final Map<String, Object?> person = await _doRequest(MY_PROFILE, tokenResponse,
+    overrideClient: overrideClient,
+  );
 
   // Now transform the Person response into a GoogleSignInUserData.
   return extractUserData(person);
@@ -33,8 +37,8 @@ Future<GoogleSignInUserData?> requestUserData(TokenResponse tokenResponse) async
 ///
 /// See: https://developers.google.com/people/api/rest/v1/people#Person
 GoogleSignInUserData? extractUserData(Map<String, Object?> json) {
-  final String? userId = extractUserId(json);
-  final String? email = extractPrimaryField(
+  final String? userId = _extractUserId(json);
+  final String? email = _extractPrimaryField(
     json['emailAddresses'] as List<Object?>?,
     'value',
   );
@@ -45,11 +49,11 @@ GoogleSignInUserData? extractUserData(Map<String, Object?> json) {
   return GoogleSignInUserData(
     id: userId!,
     email: email!,
-    displayName: extractPrimaryField(
+    displayName: _extractPrimaryField(
       json['names'] as List<Object?>?,
       'displayName',
     ),
-    photoUrl: extractPrimaryField(
+    photoUrl: _extractPrimaryField(
       json['photos'] as List<Object?>?,
       'url',
     ),
@@ -64,7 +68,7 @@ GoogleSignInUserData? extractUserData(Map<String, Object?> json) {
 ///   'resourceName': 'people/PERSON_ID',
 ///   ...
 /// }
-String? extractUserId(Map<String, Object?> profile) {
+String? _extractUserId(Map<String, Object?> profile) {
   final String? resourceName = profile['resourceName'] as String?;
   return resourceName?.split('/').last;
 }
@@ -77,14 +81,15 @@ String? extractUserId(Map<String, Object?> profile) {
 /// * `photos`
 ///
 /// From a Person object.
-String? extractPrimaryField(List<Object?>? values, String fieldName) {
+T? _extractPrimaryField<T>(List<Object?>? values, String fieldName) {
   if (values != null) {
     for (final Object? value in values) {
       if (value != null && value is Map<String, Object?>) {
-        final bool isPrimary = _deepGet(value,
-            path: <String>['metadata', 'primary'], defaultValue: false);
+        final bool isPrimary = _extractPath(value,
+            path: <String>['metadata', 'primary'],
+            defaultValue: false,);
         if (isPrimary) {
-          return value[fieldName] as String?;
+          return value[fieldName] as T?;
         }
       }
     }
@@ -96,22 +101,22 @@ String? extractPrimaryField(List<Object?>? values, String fieldName) {
 /// Attempts to get the property in [path] of type `T` from a deeply nested [source].
 ///
 /// Returns [default] if the property is not found.
-T _deepGet<T>(
+T _extractPath<T>(
   Map<String, Object?> source, {
   required List<String> path,
   required T defaultValue,
 }) {
-  final String value = path.removeLast();
+  final String valueKey = path.removeLast();
   Object? data = source;
-  for (final String index in path) {
+  for (final String key in path) {
     if (data != null && data is Map) {
-      data = data[index];
+      data = data[key];
     } else {
       break;
     }
   }
   if (data != null && data is Map) {
-    return (data[value] ?? defaultValue) as T;
+    return (data[valueKey] ?? defaultValue) as T;
   } else {
     return defaultValue;
   }
@@ -120,15 +125,20 @@ T _deepGet<T>(
 /// Gets from [url] with an authorization header defined by [token].
 ///
 /// Attempts to [jsonDecode] the result.
-Future<Map<String, Object?>> _get(TokenResponse token, String url) async {
+Future<Map<String, Object?>> _doRequest(String url, TokenResponse token, {
+  http.Client? overrideClient,
+}) async {
   final Uri uri = Uri.parse(url);
-  final http.Response response = await http.get(uri, headers: <String, String>{
-    'Authorization': '${token.token_type} ${token.access_token}',
-  });
-
-  if (response.statusCode != 200) {
-    throw http.ClientException(response.body, uri);
+  final http.Client client = overrideClient ?? http.Client();
+  try {
+    final http.Response response = await client.get(uri, headers: <String, String>{
+      'Authorization': '${token.token_type} ${token.access_token}',
+    });
+    if (response.statusCode != 200) {
+      throw http.ClientException(response.body, uri);
+    }
+    return jsonDecode(response.body) as Map<String, Object?>;
+  } finally {
+    client.close();
   }
-
-  return jsonDecode(response.body) as Map<String, Object?>;
 }
