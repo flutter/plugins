@@ -401,3 +401,65 @@ class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
         returnValueForMissingStub: null,
       );
 }
+
+/// A class which mocks [TileOverlaysController].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTileOverlaysController extends _i1.Mock
+    implements _i3.TileOverlaysController {
+  @override
+  _i2.GMap get googleMap => (super.noSuchMethod(
+        Invocation.getter(#googleMap),
+        returnValue: _FakeGMap_0(
+          this,
+          Invocation.getter(#googleMap),
+        ),
+        returnValueForMissingStub: _FakeGMap_0(
+          this,
+          Invocation.getter(#googleMap),
+        ),
+      ) as _i2.GMap);
+  @override
+  set googleMap(_i2.GMap? _googleMap) => super.noSuchMethod(
+        Invocation.setter(
+          #googleMap,
+          _googleMap,
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void addTileOverlays(Set<_i4.TileOverlay>? tileOverlays) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #addTileOverlays,
+          [tileOverlays],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void changeTileOverlays(Set<_i4.TileOverlay>? tileOverlays) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #changeTileOverlays,
+          [tileOverlays],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void removeTileOverlays(Set<_i4.TileOverlayId>? tileOverlayIds) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #removeTileOverlays,
+          [tileOverlayIds],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void clearTileCache(_i4.TileOverlayId? tileOverlayId) => super.noSuchMethod(
+        Invocation.method(
+          #clearTileCache,
+          [tileOverlayId],
+        ),
+        returnValueForMissingStub: null,
+      );
+}

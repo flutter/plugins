@@ -19,6 +19,7 @@ import 'package:mockito/mockito.dart';
   MockSpec<PolygonsController>(),
   MockSpec<PolylinesController>(),
   MockSpec<MarkersController>(),
+  MockSpec<TileOverlaysController>(),
 ])
 import 'google_maps_controller_test.mocks.dart';
 
@@ -197,6 +198,15 @@ void main() {
           }, throwsAssertionError);
         });
 
+        testWidgets('cannot updateTileOverlays after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() {
+            controller.updateTileOverlays(const <TileOverlay>{});
+          }, throwsAssertionError);
+        });
+
         testWidgets('isInfoWindowShown defaults to false',
             (WidgetTester tester) async {
           controller.dispose();
@@ -211,6 +221,7 @@ void main() {
       late MockMarkersController markers;
       late MockPolygonsController polygons;
       late MockPolylinesController polylines;
+      late MockTileOverlaysController tileOverlays;
       late gmaps.GMap map;
 
       setUp(() {
@@ -218,6 +229,7 @@ void main() {
         markers = MockMarkersController();
         polygons = MockPolygonsController();
         polylines = MockPolylinesController();
+        tileOverlays = MockTileOverlaysController();
         map = gmaps.GMap(html.DivElement());
       });
 
@@ -267,6 +279,7 @@ void main() {
             markers: markers,
             polygons: polygons,
             polylines: polylines,
+            tileOverlays: tileOverlays,
           )
           ..init();
 
@@ -274,6 +287,7 @@ void main() {
         verify(markers.bindToMap(mapId, map));
         verify(polygons.bindToMap(mapId, map));
         verify(polylines.bindToMap(mapId, map));
+        verify(tileOverlays.googleMap = map);
       });
 
       testWidgets('renders initial geometry', (WidgetTester tester) async {
@@ -320,6 +334,8 @@ void main() {
             LatLng(43.354469, -5.851318),
             LatLng(43.354762, -5.850824),
           ])
+        }, tileOverlays: <TileOverlay>{
+          const TileOverlay(tileOverlayId: TileOverlayId('overlay-1'))
         });
 
         controller = createController(mapObjects: mapObjects)
@@ -328,6 +344,7 @@ void main() {
             markers: markers,
             polygons: polygons,
             polylines: polylines,
+            tileOverlays: tileOverlays,
           )
           ..init();
 
@@ -335,6 +352,7 @@ void main() {
         verify(markers.addMarkers(mapObjects.markers));
         verify(polygons.addPolygons(mapObjects.polygons));
         verify(polylines.addPolylines(mapObjects.polylines));
+        verify(tileOverlays.addTileOverlays(mapObjects.tileOverlays));
       });
 
       group('Initialization options', () {
@@ -521,13 +539,9 @@ void main() {
 
     // These are the methods that get forwarded to other controllers, so we just verify calls.
     group('Pass-through methods', () {
-      setUp(() {
-        controller = createController();
-      });
-
       testWidgets('updateCircles', (WidgetTester tester) async {
         final MockCirclesController mock = MockCirclesController();
-        controller.debugSetOverrides(circles: mock);
+        controller = createController()..debugSetOverrides(circles: mock);
 
         final Set<Circle> previous = <Circle>{
           const Circle(circleId: CircleId('to-be-updated')),
@@ -554,7 +568,7 @@ void main() {
 
       testWidgets('updateMarkers', (WidgetTester tester) async {
         final MockMarkersController mock = MockMarkersController();
-        controller.debugSetOverrides(markers: mock);
+        controller = createController()..debugSetOverrides(markers: mock);
 
         final Set<Marker> previous = <Marker>{
           const Marker(markerId: MarkerId('to-be-updated')),
@@ -581,7 +595,7 @@ void main() {
 
       testWidgets('updatePolygons', (WidgetTester tester) async {
         final MockPolygonsController mock = MockPolygonsController();
-        controller.debugSetOverrides(polygons: mock);
+        controller = createController()..debugSetOverrides(polygons: mock);
 
         final Set<Polygon> previous = <Polygon>{
           const Polygon(polygonId: PolygonId('to-be-updated')),
@@ -608,7 +622,7 @@ void main() {
 
       testWidgets('updatePolylines', (WidgetTester tester) async {
         final MockPolylinesController mock = MockPolylinesController();
-        controller.debugSetOverrides(polylines: mock);
+        controller = createController()..debugSetOverrides(polylines: mock);
 
         final Set<Polyline> previous = <Polyline>{
           const Polyline(polylineId: PolylineId('to-be-updated')),
@@ -639,11 +653,38 @@ void main() {
         }));
       });
 
+      testWidgets('updateTileOverlays', (WidgetTester tester) async {
+        final MockTileOverlaysController mock = MockTileOverlaysController();
+        controller = createController(
+            mapObjects: MapObjects(tileOverlays: <TileOverlay>{
+          const TileOverlay(tileOverlayId: TileOverlayId('to-be-updated')),
+          const TileOverlay(tileOverlayId: TileOverlayId('to-be-removed')),
+        }))
+          ..debugSetOverrides(tileOverlays: mock);
+
+        controller.updateTileOverlays(<TileOverlay>{
+          const TileOverlay(
+              tileOverlayId: TileOverlayId('to-be-updated'), visible: false),
+          const TileOverlay(tileOverlayId: TileOverlayId('to-be-added')),
+        });
+
+        verify(mock.removeTileOverlays(<TileOverlayId>{
+          const TileOverlayId('to-be-removed'),
+        }));
+        verify(mock.addTileOverlays(<TileOverlay>{
+          const TileOverlay(tileOverlayId: TileOverlayId('to-be-added')),
+        }));
+        verify(mock.changeTileOverlays(<TileOverlay>{
+          const TileOverlay(
+              tileOverlayId: TileOverlayId('to-be-updated'), visible: false),
+        }));
+      });
+
       testWidgets('infoWindow visibility', (WidgetTester tester) async {
         final MockMarkersController mock = MockMarkersController();
         const MarkerId markerId = MarkerId('marker-with-infowindow');
         when(mock.isInfoWindowShown(markerId)).thenReturn(true);
-        controller.debugSetOverrides(markers: mock);
+        controller = createController()..debugSetOverrides(markers: mock);
 
         controller.showInfoWindow(markerId);
 
