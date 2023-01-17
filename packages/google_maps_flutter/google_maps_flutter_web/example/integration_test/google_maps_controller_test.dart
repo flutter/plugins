@@ -222,16 +222,15 @@ void main() {
       });
 
       testWidgets('listens to map events', (WidgetTester tester) async {
-        controller = createController();
-        controller.debugSetOverrides(
-          createMap: (_, __) => map,
-          circles: circles,
-          markers: markers,
-          polygons: polygons,
-          polylines: polylines,
-        );
-
-        controller.init();
+        controller = createController()
+          ..debugSetOverrides(
+            createMap: (_, __) => map,
+            circles: circles,
+            markers: markers,
+            polygons: polygons,
+            polylines: polylines,
+          )
+          ..init();
 
         // Trigger events on the map, and verify they've been broadcast to the stream
         final Stream<MapEvent<Object?>> capturedEvents = stream.stream.take(5);
@@ -261,16 +260,15 @@ void main() {
 
       testWidgets("binds geometry controllers to map's",
           (WidgetTester tester) async {
-        controller = createController();
-        controller.debugSetOverrides(
-          createMap: (_, __) => map,
-          circles: circles,
-          markers: markers,
-          polygons: polygons,
-          polylines: polylines,
-        );
-
-        controller.init();
+        controller = createController()
+          ..debugSetOverrides(
+            createMap: (_, __) => map,
+            circles: circles,
+            markers: markers,
+            polygons: polygons,
+            polylines: polylines,
+          )
+          ..init();
 
         verify(circles.bindToMap(mapId, map));
         verify(markers.bindToMap(mapId, map));
@@ -324,16 +322,14 @@ void main() {
           ])
         });
 
-        controller = createController(mapObjects: mapObjects);
-
-        controller.debugSetOverrides(
-          circles: circles,
-          markers: markers,
-          polygons: polygons,
-          polylines: polylines,
-        );
-
-        controller.init();
+        controller = createController(mapObjects: mapObjects)
+          ..debugSetOverrides(
+            circles: circles,
+            markers: markers,
+            polygons: polygons,
+            polylines: polylines,
+          )
+          ..init();
 
         verify(circles.addCircles(mapObjects.circles));
         verify(markers.addMarkers(mapObjects.markers));
@@ -351,14 +347,12 @@ void main() {
               mapConfiguration: const MapConfiguration(
             mapType: MapType.satellite,
             zoomControlsEnabled: true,
-          ));
-          controller.debugSetOverrides(
-              createMap: (_, gmaps.MapOptions options) {
-            capturedOptions = options;
-            return map;
-          });
-
-          controller.init();
+          ))
+            ..debugSetOverrides(createMap: (_, gmaps.MapOptions options) {
+              capturedOptions = options;
+              return map;
+            })
+            ..init();
 
           expect(capturedOptions, isNotNull);
           expect(capturedOptions!.mapTypeId, gmaps.MapTypeId.SATELLITE);
@@ -373,14 +367,12 @@ void main() {
           controller = createController(
               mapConfiguration: const MapConfiguration(
             scrollGesturesEnabled: false,
-          ));
-          controller.debugSetOverrides(
-              createMap: (_, gmaps.MapOptions options) {
-            capturedOptions = options;
-            return map;
-          });
-
-          controller.init();
+          ))
+            ..debugSetOverrides(createMap: (_, gmaps.MapOptions options) {
+              capturedOptions = options;
+              return map;
+            })
+            ..init();
 
           expect(capturedOptions, isNotNull);
           expect(capturedOptions!.gestureHandling, 'none',
@@ -393,14 +385,12 @@ void main() {
           controller = createController(
               mapConfiguration: const MapConfiguration(
             zoomGesturesEnabled: false,
-          ));
-          controller.debugSetOverrides(
-              createMap: (_, gmaps.MapOptions options) {
-            capturedOptions = options;
-            return map;
-          });
-
-          controller.init();
+          ))
+            ..debugSetOverrides(createMap: (_, gmaps.MapOptions options) {
+              capturedOptions = options;
+              return map;
+            })
+            ..init();
 
           expect(capturedOptions, isNotNull);
           expect(capturedOptions!.gestureHandling, 'none',
@@ -415,15 +405,12 @@ void main() {
               target: LatLng(43.308, -5.6910),
               zoom: 12,
             ),
-          );
-
-          controller.debugSetOverrides(
-              createMap: (_, gmaps.MapOptions options) {
-            capturedOptions = options;
-            return map;
-          });
-
-          controller.init();
+          )
+            ..debugSetOverrides(createMap: (_, gmaps.MapOptions options) {
+              capturedOptions = options;
+              return map;
+            })
+            ..init();
 
           expect(capturedOptions, isNotNull);
           expect(capturedOptions!.zoom, 12);
@@ -433,8 +420,7 @@ void main() {
 
       group('Traffic Layer', () {
         testWidgets('by default is disabled', (WidgetTester tester) async {
-          controller = createController();
-          controller.init();
+          controller = createController()..init();
           expect(controller.trafficLayer, isNull);
         });
 
@@ -443,9 +429,9 @@ void main() {
           controller = createController(
               mapConfiguration: const MapConfiguration(
             trafficEnabled: true,
-          ));
-          controller.debugSetOverrides(createMap: (_, __) => map);
-          controller.init();
+          ))
+            ..debugSetOverrides(createMap: (_, __) => map)
+            ..init();
           expect(controller.trafficLayer, isNotNull);
         });
       });
@@ -462,9 +448,9 @@ void main() {
             ..zoom = 10
             ..center = gmaps.LatLng(0, 0),
         );
-        controller = createController();
-        controller.debugSetOverrides(createMap: (_, __) => map);
-        controller.init();
+        controller = createController()
+          ..debugSetOverrides(createMap: (_, __) => map)
+          ..init();
       });
 
       group('updateRawOptions', () {
