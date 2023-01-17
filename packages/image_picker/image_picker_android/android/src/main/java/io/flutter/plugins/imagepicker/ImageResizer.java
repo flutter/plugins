@@ -34,10 +34,10 @@ class ImageResizer {
       @Nullable Double maxWidth,
       @Nullable Double maxHeight,
       @Nullable Integer imageQuality) {
-    BitmapFactory.Options options = new BitmapFactory.Options();
-    options.inJustDecodeBounds = true;
-    decodeFile(imagePath, options);
-    if (options.outWidth == -1 || options.outHeight == -1) {
+    BitmapFactory.Options queryOptions = new BitmapFactory.Options();
+    queryOptions.inJustDecodeBounds = true;
+    decodeFile(imagePath, queryOptions);
+    if (queryOptions.outWidth == -1 || queryOptions.outHeight == -1) {
       return null;
     }
     boolean shouldScale =
@@ -50,10 +50,11 @@ class ImageResizer {
       String imageName = pathParts[pathParts.length - 1];
       Point size =
           calculateSize(
-              Double.valueOf(options.outWidth),
-              Double.valueOf(options.outHeight),
+              Double.valueOf(queryOptions.outWidth),
+              Double.valueOf(queryOptions.outHeight),
               maxWidth,
               maxHeight);
+      BitmapFactory.Options options = new BitmapFactory.Options();
       options.inSampleSize = calculateInSampleSize(options, size.x, size.y);
       options.inJustDecodeBounds = false;
       File file =
