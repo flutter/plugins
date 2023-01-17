@@ -109,10 +109,10 @@ class CameraValue {
     bool? exposurePointSupported,
     bool? focusPointSupported,
     DeviceOrientation? deviceOrientation,
-    DeviceOrientation? lockedCaptureOrientation,
-    DeviceOrientation? recordingOrientation,
+    Optional<DeviceOrientation>? lockedCaptureOrientation,
+    Optional<DeviceOrientation>? recordingOrientation,
     bool? isPreviewPaused,
-    DeviceOrientation? previewPauseOrientation,
+    Optional<DeviceOrientation>? previewPauseOrientation,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -262,15 +262,16 @@ class CameraController extends ValueNotifier<CameraValue> {
     await CameraPlatform.instance.pausePreview(_cameraId);
     value = value.copyWith(
         isPreviewPaused: true,
-        previewPauseOrientation:
-            value.lockedCaptureOrientation ?? value.deviceOrientation);
+        previewPauseOrientation: Optional<DeviceOrientation>.of(
+            value.lockedCaptureOrientation ?? value.deviceOrientation));
   }
 
   /// Resumes the current camera preview
   Future<void> resumePreview() async {
     await CameraPlatform.instance.resumePreview(_cameraId);
-    value =
-        value.copyWith(isPreviewPaused: false, previewPauseOrientation: null);
+    value = value.copyWith(
+        isPreviewPaused: false,
+        previewPauseOrientation: const Optional<DeviceOrientation>.absent());
   }
 
   /// Captures an image and returns the file where it was saved.
@@ -313,8 +314,8 @@ class CameraController extends ValueNotifier<CameraValue> {
         isRecordingVideo: true,
         isRecordingPaused: false,
         isStreamingImages: streamCallback != null,
-        recordingOrientation:
-            value.lockedCaptureOrientation ?? value.deviceOrientation);
+        recordingOrientation: Optional<DeviceOrientation>.of(
+            value.lockedCaptureOrientation ?? value.deviceOrientation));
   }
 
   /// Stops the video recording and returns the file where it was saved.
@@ -329,7 +330,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         await CameraPlatform.instance.stopVideoRecording(_cameraId);
     value = value.copyWith(
       isRecordingVideo: false,
-      recordingOrientation: null,
+      recordingOrientation: const Optional<DeviceOrientation>.absent(),
     );
     return file;
   }
@@ -398,13 +399,16 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> lockCaptureOrientation() async {
     await CameraPlatform.instance
         .lockCaptureOrientation(_cameraId, value.deviceOrientation);
-    value = value.copyWith(lockedCaptureOrientation: value.deviceOrientation);
+    value = value.copyWith(
+        lockedCaptureOrientation:
+            Optional<DeviceOrientation>.of(value.deviceOrientation));
   }
 
   /// Unlocks the capture orientation.
   Future<void> unlockCaptureOrientation() async {
     await CameraPlatform.instance.unlockCaptureOrientation(_cameraId);
-    value = value.copyWith(lockedCaptureOrientation: null);
+    value = value.copyWith(
+        lockedCaptureOrientation: const Optional<DeviceOrientation>.absent());
   }
 
   /// Sets the focus mode for taking pictures.

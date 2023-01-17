@@ -13,6 +13,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:quiver/core.dart';
 
 List<CameraDescription> get mockAvailableCameras => <CameraDescription>[
       const CameraDescription(
@@ -1190,7 +1191,8 @@ void main() {
       cameraController.value = cameraController.value.copyWith(
           isPreviewPaused: false,
           deviceOrientation: DeviceOrientation.portraitUp,
-          lockedCaptureOrientation: DeviceOrientation.landscapeRight);
+          lockedCaptureOrientation:
+              Optional<DeviceOrientation>.of(DeviceOrientation.landscapeRight));
 
       await cameraController.pausePreview();
 

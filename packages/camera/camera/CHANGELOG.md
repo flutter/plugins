@@ -1,4 +1,4 @@
-## 0.10.3
+## 0.10.2
 
 * Adds back use of Optional type.
 
