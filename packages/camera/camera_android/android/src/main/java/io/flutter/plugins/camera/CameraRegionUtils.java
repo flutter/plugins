@@ -11,8 +11,8 @@ import android.os.Build;
 import android.util.Size;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import java.util.Arrays;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
+import java.util.Arrays;
 
 /**
  * Utility class offering functions to calculate values regarding the camera boundaries.
