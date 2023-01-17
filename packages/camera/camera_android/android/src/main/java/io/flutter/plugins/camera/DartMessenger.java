@@ -8,13 +8,13 @@ import android.os.Handler;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.features.autofocus.FocusMode;
 import io.flutter.plugins.camera.features.exposurelock.ExposureMode;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Utility class that facilitates communication to the Flutter client */
 public class DartMessenger {

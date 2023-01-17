@@ -11,9 +11,9 @@ import android.media.EncoderProfiles;
 import android.os.Build;
 import android.util.Size;
 import androidx.annotation.VisibleForTesting;
-import java.util.List;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
+import java.util.List;
 
 /**
  * Controls the resolutions configuration on the {@link android.hardware.camera2} API.
