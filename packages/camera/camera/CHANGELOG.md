@@ -1,6 +1,11 @@
 ## 0.10.1
 
 * Implements option to also stream when recording a video.
+* Remove usage of deprecated quiver Optional type.
+
+## 0.10.0+5
+
+* Updates code for stricter lint checks.
 
 ## 0.10.0+4
 

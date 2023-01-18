@@ -1,5 +1,18 @@
-## NEXT
+## 3.0.2
 
+* Updates code for stricter lint checks.
+
+## 3.0.1
+
+* Adds support for retrieving navigation type with internal class.
+* Updates README with details on contributing.
+* Updates pigeon dev dependency to `4.2.13`.
+
+## 3.0.0
+
+* **BREAKING CHANGE** Updates platform implementation to `2.0.0` release of
+  `webview_flutter_platform_interface`. See
+  [webview_flutter](https://pub.dev/packages/webview_flutter/versions/4.0.0) for updated usage.
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 
 ## 2.9.5

@@ -98,7 +98,7 @@ void main() {
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>['format', ...getPackagesDirRelativePaths(plugin, files)],
               packagesDir.path),
         ]));
@@ -132,7 +132,7 @@ void main() {
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>[
                 'format',
                 ...getPackagesDirRelativePaths(plugin, formattedFiles)
@@ -141,7 +141,7 @@ void main() {
         ]));
   });
 
-  test('fails if flutter format fails', () async {
+  test('fails if dart format fails', () async {
     const List<String> files = <String>[
       'lib/a.dart',
       'lib/src/b.dart',
@@ -149,8 +149,9 @@ void main() {
     ];
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
-    processRunner.mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
-        <io.Process>[MockProcess(exitCode: 1)];
+    processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
+      MockProcess(exitCode: 1)
+    ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
         runner, <String>['format'], errorHandler: (Error e) {
@@ -332,6 +333,44 @@ void main() {
         ]));
   });
 
+  test('falls back to working clang-format in the path', () async {
+    const List<String> files = <String>[
+      'linux/foo_plugin.cc',
+      'macos/Classes/Foo.h',
+    ];
+    final RepositoryPackage plugin = createFakePlugin(
+      'a_plugin',
+      packagesDir,
+      extraFiles: files,
+    );
+
+    processRunner.mockProcessesForExecutable['clang-format'] = <io.Process>[
+      MockProcess(exitCode: 1)
+    ];
+    processRunner.mockProcessesForExecutable['which'] = <io.Process>[
+      MockProcess(
+          stdout: '/usr/local/bin/clang-format\n/path/to/working-clang-format')
+    ];
+    processRunner.mockProcessesForExecutable['/usr/local/bin/clang-format'] =
+        <io.Process>[MockProcess(exitCode: 1)];
+    await runCapturingPrint(runner, <String>['format']);
+
+    expect(
+        processRunner.recordedCalls,
+        containsAll(<ProcessCall>[
+          const ProcessCall(
+              '/path/to/working-clang-format', <String>['--version'], null),
+          ProcessCall(
+              '/path/to/working-clang-format',
+              <String>[
+                '-i',
+                '--style=file',
+                ...getPackagesDirRelativePaths(plugin, files)
+              ],
+              packagesDir.path),
+        ]));
+  });
+
   test('honors --clang-format flag', () async {
     const List<String> files = <String>[
       'windows/foo_plugin.cpp',
@@ -427,7 +466,7 @@ void main() {
               ],
               packagesDir.path),
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>[
                 'format',
                 ...getPackagesDirRelativePaths(plugin, dartFiles)
@@ -556,7 +595,7 @@ void main() {
         processRunner.recordedCalls,
         contains(
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>[
                 'format',
                 '$pluginName\\$extraFile',
@@ -613,7 +652,7 @@ void main() {
         processRunner.recordedCalls,
         contains(
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>[
                 'format',
                 '$pluginName/$extraFile',

@@ -1,3 +1,26 @@
+## 3.1.3
+
+* Fixes crash when the Java `InstanceManager` was used after plugin was removed from the engine.
+
+## 3.1.2
+
+* Fixes bug where an `AndroidWebViewController` couldn't be reused with a new `WebViewWidget`.
+
+## 3.1.1
+
+* Fixes bug where a `AndroidNavigationDelegate` was required to load a request.
+
+## 3.1.0
+
+* Adds support for selecting Hybrid Composition on versions 23+. Please use
+  `AndroidWebViewControllerCreationParams.displayWithHybridComposition`.
+
+## 3.0.0
+
+* **BREAKING CHANGE** Updates platform implementation to `2.0.0` release of
+  `webview_flutter_platform_interface`. See
+  [webview_flutter](https://pub.dev/packages/webview_flutter/versions/4.0.0) for updated usage.
+
 ## 2.10.4
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.

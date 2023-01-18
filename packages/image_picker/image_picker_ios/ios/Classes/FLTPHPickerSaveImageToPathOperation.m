@@ -2,27 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <Flutter/Flutter.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "FLTPHPickerSaveImageToPathOperation.h"
+
+#import <os/log.h>
 
 API_AVAILABLE(ios(14))
 @interface FLTPHPickerSaveImageToPathOperation ()
 
 @property(strong, nonatomic) PHPickerResult *result;
-@property(assign, nonatomic) NSNumber *maxHeight;
-@property(assign, nonatomic) NSNumber *maxWidth;
-@property(assign, nonatomic) NSNumber *desiredImageQuality;
+@property(strong, nonatomic) NSNumber *maxHeight;
+@property(strong, nonatomic) NSNumber *maxWidth;
+@property(strong, nonatomic) NSNumber *desiredImageQuality;
 @property(assign, nonatomic) BOOL requestFullMetadata;
 
 @end
 
-typedef void (^GetSavedPath)(NSString *);
-
 @implementation FLTPHPickerSaveImageToPathOperation {
   BOOL executing;
   BOOL finished;
-  GetSavedPath getSavedPath;
+  FLTGetSavedPath getSavedPath;
 }
 
 - (instancetype)initWithResult:(PHPickerResult *)result
@@ -30,7 +31,7 @@ typedef void (^GetSavedPath)(NSString *);
                       maxWidth:(NSNumber *)maxWidth
            desiredImageQuality:(NSNumber *)desiredImageQuality
                   fullMetadata:(BOOL)fullMetadata
-                savedPathBlock:(GetSavedPath)savedPathBlock API_AVAILABLE(ios(14)) {
+                savedPathBlock:(FLTGetSavedPath)savedPathBlock API_AVAILABLE(ios(14)) {
   if (self = [super init]) {
     if (result) {
       self.result = result;
@@ -74,10 +75,10 @@ typedef void (^GetSavedPath)(NSString *);
   [self didChangeValueForKey:@"isExecuting"];
 }
 
-- (void)completeOperationWithPath:(NSString *)savedPath {
+- (void)completeOperationWithPath:(NSString *)savedPath error:(FlutterError *)error {
+  getSavedPath(savedPath, error);
   [self setExecuting:NO];
   [self setFinished:YES];
-  getSavedPath(savedPath);
 }
 
 - (void)start {
@@ -88,25 +89,31 @@ typedef void (^GetSavedPath)(NSString *);
   if (@available(iOS 14, *)) {
     [self setExecuting:YES];
 
-    if ([self.result.itemProvider hasItemConformingToTypeIdentifier:UTTypeWebP.identifier]) {
+    // This supports uniform types that conform to UTTypeImage.
+    // This includes UTTypeHEIC, UTTypeHEIF, UTTypeLivePhoto, UTTypeICO, UTTypeICNS, UTTypePNG
+    // UTTypeGIF, UTTypeJPEG, UTTypeWebP, UTTypeTIFF, UTTypeBMP, UTTypeSVG, UTTypeRAWImage
+    if ([self.result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
       [self.result.itemProvider
-          loadDataRepresentationForTypeIdentifier:UTTypeWebP.identifier
+          loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
                                 completionHandler:^(NSData *_Nullable data,
                                                     NSError *_Nullable error) {
-                                  UIImage *image = [[UIImage alloc] initWithData:data];
-                                  [self processImage:image];
+                                  if (data != nil) {
+                                    UIImage *image = [[UIImage alloc] initWithData:data];
+                                    [self processImage:image];
+                                  } else {
+                                    FlutterError *flutterError =
+                                        [FlutterError errorWithCode:@"invalid_image"
+                                                            message:error.localizedDescription
+                                                            details:error.domain];
+                                    [self completeOperationWithPath:nil error:flutterError];
+                                  }
                                 }];
-      return;
+    } else {
+      FlutterError *flutterError = [FlutterError errorWithCode:@"invalid_source"
+                                                       message:@"Invalid image source."
+                                                       details:nil];
+      [self completeOperationWithPath:nil error:flutterError];
     }
-
-    [self.result.itemProvider
-        loadObjectOfClass:[UIImage class]
-        completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
-                            NSError *_Nullable error) {
-          if ([image isKindOfClass:[UIImage class]]) {
-            [self processImage:image];
-          }
-        }];
   } else {
     [self setFinished:YES];
   }
@@ -139,7 +146,7 @@ typedef void (^GetSavedPath)(NSString *);
                                     maxWidth:self.maxWidth
                                    maxHeight:self.maxHeight
                                 imageQuality:self.desiredImageQuality];
-          [self completeOperationWithPath:savedPath];
+          [self completeOperationWithPath:savedPath error:nil];
         };
     if (@available(iOS 13.0, *)) {
       [[PHImageManager defaultManager]
@@ -169,7 +176,7 @@ typedef void (^GetSavedPath)(NSString *);
         [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
                                                         image:localImage
                                                  imageQuality:self.desiredImageQuality];
-    [self completeOperationWithPath:savedPath];
+    [self completeOperationWithPath:savedPath error:nil];
   }
 }
 
