@@ -294,7 +294,7 @@ NS_INLINE UIViewController *rootViewController() {
 }
 
 - (void)startOrStopPictureInPicture:(BOOL)shouldPictureInPictureStart {
-  if (self.isPictureInPictureStarted == shouldPictureInPictureStart) {
+  if (![self doesInfoPlistSupportPictureInPicture:error] || self.isPictureInPictureStarted == shouldPictureInPictureStart) {
     return;
   }
 
@@ -733,7 +733,7 @@ NS_INLINE UIViewController *rootViewController() {
 
 - (nullable NSNumber *)isPictureInPictureSupported:
     (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  return @(AVPictureInPictureController.isPictureInPictureSupported);
+    return @([AVPictureInPictureController isPictureInPictureSupported]);
 }
 
 - (void)setAutomaticallyStartPictureInPicture:(FLTAutomaticallyStartPictureInPictureMessage *)input
@@ -753,13 +753,31 @@ NS_INLINE UIViewController *rootViewController() {
                                                     input.rect.height.floatValue)];
 }
 
+- (BOOL)doesInfoPlistSupportPictureInPicture:(FlutterError **)error {
+  NSArray *backgroundModes = [NSBundle.mainBundle objectForInfoDictionaryKey:@"UIBackgroundModes"];
+  if (![backgroundModes isKindOfClass:[NSArray class]] ||
+      ![backgroundModes containsObject:@"audio"]) {
+    *error = [FlutterError errorWithCode:@"video_player"
+                                 message:@"missing audio UIBackgroundModes audio in Info.plist"
+                                 details:nil];
+    return NO;
+  }
+  return YES;
+}
+
 - (void)startPictureInPicture:(FLTStartPictureInPictureMessage *)input
                         error:(FlutterError **)error {
+  if (![self doesInfoPlistSupportPictureInPicture:error]) {
+    return;
+  }
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
   [player startOrStopPictureInPicture:YES];
 }
 
 - (void)stopPictureInPicture:(FLTStopPictureInPictureMessage *)input error:(FlutterError **)error {
+  if (![self doesInfoPlistSupportPictureInPicture:error]) {
+    return;
+  }
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
   [player startOrStopPictureInPicture:NO];
 }

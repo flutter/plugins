@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 @import AVFoundation;
+@import AVKit;
 @import video_player_avfoundation;
 @import XCTest;
 
@@ -254,30 +255,24 @@
   XCTAssertEqual(avPlayer.volume, 0.1f);
 
   // Set Picture In Picture
-  FLTPictureInPictureOverlayRect *pictureInPictureRect =
-      [FLTPictureInPictureOverlayRect makeWithTop:@0 left:@0 width:@300 height:@200];
-  FLTSetPictureInPictureOverlayRectMessage *setPictureInPictureOverlayRectMessage =
-      [FLTSetPictureInPictureOverlayRectMessage makeWithTextureId:textureId
-                                                             rect:pictureInPictureRect];
-  [videoPlayerPlugin setPictureInPictureOverlayRect:setPictureInPictureOverlayRectMessage
-                                              error:&error];
+  NSNumber *isPictureInPictureSupported = [videoPlayerPlugin isPictureInPictureSupported:&error];
   XCTAssertNil(error);
-
-  // Set Picture In Picture Start
-  FLTStartPictureInPictureMessage *startPictureInPicture =
-      [FLTStartPictureInPictureMessage makeWithTextureId:textureId];
-  XCTestExpectation *startingPiPExpectation =
-      [self expectationWithDescription:@"startingPictureInPicture"];
-  [player onListenWithArguments:nil
-                      eventSink:^(NSDictionary<NSString *, id> *event) {
-                        if ([event[@"event"] isEqualToString:@"startingPictureInPicture"]) {
-                          [startingPiPExpectation fulfill];
-                        }
-                      }];
-  [videoPlayerPlugin startPictureInPicture:startPictureInPicture error:&error];
-  XCTAssertNil(error);
-  [self waitForExpectationsWithTimeout:30.0 handler:nil];
-
+  XCTAssertNotNil(isPictureInPictureSupported);
+  XCTAssertEqual(isPictureInPictureSupported.boolValue, [AVPictureInPictureController isPictureInPictureSupported]);
+  if (isPictureInPictureSupported.boolValue) {
+    FLTStartPictureInPictureMessage *startPictureInPicture = [FLTStartPictureInPictureMessage makeWithTextureId:textureId];
+    XCTestExpectation *startingPiPExpectation = [self expectationWithDescription:@"startingPictureInPicture"];
+    [player onListenWithArguments:nil
+                          eventSink:^(NSDictionary<NSString *, id> *event) {
+                            if ([event[@"event"] isEqualToString:@"startingPictureInPicture"]) {
+                              [startingPiPExpectation fulfill];
+                            }
+                          }];
+    [videoPlayerPlugin startPictureInPicture:startPictureInPicture error:&error];
+    XCTAssertNil(error);
+    [self waitForExpectationsWithTimeout:30.0 handler:nil];
+  }
+    
   [player onCancelWithArguments:nil];
 
   return initializationEvent;
