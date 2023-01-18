@@ -1,6 +1,6 @@
-# path\_provider\_macos
+# path\_provider\_foundation
 
-The macos implementation of [`path_provider`][1].
+The iOS and macOS implementation of [`path_provider`][1].
 
 ## Usage
 

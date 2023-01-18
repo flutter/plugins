@@ -8,13 +8,13 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 
 import 'messages.g.dart';
 
-/// The macOS implementation of [PathProviderPlatform].
-class PathProviderMacOS extends PathProviderPlatform {
+/// The iOS and macOS implementation of [PathProviderPlatform].
+class PathProviderFoundation extends PathProviderPlatform {
   final PathProviderApi _pathProvider = PathProviderApi();
 
   /// Registers this class as the default instance of [PathProviderPlatform]
   static void registerWith() {
-    PathProviderPlatform.instance = PathProviderMacOS();
+    PathProviderPlatform.instance = PathProviderFoundation();
   }
 
   @override

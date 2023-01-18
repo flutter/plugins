@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:path_provider_macos/messages.g.dart';
+import 'package:path_provider_foundation/messages.g.dart';
 
 abstract class TestPathProviderApi {
   static const MessageCodec<Object?> codec = StandardMessageCodec();

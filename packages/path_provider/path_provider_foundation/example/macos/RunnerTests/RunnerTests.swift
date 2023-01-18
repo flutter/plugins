@@ -4,7 +4,7 @@
 
 import FlutterMacOS
 import XCTest
-@testable import path_provider_macos
+@testable import path_provider_foundation
 
 class RunnerTests: XCTestCase {
   func testGetTemporaryDirectory() throws {

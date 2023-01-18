@@ -8,18 +8,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider_macos/messages.g.dart';
-import 'package:path_provider_macos/path_provider_macos.dart';
+import 'package:path_provider_foundation/messages.g.dart';
+import 'package:path_provider_foundation/path_provider_foundation.dart';
 
 import 'messages_test.g.dart';
-import 'path_provider_macos_test.mocks.dart';
+import 'path_provider_foundation_test.mocks.dart';
 
 @GenerateMocks(<Type>[TestPathProviderApi])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('PathProviderMacOS', () {
-    late PathProviderMacOS pathProvider;
+  group('PathProviderFoundation', () {
+    late PathProviderFoundation pathProvider;
     late MockTestPathProviderApi mockApi;
     // These unit tests use the actual filesystem, since an injectable
     // filesystem would add a runtime dependency to the package, so everything
@@ -28,7 +28,7 @@ void main() {
 
     setUp(() async {
       testRoot = Directory.systemTemp.createTempSync();
-      pathProvider = PathProviderMacOS();
+      pathProvider = PathProviderFoundation();
       mockApi = MockTestPathProviderApi();
       TestPathProviderApi.setup(mockApi);
     });
