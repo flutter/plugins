@@ -5,7 +5,7 @@
 import 'dart:async';
 import 'dart:html' as html;
 
-import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/foundation.dart' show visibleForTesting, kDebugMode;
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_identity_services_web/loader.dart' as loader;
@@ -117,8 +117,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
           clientId: appClientId!,
           hostedDomain: params.hostedDomain,
           initialScopes: List<String>.from(params.scopes),
-          // *TODO(dit): Remove this before releasing.
-          loggingEnabled: true,
+          loggingEnabled: kDebugMode,
         );
 
     _isInitCalled = true;
