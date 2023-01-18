@@ -294,7 +294,7 @@ NS_INLINE UIViewController *rootViewController() {
 }
 
 - (void)startOrStopPictureInPicture:(BOOL)shouldPictureInPictureStart {
-  if (![self doesInfoPlistSupportPictureInPicture:error] ||
+  if (![AVPictureInPictureController isPictureInPictureSupported] ||
       self.isPictureInPictureStarted == shouldPictureInPictureStart) {
     return;
   }
