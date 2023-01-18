@@ -17,5 +17,9 @@ Pod::Spec.new do |s|
   s.osx.dependency 'FlutterMacOS'
   s.ios.deployment_target = '9.0'
   s.osx.deployment_target = '10.11'
+  s.ios.xcconfig = {
+    'LIBRARY_SEARCH_PATHS' => '$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)/ $(SDKROOT)/usr/lib/swift',
+    'LD_RUNPATH_SEARCH_PATHS' => '/usr/lib/swift',
+  }
   s.swift_version = '5.0'
 end
