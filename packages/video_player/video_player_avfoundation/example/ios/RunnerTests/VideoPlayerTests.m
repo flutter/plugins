@@ -258,21 +258,24 @@
   NSNumber *isPictureInPictureSupported = [videoPlayerPlugin isPictureInPictureSupported:&error];
   XCTAssertNil(error);
   XCTAssertNotNil(isPictureInPictureSupported);
-  XCTAssertEqual(isPictureInPictureSupported.boolValue, [AVPictureInPictureController isPictureInPictureSupported]);
+  XCTAssertEqual(isPictureInPictureSupported.boolValue,
+                 [AVPictureInPictureController isPictureInPictureSupported]);
   if (isPictureInPictureSupported.boolValue) {
-    FLTStartPictureInPictureMessage *startPictureInPicture = [FLTStartPictureInPictureMessage makeWithTextureId:textureId];
-    XCTestExpectation *startingPiPExpectation = [self expectationWithDescription:@"startingPictureInPicture"];
+    FLTStartPictureInPictureMessage *startPictureInPicture =
+        [FLTStartPictureInPictureMessage makeWithTextureId:textureId];
+    XCTestExpectation *startingPiPExpectation =
+        [self expectationWithDescription:@"startingPictureInPicture"];
     [player onListenWithArguments:nil
-                          eventSink:^(NSDictionary<NSString *, id> *event) {
-                            if ([event[@"event"] isEqualToString:@"startingPictureInPicture"]) {
-                              [startingPiPExpectation fulfill];
-                            }
-                          }];
+                        eventSink:^(NSDictionary<NSString *, id> *event) {
+                          if ([event[@"event"] isEqualToString:@"startingPictureInPicture"]) {
+                            [startingPiPExpectation fulfill];
+                          }
+                        }];
     [videoPlayerPlugin startPictureInPicture:startPictureInPicture error:&error];
     XCTAssertNil(error);
     [self waitForExpectationsWithTimeout:30.0 handler:nil];
   }
-    
+
   [player onCancelWithArguments:nil];
 
   return initializationEvent;

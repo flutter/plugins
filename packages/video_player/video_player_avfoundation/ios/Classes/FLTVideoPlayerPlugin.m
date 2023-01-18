@@ -294,7 +294,8 @@ NS_INLINE UIViewController *rootViewController() {
 }
 
 - (void)startOrStopPictureInPicture:(BOOL)shouldPictureInPictureStart {
-  if (![self doesInfoPlistSupportPictureInPicture:error] || self.isPictureInPictureStarted == shouldPictureInPictureStart) {
+  if (![self doesInfoPlistSupportPictureInPicture:error] ||
+      self.isPictureInPictureStarted == shouldPictureInPictureStart) {
     return;
   }
 
@@ -733,7 +734,7 @@ NS_INLINE UIViewController *rootViewController() {
 
 - (nullable NSNumber *)isPictureInPictureSupported:
     (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-    return @([AVPictureInPictureController isPictureInPictureSupported]);
+  return @([AVPictureInPictureController isPictureInPictureSupported]);
 }
 
 - (void)setAutomaticallyStartPictureInPicture:(FLTAutomaticallyStartPictureInPictureMessage *)input
