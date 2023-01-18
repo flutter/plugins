@@ -506,8 +506,8 @@ class CameraController extends ValueNotifier<CameraValue> {
           isRecordingVideo: true,
           isRecordingPaused: false,
           recordingOrientation: Optional<DeviceOrientation>.of(
-              value.lockedCaptureOrientation ?? value.deviceOrientation)),
-          isStreamingImages: onAvailable != null,
+              value.lockedCaptureOrientation ?? value.deviceOrientation),
+          isStreamingImages: onAvailable != null);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
