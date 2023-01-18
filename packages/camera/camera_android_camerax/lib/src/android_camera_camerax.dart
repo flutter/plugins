@@ -31,10 +31,10 @@ class AndroidCameraCameraX extends CameraPlatform {
     final CameraSelector frontCameraSelector =
         CameraSelector.getDefaultFrontCamera();
 
-    CameraLensDirection cameraLensDirection;
+    CameraLensDirection? cameraLensDirection;
     int cameraCount = 0;
-    int cameraSensorOrientation;
-    String cameraName;
+    int? cameraSensorOrientation;
+    String? cameraName;
 
     for (final CameraInfo cameraInfo in cameraInfos) {
       // Determine the lens direction by filtering the CameraInfo
