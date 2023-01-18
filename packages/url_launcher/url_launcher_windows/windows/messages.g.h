@@ -15,6 +15,8 @@
 #include <optional>
 #include <string>
 
+namespace url_launcher_windows {
+
 // Generated class from Pigeon.
 
 class FlutterError {
@@ -78,4 +80,7 @@ class UrlLauncherApi {
  protected:
   UrlLauncherApi() = default;
 };
+
+}  // namespace url_launcher_windows
+
 #endif  // PIGEON_H_

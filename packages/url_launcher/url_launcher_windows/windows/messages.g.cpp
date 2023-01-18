@@ -17,6 +17,8 @@
 #include <optional>
 #include <string>
 
+namespace url_launcher_windows {
+
 /// The codec used by UrlLauncherApi.
 const flutter::StandardMessageCodec& UrlLauncherApi::GetCodec() {
   return flutter::StandardMessageCodec::GetInstance(
@@ -107,3 +109,5 @@ flutter::EncodableValue UrlLauncherApi::WrapError(const FlutterError& error) {
       flutter::EncodableValue(error.message()),
       flutter::EncodableValue(error.code()), error.details()});
 }
+
+}  // namespace url_launcher_windows
