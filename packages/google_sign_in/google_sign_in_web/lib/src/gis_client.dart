@@ -38,6 +38,7 @@ class GisSdkClient {
       clientId,
       onResponse: _onCredentialResponse,
     );
+
     _tokenClient = _initializeTokenClient(
       clientId,
       hostedDomain: hostedDomain,
@@ -63,7 +64,8 @@ class GisSdkClient {
   }
 
   // Initializes the `id` SDK for the silent-sign in (authentication) client.
-  void _initializeIdClient(String clientId, {
+  void _initializeIdClient(
+    String clientId, {
     required CallbackFn onResponse,
   }) {
     // Initialize `id` for the silent-sign in code.
@@ -88,7 +90,8 @@ class GisSdkClient {
   }
 
   // Creates a `oauth2.TokenClient` used for authorization (scope) requests.
-  TokenClient _initializeTokenClient(String clientId, {
+  TokenClient _initializeTokenClient(
+    String clientId, {
     String? hostedDomain,
     required TokenClientCallbackFn onResponse,
     required ErrorCallbackFn onError,
@@ -165,9 +168,8 @@ class GisSdkClient {
       // the _credentialResponses stream has time to propagate its last value,
       // and we can use _lastCredentialResponse.
       return Future<void>.delayed(Duration.zero, () {
-        completer.complete(
-          utils.gisResponsesToUserData(_lastCredentialResponse)
-        );
+        completer
+            .complete(utils.gisResponsesToUserData(_lastCredentialResponse));
       });
     }
 
@@ -226,7 +228,7 @@ class GisSdkClient {
     // Complete user data either with the _lastCredentialResponse seen,
     // or the synthetic _requestedUserData from above.
     return utils.gisResponsesToUserData(_lastCredentialResponse) ??
-            _requestedUserData;
+        _requestedUserData;
   }
 
   /// Returns a [GoogleSignInTokenData] from the latest seen responses.

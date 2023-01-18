@@ -29,13 +29,15 @@ void main() {
       const String expectedIdToken = 'some-value-for-testing';
       const String expectedAccessToken = 'another-value-for-testing';
 
-      final CredentialResponse credential = jsifyAs<CredentialResponse>(<String, Object?>{
+      final CredentialResponse credential =
+          jsifyAs<CredentialResponse>(<String, Object?>{
         'credential': expectedIdToken,
       });
-      final TokenResponse token = jsifyAs<TokenResponse>(<String, Object?> {
+      final TokenResponse token = jsifyAs<TokenResponse>(<String, Object?>{
         'access_token': expectedAccessToken,
       });
-      final GoogleSignInTokenData tokens = gisResponsesToTokenData(credential, token);
+      final GoogleSignInTokenData tokens =
+          gisResponsesToTokenData(credential, token);
       expect(tokens.accessToken, expectedAccessToken);
       expect(tokens.idToken, expectedIdToken);
       expect(tokens.serverAuthCode, isNull);
@@ -70,7 +72,8 @@ void main() {
     });
 
     testWidgets('invalid payload -> null', (_) async {
-      final CredentialResponse response = jsifyAs<CredentialResponse>(<String, Object?>{
+      final CredentialResponse response =
+          jsifyAs<CredentialResponse>(<String, Object?>{
         'credential': 'some-bogus.thing-that-is-not.valid-jwt',
       });
       expect(gisResponsesToUserData(response), isNull);
@@ -84,10 +87,12 @@ CredentialResponse createJwt(Map<String, Object?>? claims) {
     final JsonWebTokenClaims token = JsonWebTokenClaims.fromJson(claims);
     final JsonWebSignatureBuilder builder = JsonWebSignatureBuilder();
     builder.jsonContent = token.toJson();
-    builder.addRecipient(JsonWebKey.fromJson(<String, Object?>{
-      'kty': 'oct',
-      'k': base64.encode('symmetric-encryption-is-weak'.codeUnits),
-    }), algorithm: 'HS256'); // bogus crypto, don't use this for prod!
+    builder.addRecipient(
+        JsonWebKey.fromJson(<String, Object?>{
+          'kty': 'oct',
+          'k': base64.encode('symmetric-encryption-is-weak'.codeUnits),
+        }),
+        algorithm: 'HS256'); // bogus crypto, don't use this for prod!
     builder.setProtectedHeader('typ', 'JWT');
     credential = builder.build().toCompactSerialization();
     // ignore:avoid_print

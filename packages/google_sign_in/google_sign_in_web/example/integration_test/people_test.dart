@@ -22,7 +22,7 @@ void main() {
   group('requestUserData', () {
     const String expectedAccessToken = '3xp3c73d_4cc355_70k3n';
 
-    final TokenResponse fakeToken = jsifyAs(<String, Object?> {
+    final TokenResponse fakeToken = jsifyAs(<String, Object?>{
       'token_type': 'Bearer',
       'access_token': expectedAccessToken,
     });
@@ -31,16 +31,16 @@ void main() {
       final Completer<String> accessTokenCompleter = Completer<String>();
 
       final http.Client mockClient = http_test.MockClient(
-          (http.Request request) async {
+        (http.Request request) async {
+          accessTokenCompleter.complete(request.headers['Authorization']);
 
-        accessTokenCompleter.complete(request.headers['Authorization']);
-
-        return http.Response(
-          jsonEncode(person),
-          200,
-          headers: <String, String>{'content-type': 'application/json'},
-        );
-      });
+          return http.Response(
+            jsonEncode(person),
+            200,
+            headers: <String, String>{'content-type': 'application/json'},
+          );
+        },
+      );
 
       final GoogleSignInUserData? user = await requestUserData(
         fakeToken,
@@ -53,17 +53,21 @@ void main() {
       expect(user.displayName, expectedPersonName);
       expect(user.photoUrl, expectedPersonPhoto);
       expect(user.idToken, isNull);
-      expect(accessTokenCompleter.future, completion('Bearer $expectedAccessToken'));
+      expect(
+        accessTokenCompleter.future,
+        completion('Bearer $expectedAccessToken'),
+      );
     });
 
     testWidgets('Unauthorized request - throws exception', (_) async {
       final http.Client mockClient = http_test.MockClient(
-          (http.Request request) async {
-        return http.Response(
-          'Unauthorized',
-          403,
-        );
-      });
+        (http.Request request) async {
+          return http.Response(
+            'Unauthorized',
+            403,
+          );
+        },
+      );
 
       expect(() async {
         await requestUserData(
@@ -87,7 +91,8 @@ void main() {
     });
 
     testWidgets('no name/photo - keeps going', (_) async {
-      final Map<String, Object?> personWithoutSomeData = mapWithoutKeys(person, <String>{
+      final Map<String, Object?> personWithoutSomeData =
+          mapWithoutKeys(person, <String>{
         'names',
         'photos',
       });
@@ -103,7 +108,8 @@ void main() {
     });
 
     testWidgets('no userId - throws assertion error', (_) async {
-      final Map<String, Object?> personWithoutId = mapWithoutKeys(person, <String>{
+      final Map<String, Object?> personWithoutId =
+          mapWithoutKeys(person, <String>{
         'resourceName',
       });
 
@@ -113,7 +119,8 @@ void main() {
     });
 
     testWidgets('no email - throws assertion error', (_) async {
-      final Map<String, Object?> personWithoutEmail = mapWithoutKeys(person, <String>{
+      final Map<String, Object?> personWithoutEmail =
+          mapWithoutKeys(person, <String>{
         'emailAddresses',
       });
 

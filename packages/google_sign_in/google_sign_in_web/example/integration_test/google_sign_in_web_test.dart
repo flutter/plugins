@@ -28,20 +28,21 @@ void main() {
 
     testWidgets('Loads clientId when set in a meta', (_) async {
       final GoogleSignInPlugin plugin = GoogleSignInPlugin(
-        debugOverrideLoader: true
+        debugOverrideLoader: true,
       );
 
       expect(plugin.autoDetectedClientId, isNull);
 
       // Add it to the test page now, and try again
-      final DomHtmlMetaElement meta = document.createElement('meta') as DomHtmlMetaElement
-        ..name = clientIdMetaName
-        ..content = expectedClientId;
+      final DomHtmlMetaElement meta =
+          document.createElement('meta') as DomHtmlMetaElement
+            ..name = clientIdMetaName
+            ..content = expectedClientId;
 
       document.head.appendChild(meta);
 
       final GoogleSignInPlugin another = GoogleSignInPlugin(
-        debugOverrideLoader: true
+        debugOverrideLoader: true,
       );
 
       expect(another.autoDetectedClientId, expectedClientId);
@@ -57,20 +58,9 @@ void main() {
 
     setUp(() {
       plugin = GoogleSignInPlugin(
-        debugOverrideLoader: true
+        debugOverrideLoader: true,
       );
       mockGis = MockGisSdkClient();
-    });
-
-    testWidgets('must be called for most of the API to work', (_) async {
-      expect(() async { await plugin.signInSilently(); }, throwsA(isA<StateError>()));
-      expect(() async { await plugin.signIn(); }, throwsA(isA<StateError>()));
-      expect(() async { await plugin.getTokens(email: ''); }, throwsA(isA<StateError>()));
-      expect(() async { await plugin.signOut(); }, throwsA(isA<StateError>()));
-      expect(() async { await plugin.disconnect(); }, throwsA(isA<StateError>()));
-      expect(() async { await plugin.isSignedIn(); }, throwsA(isA<StateError>()));
-      expect(() async { await plugin.clearAuthCache(token: ''); }, throwsA(isA<StateError>()));
-      expect(() async { await plugin.requestScopes(<String>[]); }, throwsA(isA<StateError>()));
     });
 
     testWidgets('initializes if all is OK', (_) async {
@@ -117,6 +107,40 @@ void main() {
         );
       }, throwsAssertionError);
     });
+
+    testWidgets('must be called for most of the API to work', (_) async {
+      expect(() async {
+        await plugin.signInSilently();
+      }, throwsStateError);
+
+      expect(() async {
+        await plugin.signIn();
+      }, throwsStateError);
+
+      expect(() async {
+        await plugin.getTokens(email: '');
+      }, throwsStateError);
+
+      expect(() async {
+        await plugin.signOut();
+      }, throwsStateError);
+
+      expect(() async {
+        await plugin.disconnect();
+      }, throwsStateError);
+
+      expect(() async {
+        await plugin.isSignedIn();
+      }, throwsStateError);
+
+      expect(() async {
+        await plugin.clearAuthCache(token: '');
+      }, throwsStateError);
+
+      expect(() async {
+        await plugin.requestScopes(<String>[]);
+      }, throwsStateError);
+    });
   });
 
   group('(with mocked GIS)', () {
@@ -129,7 +153,7 @@ void main() {
 
     setUp(() {
       plugin = GoogleSignInPlugin(
-        debugOverrideLoader: true
+        debugOverrideLoader: true,
       );
       mockGis = MockGisSdkClient();
     });
@@ -142,15 +166,15 @@ void main() {
       testWidgets('always returns null, regardless of GIS response', (_) async {
         final GoogleSignInUserData someUser = extractUserData(person)!;
 
-        mockito.when(mockGis.signInSilently()).thenAnswer(
-          (_) => Future<GoogleSignInUserData>.value(someUser),
-        );
+        mockito
+            .when(mockGis.signInSilently())
+            .thenAnswer((_) => Future<GoogleSignInUserData>.value(someUser));
 
         expect(plugin.signInSilently(), completion(isNull));
 
-        mockito.when(mockGis.signInSilently()).thenAnswer(
-          (_) => Future<GoogleSignInUserData?>.value(),
-        );
+        mockito
+            .when(mockGis.signInSilently())
+            .thenAnswer((_) => Future<GoogleSignInUserData?>.value());
 
         expect(plugin.signInSilently(), completion(isNull));
       });
@@ -164,28 +188,28 @@ void main() {
       testWidgets('returns the signed-in user', (_) async {
         final GoogleSignInUserData someUser = extractUserData(person)!;
 
-        mockito.when(mockGis.signIn()).thenAnswer(
-          (_) => Future<GoogleSignInUserData>.value(someUser),
-        );
+        mockito
+            .when(mockGis.signIn())
+            .thenAnswer((_) => Future<GoogleSignInUserData>.value(someUser));
 
         expect(await plugin.signIn(), someUser);
       });
 
       testWidgets('returns null if no user is signed in', (_) async {
-        mockito.when(mockGis.signIn()).thenAnswer(
-          (_) => Future<GoogleSignInUserData?>.value(),
-        );
+        mockito
+            .when(mockGis.signIn())
+            .thenAnswer((_) => Future<GoogleSignInUserData?>.value());
 
         expect(await plugin.signIn(), isNull);
       });
 
-      testWidgets('converts inner errors.toString to PlatformException', (_) async {
+      testWidgets('converts inner errors to PlatformException', (_) async {
         mockito.when(mockGis.signIn()).thenThrow('popup_closed');
 
         try {
           await plugin.signIn();
           fail('signIn should have thrown an exception');
-        } catch(exception) {
+        } catch (exception) {
           expect(exception, isA<PlatformException>());
           expect((exception as PlatformException).code, 'popup_closed');
         }

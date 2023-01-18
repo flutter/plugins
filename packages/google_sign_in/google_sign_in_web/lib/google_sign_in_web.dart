@@ -15,8 +15,10 @@ import 'src/gis_client.dart';
 
 /// The `name` of the meta-tag to define a ClientID in HTML.
 const String clientIdMetaName = 'google-signin-client_id';
+
 /// The selector used to find the meta-tag that defines a ClientID in HTML.
 const String clientIdMetaSelector = 'meta[name=$clientIdMetaName]';
+
 /// The attribute name that stores the Client ID in the meta-tag that defines a Client ID in HTML.
 const String clientIdAttributeName = 'content';
 
@@ -26,9 +28,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   /// background.
   ///
   /// The plugin is completely initialized when [initialized] completed.
-  GoogleSignInPlugin({
-    @visibleForTesting bool debugOverrideLoader = false
-  }) {
+  GoogleSignInPlugin({@visibleForTesting bool debugOverrideLoader = false}) {
     autoDetectedClientId = html
         .querySelector(clientIdMetaSelector)
         ?.getAttribute(clientIdAttributeName);
@@ -90,7 +90,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   }
 
   @override
-  Future<void> initWithParams(SignInInitParameters params, {
+  Future<void> initWithParams(
+    SignInInitParameters params, {
     @visibleForTesting GisSdkClient? overrideClient,
   }) async {
     final String? appClientId = params.clientId ?? autoDetectedClientId;
@@ -111,13 +112,14 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
     await _isJsSdkLoaded;
 
-    _gisClient = overrideClient ?? GisSdkClient(
-      clientId: appClientId!,
-      hostedDomain: params.hostedDomain,
-      initialScopes: List<String>.from(params.scopes),
-      // *TODO(dit): Remove this before releasing.
-      loggingEnabled: true,
-    );
+    _gisClient = overrideClient ??
+        GisSdkClient(
+          clientId: appClientId!,
+          hostedDomain: params.hostedDomain,
+          initialScopes: List<String>.from(params.scopes),
+          // *TODO(dit): Remove this before releasing.
+          loggingEnabled: true,
+        );
 
     _isInitCalled = true;
   }

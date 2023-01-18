@@ -21,6 +21,7 @@ abstract class DomHtmlDocument {}
 extension DomHtmlDocumentExtension on DomHtmlDocument {
   /// document.head
   external DomHtmlElement get head;
+
   /// document.createElement
   external DomHtmlElement createElement(String tagName);
 }
@@ -34,6 +35,7 @@ abstract class DomHtmlElement {}
 extension DomHtmlElementExtension on DomHtmlElement {
   /// Node.appendChild
   external DomHtmlElement appendChild(DomHtmlElement child);
+
   /// Element.remove
   external void remove();
 }

@@ -21,11 +21,14 @@ const String MY_PROFILE = 'https://content-people.googleapis.com/v1/people/me'
     '&personFields=photos%2Cnames%2CemailAddresses';
 
 /// Requests user data from the People API using the given [tokenResponse].
-Future<GoogleSignInUserData?> requestUserData(TokenResponse tokenResponse, {
+Future<GoogleSignInUserData?> requestUserData(
+  TokenResponse tokenResponse, {
   @visibleForTesting http.Client? overrideClient,
 }) async {
   // Request my profile from the People API.
-  final Map<String, Object?> person = await _doRequest(MY_PROFILE, tokenResponse,
+  final Map<String, Object?> person = await _doRequest(
+    MY_PROFILE,
+    tokenResponse,
     overrideClient: overrideClient,
   );
 
@@ -85,9 +88,11 @@ T? _extractPrimaryField<T>(List<Object?>? values, String fieldName) {
   if (values != null) {
     for (final Object? value in values) {
       if (value != null && value is Map<String, Object?>) {
-        final bool isPrimary = _extractPath(value,
-            path: <String>['metadata', 'primary'],
-            defaultValue: false,);
+        final bool isPrimary = _extractPath(
+          value,
+          path: <String>['metadata', 'primary'],
+          defaultValue: false,
+        );
         if (isPrimary) {
           return value[fieldName] as T?;
         }
@@ -125,13 +130,16 @@ T _extractPath<T>(
 /// Gets from [url] with an authorization header defined by [token].
 ///
 /// Attempts to [jsonDecode] the result.
-Future<Map<String, Object?>> _doRequest(String url, TokenResponse token, {
+Future<Map<String, Object?>> _doRequest(
+  String url,
+  TokenResponse token, {
   http.Client? overrideClient,
 }) async {
   final Uri uri = Uri.parse(url);
   final http.Client client = overrideClient ?? http.Client();
   try {
-    final http.Response response = await client.get(uri, headers: <String, String>{
+    final http.Response response =
+        await client.get(uri, headers: <String, String>{
       'Authorization': '${token.token_type} ${token.access_token}',
     });
     if (response.statusCode != 200) {
