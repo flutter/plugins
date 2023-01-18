@@ -10,16 +10,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import android.graphics.ImageFormat;
 import android.media.Image;
 import android.media.ImageReader;
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugins.camera.types.CameraCaptureProperties;
+import java.nio.ByteBuffer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import java.nio.ByteBuffer;
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugins.camera.types.CameraCaptureProperties;
 
 @RunWith(RobolectricTestRunner.class)
 public class ImageStreamReaderTest {
@@ -32,7 +33,8 @@ public class ImageStreamReaderTest {
     ImageStreamReaderUtils mockImageStreamReaderUtils = mock(ImageStreamReaderUtils.class);
 
     this.mockImageStreamReaderUtils = mockImageStreamReaderUtils;
-    this.imageStreamReader = new ImageStreamReader(mockImageReader, this.mockImageStreamReaderUtils);
+    this.imageStreamReader =
+        new ImageStreamReader(mockImageReader, this.mockImageStreamReaderUtils);
   }
 
   @Test
@@ -49,7 +51,6 @@ public class ImageStreamReaderTest {
     when(plane0.getPixelStride()).thenReturn(0);
     Image.Plane[] planes = {plane0};
     when(mockImage.getPlanes()).thenReturn(planes);
-
 
     CameraCaptureProperties mockCaptureProps = mock(CameraCaptureProperties.class);
     EventChannel.EventSink mockEventSink = mock(EventChannel.EventSink.class);

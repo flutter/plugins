@@ -301,12 +301,13 @@ class Camera
       Log.w(TAG, "The selected imageFormatGroup is not supported by Android. Defaulting to yuv420");
       imageFormat = ImageFormat.YUV_420_888;
     }
-    imageStreamReader = new ImageStreamReader(ImageReader.newInstance(
-            resolutionFeature.getPreviewSize().getWidth(),
-            resolutionFeature.getPreviewSize().getHeight(),
-            imageFormat,
-            1)
-    );
+    imageStreamReader =
+        new ImageStreamReader(
+            ImageReader.newInstance(
+                resolutionFeature.getPreviewSize().getWidth(),
+                resolutionFeature.getPreviewSize().getHeight(),
+                imageFormat,
+                1));
 
     // Open the camera.
     CameraManager cameraManager = CameraUtils.getCameraManager(activity);
