@@ -22,6 +22,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String? _tempDirectory = 'Unknown';
   String? _downloadsDirectory = 'Unknown';
+  String? _libraryDirectory = 'Unknown';
   String? _appSupportDirectory = 'Unknown';
   String? _documentsDirectory = 'Unknown';
 
@@ -36,6 +37,7 @@ class _MyAppState extends State<MyApp> {
     String? tempDirectory;
     String? downloadsDirectory;
     String? appSupportDirectory;
+    String? libraryDirectory;
     String? documentsDirectory;
     final PathProviderPlatform provider = PathProviderPlatform.instance;
 
@@ -57,6 +59,12 @@ class _MyAppState extends State<MyApp> {
     }
 
     try {
+      libraryDirectory = await provider.getLibraryPath();
+    } catch (exception) {
+      libraryDirectory = 'Failed to get library directory: $exception';
+    }
+
+    try {
       appSupportDirectory = await provider.getApplicationSupportPath();
     } catch (exception) {
       appSupportDirectory = 'Failed to get app support directory: $exception';
@@ -65,6 +73,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _tempDirectory = tempDirectory;
       _downloadsDirectory = downloadsDirectory;
+      _libraryDirectory = libraryDirectory;
       _appSupportDirectory = appSupportDirectory;
       _documentsDirectory = documentsDirectory;
     });
@@ -83,6 +92,7 @@ class _MyAppState extends State<MyApp> {
               Text('Temp Directory: $_tempDirectory\n'),
               Text('Documents Directory: $_documentsDirectory\n'),
               Text('Downloads Directory: $_downloadsDirectory\n'),
+              Text('Library Directory: $_libraryDirectory\n'),
               Text('Application Support Directory: $_appSupportDirectory\n'),
             ],
           ),
