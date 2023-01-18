@@ -1,6 +1,10 @@
-## 0.10.2
+## 0.10.3
 
 * Adds back use of Optional type.
+
+## 0.10.2
+
+* Implements option to also stream when recording a video.
 
 ## 0.10.1
 
