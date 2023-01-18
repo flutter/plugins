@@ -2,13 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import FlutterMacOS
 import Foundation
+
+#if os(iOS)
+import Flutter
+#elseif os(macOS)
+import FlutterMacOS
+#endif
 
 public class PathProviderPlugin: NSObject, FlutterPlugin, PathProviderApi {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let instance = PathProviderPlugin()
-    PathProviderApiSetup.setUp(binaryMessenger: registrar.messenger, api: instance)
+    // Workaround for https://github.com/flutter/flutter/issues/118103.
+#if os(iOS)
+    let messenger = registrar.messenger()
+#else
+    let messenger = registrar.messenger
+#endif
+    PathProviderApiSetup.setUp(binaryMessenger: messenger, api: instance)
   }
 
   func getDirectoryPath(type: DirectoryType) -> String? {

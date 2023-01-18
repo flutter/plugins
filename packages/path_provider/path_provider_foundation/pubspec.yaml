@@ -12,6 +12,10 @@ flutter:
   plugin:
     implements: path_provider
     platforms:
+      ios:
+        pluginClass: PathProviderPlugin
+        dartPluginClass: PathProviderFoundation
+        sharedDarwinSource: true
       macos:
         pluginClass: PathProviderPlugin
         dartPluginClass: PathProviderFoundation
