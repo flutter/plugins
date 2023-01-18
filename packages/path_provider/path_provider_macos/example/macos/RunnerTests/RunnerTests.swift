@@ -4,18 +4,12 @@
 
 import FlutterMacOS
 import XCTest
-import path_provider_macos
+@testable import path_provider_macos
 
 class RunnerTests: XCTestCase {
   func testGetTemporaryDirectory() throws {
     let plugin = PathProviderPlugin()
-    var path: String?
-    plugin.handle(
-      FlutterMethodCall(methodName: "getTemporaryDirectory", arguments: nil),
-      result: { (result: Any?) -> Void in
-        path = result as? String
-
-      })
+    let path = plugin.getDirectoryPath(type: .temp)
     XCTAssertEqual(
       path,
       NSSearchPathForDirectoriesInDomains(
@@ -27,13 +21,7 @@ class RunnerTests: XCTestCase {
 
   func testGetApplicationDocumentsDirectory() throws {
     let plugin = PathProviderPlugin()
-    var path: String?
-    plugin.handle(
-      FlutterMethodCall(methodName: "getApplicationDocumentsDirectory", arguments: nil),
-      result: { (result: Any?) -> Void in
-        path = result as? String
-
-      })
+    let path = plugin.getDirectoryPath(type: .applicationDocuments)
     XCTAssertEqual(
       path,
       NSSearchPathForDirectoriesInDomains(
@@ -45,13 +33,7 @@ class RunnerTests: XCTestCase {
 
   func testGetApplicationSupportDirectory() throws {
     let plugin = PathProviderPlugin()
-    var path: String?
-    plugin.handle(
-      FlutterMethodCall(methodName: "getApplicationSupportDirectory", arguments: nil),
-      result: { (result: Any?) -> Void in
-        path = result as? String
-
-      })
+    let path = plugin.getDirectoryPath(type: .applicationSupport)
     // The application support directory path should be the system application support
     // path with an added subdirectory based on the app name.
     XCTAssert(
@@ -66,13 +48,7 @@ class RunnerTests: XCTestCase {
 
   func testGetLibraryDirectory() throws {
     let plugin = PathProviderPlugin()
-    var path: String?
-    plugin.handle(
-      FlutterMethodCall(methodName: "getLibraryDirectory", arguments: nil),
-      result: { (result: Any?) -> Void in
-        path = result as? String
-
-      })
+    let path = plugin.getDirectoryPath(type: .library)
     XCTAssertEqual(
       path,
       NSSearchPathForDirectoriesInDomains(
@@ -84,13 +60,7 @@ class RunnerTests: XCTestCase {
 
   func testGetDownloadsDirectory() throws {
     let plugin = PathProviderPlugin()
-    var path: String?
-    plugin.handle(
-      FlutterMethodCall(methodName: "getDownloadsDirectory", arguments: nil),
-      result: { (result: Any?) -> Void in
-        path = result as? String
-
-      })
+    let path = plugin.getDirectoryPath(type: .downloads)
     XCTAssertEqual(
       path,
       NSSearchPathForDirectoriesInDomains(
