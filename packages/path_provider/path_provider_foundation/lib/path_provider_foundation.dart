@@ -46,19 +46,22 @@ class PathProviderFoundation extends PathProviderPlatform {
 
   @override
   Future<String?> getExternalStoragePath() async {
-    throw UnsupportedError('getExternalStoragePath is not supported on macOS');
+    throw UnsupportedError(
+        'getExternalStoragePath is not supported on this platform');
   }
 
   @override
   Future<List<String>?> getExternalCachePaths() async {
-    throw UnsupportedError('getExternalCachePaths is not supported on macOS');
+    throw UnsupportedError(
+        'getExternalCachePaths is not supported on this platform');
   }
 
   @override
   Future<List<String>?> getExternalStoragePaths({
     StorageDirectory? type,
   }) async {
-    throw UnsupportedError('getExternalStoragePaths is not supported on macOS');
+    throw UnsupportedError(
+        'getExternalStoragePaths is not supported on this platform');
   }
 
   @override
