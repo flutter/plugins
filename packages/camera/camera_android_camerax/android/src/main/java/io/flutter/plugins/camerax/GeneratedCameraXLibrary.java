@@ -554,6 +554,8 @@ public class GeneratedCameraXLibrary {
     void startListeningForDeviceOrientationChange(
         @NonNull Boolean isFrontFacing, @NonNull Long sensorOrientation);
 
+    void stopListeningForDeviceOrientationChange();
+
     /** The codec used by SystemServicesHostApi. */
     static MessageCodec<Object> getCodec() {
       return SystemServicesHostApiCodec.INSTANCE;
@@ -626,6 +628,28 @@ public class GeneratedCameraXLibrary {
                   api.startListeningForDeviceOrientationChange(
                       isFrontFacingArg,
                       (sensorOrientationArg == null) ? null : sensorOrientationArg.longValue());
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.SystemServicesHostApi.stopListeningForDeviceOrientationChange",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  api.stopListeningForDeviceOrientationChange();
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));

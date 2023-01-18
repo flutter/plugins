@@ -74,6 +74,15 @@ void main() {
           isFrontFacing, sensorOrientation));
     });
 
+    test('stopListeningForDeviceOrientationChangeTest', () async {
+      final MockTestSystemServicesHostApi mockApi =
+          MockTestSystemServicesHostApi();
+      TestSystemServicesHostApi.setup(mockApi);
+
+      SystemServices.stopListeningForDeviceOrientationChange();
+      verify(mockApi.stopListeningForDeviceOrientationChange());
+    });
+
     test('onDeviceOrientationChanged adds new orientation to stream', () {
       const String orientation = 'LANDSCAPE_LEFT';
 

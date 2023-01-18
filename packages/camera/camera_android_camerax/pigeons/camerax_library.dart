@@ -88,6 +88,8 @@ abstract class SystemServicesHostApi {
 
   void startListeningForDeviceOrientationChange(
       bool isFrontFacing, int sensorOrientation);
+
+  void stopListeningForDeviceOrientationChange();
 }
 
 @FlutterApi()

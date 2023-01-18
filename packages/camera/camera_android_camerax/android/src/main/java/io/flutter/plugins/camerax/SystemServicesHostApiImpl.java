@@ -18,6 +18,7 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
   private final InstanceManager instanceManager;
 
   @VisibleForTesting public CameraXProxy cameraXProxy = new CameraXProxy();
+  @VisibleForTesting public DeviceOrientationManager deviceOrientationManager;
   @VisibleForTesting public SystemServicesFlutterApiImpl systemServicesFlutterApi;
 
   private Activity activity;
@@ -79,7 +80,7 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
   @Override
   public void startListeningForDeviceOrientationChange(
       Boolean isFrontFacing, Long sensorOrientation) {
-    DeviceOrientationManager deviceOrientationManager =
+    deviceOrientationManager =
         cameraXProxy.createDeviceOrientationManager(
             activity,
             isFrontFacing,
@@ -91,11 +92,21 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
     deviceOrientationManager.start();
   }
 
-  /**
-   * Helper method for serializing a {@code DeviceOrientation} into a String that the Dart side is
-   * able to recognize.
-   */
+  /** Serializes {@code DeviceOrientation} into a String that the Dart side is able to recognize. */
   String serializeDeviceOrientation(DeviceOrientation orientation) {
     return orientation.toString();
+  }
+
+  /**
+   * Tells the {@code deviceOrientationManager} to stop listening for orientation updates.
+   *
+   * <p>Has no effect if the {@code deviceOrientationManager} was never created to listen for device
+   * orientation updates.
+   */
+  @Override
+  public void stopListeningForDeviceOrientationChange() {
+    if (deviceOrientationManager != null) {
+      deviceOrientationManager.stop();
+    }
   }
 }

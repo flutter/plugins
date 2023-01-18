@@ -55,4 +55,12 @@ class MockTestSystemServicesHostApi extends _i1.Mock
         ),
         returnValueForMissingStub: null,
       );
+  @override
+  void stopListeningForDeviceOrientationChange() => super.noSuchMethod(
+        Invocation.method(
+          #stopListeningForDeviceOrientationChange,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
 }

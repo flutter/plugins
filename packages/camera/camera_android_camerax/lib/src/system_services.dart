@@ -10,8 +10,8 @@ import 'package:flutter/services.dart';
 
 import 'android_camera_camerax_flutter_api_impls.dart';
 import 'camerax_library.pigeon.dart';
-import 'instance_manager.dart';
-import 'java_object.dart';
+
+// ignore_for_file: avoid_classes_with_only_static_members
 
 /// Utility class that offers access to Android system services needed for
 /// camera usage.
@@ -27,10 +27,10 @@ class SystemServices {
   /// Requests permission to access the camera and audio if specified.
   static Future<void> requestCameraPermissions(bool enableAudio,
       {BinaryMessenger? binaryMessenger}) {
-    SystemServicesHostApiImpl api =
+    final SystemServicesHostApiImpl api =
         SystemServicesHostApiImpl(binaryMessenger: binaryMessenger);
 
-    return api.requestCameraPermissions(enableAudio);
+    return api.sendCameraPermissionsRequest(enableAudio);
   }
 
   /// Requests that [deviceOrientationChangedStreamController] start
@@ -39,11 +39,21 @@ class SystemServices {
       bool isFrontFacing, int sensorOrientation,
       {BinaryMessenger? binaryMessenger}) {
     AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
-    SystemServicesHostApi api =
+    final SystemServicesHostApi api =
         SystemServicesHostApi(binaryMessenger: binaryMessenger);
 
     api.startListeningForDeviceOrientationChange(
         isFrontFacing, sensorOrientation);
+  }
+
+  /// Stops the [deviceOrientationChangedStreamController] from emitting values
+  /// for changes in device orientation.
+  static void stopListeningForDeviceOrientationChange(
+      {BinaryMessenger? binaryMessenger}) {
+    final SystemServicesHostApi api =
+        SystemServicesHostApi(binaryMessenger: binaryMessenger);
+
+    api.stopListeningForDeviceOrientationChange();
   }
 }
 
@@ -51,7 +61,7 @@ class SystemServices {
 class SystemServicesHostApiImpl extends SystemServicesHostApi {
   /// Creates a [SystemServicesHostApiImpl].
   SystemServicesHostApiImpl({this.binaryMessenger})
-      : super(binaryMessenger: binaryMessenger) {}
+      : super(binaryMessenger: binaryMessenger);
 
   /// Receives binary data across the Flutter platform barrier.
   ///
@@ -63,8 +73,8 @@ class SystemServicesHostApiImpl extends SystemServicesHostApi {
   ///
   /// Will complete normally if permissions are successfully granted; otherwise,
   /// will throw a [CameraException].
-  Future<void> requestCameraPermissions(bool enableAudio) async {
-    CameraPermissionsErrorData? error =
+  Future<void> sendCameraPermissionsRequest(bool enableAudio) async {
+    final CameraPermissionsErrorData? error =
         await requestCameraPermissions(enableAudio);
 
     if (error != null) {
@@ -89,17 +99,24 @@ class SystemServicesFlutterApiImpl implements SystemServicesFlutterApi {
   /// the host platform.
   final BinaryMessenger? binaryMessenger;
 
+  /// Callback method for any changes in device orientation.
+  ///
+  /// Will only be called if
+  /// `SystemServices.startListeningForDeviceOrientationChange(...)` was called
+  /// to start listening for device orientation updates.
   @override
   void onDeviceOrientationChanged(String orientation) {
-    DeviceOrientation deviceOrientation =
+    final DeviceOrientation deviceOrientation =
         deserializeDeviceOrientation(orientation);
     if (deviceOrientation == null) {
       return;
     }
     SystemServices.deviceOrientationChangedStreamController
-        .add(DeviceOrientationChangedEvent(deviceOrientation!));
+        .add(DeviceOrientationChangedEvent(deviceOrientation));
   }
 
+  /// Deserializes device orientation in [String] format into a
+  /// [DeviceOrientation].
   DeviceOrientation deserializeDeviceOrientation(String orientation) {
     switch (orientation) {
       case 'LANDSCAPE_LEFT':

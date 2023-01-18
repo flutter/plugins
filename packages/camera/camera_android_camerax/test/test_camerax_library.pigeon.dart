@@ -217,6 +217,7 @@ abstract class TestSystemServicesHostApi {
       bool enableAudio);
   void startListeningForDeviceOrientationChange(
       bool isFrontFacing, int sensorOrientation);
+  void stopListeningForDeviceOrientationChange();
   static void setup(TestSystemServicesHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -260,6 +261,21 @@ abstract class TestSystemServicesHostApi {
               'Argument for dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange was null, expected non-null int.');
           api.startListeningForDeviceOrientationChange(
               arg_isFrontFacing!, arg_sensorOrientation!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.SystemServicesHostApi.stopListeningForDeviceOrientationChange',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          // ignore message
+          api.stopListeningForDeviceOrientationChange();
           return <Object?, Object?>{};
         });
       }
