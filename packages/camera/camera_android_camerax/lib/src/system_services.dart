@@ -16,7 +16,7 @@ import 'camerax_library.pigeon.dart';
 /// Utility class that offers access to Android system services needed for
 /// camera usage.
 class SystemServices {
-  /// Stream that emits the device orientation whenever it is changed/
+  /// Stream that emits the device orientation whenever it is changed.
   ///
   /// Values may start being added to the stream once
   /// `startListeningForDeviceOrientationChange(...)` is called.
