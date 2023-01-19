@@ -87,7 +87,7 @@ void main() {
   }
 
   testWidgets('getDownloadsDirectory', (WidgetTester tester) async {
-    if (Platform.isIOS || Platform.isAndroid) {
+    if (Platform.isAndroid) {
       final Future<Directory?> result = getDownloadsDirectory();
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
     } else {
