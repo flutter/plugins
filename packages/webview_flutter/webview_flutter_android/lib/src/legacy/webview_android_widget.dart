@@ -134,7 +134,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   final Map<String, WebViewAndroidJavaScriptChannel> _javaScriptChannels =
       <String, WebViewAndroidJavaScriptChannel>{};
 
-  late final android_webview.WebViewClient _webViewClient = withWeakRefenceTo(
+  late final android_webview.WebViewClient _webViewClient = withWeakReferenceTo(
       this, (WeakReference<WebViewAndroidPlatformController> weakReference) {
     return webViewProxy.createWebViewClient(
       onPageStarted: (_, String url) {
@@ -213,7 +213,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final android_webview.DownloadListener downloadListener =
       android_webview.DownloadListener(
-    onDownloadStart: withWeakRefenceTo(
+    onDownloadStart: withWeakReferenceTo(
       this,
       (WeakReference<WebViewAndroidPlatformController> weakReference) {
         return (
@@ -236,7 +236,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final android_webview.WebChromeClient webChromeClient =
       android_webview.WebChromeClient(
-          onProgressChanged: withWeakRefenceTo(
+          onProgressChanged: withWeakReferenceTo(
     this,
     (WeakReference<WebViewAndroidPlatformController> weakReference) {
       return (_, int progress) {
@@ -574,7 +574,7 @@ class WebViewAndroidJavaScriptChannel
     super.channelName,
     this.javascriptChannelRegistry,
   ) : super(
-          postMessage: withWeakRefenceTo(
+          postMessage: withWeakReferenceTo(
             javascriptChannelRegistry,
             (WeakReference<JavascriptChannelRegistry> weakReference) {
               return (String message) {
