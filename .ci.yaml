@@ -43,6 +43,7 @@ targets:
   # TODO(stuartmorgan): Move this to ARM once google_maps_flutter has ARM
   # support. `pod lint` makes a synthetic target that doesn't respect the
   # pod's arch exclusions, so fails to build.
+  # When moving it, rename the task and file to check_podspecs
   - name: Mac_x64 lint_podspecs
     recipe: plugins/plugins
     timeout: 30

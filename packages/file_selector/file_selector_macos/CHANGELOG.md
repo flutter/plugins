@@ -1,3 +1,7 @@
+## 0.9.0+4
+
+* Converts platform channel to Pigeon.
+
 ## 0.9.0+3
 
 * Changes XTypeGroup initialization from final to const.

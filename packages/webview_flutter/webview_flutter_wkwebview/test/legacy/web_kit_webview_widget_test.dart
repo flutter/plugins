@@ -137,13 +137,13 @@ void main() {
         (WidgetTester tester) async {
       await buildWidget(tester);
 
-      final dynamic onCreateWebView = verify(
-                  mockWebViewWidgetProxy.createUIDelgate(
+      final void Function(WKWebView, WKWebViewConfiguration, WKNavigationAction)
+          onCreateWebView = verify(mockWebViewWidgetProxy.createUIDelgate(
                       onCreateWebView: captureAnyNamed('onCreateWebView')))
-              .captured
-              .single
-          as void Function(
-              WKWebView, WKWebViewConfiguration, WKNavigationAction);
+                  .captured
+                  .single
+              as void Function(
+                  WKWebView, WKWebViewConfiguration, WKNavigationAction);
 
       const NSUrlRequest request = NSUrlRequest(url: 'https://google.com');
       onCreateWebView(
@@ -989,7 +989,7 @@ void main() {
       testWidgets('onPageStarted', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        final dynamic didStartProvisionalNavigation =
+        final void Function(WKWebView, String) didStartProvisionalNavigation =
             verify(mockWebViewWidgetProxy.createNavigationDelegate(
           didFinishNavigation: anyNamed('didFinishNavigation'),
           didStartProvisionalNavigation:
@@ -1010,7 +1010,7 @@ void main() {
       testWidgets('onPageFinished', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        final dynamic didFinishNavigation =
+        final void Function(WKWebView, String) didFinishNavigation =
             verify(mockWebViewWidgetProxy.createNavigationDelegate(
           didFinishNavigation: captureAnyNamed('didFinishNavigation'),
           didStartProvisionalNavigation:
@@ -1032,7 +1032,7 @@ void main() {
           (WidgetTester tester) async {
         await buildWidget(tester);
 
-        final dynamic didFailNavigation =
+        final void Function(WKWebView, NSError) didFailNavigation =
             verify(mockWebViewWidgetProxy.createNavigationDelegate(
           didFinishNavigation: anyNamed('didFinishNavigation'),
           didStartProvisionalNavigation:
@@ -1069,7 +1069,7 @@ void main() {
           (WidgetTester tester) async {
         await buildWidget(tester);
 
-        final dynamic didFailProvisionalNavigation =
+        final void Function(WKWebView, NSError) didFailProvisionalNavigation =
             verify(mockWebViewWidgetProxy.createNavigationDelegate(
           didFinishNavigation: anyNamed('didFinishNavigation'),
           didStartProvisionalNavigation:
@@ -1110,7 +1110,7 @@ void main() {
           (WidgetTester tester) async {
         await buildWidget(tester);
 
-        final dynamic webViewWebContentProcessDidTerminate =
+        final void Function(WKWebView) webViewWebContentProcessDidTerminate =
             verify(mockWebViewWidgetProxy.createNavigationDelegate(
           didFinishNavigation: anyNamed('didFinishNavigation'),
           didStartProvisionalNavigation:
@@ -1142,7 +1142,8 @@ void main() {
           (WidgetTester tester) async {
         await buildWidget(tester, hasNavigationDelegate: true);
 
-        final dynamic decidePolicyForNavigationAction =
+        final Future<WKNavigationActionPolicy> Function(
+                WKWebView, WKNavigationAction) decidePolicyForNavigationAction =
             verify(mockWebViewWidgetProxy.createNavigationDelegate(
           didFinishNavigation: anyNamed('didFinishNavigation'),
           didStartProvisionalNavigation:
@@ -1191,15 +1192,13 @@ void main() {
           },
         ));
 
-        final dynamic observeValue = verify(
-                mockWebViewWidgetProxy.createWebView(any,
-                    observeValue: captureAnyNamed('observeValue')))
-            .captured
-            .single as void Function(
-          String keyPath,
-          NSObject object,
-          Map<NSKeyValueChangeKey, Object?> change,
-        );
+        final void Function(String, NSObject, Map<NSKeyValueChangeKey, Object?>)
+            observeValue = verify(mockWebViewWidgetProxy.createWebView(any,
+                        observeValue: captureAnyNamed('observeValue')))
+                    .captured
+                    .single
+                as void Function(
+                    String, NSObject, Map<NSKeyValueChangeKey, Object?>);
 
         observeValue(
           'estimatedProgress',
@@ -1234,15 +1233,14 @@ void main() {
         await buildWidget(tester);
         await testController.addJavascriptChannels(<String>{'hello'});
 
-        final dynamic didReceiveScriptMessage = verify(
-                mockWebViewWidgetProxy.createScriptMessageHandler(
-                    didReceiveScriptMessage:
-                        captureAnyNamed('didReceiveScriptMessage')))
-            .captured
-            .single as void Function(
-          WKUserContentController userContentController,
-          WKScriptMessage message,
-        );
+        final void Function(WKUserContentController, WKScriptMessage)
+            didReceiveScriptMessage = verify(
+                        mockWebViewWidgetProxy.createScriptMessageHandler(
+                            didReceiveScriptMessage:
+                                captureAnyNamed('didReceiveScriptMessage')))
+                    .captured
+                    .single
+                as void Function(WKUserContentController, WKScriptMessage);
 
         didReceiveScriptMessage(
           mockUserContentController,

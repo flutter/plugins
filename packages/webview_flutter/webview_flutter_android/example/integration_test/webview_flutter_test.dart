@@ -1018,6 +1018,51 @@ Future<void> main() async {
       expect(elementText, 'null');
     },
   );
+
+  testWidgets(
+    '`AndroidWebViewController` can be reused with a new `AndroidWebViewWidget`',
+    (WidgetTester tester) async {
+      Completer<void> pageLoaded = Completer<void>();
+
+      final PlatformWebViewController controller = PlatformWebViewController(
+        const PlatformWebViewControllerCreationParams(),
+      )
+        ..setPlatformNavigationDelegate(PlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        )..setOnPageFinished((_) => pageLoaded.complete()))
+        ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
+      await pageLoaded.future;
+
+      await tester.pumpWidget(Container());
+      await tester.pumpAndSettle();
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
+      pageLoaded = Completer<void>();
+      await controller.loadRequest(
+        LoadRequestParams(uri: Uri.parse(primaryUrl)),
+      );
+      await expectLater(
+        pageLoaded.future,
+        completes,
+      );
+    },
+  );
 }
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.

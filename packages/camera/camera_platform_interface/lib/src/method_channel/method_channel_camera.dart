@@ -551,9 +551,9 @@ class MethodChannelCamera extends CameraPlatform {
   Future<dynamic> handleDeviceMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'orientation_changed':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         deviceEventStreamController.add(DeviceOrientationChangedEvent(
-            deserializeDeviceOrientation(
-                call.arguments['orientation']! as String)));
+            deserializeDeviceOrientation(arguments['orientation']! as String)));
         break;
       default:
         throw MissingPluginException();
@@ -568,21 +568,23 @@ class MethodChannelCamera extends CameraPlatform {
   Future<dynamic> handleCameraMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
       case 'initialized':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         cameraEventStreamController.add(CameraInitializedEvent(
           cameraId,
-          call.arguments['previewWidth']! as double,
-          call.arguments['previewHeight']! as double,
-          deserializeExposureMode(call.arguments['exposureMode']! as String),
-          call.arguments['exposurePointSupported']! as bool,
-          deserializeFocusMode(call.arguments['focusMode']! as String),
-          call.arguments['focusPointSupported']! as bool,
+          arguments['previewWidth']! as double,
+          arguments['previewHeight']! as double,
+          deserializeExposureMode(arguments['exposureMode']! as String),
+          arguments['exposurePointSupported']! as bool,
+          deserializeFocusMode(arguments['focusMode']! as String),
+          arguments['focusPointSupported']! as bool,
         ));
         break;
       case 'resolution_changed':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         cameraEventStreamController.add(CameraResolutionChangedEvent(
           cameraId,
-          call.arguments['captureWidth']! as double,
-          call.arguments['captureHeight']! as double,
+          arguments['captureWidth']! as double,
+          arguments['captureHeight']! as double,
         ));
         break;
       case 'camera_closing':
@@ -591,23 +593,32 @@ class MethodChannelCamera extends CameraPlatform {
         ));
         break;
       case 'video_recorded':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         cameraEventStreamController.add(VideoRecordedEvent(
           cameraId,
-          XFile(call.arguments['path']! as String),
-          call.arguments['maxVideoDuration'] != null
-              ? Duration(
-                  milliseconds: call.arguments['maxVideoDuration']! as int)
+          XFile(arguments['path']! as String),
+          arguments['maxVideoDuration'] != null
+              ? Duration(milliseconds: arguments['maxVideoDuration']! as int)
               : null,
         ));
         break;
       case 'error':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         cameraEventStreamController.add(CameraErrorEvent(
           cameraId,
-          call.arguments['description']! as String,
+          arguments['description']! as String,
         ));
         break;
       default:
         throw MissingPluginException();
     }
+  }
+
+  /// Returns the arguments of [call] as typed string-keyed Map.
+  ///
+  /// This does not do any type validation, so is only safe to call if the
+  /// arguments are known to be a map.
+  Map<String, Object?> _getArgumentDictionary(MethodCall call) {
+    return (call.arguments as Map<Object?, Object?>).cast<String, Object?>();
   }
 }

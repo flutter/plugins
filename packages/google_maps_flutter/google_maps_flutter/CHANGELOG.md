@@ -1,3 +1,7 @@
+## 2.2.3
+
+* Fixes a minor syntax error in `README.md`.
+
 ## 2.2.2
 
 * Modified `README.md` to fix minor syntax issues and added Code Excerpt to `README.md`.
