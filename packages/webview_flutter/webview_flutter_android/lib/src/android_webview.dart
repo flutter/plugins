@@ -927,10 +927,11 @@ class WebChromeClient extends JavaObject {
   Future<void> setSynchronousReturnValueForOnShowFileChooser(
     bool value,
   ) {
-    assert(
-      !value || onShowFileChooser != null,
-      'Setting this to true requires `onShowFileChooser` to be nonnull.',
-    );
+    if (value && onShowFileChooser != null) {
+      throw StateError(
+        'Setting this to true requires `onShowFileChooser` to be nonnull.',
+      );
+    }
     return api.setSynchronousReturnValueForOnShowFileChooserFromInstance(
       this,
       value,
