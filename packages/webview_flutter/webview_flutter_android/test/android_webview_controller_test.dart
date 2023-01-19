@@ -540,12 +540,19 @@ void main() {
     });
 
     test('setOnShowFileSelector', () async {
-      late final Function onShowFileChooserCallback;
+      late final Future<List<String>> Function(
+        android_webview.WebView webView,
+        android_webview.FileChooserParams params,
+      ) onShowFileChooserCallback;
       final MockWebChromeClient mockWebChromeClient = MockWebChromeClient();
       final AndroidWebViewController controller = createControllerWithMocks(
         createWebChromeClient: ({
           dynamic onProgressChanged,
-          Function? onShowFileChooser,
+          Future<List<String>> Function(
+            android_webview.WebView webView,
+            android_webview.FileChooserParams params,
+          )?
+              onShowFileChooser,
         }) {
           onShowFileChooserCallback = onShowFileChooser!;
           return mockWebChromeClient;
