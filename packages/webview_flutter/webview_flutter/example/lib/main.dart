@@ -146,13 +146,17 @@ Page resource error:
           );
         },
       )
-      ..loadRequest(Uri.parse('https://flutter.dev'));
+      ..loadRequest(Uri.parse('https://ps.uci.edu/~franklin/doc/file_upload.html'));
 
     // #docregion platform_features
     if (controller.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
       (controller.platform as AndroidWebViewController)
           .setMediaPlaybackRequiresUserGesture(false);
+      (controller.platform as AndroidWebViewController).setOnShowFileSelector((FileSelectorParams params) async {
+        print('hello');
+        return <String>['apple.txt'];
+      });
     }
     // #enddocregion platform_features
 

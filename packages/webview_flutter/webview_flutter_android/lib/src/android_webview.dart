@@ -927,7 +927,7 @@ class WebChromeClient extends JavaObject {
   Future<void> setSynchronousReturnValueForOnShowFileChooser(
     bool value,
   ) {
-    if (value && onShowFileChooser != null) {
+    if (value && onShowFileChooser == null) {
       throw StateError(
         'Setting this to true requires `onShowFileChooser` to be nonnull.',
       );
