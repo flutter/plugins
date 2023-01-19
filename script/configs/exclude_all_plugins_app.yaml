@@ -8,8 +8,3 @@
 
 # This is a permament entry, as it should never be a direct app dependency.
 - plugin_platform_interface
-# Temporarily excluded to avoid runtime conflicts with
-# path_provider_macos and _ios, which are still what path_provider
-# uses. This will be removed when the switch to path_provider_foundation
-# is complete. See https://github.com/flutter/flutter/issues/117941
-- path_provider_foundation
