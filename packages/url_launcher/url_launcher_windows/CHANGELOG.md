@@ -1,5 +1,6 @@
-## NEXT
+## 3.0.2
 
+* Converts internal implentation to Pigeon.
 * Updates minimum Flutter version to 2.10.
 
 ## 3.0.1
