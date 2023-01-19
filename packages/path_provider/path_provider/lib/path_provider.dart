@@ -192,6 +192,9 @@ Future<List<Directory>?> getExternalStorageDirectories({
 
 /// Path to the directory where downloaded files can be stored.
 ///
+/// The returned directory is not guaranteed to exist, so clients should verify
+/// that it does before using it, and potentially create it if necessary.
+///
 /// Throws an [UnsupportedError] if this is not supported on the current
 /// platform.
 Future<Directory?> getDownloadsDirectory() async {
