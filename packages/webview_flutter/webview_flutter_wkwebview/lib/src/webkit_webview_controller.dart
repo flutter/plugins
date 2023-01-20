@@ -49,7 +49,12 @@ class WebKitWebViewControllerCreationParams
       PlaybackMediaTypes.video,
     },
     this.allowsInlineMediaPlayback = false,
-  }) : _configuration = webKitProxy.createWebViewConfiguration() {
+    @visibleForTesting InstanceManager? instanceManager,
+  }) : _instanceManager = instanceManager ?? NSObject.globalInstanceManager {
+    _configuration = webKitProxy.createWebViewConfiguration(
+      instanceManager: _instanceManager,
+    );
+
     if (mediaTypesRequiringUserAction.isEmpty) {
       _configuration.setMediaTypesRequiringUserActionForPlayback(
         <WKAudiovisualMediaType>{WKAudiovisualMediaType.none},
@@ -79,13 +84,15 @@ class WebKitWebViewControllerCreationParams
       PlaybackMediaTypes.video,
     },
     bool allowsInlineMediaPlayback = false,
+    @visibleForTesting InstanceManager? instanceManager,
   }) : this(
           webKitProxy: webKitProxy,
           mediaTypesRequiringUserAction: mediaTypesRequiringUserAction,
           allowsInlineMediaPlayback: allowsInlineMediaPlayback,
+          instanceManager: instanceManager,
         );
 
-  final WKWebViewConfiguration _configuration;
+  late final WKWebViewConfiguration _configuration;
 
   /// Media types that require a user gesture to begin playing.
   ///
@@ -102,6 +109,10 @@ class WebKitWebViewControllerCreationParams
   /// native library.
   @visibleForTesting
   final WebKitProxy webKitProxy;
+
+  // Maintains instances used to communicate with the native objects they
+  // represent.
+  final InstanceManager _instanceManager;
 }
 
 /// An implementation of [PlatformWebViewController] with the WebKit api.
@@ -122,12 +133,12 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   /// The WebKit WebView being controlled.
-  late final WKWebView _webView = withWeakRefenceTo(this, (
-    WeakReference<WebKitWebViewController> weakReference,
-  ) {
-    return _webKitParams.webKitProxy.createWebView(
-      _webKitParams._configuration,
-      observeValue: (
+  late final WKWebView _webView = _webKitParams.webKitProxy.createWebView(
+    _webKitParams._configuration,
+    observeValue: withWeakRefenceTo(this, (
+      WeakReference<WebKitWebViewController> weakReference,
+    ) {
+      return (
         String keyPath,
         NSObject object,
         Map<NSKeyValueChangeKey, Object?> change,
@@ -139,9 +150,10 @@ class WebKitWebViewController extends PlatformWebViewController {
               change[NSKeyValueChangeKey.newValue]! as double;
           progressCallback((progress * 100).round());
         }
-      },
-    );
-  });
+      };
+    }),
+    instanceManager: _webKitParams._instanceManager,
+  );
 
   final Map<String, WebKitJavaScriptChannelParams> _javaScriptChannelParams =
       <String, WebKitJavaScriptChannelParams>{};

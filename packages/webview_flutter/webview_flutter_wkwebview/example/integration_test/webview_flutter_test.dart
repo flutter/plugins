@@ -21,6 +21,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
+import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 Future<void> main() async {
@@ -47,7 +48,7 @@ Future<void> main() async {
   final String headersUrl = '$prefixUrl/headers';
 
   testWidgets(
-      'withWeakRefenceTo allows encapsulating class to be garbage collected',
+      'withWeakReferenceTo allows encapsulating class to be garbage collected',
       (WidgetTester tester) async {
     final Completer<int> gcCompleter = Completer<int>();
     final InstanceManager instanceManager = InstanceManager(
@@ -67,6 +68,40 @@ Future<void> main() async {
     final int gcIdentifier = await gcCompleter.future;
     expect(gcIdentifier, 0);
   }, timeout: const Timeout(Duration(seconds: 10)));
+
+  testWidgets(
+    'WKWebView is released by garbage collection',
+    (WidgetTester tester) async {
+      final Completer<void> webViewGCCompleter = Completer<void>();
+
+      late final InstanceManager instanceManager;
+      instanceManager =
+          InstanceManager(onWeakReferenceRemoved: (int identifier) {
+        final Copyable instance =
+            instanceManager.getInstanceWithWeakReference(identifier)!;
+        if (instance is WKWebView) {
+          if (!webViewGCCompleter.isCompleted) {
+            webViewGCCompleter.complete();
+          }
+        }
+      });
+
+      // ignore: unused_local_variable
+      WebKitWebViewController? controller = WebKitWebViewController(
+        WebKitWebViewControllerCreationParams(instanceManager: instanceManager),
+      );
+      controller = null;
+
+      // Force garbage collection.
+      await IntegrationTestWidgetsFlutterBinding.instance
+          .watchPerformance(() async {
+        await tester.pumpAndSettle();
+      });
+
+      await expectLater(webViewGCCompleter.future, completes);
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
 
   testWidgets('loadRequest', (WidgetTester tester) async {
     final PlatformWebViewController controller = PlatformWebViewController(
@@ -113,6 +148,8 @@ Future<void> main() async {
         ),
       );
 
+    await tester.pumpAndSettle();
+
     await pageLoads.stream.firstWhere((String url) => url == headersUrl);
 
     final String content = await controller.runJavaScriptReturningResult(
@@ -146,6 +183,8 @@ Future<void> main() async {
     controller.loadHtmlString(
       'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
     );
+
+    await tester.pumpAndSettle();
 
     await pageFinished.future;
 
@@ -249,6 +288,8 @@ Future<void> main() async {
             ),
           ),
         );
+
+      await tester.pumpAndSettle();
 
       await pageLoaded.future;
 
@@ -508,6 +549,8 @@ Future<void> main() async {
           ),
         ),
       );
+
+    await tester.pumpAndSettle();
 
     await pageLoaded.future;
 
@@ -824,6 +867,7 @@ Future<void> main() async {
       )..setOnPageFinished((_) => pageLoaded.complete()));
 
     await controller.runJavaScript('window.open("$primaryUrl", "_blank")');
+    await tester.pumpAndSettle();
     await pageLoaded.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);

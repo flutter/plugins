@@ -19,7 +19,7 @@ void main() {
 
   group('WebKitWebViewWidget', () {
     testWidgets('build', (WidgetTester tester) async {
-      final InstanceManager instanceManager = InstanceManager(
+      final InstanceManager testInstanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
 
@@ -34,14 +34,17 @@ void main() {
                 Map<NSKeyValueChangeKey, Object?> change,
               )?
                   observeValue,
+              InstanceManager? instanceManager,
             }) {
               final WKWebView webView = WKWebView.detached(
-                instanceManager: instanceManager,
+                instanceManager: testInstanceManager,
               );
-              instanceManager.addDartCreatedInstance(webView);
+              testInstanceManager.addDartCreatedInstance(webView);
               return webView;
             },
-            createWebViewConfiguration: () => MockWKWebViewConfiguration(),
+            createWebViewConfiguration: ({InstanceManager? instanceManager}) {
+              return MockWKWebViewConfiguration();
+            },
           ),
         ),
       );
@@ -50,7 +53,7 @@ void main() {
         WebKitWebViewWidgetCreationParams(
           key: const Key('keyValue'),
           controller: controller,
-          instanceManager: instanceManager,
+          instanceManager: testInstanceManager,
         ),
       );
 

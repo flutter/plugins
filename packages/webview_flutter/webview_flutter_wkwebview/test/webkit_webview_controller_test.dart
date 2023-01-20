@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
@@ -49,6 +50,7 @@ void main() {
       })?
           createMockWebView,
       MockWKWebViewConfiguration? mockWebViewConfiguration,
+      InstanceManager? instanceManager,
     }) {
       final MockWKWebViewConfiguration nonNullMockWebViewConfiguration =
           mockWebViewConfiguration ?? MockWKWebViewConfiguration();
@@ -57,7 +59,9 @@ void main() {
       final PlatformWebViewControllerCreationParams controllerCreationParams =
           WebKitWebViewControllerCreationParams(
         webKitProxy: WebKitProxy(
-          createWebViewConfiguration: () => nonNullMockWebViewConfiguration,
+          createWebViewConfiguration: ({InstanceManager? instanceManager}) {
+            return nonNullMockWebViewConfiguration;
+          },
           createWebView: (
             _, {
             void Function(
@@ -66,6 +70,7 @@ void main() {
               Map<NSKeyValueChangeKey, Object?> change,
             )?
                 observeValue,
+            InstanceManager? instanceManager,
           }) {
             nonNullMockWebView = createMockWebView == null
                 ? MockWKWebView()
@@ -104,7 +109,9 @@ void main() {
 
         WebKitWebViewControllerCreationParams(
           webKitProxy: WebKitProxy(
-            createWebViewConfiguration: () => mockConfiguration,
+            createWebViewConfiguration: ({InstanceManager? instanceManager}) {
+              return mockConfiguration;
+            },
           ),
           allowsInlineMediaPlayback: true,
         );
@@ -120,7 +127,9 @@ void main() {
 
         WebKitWebViewControllerCreationParams(
           webKitProxy: WebKitProxy(
-            createWebViewConfiguration: () => mockConfiguration,
+            createWebViewConfiguration: ({InstanceManager? instanceManager}) {
+              return mockConfiguration;
+            },
           ),
           mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{
             PlaybackMediaTypes.video,
@@ -143,7 +152,9 @@ void main() {
 
         WebKitWebViewControllerCreationParams(
           webKitProxy: WebKitProxy(
-            createWebViewConfiguration: () => mockConfiguration,
+            createWebViewConfiguration: ({InstanceManager? instanceManager}) {
+              return mockConfiguration;
+            },
           ),
         );
 
@@ -164,7 +175,9 @@ void main() {
 
         WebKitWebViewControllerCreationParams(
           webKitProxy: WebKitProxy(
-            createWebViewConfiguration: () => mockConfiguration,
+            createWebViewConfiguration: ({InstanceManager? instanceManager}) {
+              return mockConfiguration;
+            },
           ),
           mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
         );
