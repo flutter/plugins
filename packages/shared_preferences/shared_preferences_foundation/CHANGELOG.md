@@ -1,3 +1,7 @@
+## 2.1.2
+
+* Updates code for stricter lint checks.
+
 ## 2.1.1
 
 * Adds Swift runtime search paths in podspec to avoid crash in Objective-C apps.

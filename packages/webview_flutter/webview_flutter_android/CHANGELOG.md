@@ -1,3 +1,7 @@
+## 3.2.1
+
+* Updates code for stricter lint checks.
+
 ## 3.2.0
 
 * Adds support for handling file selection. See `AndroidWebViewController.setOnShowFileSelector`.

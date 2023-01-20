@@ -206,11 +206,17 @@ class AndroidWebViewController extends PlatformWebViewController {
       case LoadRequestMethod.post:
         return _webView.postUrl(
             params.uri.toString(), params.body ?? Uint8List(0));
-      default:
-        throw UnimplementedError(
-          'This version of `AndroidWebViewController` currently has no implementation for HTTP method ${params.method.serialize()} in loadRequest.',
-        );
     }
+    // The enum comes from a different package, which could get a new value at
+    // any time, so a fallback case is necessary. Since there is no reasonable
+    // default behavior, throw to alert the client that they need an updated
+    // version. This is deliberately outside the switch rather than a `default`
+    // so that the linter will flag the switch as needing an update.
+    // ignore: dead_code
+    throw UnimplementedError(
+        'This version of `AndroidWebViewController` currently has no '
+        'implementation for HTTP method ${params.method.serialize()} in '
+        'loadRequest.');
   }
 
   @override

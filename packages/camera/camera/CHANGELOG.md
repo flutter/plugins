@@ -1,3 +1,7 @@
+## 0.10.2+1
+
+* Updates code for stricter lint checks.
+
 ## 0.10.2
 
 * Implements option to also stream when recording a video.
@@ -31,7 +35,7 @@
 ## 0.10.0
 
 * **Breaking Change** Bumps default camera_web package version, which updates permission exception code from `cameraPermission` to `CameraAccessDenied`.
-* **Breaking Change** Bumps default camera_android package version, which updates permission exception code from `cameraPermission` to 
+* **Breaking Change** Bumps default camera_android package version, which updates permission exception code from `cameraPermission` to
   `CameraAccessDenied` and `AudioAccessDenied`.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
