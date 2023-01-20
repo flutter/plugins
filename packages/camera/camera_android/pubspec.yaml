@@ -30,3 +30,7 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  camera_platform_interface:
+    path: ../camera_platform_interface
