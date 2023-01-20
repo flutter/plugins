@@ -30,12 +30,12 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
     case CameraLensDirection.front:
       return Icons.camera_front;
     case CameraLensDirection.external:
-    // This enum is from a different package, so a new value could be added at
-    // any time. The example should keep working if that happens.
-    // ignore: no_default_cases
-    default:
       return Icons.camera;
   }
+  // This enum is from a different package, so a new value could be added at
+  // any time. The example should keep working if that happens.
+  // ignore: dead_code
+  return Icons.camera;
 }
 
 void _logError(String code, String? message) {
