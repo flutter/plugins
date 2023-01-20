@@ -21,10 +21,10 @@ import 'fix_command.dart';
 import 'format_command.dart';
 import 'license_check_command.dart';
 import 'lint_android_command.dart';
-import 'lint_podspecs_command.dart';
 import 'list_command.dart';
 import 'make_deps_path_based_command.dart';
 import 'native_test_command.dart';
+import 'podspec_check_command.dart';
 import 'publish_check_command.dart';
 import 'publish_command.dart';
 import 'pubspec_check_command.dart';
@@ -66,7 +66,7 @@ void main(List<String> args) {
     ..addCommand(FormatCommand(packagesDir))
     ..addCommand(LicenseCheckCommand(packagesDir))
     ..addCommand(LintAndroidCommand(packagesDir))
-    ..addCommand(LintPodspecsCommand(packagesDir))
+    ..addCommand(PodspecCheckCommand(packagesDir))
     ..addCommand(ListCommand(packagesDir))
     ..addCommand(NativeTestCommand(packagesDir))
     ..addCommand(MakeDepsPathBasedCommand(packagesDir))

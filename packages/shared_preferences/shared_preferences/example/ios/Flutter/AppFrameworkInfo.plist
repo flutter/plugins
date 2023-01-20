@@ -20,7 +20,11 @@
   <string>????</string>
   <key>CFBundleVersion</key>
   <string>1.0</string>
+  <key>UIRequiredDeviceCapabilities</key>
+  <array>
+    <string>arm64</string>
+  </array>
   <key>MinimumOSVersion</key>
-  <string>11.0</string>
+  <string>9.0</string>
 </dict>
 </plist>

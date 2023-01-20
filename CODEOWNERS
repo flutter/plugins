@@ -49,7 +49,7 @@ packages/image_picker/image_picker_ios/**                @vashworth
 packages/in_app_purchase/in_app_purchase_storekit/**     @cyanglaz
 packages/ios_platform_images/ios/**                      @jmagman
 packages/local_auth/local_auth_ios/**                    @hellohuanlin
-packages/path_provider/path_provider_ios/**              @jmagman
+packages/path_provider/path_provider_foundation/**       @jmagman
 packages/quick_actions/quick_actions_ios/**              @hellohuanlin
 packages/shared_preferences/shared_preferences_foundation/**  @cyanglaz
 packages/url_launcher/url_launcher_ios/**                @jmagman
@@ -64,7 +64,6 @@ packages/url_launcher/url_launcher_linux/**              @cbracken
 
 # - macOS
 packages/file_selector/file_selector_macos/**            @cbracken
-packages/path_provider/path_provider_macos/**            @cbracken
 packages/url_launcher/url_launcher_macos/**              @cbracken
 
 # - Windows

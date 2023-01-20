@@ -304,6 +304,21 @@ class MockTestWebChromeClientHostApi extends _i1.Mock
         ),
         returnValueForMissingStub: null,
       );
+  @override
+  void setSynchronousReturnValueForOnShowFileChooser(
+    int? instanceId,
+    bool? value,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setSynchronousReturnValueForOnShowFileChooser,
+          [
+            instanceId,
+            value,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
 }
 
 /// A class which mocks [TestWebSettingsHostApi].
@@ -952,6 +967,16 @@ class MockWebChromeClient extends _i1.Mock implements _i2.WebChromeClient {
     _i1.throwOnMissingStub(this);
   }
 
+  @override
+  _i5.Future<void> setSynchronousReturnValueForOnShowFileChooser(bool? value) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setSynchronousReturnValueForOnShowFileChooser,
+          [value],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
   @override
   _i2.WebChromeClient copy() => (super.noSuchMethod(
         Invocation.method(

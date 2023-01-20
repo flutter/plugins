@@ -26,6 +26,34 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
+
+/// Mode of how to select files for a file chooser.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
+enum FileChooserMode {
+  /// Open single file and requires that the file exists before allowing the
+  /// user to pick it.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN.
+  open,
+
+  /// Similar to [open] but allows multiple files to be selected.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN_MULTIPLE.
+  openMultiple,
+
+  /// Allows picking a nonexistent file and saving it.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_SAVE.
+  save,
+}
+
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
+class FileChooserModeEnumData {
+  late FileChooserMode value;
+}
+
 class WebResourceRequestData {
   WebResourceRequestData(
     this.url,
@@ -262,6 +290,11 @@ abstract class DownloadListenerFlutterApi {
 @HostApi(dartHostTestHandler: 'TestWebChromeClientHostApi')
 abstract class WebChromeClientHostApi {
   void create(int instanceId);
+
+  void setSynchronousReturnValueForOnShowFileChooser(
+    int instanceId,
+    bool value,
+  );
 }
 
 @HostApi(dartHostTestHandler: 'TestAssetManagerHostApi')
@@ -274,6 +307,13 @@ abstract class FlutterAssetManagerHostApi {
 @FlutterApi()
 abstract class WebChromeClientFlutterApi {
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
+
+  @async
+  List<String> onShowFileChooser(
+    int instanceId,
+    int webViewInstanceId,
+    int paramsInstanceId,
+  );
 }
 
 @HostApi(dartHostTestHandler: 'TestWebStorageHostApi')
@@ -281,4 +321,18 @@ abstract class WebStorageHostApi {
   void create(int instanceId);
 
   void deleteAllData(int instanceId);
+}
+
+/// Handles callbacks methods for the native Java FileChooserParams class.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
+@FlutterApi()
+abstract class FileChooserParamsFlutterApi {
+  void create(
+    int instanceId,
+    bool isCaptureEnabled,
+    List<String> acceptTypes,
+    FileChooserModeEnumData mode,
+    String? filenameHint,
+  );
 }

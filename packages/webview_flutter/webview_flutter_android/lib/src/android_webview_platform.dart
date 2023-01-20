@@ -4,7 +4,6 @@
 
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import 'android_navigation_delegate.dart';
 import 'android_webview_controller.dart';
 import 'android_webview_cookie_manager.dart';
 
