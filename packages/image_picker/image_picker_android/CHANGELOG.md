@@ -1,6 +1,10 @@
+## 0.8.5+6
+
+* Improves Bitmap resizing.
+
 ## 0.8.5+5
 
-* Improves Bitmap resizing on Android.
+* Updates code for stricter lint checks.
 
 ## 0.8.5+4
 

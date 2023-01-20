@@ -1,3 +1,7 @@
+## 2.1.3
+
+* Updates code for stricter lint checks.
+
 ## 2.1.2
 
 * Updates code for stricter lint checks.

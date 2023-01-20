@@ -38,10 +38,10 @@ Future<void> _openFile() async {
   final Uri uri = Uri.file(filePath);
 
   if (!File(uri.toFilePath()).existsSync()) {
-    throw '$uri does not exist!';
+    throw Exception('$uri does not exist!');
   }
   if (!await launchUrl(uri)) {
-    throw 'Could not launch $uri';
+    throw Exception('Could not launch $uri');
   }
 // #enddocregion file
 }

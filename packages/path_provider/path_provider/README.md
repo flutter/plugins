@@ -36,7 +36,7 @@ Directories support by platform:
 | External Storage | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
 | External Cache Directories | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
 | External Storage Directories | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
-| Downloads | ❌ | ❌ | ✔️ | ✔️ | ✔️ |
+| Downloads | ❌ | ✔️ | ✔️ | ✔️ | ✔️ |
 
 ## Testing
 

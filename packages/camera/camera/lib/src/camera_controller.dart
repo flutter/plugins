@@ -452,12 +452,6 @@ class CameraController extends ValueNotifier<CameraValue> {
     assert(defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
     _throwIfNotInitialized('stopImageStream');
-    if (value.isRecordingVideo) {
-      throw CameraException(
-        'A video recording is already started.',
-        'stopImageStream was called while a video is being recorded.',
-      );
-    }
     if (!value.isStreamingImages) {
       throw CameraException(
         'No camera is streaming images',
@@ -476,9 +470,13 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Start a video recording.
   ///
+  /// You may optionally pass an [onAvailable] callback to also have the
+  /// video frames streamed to this callback.
+  ///
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
-  Future<void> startVideoRecording() async {
+  Future<void> startVideoRecording(
+      {onLatestImageAvailable? onAvailable}) async {
     _throwIfNotInitialized('startVideoRecording');
     if (value.isRecordingVideo) {
       throw CameraException(
@@ -486,18 +484,21 @@ class CameraController extends ValueNotifier<CameraValue> {
         'startVideoRecording was called when a recording is already started.',
       );
     }
-    if (value.isStreamingImages) {
-      throw CameraException(
-        'A camera has started streaming images.',
-        'startVideoRecording was called while a camera was streaming images.',
-      );
+
+    Function(CameraImageData image)? streamCallback;
+    if (onAvailable != null) {
+      streamCallback = (CameraImageData imageData) {
+        onAvailable(CameraImage.fromPlatformInterface(imageData));
+      };
     }
 
     try {
-      await CameraPlatform.instance.startVideoRecording(_cameraId);
+      await CameraPlatform.instance.startVideoCapturing(
+          VideoCaptureOptions(_cameraId, streamCallback: streamCallback));
       value = value.copyWith(
           isRecordingVideo: true,
           isRecordingPaused: false,
+          isStreamingImages: onAvailable != null,
           recordingOrientation:
               value.lockedCaptureOrientation ?? value.deviceOrientation);
     } on PlatformException catch (e) {
@@ -516,6 +517,11 @@ class CameraController extends ValueNotifier<CameraValue> {
         'stopVideoRecording was called when no video is recording.',
       );
     }
+
+    if (value.isStreamingImages) {
+      stopImageStream();
+    }
+
     try {
       final XFile file =
           await CameraPlatform.instance.stopVideoRecording(_cameraId);

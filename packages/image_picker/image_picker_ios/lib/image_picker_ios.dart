@@ -14,9 +14,14 @@ SourceType _convertSource(ImageSource source) {
       return SourceType.camera;
     case ImageSource.gallery:
       return SourceType.gallery;
-    default:
-      throw UnimplementedError('Unknown source: $source');
   }
+  // The enum comes from a different package, which could get a new value at
+  // any time, so a fallback case is necessary. Since there is no reasonable
+  // default behavior, throw to alert the client that they need an updated
+  // version. This is deliberately outside the switch rather than a `default`
+  // so that the linter will flag the switch as needing an update.
+  // ignore: dead_code
+  throw UnimplementedError('Unknown source: $source');
 }
 
 // Converts a [CameraDevice] to the corresponding Pigeon API enum value.
@@ -26,9 +31,14 @@ SourceCamera _convertCamera(CameraDevice camera) {
       return SourceCamera.front;
     case CameraDevice.rear:
       return SourceCamera.rear;
-    default:
-      throw UnimplementedError('Unknown camera: $camera');
   }
+  // The enum comes from a different package, which could get a new value at
+  // any time, so a fallback case is necessary. Since there is no reasonable
+  // default behavior, throw to alert the client that they need an updated
+  // version. This is deliberately outside the switch rather than a `default`
+  // so that the linter will flag the switch as needing an update.
+  // ignore: dead_code
+  throw UnimplementedError('Unknown camera: $camera');
 }
 
 /// An implementation of [ImagePickerPlatform] for iOS.
