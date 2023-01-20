@@ -1,3 +1,7 @@
+## 3.0.3
+
+* Fixes bug where `WKWebView` could not be released.
+
 ## 3.0.2
 
 * Updates code for stricter lint checks.
