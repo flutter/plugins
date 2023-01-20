@@ -221,6 +221,8 @@ Future<void> main() async {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setUserAgent('Custom_User_Agent1');
 
+    await tester.pumpAndSettle();
+
     final String customUserAgent2 = await _getUserAgent(controller);
     expect(customUserAgent2, 'Custom_User_Agent1');
   });
@@ -485,6 +487,8 @@ Future<void> main() async {
             ),
           ),
         );
+
+      await tester.pumpAndSettle();
 
       await pageLoaded.future;
 
@@ -864,6 +868,8 @@ Future<void> main() async {
       ..setAllowsBackForwardNavigationGestures(true)
       ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
 
+    await tester.pumpAndSettle();
+
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
   });
@@ -900,6 +906,8 @@ Future<void> main() async {
           const WebKitNavigationDelegateCreationParams(),
         )..setOnPageFinished((_) => pageLoaded.complete()))
         ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+      await tester.pumpAndSettle();
 
       expect(controller.currentUrl(), completion(primaryUrl));
       await pageLoaded.future;
