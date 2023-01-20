@@ -102,7 +102,6 @@ public class ImageStreamReader {
   @VisibleForTesting
   public void onImageAvailable(
           @NonNull Image image,
-          int imageFormat,
           CameraCaptureProperties captureProps,
           EventChannel.EventSink imageStreamSink) {
     try {
@@ -196,7 +195,7 @@ public class ImageStreamReader {
           Image image = reader.acquireNextImage();
           if (image == null) return;
 
-          onImageAvailable(image, imageReader.getImageFormat(), captureProps, imageStreamSink);
+          onImageAvailable(image, captureProps, imageStreamSink);
         },
         handler);
   }
