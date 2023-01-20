@@ -95,11 +95,9 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
   /// the [ProcessCameraProvider] instance.
   int getProcessCameraProviderIdentifier(ProcessCameraProvider instance) {
     int? identifier = instanceManager.getIdentifier(instance);
-    identifier ??= instanceManager.addDartCreatedInstance(instance,
-        onCopy: (ProcessCameraProvider original) {
-      return ProcessCameraProvider.detached(
-          binaryMessenger: binaryMessenger, instanceManager: instanceManager);
-    });
+
+    assert(identifier != null,
+        'No ProcessCameraProvider has the identifer of that requested.');
     return identifier;
   }
 

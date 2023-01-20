@@ -18,6 +18,7 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderHostApi;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHostApi {
   private final BinaryMessenger binaryMessenger;
@@ -78,7 +79,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
   @Override
   public List<Long> getAvailableCameraInfos(@NonNull Long identifier) {
     ProcessCameraProvider processCameraProvider =
-        (ProcessCameraProvider) instanceManager.getInstance(identifier);
+        (ProcessCameraProvider) Objects.requireNonNull(instanceManager.getInstance(identifier));
 
     List<CameraInfo> availableCameras = processCameraProvider.getAvailableCameraInfos();
     List<Long> availableCamerasIds = new ArrayList<Long>();
@@ -103,12 +104,16 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
       @NonNull Long cameraSelectorIdentifier,
       @NonNull List<Long> useCaseIds) {
     ProcessCameraProvider processCameraProvider =
-        (ProcessCameraProvider) instanceManager.getInstance(identifier);
+        (ProcessCameraProvider) Objects.requireNonNull(instanceManager.getInstance(identifier));
     CameraSelector cameraSelector =
-        (CameraSelector) instanceManager.getInstance(cameraSelectorIdentifier);
+        (CameraSelector)
+            Objects.requireNonNull(instanceManager.getInstance(cameraSelectorIdentifier));
     UseCase[] useCases = new UseCase[useCaseIds.size()];
     for (int i = 0; i < useCaseIds.size(); i++) {
-      useCases[i] = (UseCase) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
+      useCases[i] =
+          (UseCase)
+              Objects.requireNonNull(
+                  instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue()));
     }
 
     Camera camera =
@@ -125,10 +130,13 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
   @Override
   public void unbind(@NonNull Long identifier, @NonNull List<Long> useCaseIds) {
     ProcessCameraProvider processCameraProvider =
-        (ProcessCameraProvider) instanceManager.getInstance(identifier);
+        (ProcessCameraProvider) Objects.requireNonNull(instanceManager.getInstance(identifier));
     UseCase[] useCases = new UseCase[useCaseIds.size()];
     for (int i = 0; i < useCaseIds.size(); i++) {
-      useCases[i] = (UseCase) instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue());
+      useCases[i] =
+          (UseCase)
+              Objects.requireNonNull(
+                  instanceManager.getInstance(((Number) useCaseIds.get(i)).longValue()));
     }
     processCameraProvider.unbind(useCases);
   }
@@ -136,7 +144,7 @@ public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHo
   @Override
   public void unbindAll(@NonNull Long identifier) {
     ProcessCameraProvider processCameraProvider =
-        (ProcessCameraProvider) instanceManager.getInstance(identifier);
+        (ProcessCameraProvider) Objects.requireNonNull(instanceManager.getInstance(identifier));
     processCameraProvider.unbindAll();
   }
 }

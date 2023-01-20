@@ -15,13 +15,10 @@ import java.util.Objects;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RobolectricTestRunner;
 
-@RunWith(RobolectricTestRunner.class)
 public class CameraTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -33,6 +30,11 @@ public class CameraTest {
   @Before
   public void setUp() {
     testInstanceManager = InstanceManager.open(identifier -> {});
+  }
+
+  @After
+  public void tearDown() {
+    testInstanceManager.close();
   }
 
   @Test
