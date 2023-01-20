@@ -70,3 +70,21 @@ abstract class ProcessCameraProviderHostApi {
 abstract class ProcessCameraProviderFlutterApi {
   void create(int identifier);
 }
+
+@HostApi(dartHostTestHandler: 'TestPreviewHostApi')
+abstract class PreviewHostApi {
+  void create(
+      int identifier, int? rotation, Map<String, int>? targetResolution);
+
+  int setSurfaceProvider(int identifier);
+
+  void setTargetRotation(int identifier, int targetRotation);
+
+  Map<String, int> getResolutionInfo(int identifier);
+}
+
+@FlutterApi()
+abstract class PreviewFlutterApi {
+  void create(
+      int identifier, int targetRotation, Map<String, int>? targetResolution);
+}
