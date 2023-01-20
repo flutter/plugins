@@ -22,8 +22,24 @@ import java.util.Map;
 
 // Wraps an ImageReader to allow for testing of the image handler.
 public class ImageStreamReader {
+
+  /**
+   * The image format we are going to send back to dart. Usually it's the
+   * same as streamImageFormat but in the case of NV21 we will actually
+   * request YUV frames but convert it to NV21 before sending to dart.
+   */
+  private final int dartImageFormat;
+
   private final ImageReader imageReader;
   private final ImageStreamReaderUtils imageStreamReaderUtils;
+
+  // For NV21, we will be streaming YUV420 but converting the frames
+  // before sending back to dart.
+  public static ImageReader createImageReader(int width, int height, int imageFormat, int maxImages) {
+    final int _imageFormat = imageFormat == ImageFormat.NV21 ? ImageFormat.YUV_420_888 : imageFormat;
+
+    return ImageReader.newInstance(width, height, _imageFormat, maxImages);
+  }
 
   /**
    * Creates a new instance of the {@link ImageStreamReader}.
@@ -34,17 +50,41 @@ public class ImageStreamReader {
   @VisibleForTesting
   public ImageStreamReader(ImageReader imageReader, ImageStreamReaderUtils imageStreamReaderUtils) {
     this.imageReader = imageReader;
+    this.dartImageFormat = imageReader.getImageFormat();
     this.imageStreamReaderUtils = imageStreamReaderUtils;
   }
 
   /**
    * Creates a new instance of the {@link ImageStreamReader}.
    *
-   * @param imageReader is the image reader that will receive frames
+   * @param width is the image width
+   * @param height is the image height
+   * @param imageFormat is the {@link ImageFormat} that should be returned to dart.
+   * @param maxImages is how many images can be acquired at one time, usually 1.
    */
-  public ImageStreamReader(ImageReader imageReader) {
-    this.imageReader = imageReader;
+  public ImageStreamReader(int width, int height, int imageFormat, int maxImages) {
+    this.dartImageFormat = imageFormat;
+    this.imageReader = ImageReader.newInstance(
+            width,
+            height,
+            computeStreamImageFormat(imageFormat),
+            maxImages);
     this.imageStreamReaderUtils = new ImageStreamReaderUtils();
+  }
+
+  /**
+   * Returns the image format to stream based on a requested input format.
+   * Usually it's the same except when dart is requesting NV21. In that case
+   * we stream YUV420 and process it into NV21 before sending the frames over.
+   * @param dartImageFormat
+   * @return
+   */
+  private static int computeStreamImageFormat(int dartImageFormat) {
+    if (dartImageFormat == ImageFormat.NV21) {
+      return ImageFormat.YUV_420_888;
+    } else {
+      return dartImageFormat;
+    }
   }
 
   /**
@@ -61,69 +101,77 @@ public class ImageStreamReader {
    */
   @VisibleForTesting
   public void onImageAvailable(
-      @NonNull Image image,
-      int imageFormat,
-      CameraCaptureProperties captureProps,
-      EventChannel.EventSink imageStreamSink) {
-    List<Map<String, Object>> planes = new ArrayList<>();
-    for (int i = 0; i < image.getPlanes().length; i++) {
-      // Current plane
-      Image.Plane plane = image.getPlanes()[i];
+          @NonNull Image image,
+          int imageFormat,
+          CameraCaptureProperties captureProps,
+          EventChannel.EventSink imageStreamSink) {
+    try {
+      Map<String, Object> imageBuffer = new HashMap<>();
 
-      // The metadata to be returned to dart
-      Map<String, Object> planeBuffer = new HashMap<>();
-      planeBuffer.put("bytesPerPixel", plane.getPixelStride());
-
-      // Sometimes YUV420 has additional padding that must be removed. This is only the case if we are
-      // streaming YUV420, the row stride does not match the image width, and the pixel stride is 1.
-      if (imageFormat == ImageFormat.YUV_420_888
-          && plane.getRowStride() != image.getWidth()
-          && plane.getPixelStride() == 1) {
-        // The ordering of planes is guaranteed by Android. It always goes Y, U, V.
-        int planeWidth;
-        int planeHeight;
-        if (i == 0) {
-          // Y is the image size
-          planeWidth = image.getWidth();
-          planeHeight = image.getHeight();
-        } else {
-          // U and V are guaranteed to be the same size and are half of the image height/width
-          // in YUV420
-          planeWidth = image.getWidth() / 2;
-          planeHeight = image.getHeight() / 2;
-        }
-
-        planeBuffer.put(
-            "bytes",
-            imageStreamReaderUtils.removePlaneBufferPadding(plane, planeWidth, planeHeight));
-
-        // Make sure the bytesPerRow matches the image width now that we've removed the padding
-        planeBuffer.put("bytesPerRow", image.getWidth());
+      // Get plane data ready
+      if (dartImageFormat == ImageFormat.NV21) {
+        imageBuffer.put("planes", parsePlanesForNv21(image));
       } else {
-        // Just use the data as-is
-        ByteBuffer buffer = plane.getBuffer();
-        byte[] bytes = new byte[buffer.remaining()];
-        buffer.get(bytes, 0, bytes.length);
-        planeBuffer.put("bytes", bytes);
-        planeBuffer.put("bytesPerRow", plane.getRowStride());
+        imageBuffer.put("planes", parsePlanesForYuvOrJpeg(image));
       }
+
+      imageBuffer.put("width", image.getWidth());
+      imageBuffer.put("height", image.getHeight());
+      imageBuffer.put("format", dartImageFormat);
+      imageBuffer.put("lensAperture", captureProps.getLastLensAperture());
+      imageBuffer.put("sensorExposureTime", captureProps.getLastSensorExposureTime());
+      Integer sensorSensitivity = captureProps.getLastSensorSensitivity();
+      imageBuffer.put(
+              "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
+
+      final Handler handler = new Handler(Looper.getMainLooper());
+      handler.post(() -> imageStreamSink.success(imageBuffer));
+      image.close();
+
+    } catch (IllegalStateException e) {
+      // Handle "buffer is inaccessible" errors that can happen on some devices from ImageStreamReaderUtils.yuv420ThreePlanesToNV21()
+      final Handler handler = new Handler(Looper.getMainLooper());
+      handler.post(() -> imageStreamSink.error("IllegalStateException", "Caught IllegalStateException: " + e.getMessage(), null));
+      image.close();
+    }
+  }
+
+  public List<Map<String, Object>> parsePlanesForYuvOrJpeg(Image image) {
+    List<Map<String, Object>> planes = new ArrayList<>();
+
+    // For YUV420 and JPEG, just send the data as-is for each plane.
+    for (Image.Plane plane : image.getPlanes()) {
+      ByteBuffer buffer = plane.getBuffer();
+
+      byte[] bytes = new byte[buffer.remaining()];
+      buffer.get(bytes, 0, bytes.length);
+
+      Map<String, Object> planeBuffer = new HashMap<>();
+      planeBuffer.put("bytesPerRow", plane.getRowStride());
+      planeBuffer.put("bytesPerPixel", plane.getPixelStride());
+      planeBuffer.put("bytes", bytes);
+
       planes.add(planeBuffer);
     }
+    return planes;
+  }
 
-    Map<String, Object> imageBuffer = new HashMap<>();
-    imageBuffer.put("width", image.getWidth());
-    imageBuffer.put("height", image.getHeight());
-    imageBuffer.put("format", image.getFormat());
-    imageBuffer.put("planes", planes);
-    imageBuffer.put("lensAperture", captureProps.getLastLensAperture());
-    imageBuffer.put("sensorExposureTime", captureProps.getLastSensorExposureTime());
-    Integer sensorSensitivity = captureProps.getLastSensorSensitivity();
-    imageBuffer.put(
-        "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
+  public List<Map<String, Object>> parsePlanesForNv21(Image image) {
+    List<Map<String, Object>> planes = new ArrayList<>();
 
-    final Handler handler = new Handler(Looper.getMainLooper());
-    handler.post(() -> imageStreamSink.success(imageBuffer));
-    image.close();
+    // We will convert the YUV data to NV21 which is a single-plane image
+    ByteBuffer bytes = imageStreamReaderUtils.yuv420ThreePlanesToNV21(
+            image.getPlanes(),
+            image.getWidth(),
+            image.getHeight()
+    );
+
+    Map<String, Object> planeBuffer = new HashMap<>();
+    planeBuffer.put("bytesPerRow", image.getWidth());
+    planeBuffer.put("bytesPerPixel", 1);
+    planeBuffer.put("bytes", bytes.array());
+    planes.add(planeBuffer);
+    return planes;
   }
 
   /** Returns the image reader surface. */
