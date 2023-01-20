@@ -861,6 +861,58 @@ void main() {
         expect(result[1], params);
       });
 
+      test('setSynchronousReturnValueForOnShowFileChooser', () {
+        final MockTestWebChromeClientHostApi mockHostApi =
+            MockTestWebChromeClientHostApi();
+        TestWebChromeClientHostApi.setup(mockHostApi);
+
+        WebChromeClient.api =
+            WebChromeClientHostApiImpl(instanceManager: instanceManager);
+
+        final WebChromeClient webChromeClient = WebChromeClient.detached();
+        instanceManager.addHostCreatedInstance(webChromeClient, 2);
+
+        webChromeClient.setSynchronousReturnValueForOnShowFileChooser(false);
+
+        verify(
+          mockHostApi.setSynchronousReturnValueForOnShowFileChooser(2, false),
+        );
+      });
+
+      test(
+          'setSynchronousReturnValueForOnShowFileChooser throws StateError when onShowFileChooser is null',
+          () {
+        final MockTestWebChromeClientHostApi mockHostApi =
+            MockTestWebChromeClientHostApi();
+        TestWebChromeClientHostApi.setup(mockHostApi);
+
+        WebChromeClient.api =
+            WebChromeClientHostApiImpl(instanceManager: instanceManager);
+
+        final WebChromeClient clientWithNullCallback =
+            WebChromeClient.detached();
+        instanceManager.addHostCreatedInstance(clientWithNullCallback, 2);
+
+        expect(
+          () => clientWithNullCallback
+              .setSynchronousReturnValueForOnShowFileChooser(true),
+          throwsStateError,
+        );
+
+        final WebChromeClient clientWithNonnullCallback =
+            WebChromeClient.detached(
+          onShowFileChooser: (_, __) async => <String>[],
+        );
+        instanceManager.addHostCreatedInstance(clientWithNonnullCallback, 3);
+
+        clientWithNonnullCallback
+            .setSynchronousReturnValueForOnShowFileChooser(true);
+
+        verify(
+          mockHostApi.setSynchronousReturnValueForOnShowFileChooser(3, true),
+        );
+      });
+
       test('copy', () {
         expect(WebChromeClient.detached().copy(), isA<WebChromeClient>());
       });
