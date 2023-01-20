@@ -510,6 +510,8 @@ Future<void> main() async {
           ),
         );
 
+      await tester.pumpAndSettle();
+
       await pageLoaded.future;
 
       isPaused =
@@ -606,6 +608,8 @@ Future<void> main() async {
           ),
         );
 
+      await tester.pumpAndSettle();
+
       await pageLoaded.future;
 
       await tester.pumpAndSettle(const Duration(seconds: 3));
@@ -662,6 +666,8 @@ Future<void> main() async {
           LoadRequestParams(uri: Uri.parse(blankPageEncoded)),
         );
 
+      await tester.pumpAndSettle();
+
       await pageLoads.stream.first; // Wait for initial page load.
       await controller.runJavaScript('location.href = "$secondaryUrl"');
 
@@ -688,6 +694,8 @@ Future<void> main() async {
         ..loadRequest(
           LoadRequestParams(uri: Uri.parse('https://www.notawebsite..com')),
         );
+
+      await tester.pumpAndSettle();
 
       final WebResourceError error = await errorCompleter.future;
       expect(error, isNotNull);
@@ -721,6 +729,8 @@ Future<void> main() async {
             ),
           ),
         );
+
+      await tester.pumpAndSettle();
 
       expect(errorCompleter.future, doesNotComplete);
       await pageFinishCompleter.future;
@@ -768,6 +778,8 @@ Future<void> main() async {
             ),
           );
 
+        await tester.pumpAndSettle();
+
         expect(errorCompleter.future, doesNotComplete);
         await pageFinishCompleter.future;
       },
@@ -793,6 +805,8 @@ Future<void> main() async {
             }),
         )
         ..loadRequest(LoadRequestParams(uri: Uri.parse(blankPageEncoded)));
+
+      await tester.pumpAndSettle();
 
       await pageLoads.stream.first; // Wait for initial page load.
       await controller
@@ -830,6 +844,8 @@ Future<void> main() async {
             }),
         )
         ..loadRequest(LoadRequestParams(uri: Uri.parse(blankPageEncoded)));
+
+      await tester.pumpAndSettle();
 
       await pageLoads.stream.first; // Wait for initial page load.
       await controller.runJavaScript('location.href = "$secondaryUrl"');
