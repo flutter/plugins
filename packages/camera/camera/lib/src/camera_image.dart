@@ -90,6 +90,9 @@ ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
       // android.graphics.ImageFormat.JPEG
       case 256:
         return ImageFormatGroup.jpeg;
+      // android.graphics.ImageFormat.NV21
+      case 17:
+        return ImageFormatGroup.nv21;
     }
   }
 
