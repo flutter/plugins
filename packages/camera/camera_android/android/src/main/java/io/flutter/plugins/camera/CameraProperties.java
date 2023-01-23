@@ -150,9 +150,33 @@ public interface CameraProperties {
    * android.hardware.camera2.CameraCharacteristics#SCALER_AVAILABLE_MAX_DIGITAL_ZOOM key.
    *
    * @return Float Maximum ratio between both active area width and crop region width, and active
-   *     area height and crop region height
+   *     area height and crop region height.
    */
   Float getScalerAvailableMaxDigitalZoom();
+
+  /**
+   * Returns the minimum ratio between the default camera zoom setting and all of the available
+   * zoom.
+   *
+   * <p>By default maps to the @see
+   * android.hardware.camera2.CameraCharacteristics#CONTROL_ZOOM_RATIO_RANGE key's lower value.
+   *
+   * @return Float Minimum ratio between the default zoom ratio and the minimum possible zoom.
+   */
+  @RequiresApi(api = VERSION_CODES.R)
+  Float getScalerMinZoomRatio();
+
+  /**
+   * Returns the maximum ratio between the default camera zoom setting and all of the available
+   * zoom.
+   *
+   * <p>By default maps to the @see
+   * android.hardware.camera2.CameraCharacteristics#CONTROL_ZOOM_RATIO_RANGE key's upper value.
+   *
+   * @return Float Maximum ratio between the default zoom ratio and the maximum possible zoom.
+   */
+  @RequiresApi(api = VERSION_CODES.R)
+  Float getScalerMaxZoomRatio();
 
   /**
    * Returns the area of the image sensor which corresponds to active pixels after any geometric
@@ -313,6 +337,18 @@ class CameraPropertiesImpl implements CameraProperties {
   @Override
   public Float getScalerAvailableMaxDigitalZoom() {
     return cameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+  }
+
+  @RequiresApi(api = VERSION_CODES.R)
+  @Override
+  public Float getScalerMaxZoomRatio() {
+    return cameraCharacteristics.get(CameraCharacteristics.CONTROL_ZOOM_RATIO_RANGE).getUpper();
+  }
+
+  @RequiresApi(api = VERSION_CODES.R)
+  @Override
+  public Float getScalerMinZoomRatio() {
+    return cameraCharacteristics.get(CameraCharacteristics.CONTROL_ZOOM_RATIO_RANGE).getLower();
   }
 
   @Override

@@ -2,6 +2,10 @@
 
 * Add "My Location" Widget. Issue [#64073](https://github.com/flutter/flutter/issues/64073)
 
+## 0.4.0+5
+
+* Updates code for stricter lint checks.
+
 ## 0.4.0+4
 
 * Updates code for stricter lint checks.

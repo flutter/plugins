@@ -127,6 +127,7 @@ class WebView extends StatefulWidget {
         case TargetPlatform.iOS:
           _platform = CupertinoWebView();
           break;
+        // ignore: no_default_cases
         default:
           throw UnsupportedError(
               "Trying to use the default webview implementation for $defaultTargetPlatform but there isn't a default one");

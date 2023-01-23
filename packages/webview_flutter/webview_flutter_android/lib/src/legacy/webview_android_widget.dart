@@ -134,7 +134,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   final Map<String, WebViewAndroidJavaScriptChannel> _javaScriptChannels =
       <String, WebViewAndroidJavaScriptChannel>{};
 
-  late final android_webview.WebViewClient _webViewClient = withWeakRefenceTo(
+  late final android_webview.WebViewClient _webViewClient = withWeakReferenceTo(
       this, (WeakReference<WebViewAndroidPlatformController> weakReference) {
     return webViewProxy.createWebViewClient(
       onPageStarted: (_, String url) {
@@ -213,7 +213,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final android_webview.DownloadListener downloadListener =
       android_webview.DownloadListener(
-    onDownloadStart: withWeakRefenceTo(
+    onDownloadStart: withWeakReferenceTo(
       this,
       (WeakReference<WebViewAndroidPlatformController> weakReference) {
         return (
@@ -236,7 +236,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final android_webview.WebChromeClient webChromeClient =
       android_webview.WebChromeClient(
-          onProgressChanged: withWeakRefenceTo(
+          onProgressChanged: withWeakReferenceTo(
     this,
     (WeakReference<WebViewAndroidPlatformController> weakReference) {
       return (_, int progress) {
@@ -320,11 +320,17 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
       case WebViewRequestMethod.post:
         return webView.postUrl(
             request.uri.toString(), request.body ?? Uint8List(0));
-      default:
-        throw UnimplementedError(
-          'This version of webview_android_widget currently has no implementation for HTTP method ${request.method.serialize()} in loadRequest.',
-        );
     }
+    // The enum comes from a different package, which could get a new value at
+    // any time, so a fallback case is necessary. Since there is no reasonable
+    // default behavior, throw to alert the client that they need an updated
+    // version. This is deliberately outside the switch rather than a `default`
+    // so that the linter will flag the switch as needing an update.
+    // ignore: dead_code
+    throw UnimplementedError(
+        'This version of webview_android_widget currently has no '
+        'implementation for HTTP method ${request.method.serialize()} in '
+        'loadRequest.');
   }
 
   @override
@@ -574,7 +580,7 @@ class WebViewAndroidJavaScriptChannel
     super.channelName,
     this.javascriptChannelRegistry,
   ) : super(
-          postMessage: withWeakRefenceTo(
+          postMessage: withWeakReferenceTo(
             javascriptChannelRegistry,
             (WeakReference<JavascriptChannelRegistry> weakReference) {
               return (String message) {
