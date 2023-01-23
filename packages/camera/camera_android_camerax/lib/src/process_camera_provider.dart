@@ -97,7 +97,7 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
     final int? identifier = instanceManager.getIdentifier(instance);
 
     assert(identifier != null,
-        'No ProcessCameraProvider has the identifer of that requested.');
+        'No ProcessCameraProvider has the identifer of that which was requested.');
     return identifier!;
   }
 
