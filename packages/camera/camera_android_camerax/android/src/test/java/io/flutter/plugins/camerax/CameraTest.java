@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import androidx.camera.core.Camera;
 import io.flutter.plugin.common.BinaryMessenger;
 import java.util.Objects;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
