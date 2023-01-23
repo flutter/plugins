@@ -1,3 +1,7 @@
+## 4.0.2
+
+* Updates code for stricter lint checks.
+
 ## 4.0.1
 
 * Exposes `WebResourceErrorType` from platform interface.
