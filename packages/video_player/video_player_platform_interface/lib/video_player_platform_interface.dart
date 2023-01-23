@@ -102,6 +102,18 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
+<<<<<<< HEAD
+=======
+
+  /// enter fullscreen.
+  Future<void> enterFullscreen(int textureId) {
+    throw UnimplementedError('enterFullscreen() has not been implemented.');
+  }
+
+  void addEventListener(int textureId, String type, EventListener? listener, [bool? useCapture]) {
+    throw UnimplementedError('addEventListener() has not been implemented.');
+  }
+>>>>>>> 59582a6f1 (update)
 }
 
 class _PlaceholderImplementation extends VideoPlayerPlatform {}

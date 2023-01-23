@@ -130,6 +130,21 @@ class VideoPlayer {
     }, test: (Object e) => e is html.DomException);
   }
 
+<<<<<<< HEAD
+=======
+  void enterFullscreen() {
+    _videoElement.enterFullscreen();
+  }
+
+  void addEventListener(String type, EventListener? listener, [bool? useCapture]) {
+    return _videoElement.addEventListener(type, listener, useCapture);
+  }
+
+  void removeEventListener(String type, EventListener? listener, [bool? useCapture]) {
+    return _videoElement.removeEventListener(type, listener, useCapture);
+  }
+
+>>>>>>> 59582a6f1 (update)
   /// Pauses the video in the current position.
   void pause() {
     _videoElement.pause();

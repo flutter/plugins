@@ -146,4 +146,19 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   /// Sets the audio mode to mix with other sources (ignored)
   @override
   Future<void> setMixWithOthers(bool mixWithOthers) => Future<void>.value();
+<<<<<<< HEAD
+=======
+
+  @override
+  Future<void> enterFullscreen(int textureId) async {
+    return _player(textureId).enterFullscreen();
+  }
+
+  @override
+  void addEventListener(
+      int textureId, String type, html.EventListener? listener,
+      [bool? useCapture]) {
+    return _player(textureId).addEventListener(type, listener, useCapture);
+  }
+>>>>>>> 59582a6f1 (update)
 }

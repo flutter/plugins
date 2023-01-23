@@ -1,0 +1,21 @@
+[debug] [2023-01-12T22:13:25.505Z] ----------------------------------------------------------------------
+[debug] [2023-01-12T22:13:25.506Z] Command:       /opt/homebrew/Cellar/node/19.3.0/bin/node /opt/homebrew/bin/firebase init
+[debug] [2023-01-12T22:13:25.507Z] CLI Version:   11.19.0
+[debug] [2023-01-12T22:13:25.507Z] Platform:      darwin
+[debug] [2023-01-12T22:13:25.507Z] Node Version:  v19.3.0
+[debug] [2023-01-12T22:13:25.507Z] Time:          Thu Jan 12 2023 23:13:25 GMT+0100 (Central European Standard Time)
+[debug] [2023-01-12T22:13:25.507Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-01-12T22:13:25.510Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-01-12T22:13:25.510Z] > authorizing via signed-in user (michalkubizna@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/michalkubizna/Desktop/plugins/packages/video_player/video_player/example
+
