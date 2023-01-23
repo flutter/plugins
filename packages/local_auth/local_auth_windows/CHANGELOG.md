@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Switches internal implementation to Pigeon.
+
 ## 1.0.4
 
 * Updates imports for `prefer_relative_imports`.
