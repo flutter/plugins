@@ -2,20 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
-import 'types/auth_messages_windows.dart';
+
+import 'src/messages.g.dart';
 
 export 'package:local_auth_platform_interface/types/auth_messages.dart';
 export 'package:local_auth_platform_interface/types/auth_options.dart';
 export 'package:local_auth_platform_interface/types/biometric_type.dart';
 export 'package:local_auth_windows/types/auth_messages_windows.dart';
 
-const MethodChannel _channel =
-    MethodChannel('plugins.flutter.io/local_auth_windows');
-
 /// The implementation of [LocalAuthPlatform] for Windows.
 class LocalAuthWindows extends LocalAuthPlatform {
+  /// Creates a new plugin implementation instance.
+  LocalAuthWindows({
+    @visibleForTesting LocalAuthApi? api,
+  }) : _api = api ?? LocalAuthApi();
+
+  final LocalAuthApi _api;
+
   /// Registers this class as the default instance of [LocalAuthPlatform].
   static void registerWith() {
     LocalAuthPlatform.instance = LocalAuthWindows();
@@ -30,24 +35,11 @@ class LocalAuthWindows extends LocalAuthPlatform {
     assert(localizedReason.isNotEmpty);
 
     if (options.biometricOnly) {
-      throw UnimplementedError(
+      throw UnsupportedError(
           "Windows doesn't support the biometricOnly parameter.");
     }
 
-    final Map<String, Object> args = <String, Object>{
-      'localizedReason': localizedReason,
-      'useErrorDialogs': options.useErrorDialogs,
-      'stickyAuth': options.stickyAuth,
-      'sensitiveTransaction': options.sensitiveTransaction,
-      'biometricOnly': options.biometricOnly,
-    };
-    args.addAll(const WindowsAuthMessages().args);
-    for (final AuthMessages messages in authMessages) {
-      if (messages is WindowsAuthMessages) {
-        args.addAll(messages.args);
-      }
-    }
-    return (await _channel.invokeMethod<bool>('authenticate', args)) ?? false;
+    return _api.authenticate(localizedReason);
   }
 
   @override
@@ -68,12 +60,9 @@ class LocalAuthWindows extends LocalAuthPlatform {
   }
 
   @override
-  Future<bool> isDeviceSupported() async =>
-      (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
+  Future<bool> isDeviceSupported() async => _api.isDeviceSupported();
 
   /// Always returns false as this method is not supported on Windows.
   @override
-  Future<bool> stopAuthentication() async {
-    return false;
-  }
+  Future<bool> stopAuthentication() async => false;
 }
