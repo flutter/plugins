@@ -5,10 +5,6 @@
 #ifndef PACKAGES_LOCAL_AUTH_LOCAL_AUTH_WINDOWS_WINDOWS_TEST_MOCKS_H_
 #define PACKAGES_LOCAL_AUTH_LOCAL_AUTH_WINDOWS_WINDOWS_TEST_MOCKS_H_
 
-#include <flutter/method_call.h>
-#include <flutter/method_result_functions.h>
-#include <flutter/standard_method_codec.h>
-#include <flutter/texture_registrar.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -19,22 +15,7 @@ namespace test {
 
 namespace {
 
-using flutter::EncodableMap;
-using flutter::EncodableValue;
 using ::testing::_;
-
-class MockMethodResult : public flutter::MethodResult<> {
- public:
-  ~MockMethodResult() = default;
-
-  MOCK_METHOD(void, SuccessInternal, (const EncodableValue* result),
-              (override));
-  MOCK_METHOD(void, ErrorInternal,
-              (const std::string& error_code, const std::string& error_message,
-               const EncodableValue* details),
-              (override));
-  MOCK_METHOD(void, NotImplementedInternal, (), (override));
-};
 
 class MockUserConsentVerifier : public UserConsentVerifier {
  public:

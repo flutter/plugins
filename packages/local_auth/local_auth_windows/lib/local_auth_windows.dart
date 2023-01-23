@@ -28,6 +28,12 @@ class LocalAuthWindows extends LocalAuthPlatform {
     AuthenticationOptions options = const AuthenticationOptions(),
   }) async {
     assert(localizedReason.isNotEmpty);
+
+    if (options.biometricOnly) {
+      throw UnimplementedError(
+          "Windows doesn't support the biometricOnly parameter.");
+    }
+
     final Map<String, Object> args = <String, Object>{
       'localizedReason': localizedReason,
       'useErrorDialogs': options.useErrorDialogs,

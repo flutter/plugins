@@ -49,12 +49,14 @@ include_directories(BEFORE SYSTEM ${CMAKE_BINARY_DIR}/include)
 
 list(APPEND PLUGIN_SOURCES
   "local_auth_plugin.cpp"
+  "local_auth.h"
+  "messages.g.cpp"
+  "messages.g.h"
 )
 
 add_library(${PLUGIN_NAME} SHARED
   "include/local_auth_windows/local_auth_plugin.h"
   "local_auth_windows.cpp"
-  "local_auth.h"
   ${PLUGIN_SOURCES}
 )
 apply_standard_settings(${PLUGIN_NAME})
