@@ -2,6 +2,10 @@
 
 * Allows camera to be switched while video recording.
 
+## 0.9.10+2
+
+* Updates code for stricter lint checks.
+
 ## 0.9.10+1
 
 * Updates code for stricter lint checks.

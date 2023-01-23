@@ -260,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       );
                     case ConnectionState.done:
                       return _handlePreview();
-                    default:
+                    case ConnectionState.active:
                       if (snapshot.hasError) {
                         return Text(
                           'Pick image/video error: ${snapshot.error}}',

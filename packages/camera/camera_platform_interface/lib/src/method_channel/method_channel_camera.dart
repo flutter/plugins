@@ -137,6 +137,7 @@ class MethodChannelCamera extends CameraPlatform {
       // ignore: body_might_complete_normally_catch_error
       (Object error, StackTrace stackTrace) {
         if (error is! PlatformException) {
+          // ignore: only_throw_errors
           throw error;
         }
         completer.completeError(
@@ -530,8 +531,6 @@ class MethodChannelCamera extends CameraPlatform {
         return 'always';
       case FlashMode.torch:
         return 'torch';
-      default:
-        throw ArgumentError('Unknown FlashMode value');
     }
   }
 
@@ -550,8 +549,6 @@ class MethodChannelCamera extends CameraPlatform {
         return 'medium';
       case ResolutionPreset.low:
         return 'low';
-      default:
-        throw ArgumentError('Unknown ResolutionPreset value');
     }
   }
 

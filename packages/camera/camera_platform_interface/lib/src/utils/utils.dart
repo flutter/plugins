@@ -30,8 +30,6 @@ String serializeDeviceOrientation(DeviceOrientation orientation) {
       return 'landscapeRight';
     case DeviceOrientation.landscapeLeft:
       return 'landscapeLeft';
-    default:
-      throw ArgumentError('Unknown DeviceOrientation value');
   }
 }
 

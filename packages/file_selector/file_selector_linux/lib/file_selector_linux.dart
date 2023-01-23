@@ -102,13 +102,26 @@ class FileSelectorLinux extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    return _channel.invokeMethod<String>(
-      _getDirectoryPathMethod,
-      <String, dynamic>{
-        _initialDirectoryKey: initialDirectory,
-        _confirmButtonTextKey: confirmButtonText,
-      },
-    );
+    final List<String>? path = await _channel
+        .invokeListMethod<String>(_getDirectoryPathMethod, <String, dynamic>{
+      _initialDirectoryKey: initialDirectory,
+      _confirmButtonTextKey: confirmButtonText,
+    });
+    return path?.first;
+  }
+
+  @override
+  Future<List<String>> getDirectoryPaths({
+    String? initialDirectory,
+    String? confirmButtonText,
+  }) async {
+    final List<String>? pathList = await _channel
+        .invokeListMethod<String>(_getDirectoryPathMethod, <String, dynamic>{
+      _initialDirectoryKey: initialDirectory,
+      _confirmButtonTextKey: confirmButtonText,
+      _multipleKey: true,
+    });
+    return pathList ?? <String>[];
   }
 }
 

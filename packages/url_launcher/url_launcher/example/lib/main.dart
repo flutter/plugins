@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
       url,
       mode: LaunchMode.externalApplication,
     )) {
-      throw 'Could not launch $url';
+      throw Exception('Could not launch $url');
     }
   }
 
@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
       webViewConfiguration: const WebViewConfiguration(
           headers: <String, String>{'my_header_key': 'my_header_value'}),
     )) {
-      throw 'Could not launch $url';
+      throw Exception('Could not launch $url');
     }
   }
 
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
       mode: LaunchMode.inAppWebView,
       webViewConfiguration: const WebViewConfiguration(enableJavaScript: false),
     )) {
-      throw 'Could not launch $url';
+      throw Exception('Could not launch $url');
     }
   }
 
@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
       mode: LaunchMode.inAppWebView,
       webViewConfiguration: const WebViewConfiguration(enableDomStorage: false),
     )) {
-      throw 'Could not launch $url';
+      throw Exception('Could not launch $url');
     }
   }
 

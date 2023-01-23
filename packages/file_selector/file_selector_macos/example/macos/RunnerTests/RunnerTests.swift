@@ -47,9 +47,13 @@ class exampleTests: XCTestCase {
     panelController.openURLs = [URL(fileURLWithPath: returnPath)]
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(methodName: "openFile", arguments: [:])
-    plugin.handle(call) { result in
-      XCTAssertEqual((result as! [String]?)![0], returnPath)
+    let options = OpenPanelOptions(
+      allowsMultipleSelection: false,
+      canChooseDirectories: false,
+      canChooseFiles: true,
+      baseOptions: SavePanelOptions())
+    plugin.displayOpenPanel(options: options) { paths in
+      XCTAssertEqual(paths[0], returnPath)
       called.fulfill()
     }
 
@@ -72,16 +76,16 @@ class exampleTests: XCTestCase {
     panelController.openURLs = [URL(fileURLWithPath: returnPath)]
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(
-      methodName: "openFile",
-      arguments: [
-        "initialDirectory": "/some/dir",
-        "suggestedName": "a name",
-        "confirmButtonText": "Open it!",
-      ]
-    )
-    plugin.handle(call) { result in
-      XCTAssertEqual((result as! [String]?)![0], returnPath)
+    let options = OpenPanelOptions(
+      allowsMultipleSelection: false,
+      canChooseDirectories: false,
+      canChooseFiles: true,
+      baseOptions: SavePanelOptions(
+        directoryPath: "/some/dir",
+        nameFieldStringValue: "a name",
+        prompt: "Open it!"))
+    plugin.displayOpenPanel(options: options) { paths in
+      XCTAssertEqual(paths[0], returnPath)
       called.fulfill()
     }
 
@@ -104,12 +108,12 @@ class exampleTests: XCTestCase {
     panelController.openURLs = returnPaths.map({ path in URL(fileURLWithPath: path) })
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(
-      methodName: "openFile",
-      arguments: ["multiple": true]
-    )
-    plugin.handle(call) { result in
-      let paths = (result as! [String]?)!
+    let options = OpenPanelOptions(
+      allowsMultipleSelection: true,
+      canChooseDirectories: false,
+      canChooseFiles: true,
+      baseOptions: SavePanelOptions())
+    plugin.displayOpenPanel(options: options) { paths in
       XCTAssertEqual(paths.count, returnPaths.count)
       XCTAssertEqual(paths[0], returnPaths[0])
       XCTAssertEqual(paths[1], returnPaths[1])
@@ -130,17 +134,17 @@ class exampleTests: XCTestCase {
     panelController.openURLs = [URL(fileURLWithPath: returnPath)]
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(
-      methodName: "openFile",
-      arguments: [
-        "acceptedTypes": [
-          "extensions": ["txt", "json"],
-          "UTIs": ["public.text", "public.image"],
-        ]
-      ]
-    )
-    plugin.handle(call) { result in
-      XCTAssertEqual((result as! [String]?)![0], returnPath)
+    let options = OpenPanelOptions(
+      allowsMultipleSelection: true,
+      canChooseDirectories: false,
+      canChooseFiles: true,
+      baseOptions: SavePanelOptions(
+        allowedFileTypes: AllowedTypes(
+          extensions: ["txt", "json"],
+          mimeTypes: [],
+          utis: ["public.text", "public.image"])))
+    plugin.displayOpenPanel(options: options) { paths in
+      XCTAssertEqual(paths[0], returnPath)
       called.fulfill()
     }
 
@@ -158,9 +162,13 @@ class exampleTests: XCTestCase {
       panelController: panelController)
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(methodName: "openFile", arguments: [:])
-    plugin.handle(call) { result in
-      XCTAssertNil(result)
+    let options = OpenPanelOptions(
+      allowsMultipleSelection: false,
+      canChooseDirectories: false,
+      canChooseFiles: true,
+      baseOptions: SavePanelOptions())
+    plugin.displayOpenPanel(options: options) { paths in
+      XCTAssertEqual(paths.count, 0)
       called.fulfill()
     }
 
@@ -178,9 +186,9 @@ class exampleTests: XCTestCase {
     panelController.saveURL = URL(fileURLWithPath: returnPath)
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(methodName: "getSavePath", arguments: [:])
-    plugin.handle(call) { result in
-      XCTAssertEqual(result as! String?, returnPath)
+    let options = SavePanelOptions()
+    plugin.displaySavePanel(options: options) { path in
+      XCTAssertEqual(path, returnPath)
       called.fulfill()
     }
 
@@ -198,15 +206,11 @@ class exampleTests: XCTestCase {
     panelController.saveURL = URL(fileURLWithPath: returnPath)
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(
-      methodName: "getSavePath",
-      arguments: [
-        "initialDirectory": "/some/dir",
-        "confirmButtonText": "Save it!",
-      ]
-    )
-    plugin.handle(call) { result in
-      XCTAssertEqual(result as! String?, returnPath)
+    let options = SavePanelOptions(
+      directoryPath: "/some/dir",
+      prompt: "Save it!")
+    plugin.displaySavePanel(options: options) { path in
+      XCTAssertEqual(path, returnPath)
       called.fulfill()
     }
 
@@ -225,9 +229,9 @@ class exampleTests: XCTestCase {
       panelController: panelController)
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(methodName: "getSavePath", arguments: [:])
-    plugin.handle(call) { result in
-      XCTAssertNil(result)
+    let options = SavePanelOptions()
+    plugin.displaySavePanel(options: options) { path in
+      XCTAssertNil(path)
       called.fulfill()
     }
 
@@ -245,9 +249,13 @@ class exampleTests: XCTestCase {
     panelController.openURLs = [URL(fileURLWithPath: returnPath)]
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(methodName: "getDirectoryPath", arguments: [:])
-    plugin.handle(call) { result in
-      XCTAssertEqual(result as! String?, returnPath)
+    let options = OpenPanelOptions(
+      allowsMultipleSelection: false,
+      canChooseDirectories: true,
+      canChooseFiles: false,
+      baseOptions: SavePanelOptions())
+    plugin.displayOpenPanel(options: options) { paths in
+      XCTAssertEqual(paths[0], returnPath)
       called.fulfill()
     }
 
@@ -270,9 +278,13 @@ class exampleTests: XCTestCase {
       panelController: panelController)
 
     let called = XCTestExpectation()
-    let call = FlutterMethodCall(methodName: "getDirectoryPath", arguments: [:])
-    plugin.handle(call) { result in
-      XCTAssertNil(result)
+    let options = OpenPanelOptions(
+      allowsMultipleSelection: false,
+      canChooseDirectories: true,
+      canChooseFiles: false,
+      baseOptions: SavePanelOptions())
+    plugin.displayOpenPanel(options: options) { paths in
+      XCTAssertEqual(paths.count, 0)
       called.fulfill()
     }
 
