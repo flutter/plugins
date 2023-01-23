@@ -13,9 +13,8 @@ void main() {
   late UrlLauncherWindows plugin;
 
   setUp(() {
-    plugin = UrlLauncherWindows();
     api = _FakeUrlLauncherApi();
-    plugin.setMockApi(api);
+    plugin = UrlLauncherWindows(api: api);
   });
 
   test('registers instance', () {

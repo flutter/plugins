@@ -10,18 +10,16 @@ import 'src/messages.g.dart';
 
 /// An implementation of [UrlLauncherPlatform] for Windows.
 class UrlLauncherWindows extends UrlLauncherPlatform {
-  UrlLauncherApi _hostApi = UrlLauncherApi();
+  /// Creates a new plugin implementation instance.
+  UrlLauncherWindows({
+    @visibleForTesting UrlLauncherApi? api,
+  }) : _hostApi = api ?? UrlLauncherApi();
+
+  final UrlLauncherApi _hostApi;
 
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith() {
     UrlLauncherPlatform.instance = UrlLauncherWindows();
-  }
-
-  /// Overrides the implementing Pigeon API for testing.
-  @visibleForTesting
-  // ignore: use_setters_to_change_properties
-  void setMockApi(UrlLauncherApi api) {
-    _hostApi = api;
   }
 
   @override
