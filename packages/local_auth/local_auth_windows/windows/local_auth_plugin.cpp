@@ -144,9 +144,7 @@ void LocalAuthPlugin::HandleMethodCall(
     Authenticate(method_call, std::move(result));
   } else if (method_call.method_name().compare("getEnrolledBiometrics") == 0) {
     GetEnrolledBiometrics(std::move(result));
-  } else if (method_call.method_name().compare("isDeviceSupported") == 0 ||
-             method_call.method_name().compare("deviceSupportsBiometrics") ==
-                 0) {
+  } else if (method_call.method_name().compare("isDeviceSupported") == 0) {
     IsDeviceSupported(std::move(result));
   } else {
     result->NotImplemented();

@@ -46,8 +46,8 @@ class LocalAuthWindows extends LocalAuthPlatform {
 
   @override
   Future<bool> deviceSupportsBiometrics() async {
-    return (await _channel.invokeMethod<bool>('deviceSupportsBiometrics')) ??
-        false;
+    // Biometrics are supported on any supported device.
+    return isDeviceSupported();
   }
 
   @override
