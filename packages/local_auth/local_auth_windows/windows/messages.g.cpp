@@ -20,81 +20,91 @@
 namespace local_auth_windows {
 /// The codec used by LocalAuthApi.
 const flutter::StandardMessageCodec& LocalAuthApi::GetCodec() {
-  return flutter::StandardMessageCodec::GetInstance(&flutter::StandardCodecSerializer::GetInstance());
+  return flutter::StandardMessageCodec::GetInstance(
+      &flutter::StandardCodecSerializer::GetInstance());
 }
 
-// Sets up an instance of `LocalAuthApi` to handle messages through the `binary_messenger`.
-void LocalAuthApi::SetUp(flutter::BinaryMessenger* binary_messenger, LocalAuthApi* api) {
+// Sets up an instance of `LocalAuthApi` to handle messages through the
+// `binary_messenger`.
+void LocalAuthApi::SetUp(flutter::BinaryMessenger* binary_messenger,
+                         LocalAuthApi* api) {
   {
-    auto channel = std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-        binary_messenger, "dev.flutter.pigeon.LocalAuthApi.isDeviceSupported", &GetCodec());
+    auto channel =
+        std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
+            binary_messenger,
+            "dev.flutter.pigeon.LocalAuthApi.isDeviceSupported", &GetCodec());
     if (api != nullptr) {
-      channel->SetMessageHandler([api](const flutter::EncodableValue& message, const flutter::MessageReply<flutter::EncodableValue>& reply) {
-        try {
-          api->IsDeviceSupported([reply](ErrorOr<bool>&& output) {
-            if (output.has_error()) {
-              reply(WrapError(output.error()));
-              return;
+      channel->SetMessageHandler(
+          [api](const flutter::EncodableValue& message,
+                const flutter::MessageReply<flutter::EncodableValue>& reply) {
+            try {
+              api->IsDeviceSupported([reply](ErrorOr<bool>&& output) {
+                if (output.has_error()) {
+                  reply(WrapError(output.error()));
+                  return;
+                }
+                flutter::EncodableList wrapped;
+                wrapped.push_back(
+                    flutter::EncodableValue(std::move(output).TakeValue()));
+                reply(flutter::EncodableValue(std::move(wrapped)));
+              });
+            } catch (const std::exception& exception) {
+              reply(WrapError(exception.what()));
             }
-            flutter::EncodableList wrapped;
-            wrapped.push_back(flutter::EncodableValue(std::move(output).TakeValue()));
-            reply(flutter::EncodableValue(std::move(wrapped)));
           });
-        }
-        catch (const std::exception& exception) {
-          reply(WrapError(exception.what()));
-        }
-      });
     } else {
       channel->SetMessageHandler(nullptr);
     }
   }
   {
-    auto channel = std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-        binary_messenger, "dev.flutter.pigeon.LocalAuthApi.authenticate", &GetCodec());
+    auto channel =
+        std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
+            binary_messenger, "dev.flutter.pigeon.LocalAuthApi.authenticate",
+            &GetCodec());
     if (api != nullptr) {
-      channel->SetMessageHandler([api](const flutter::EncodableValue& message, const flutter::MessageReply<flutter::EncodableValue>& reply) {
-        try {
-          const auto& args = std::get<flutter::EncodableList>(message);
-          const auto& encodable_localized_reason_arg = args.at(0);
-          if (encodable_localized_reason_arg.IsNull()) {
-            reply(WrapError("localized_reason_arg unexpectedly null."));
-            return;
-          }
-          const auto& localized_reason_arg = std::get<std::string>(encodable_localized_reason_arg);
-          api->Authenticate(localized_reason_arg, [reply](ErrorOr<bool>&& output) {
-            if (output.has_error()) {
-              reply(WrapError(output.error()));
-              return;
+      channel->SetMessageHandler(
+          [api](const flutter::EncodableValue& message,
+                const flutter::MessageReply<flutter::EncodableValue>& reply) {
+            try {
+              const auto& args = std::get<flutter::EncodableList>(message);
+              const auto& encodable_localized_reason_arg = args.at(0);
+              if (encodable_localized_reason_arg.IsNull()) {
+                reply(WrapError("localized_reason_arg unexpectedly null."));
+                return;
+              }
+              const auto& localized_reason_arg =
+                  std::get<std::string>(encodable_localized_reason_arg);
+              api->Authenticate(
+                  localized_reason_arg, [reply](ErrorOr<bool>&& output) {
+                    if (output.has_error()) {
+                      reply(WrapError(output.error()));
+                      return;
+                    }
+                    flutter::EncodableList wrapped;
+                    wrapped.push_back(
+                        flutter::EncodableValue(std::move(output).TakeValue()));
+                    reply(flutter::EncodableValue(std::move(wrapped)));
+                  });
+            } catch (const std::exception& exception) {
+              reply(WrapError(exception.what()));
             }
-            flutter::EncodableList wrapped;
-            wrapped.push_back(flutter::EncodableValue(std::move(output).TakeValue()));
-            reply(flutter::EncodableValue(std::move(wrapped)));
           });
-        }
-        catch (const std::exception& exception) {
-          reply(WrapError(exception.what()));
-        }
-      });
     } else {
       channel->SetMessageHandler(nullptr);
     }
   }
 }
 
-flutter::EncodableValue LocalAuthApi::WrapError(std::string_view error_message) {
+flutter::EncodableValue LocalAuthApi::WrapError(
+    std::string_view error_message) {
   return flutter::EncodableValue(flutter::EncodableList{
-    flutter::EncodableValue(std::string(error_message)),
-    flutter::EncodableValue("Error"),
-    flutter::EncodableValue()
-  });
+      flutter::EncodableValue(std::string(error_message)),
+      flutter::EncodableValue("Error"), flutter::EncodableValue()});
 }
 flutter::EncodableValue LocalAuthApi::WrapError(const FlutterError& error) {
   return flutter::EncodableValue(flutter::EncodableList{
-    flutter::EncodableValue(error.message()),
-    flutter::EncodableValue(error.code()),
-    error.details()
-  });
+      flutter::EncodableValue(error.message()),
+      flutter::EncodableValue(error.code()), error.details()});
 }
 
 }  // namespace local_auth_windows
