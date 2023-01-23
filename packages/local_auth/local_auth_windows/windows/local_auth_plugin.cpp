@@ -142,8 +142,6 @@ void LocalAuthPlugin::HandleMethodCall(
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   if (method_call.method_name().compare("authenticate") == 0) {
     Authenticate(method_call, std::move(result));
-  } else if (method_call.method_name().compare("getEnrolledBiometrics") == 0) {
-    GetEnrolledBiometrics(std::move(result));
   } else if (method_call.method_name().compare("isDeviceSupported") == 0) {
     IsDeviceSupported(std::move(result));
   } else {
@@ -198,25 +196,6 @@ winrt::fire_and_forget LocalAuthPlugin::Authenticate(
                               UserConsentVerificationResult::Verified));
   } catch (...) {
     result->Success(flutter::EncodableValue(false));
-  }
-}
-
-// Returns biometric types available on device.
-winrt::fire_and_forget LocalAuthPlugin::GetEnrolledBiometrics(
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  try {
-    flutter::EncodableList biometrics;
-    winrt::Windows::Security::Credentials::UI::UserConsentVerifierAvailability
-        ucv_availability =
-            co_await user_consent_verifier_->CheckAvailabilityAsync();
-    if (ucv_availability == winrt::Windows::Security::Credentials::UI::
-                                UserConsentVerifierAvailability::Available) {
-      biometrics.push_back(flutter::EncodableValue("weak"));
-      biometrics.push_back(flutter::EncodableValue("strong"));
-    }
-    result->Success(biometrics);
-  } catch (const std::exception& e) {
-    result->Error("no_biometrics_available", e.what());
   }
 }
 

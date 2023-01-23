@@ -52,22 +52,13 @@ class LocalAuthWindows extends LocalAuthPlatform {
 
   @override
   Future<List<BiometricType>> getEnrolledBiometrics() async {
-    final List<String> result = (await _channel.invokeListMethod<String>(
-          'getEnrolledBiometrics',
-        )) ??
-        <String>[];
-    final List<BiometricType> biometrics = <BiometricType>[];
-    for (final String value in result) {
-      switch (value) {
-        case 'weak':
-          biometrics.add(BiometricType.weak);
-          break;
-        case 'strong':
-          biometrics.add(BiometricType.strong);
-          break;
-      }
+    // Windows doesn't support querying specific biometric types. Since the
+    // OS considers this a strong authentication API, return weak+strong on
+    // any supported device.
+    if (await isDeviceSupported()) {
+      return <BiometricType>[BiometricType.weak, BiometricType.strong];
     }
-    return biometrics;
+    return <BiometricType>[];
   }
 
   @override
