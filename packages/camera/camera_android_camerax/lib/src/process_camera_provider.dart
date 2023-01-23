@@ -94,11 +94,11 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
   /// Gets identifier that the [instanceManager] has set for
   /// the [ProcessCameraProvider] instance.
   int getProcessCameraProviderIdentifier(ProcessCameraProvider instance) {
-    int? identifier = instanceManager.getIdentifier(instance);
+    final int? identifier = instanceManager.getIdentifier(instance);
 
     assert(identifier != null,
         'No ProcessCameraProvider has the identifer of that requested.');
-    return identifier;
+    return identifier!;
   }
 
   /// Retrives the list of CameraInfos corresponding to the available cameras.
