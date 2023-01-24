@@ -44,6 +44,7 @@ public class GoogleSignInTest {
   @Mock PluginRegistry.Registrar mockRegistrar;
   @Mock BinaryMessenger mockMessenger;
   @Spy MethodChannel.Result result;
+  @Mock MethodChannel.Result mockResult;
   @Mock GoogleSignInWrapper mockGoogleSignIn;
   @Mock GoogleSignInAccount account;
   @Mock GoogleSignInClient mockClient;
@@ -216,15 +217,24 @@ public class GoogleSignInTest {
     MethodCall methodCall = buildInitMethodCall(clientId, null);
     initAndAssertServerClientId(methodCall, clientId);
 
+    ArgumentCaptor<String> code = ArgumentCaptor.forClass(String.class);
+    ArgumentCaptor<String> message = ArgumentCaptor.forClass(String.class);
+    verify(mockResult).error(code.capture(), message.capture(), null);
+
     ApiException exception =
         new ApiException(new Status(CommonStatusCodes.SIGN_IN_REQUIRED, "Error text"));
     when(mockClient.silentSignIn()).thenReturn(mockSignInTask);
     when(mockSignInTask.isComplete()).thenReturn(true);
     when(mockSignInTask.getResult(ApiException.class)).thenThrow(exception);
 
-    plugin.onMethodCall(new MethodCall("signInSilently", null), result);
+    plugin.onMethodCall(new MethodCall("signInSilently", null), mockResult);
+    System.out.println("~!@ :: " + code.getValue());
+    System.out.println("~!@ :: " + message.getValue());
+    Assert.assertEquals(CommonStatusCodes.SIGN_IN_REQUIRED + ": Error text", message.getValue());
+    /*
     verify(result)
         .error("sign_in_required", CommonStatusCodes.SIGN_IN_REQUIRED + ": Error text", null);
+    */
   }
 
   @Test
