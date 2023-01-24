@@ -210,7 +210,8 @@ public class GoogleSignInTest {
   }
 
   @Test
-  public void signInSilentlyThatImmediatelyCompletesWithoutResultFinishesWithError() {
+  public void signInSilentlyThatImmediatelyCompletesWithoutResultFinishesWithError()
+      throws ApiException {
     final String clientId = "fakeClientId";
     MethodCall methodCall = buildInitMethodCall(clientId, null);
     initAndAssertServerClientId(methodCall, clientId);
