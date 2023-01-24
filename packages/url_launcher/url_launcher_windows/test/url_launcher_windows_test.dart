@@ -83,8 +83,10 @@ class _FakeUrlLauncherApi implements UrlLauncherApi {
   /// The argument that was passed to an API call.
   String? argument;
 
-  /// The return value for [canLaunchUrl], and whether or not [launchUrl]
-  /// should throw.
+  /// Controls the behavior of the fake implementations.
+  ///
+  /// - [canLaunchUrl] returns this value.
+  /// - [launchUrl] throws if this is false.
   bool canLaunch = false;
 
   @override
