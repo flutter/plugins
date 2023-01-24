@@ -5,14 +5,12 @@
 package io.flutter.plugins.sharedpreferences;
 
 import android.content.Context;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 import android.util.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.BinaryMessenger.TaskQueue;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.sharedpreferences.Messages.SharedPreferencesApi;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,47 +25,32 @@ import java.util.Map;
 import java.util.Set;
 
 /** SharedPreferencesPlugin */
-public class SharedPreferencesPlugin
-  implements FlutterPlugin, SharedPreferencesApi {
+public class SharedPreferencesPlugin implements FlutterPlugin, SharedPreferencesApi {
 
   static final String TAG = "SharedPreferencesPlugin";
 
-  private static final String SHARED_PREFERENCES_NAME =
-    "FlutterSharedPreferences";
+  private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
 
   // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
-  private static final String LIST_IDENTIFIER =
-    "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
-  private static final String BIG_INTEGER_PREFIX =
-    "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
-  private static final String DOUBLE_PREFIX =
-    "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu";
+  private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
+  private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
+  private static final String DOUBLE_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu";
 
   private android.content.SharedPreferences preferences;
 
   private void setup(BinaryMessenger messenger, Context context) {
     TaskQueue taskQueue = messenger.makeBackgroundTaskQueue();
-    preferences =
-      context.getSharedPreferences(
-        SHARED_PREFERENCES_NAME,
-        Context.MODE_PRIVATE
-      );
+    preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
     try {
       SharedPreferencesApi.setup(messenger, this);
     } catch (Exception ex) {
-      Log.e(
-        TAG,
-        "Received exception while setting up SharedPreferencesPlugin",
-        ex
-      );
+      Log.e(TAG, "Received exception while setting up SharedPreferencesPlugin", ex);
     }
   }
 
   @SuppressWarnings("deprecation")
-  public static void registerWith(
-    io.flutter.plugin.common.PluginRegistry.Registrar registrar
-  ) {
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     final SharedPreferencesPlugin plugin = new SharedPreferencesPlugin();
     plugin.setup(registrar.messenger(), registrar.context());
   }
@@ -89,14 +72,11 @@ public class SharedPreferencesPlugin
 
   @Override
   public Boolean setString(String key, String value) {
-    if (
-      value.startsWith(LIST_IDENTIFIER) ||
-      value.startsWith(BIG_INTEGER_PREFIX) ||
-      value.startsWith(DOUBLE_PREFIX)
-    ) {
+    if (value.startsWith(LIST_IDENTIFIER)
+        || value.startsWith(BIG_INTEGER_PREFIX)
+        || value.startsWith(DOUBLE_PREFIX)) {
       throw new RuntimeException(
-        "StorageError: This string cannot be stored as it clashes with special identifier prefixes"
-      );
+          "StorageError: This string cannot be stored as it clashes with special identifier prefixes");
     }
     return preferences.edit().putString(key, value).commit();
   }
@@ -107,12 +87,9 @@ public class SharedPreferencesPlugin
     if (number instanceof BigInteger) {
       BigInteger integerValue = (BigInteger) number;
       return preferences
-        .edit()
-        .putString(
-          key,
-          BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX)
-        )
-        .commit();
+          .edit()
+          .putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX))
+          .commit();
     } else {
       return preferences.edit().putLong(key, number.longValue()).commit();
     }
@@ -121,20 +98,14 @@ public class SharedPreferencesPlugin
   @Override
   public Boolean setDouble(String key, Double value) {
     String doubleValueStr = Double.toString(value);
-    return preferences
-      .edit()
-      .putString(key, DOUBLE_PREFIX + doubleValueStr)
-      .commit();
+    return preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr).commit();
   }
 
   @Override
-  public Boolean setStringList(String key, List<String> value)
-    throws RuntimeException {
+  public Boolean setStringList(String key, List<String> value) throws RuntimeException {
     try {
-      Boolean success = preferences
-        .edit()
-        .putString(key, LIST_IDENTIFIER + encodeList(value))
-        .commit();
+      Boolean success =
+          preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(value)).commit();
       return success;
     } catch (RuntimeException e) {
       throw e;
@@ -195,10 +166,10 @@ public class SharedPreferencesPlugin
           // Let's migrate the value too while we are at it.
           try {
             preferences
-              .edit()
-              .remove(key)
-              .putString(key, LIST_IDENTIFIER + encodeList(listValue))
-              .commit();
+                .edit()
+                .remove(key)
+                .putString(key, LIST_IDENTIFIER + encodeList(listValue))
+                .commit();
           } catch (RuntimeException e) {
             // If we are unable to migrate the existing preferences, it means we potentially lost them.
             // In this case, an error from getAllPrefs() is appropriate since it will alert the app during plugin initialization.
@@ -217,10 +188,7 @@ public class SharedPreferencesPlugin
   private List<String> decodeList(String encodedList) throws RuntimeException {
     ObjectInputStream stream = null;
     try {
-      stream =
-        new ObjectInputStream(
-          new ByteArrayInputStream(Base64.decode(encodedList, 0))
-        );
+      stream = new ObjectInputStream(new ByteArrayInputStream(Base64.decode(encodedList, 0)));
       List<String> data = (List<String>) stream.readObject();
       if (stream != null) {
         stream.close();
