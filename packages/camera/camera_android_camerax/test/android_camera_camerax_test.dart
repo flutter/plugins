@@ -51,7 +51,7 @@ void main() {
         MockTestCameraSelectorHostApi();
     TestCameraSelectorHostApi.setup(mockTestCameraSelectorHostApi);
 
-    MockTestCameraInfoHostApi mockTestCameraInfoHostApi =
+    final MockTestCameraInfoHostApi mockTestCameraInfoHostApi =
         MockTestCameraInfoHostApi();
     TestCameraInfoHostApi.setup(mockTestCameraInfoHostApi);
 
