@@ -223,7 +223,8 @@ public class GoogleSignInTest {
     when(mockSignInTask.getResult(ApiException.class)).thenThrow(exception);
 
     plugin.onMethodCall(new MethodCall("signInSilently", null), result);
-    verify(result).error("sign_in_required", "Error text", null);
+    verify(result)
+        .error("sign_in_required", CommonStatusCodes.SIGN_IN_REQUIRED + ": Error text", null);
   }
 
   @Test
