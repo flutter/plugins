@@ -14,6 +14,7 @@ import 'package:pigeon/pigeon.dart';
   dartTestOut: 'test/messages_test.g.dart',
   copyrightHeader: 'pigeons/copyright.txt',
 ))
+
 @HostApi(dartHostTestHandler: 'TestSharedPreferencesApi')
 abstract class SharedPreferencesApi {
   @TaskQueue(type: TaskQueueType.serialBackgroundThread)

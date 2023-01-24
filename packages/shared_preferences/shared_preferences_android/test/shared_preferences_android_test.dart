@@ -10,6 +10,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 
 import '../test/messages_test.g.dart';
 
+// Mock Implementation of the SharedPreferencesApi
 class _MockAPI extends TestSharedPreferencesApi {
   final Map<String, Object> items = <String, Object>{};
 

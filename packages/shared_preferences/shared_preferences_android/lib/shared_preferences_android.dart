@@ -46,6 +46,7 @@ class SharedPreferencesAndroid extends SharedPreferencesStorePlatform {
     return preferences;
   }
 
+  // Call the function according to the type of value provided
   Future<bool?> _handleSetValue(
       String dataType, String key, Object value) async {
     switch (dataType) {
