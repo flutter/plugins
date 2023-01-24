@@ -247,9 +247,13 @@ class LinkViewController extends PlatformViewController {
         return '_self';
       case LinkTarget.blank:
         return '_blank';
-      default:
-        throw Exception('Unknown LinkTarget value $target.');
     }
+    // The enum comes from a different package, which could get a new value at
+    // any time, so provide a fallback that ensures this won't break when used
+    // with a version that contains new values. This is deliberately outside
+    // the switch rather than a `default` so that the linter will flag the
+    // switch as needing an update.
+    return '_self';
   }
 
   @override

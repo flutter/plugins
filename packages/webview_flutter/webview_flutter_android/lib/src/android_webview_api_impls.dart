@@ -13,6 +13,8 @@ import 'android_webview.dart';
 import 'android_webview.pigeon.dart';
 import 'instance_manager.dart';
 
+export 'android_webview.pigeon.dart' show FileChooserMode;
+
 /// Converts [WebResourceRequestData] to [WebResourceRequest]
 WebResourceRequest _toWebResourceRequest(WebResourceRequestData data) {
   return WebResourceRequest(
@@ -42,6 +44,7 @@ class AndroidWebViewFlutterApis {
     WebViewClientFlutterApiImpl? webViewClientFlutterApi,
     WebChromeClientFlutterApiImpl? webChromeClientFlutterApi,
     JavaScriptChannelFlutterApiImpl? javaScriptChannelFlutterApi,
+    FileChooserParamsFlutterApiImpl? fileChooserParamsFlutterApi,
   }) {
     this.javaObjectFlutterApi =
         javaObjectFlutterApi ?? JavaObjectFlutterApiImpl();
@@ -53,6 +56,8 @@ class AndroidWebViewFlutterApis {
         webChromeClientFlutterApi ?? WebChromeClientFlutterApiImpl();
     this.javaScriptChannelFlutterApi =
         javaScriptChannelFlutterApi ?? JavaScriptChannelFlutterApiImpl();
+    this.fileChooserParamsFlutterApi =
+        fileChooserParamsFlutterApi ?? FileChooserParamsFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -77,6 +82,9 @@ class AndroidWebViewFlutterApis {
   /// Flutter Api for [JavaScriptChannel].
   late final JavaScriptChannelFlutterApiImpl javaScriptChannelFlutterApi;
 
+  /// Flutter Api for [FileChooserParams].
+  late final FileChooserParamsFlutterApiImpl fileChooserParamsFlutterApi;
+
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
     if (!_haveBeenSetUp) {
@@ -85,6 +93,7 @@ class AndroidWebViewFlutterApis {
       WebViewClientFlutterApi.setup(webViewClientFlutterApi);
       WebChromeClientFlutterApi.setup(webChromeClientFlutterApi);
       JavaScriptChannelFlutterApi.setup(javaScriptChannelFlutterApi);
+      FileChooserParamsFlutterApi.setup(fileChooserParamsFlutterApi);
       _haveBeenSetUp = true;
     }
   }
@@ -781,6 +790,17 @@ class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
       return create(identifier);
     }
   }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setSynchronousReturnValueForOnShowFileChooserFromInstance(
+    WebChromeClient instance,
+    bool value,
+  ) {
+    return setSynchronousReturnValueForOnShowFileChooser(
+      instanceManager.getIdentifier(instance)!,
+      value,
+    );
+  }
 }
 
 /// Flutter api implementation for [DownloadListener].
@@ -810,6 +830,26 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
       instance.onProgressChanged!(webViewInstance!, progress);
     }
   }
+
+  @override
+  Future<List<String?>> onShowFileChooser(
+    int instanceId,
+    int webViewInstanceId,
+    int paramsInstanceId,
+  ) {
+    final WebChromeClient instance =
+        instanceManager.getInstanceWithWeakReference(instanceId)!;
+    if (instance.onShowFileChooser != null) {
+      return instance.onShowFileChooser!(
+        instanceManager.getInstanceWithWeakReference(webViewInstanceId)!
+            as WebView,
+        instanceManager.getInstanceWithWeakReference(paramsInstanceId)!
+            as FileChooserParams,
+      );
+    }
+
+    return Future<List<String>>.value(const <String>[]);
+  }
 }
 
 /// Host api implementation for [WebStorage].
@@ -834,5 +874,34 @@ class WebStorageHostApiImpl extends WebStorageHostApi {
   /// Helper method to convert instances ids to objects.
   Future<void> deleteAllDataFromInstance(WebStorage instance) {
     return deleteAllData(instanceManager.getIdentifier(instance)!);
+  }
+}
+
+/// Flutter api implementation for [FileChooserParams].
+class FileChooserParamsFlutterApiImpl extends FileChooserParamsFlutterApi {
+  /// Constructs a [FileChooserParamsFlutterApiImpl].
+  FileChooserParamsFlutterApiImpl({InstanceManager? instanceManager})
+      : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+
+  /// Maintains instances stored to communicate with java objects.
+  final InstanceManager instanceManager;
+
+  @override
+  void create(
+    int instanceId,
+    bool isCaptureEnabled,
+    List<String?> acceptTypes,
+    FileChooserModeEnumData mode,
+    String? filenameHint,
+  ) {
+    instanceManager.addHostCreatedInstance(
+      FileChooserParams.detached(
+        isCaptureEnabled: isCaptureEnabled,
+        acceptTypes: acceptTypes.cast(),
+        mode: mode.value,
+        filenameHint: filenameHint,
+      ),
+      instanceId,
+    );
   }
 }

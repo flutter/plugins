@@ -1,6 +1,10 @@
-## 3.0.2
+## 3.0.3
 
 * Converts internal implentation to Pigeon.
+
+## 3.0.2
+
+* Updates code for stricter lint checks.
 * Updates minimum Flutter version to 2.10.
 
 ## 3.0.1

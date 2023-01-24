@@ -25,7 +25,7 @@
 ///   ),
 /// );
 /// ```
-S withWeakRefenceTo<T extends Object, S extends Object>(
+S withWeakReferenceTo<T extends Object, S extends Object>(
   T reference,
   S Function(WeakReference<T> weakReference) onCreate,
 ) {

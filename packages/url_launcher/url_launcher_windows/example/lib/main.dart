@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
         headers: <String, String>{},
       );
     } else {
-      throw 'Could not launch $url';
+      throw Exception('Could not launch $url');
     }
   }
 

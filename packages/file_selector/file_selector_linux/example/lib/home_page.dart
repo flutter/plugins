@@ -55,6 +55,13 @@ class HomePage extends StatelessWidget {
               child: const Text('Open a get directory dialog'),
               onPressed: () => Navigator.pushNamed(context, '/directory'),
             ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              style: style,
+              child: const Text('Open a get directories dialog'),
+              onPressed: () =>
+                  Navigator.pushNamed(context, '/multi-directories'),
+            ),
           ],
         ),
       ),
