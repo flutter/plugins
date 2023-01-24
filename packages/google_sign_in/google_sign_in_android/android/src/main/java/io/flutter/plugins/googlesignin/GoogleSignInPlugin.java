@@ -540,18 +540,18 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     private String errorCodeForStatus(int statusCode) {
       switch (statusCode) {
         case GoogleSignInStatusCodes.SIGN_IN_CANCELLED:
-            return ERROR_REASON_SIGN_IN_CANCELED;
+          return ERROR_REASON_SIGN_IN_CANCELED;
         case CommonStatusCodes.SIGN_IN_REQUIRED:
-            return ERROR_REASON_SIGN_IN_REQUIRED;
+          return ERROR_REASON_SIGN_IN_REQUIRED;
         case CommonStatusCodes.NETWORK_ERROR:
-            return ERROR_REASON_NETWORK_ERROR;
+          return ERROR_REASON_NETWORK_ERROR;
         case GoogleSignInStatusCodes.SIGN_IN_CURRENTLY_IN_PROGRESS:
         case GoogleSignInStatusCodes.SIGN_IN_FAILED:
         case CommonStatusCodes.INVALID_ACCOUNT:
         case CommonStatusCodes.INTERNAL_ERROR:
-            return ERROR_REASON_SIGN_IN_FAILED;
+          return ERROR_REASON_SIGN_IN_FAILED;
         default:
-            return ERROR_REASON_SIGN_IN_FAILED;
+          return ERROR_REASON_SIGN_IN_FAILED;
       }
     }
 
