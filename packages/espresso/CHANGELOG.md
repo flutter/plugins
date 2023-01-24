@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 0.2.0+6
 
 * Updates espresso-accessibility to 3.5.1.
