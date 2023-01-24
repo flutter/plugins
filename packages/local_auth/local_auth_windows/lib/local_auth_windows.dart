@@ -2,20 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
-import 'types/auth_messages_windows.dart';
+
+import 'src/messages.g.dart';
 
 export 'package:local_auth_platform_interface/types/auth_messages.dart';
 export 'package:local_auth_platform_interface/types/auth_options.dart';
 export 'package:local_auth_platform_interface/types/biometric_type.dart';
 export 'package:local_auth_windows/types/auth_messages_windows.dart';
 
-const MethodChannel _channel =
-    MethodChannel('plugins.flutter.io/local_auth_windows');
-
 /// The implementation of [LocalAuthPlatform] for Windows.
 class LocalAuthWindows extends LocalAuthPlatform {
+  /// Creates a new plugin implementation instance.
+  LocalAuthWindows({
+    @visibleForTesting LocalAuthApi? api,
+  }) : _api = api ?? LocalAuthApi();
+
+  final LocalAuthApi _api;
+
   /// Registers this class as the default instance of [LocalAuthPlatform].
   static void registerWith() {
     LocalAuthPlatform.instance = LocalAuthWindows();
@@ -28,55 +33,36 @@ class LocalAuthWindows extends LocalAuthPlatform {
     AuthenticationOptions options = const AuthenticationOptions(),
   }) async {
     assert(localizedReason.isNotEmpty);
-    final Map<String, Object> args = <String, Object>{
-      'localizedReason': localizedReason,
-      'useErrorDialogs': options.useErrorDialogs,
-      'stickyAuth': options.stickyAuth,
-      'sensitiveTransaction': options.sensitiveTransaction,
-      'biometricOnly': options.biometricOnly,
-    };
-    args.addAll(const WindowsAuthMessages().args);
-    for (final AuthMessages messages in authMessages) {
-      if (messages is WindowsAuthMessages) {
-        args.addAll(messages.args);
-      }
+
+    if (options.biometricOnly) {
+      throw UnsupportedError(
+          "Windows doesn't support the biometricOnly parameter.");
     }
-    return (await _channel.invokeMethod<bool>('authenticate', args)) ?? false;
+
+    return _api.authenticate(localizedReason);
   }
 
   @override
   Future<bool> deviceSupportsBiometrics() async {
-    return (await _channel.invokeMethod<bool>('deviceSupportsBiometrics')) ??
-        false;
+    // Biometrics are supported on any supported device.
+    return isDeviceSupported();
   }
 
   @override
   Future<List<BiometricType>> getEnrolledBiometrics() async {
-    final List<String> result = (await _channel.invokeListMethod<String>(
-          'getEnrolledBiometrics',
-        )) ??
-        <String>[];
-    final List<BiometricType> biometrics = <BiometricType>[];
-    for (final String value in result) {
-      switch (value) {
-        case 'weak':
-          biometrics.add(BiometricType.weak);
-          break;
-        case 'strong':
-          biometrics.add(BiometricType.strong);
-          break;
-      }
+    // Windows doesn't support querying specific biometric types. Since the
+    // OS considers this a strong authentication API, return weak+strong on
+    // any supported device.
+    if (await isDeviceSupported()) {
+      return <BiometricType>[BiometricType.weak, BiometricType.strong];
     }
-    return biometrics;
+    return <BiometricType>[];
   }
 
   @override
-  Future<bool> isDeviceSupported() async =>
-      (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
+  Future<bool> isDeviceSupported() async => _api.isDeviceSupported();
 
   /// Always returns false as this method is not supported on Windows.
   @override
-  Future<bool> stopAuthentication() async {
-    return false;
-  }
+  Future<bool> stopAuthentication() async => false;
 }
