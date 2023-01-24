@@ -10,8 +10,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'android_camera_camerax_test.mocks.dart';
-
-//import 'process_camera_provider_test.mocks.dart';
 import 'test_camerax_library.pigeon.dart';
 
 @GenerateMocks(<Type>[
