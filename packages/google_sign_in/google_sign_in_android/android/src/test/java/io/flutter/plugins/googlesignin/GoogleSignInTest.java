@@ -17,7 +17,10 @@ import android.content.res.Resources;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.Task;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -43,6 +46,7 @@ public class GoogleSignInTest {
   @Mock GoogleSignInWrapper mockGoogleSignIn;
   @Mock GoogleSignInAccount account;
   @Mock GoogleSignInClient mockClient;
+  @Mock Task<GoogleSignInAccount> mockSignInTask;
   private GoogleSignInPlugin plugin;
 
   @Before
@@ -202,6 +206,22 @@ public class GoogleSignInTest {
         mock(BinaryMessenger.class), mock(Context.class), mock(GoogleSignInWrapper.class));
 
     plugin.onMethodCall(new MethodCall("signIn", null), null);
+  }
+
+  @Test
+  public void signInSilentlyThatImmediatelyCompletesWithoutResultFinishesWithError() {
+    final String clientId = "fakeClientId";
+    MethodCall methodCall = buildInitMethodCall(clientId, null);
+    initAndAssertServerClientId(methodCall, clientId);
+
+    ApiException exception = new ApiException(new Status(CommonStatusCodes.SIGN_IN_REQUIRED, "Error text"));
+    when(mockClient.silentSignIn()).thenReturn(mockSignInTask);
+    when(mockSignInTask.isComplete()).thenReturn(true);
+    when(mockSignInTask.getResult(ApiException.class)).thenThrow(exception);
+
+    MethodCall methodCall = new MethodCall("signInSilently", null);
+    plugin.onMethodCall(methodCall, result);
+    verify(result).error("sign_in_required", "Error text", null);
   }
 
   @Test
