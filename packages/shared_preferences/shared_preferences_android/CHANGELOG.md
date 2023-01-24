@@ -1,3 +1,7 @@
+## 2.0.16
+
+* Converted `SharedPreferencesAndroid` to Pigeon.
+
 ## 2.0.15
 
 * Updates code for stricter lint checks.
