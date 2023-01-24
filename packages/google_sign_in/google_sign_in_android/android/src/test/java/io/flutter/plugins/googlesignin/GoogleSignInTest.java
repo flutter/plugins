@@ -219,7 +219,6 @@ public class GoogleSignInTest {
 
     ArgumentCaptor<String> code = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<String> message = ArgumentCaptor.forClass(String.class);
-    verify(mockResult).error(code.capture(), message.capture(), any());
 
     ApiException exception =
         new ApiException(new Status(CommonStatusCodes.SIGN_IN_REQUIRED, "Error text"));
@@ -228,6 +227,7 @@ public class GoogleSignInTest {
     when(mockSignInTask.getResult(ApiException.class)).thenThrow(exception);
 
     plugin.onMethodCall(new MethodCall("signInSilently", null), mockResult);
+    verify(mockResult).error(code.capture(), message.capture(), any());
     System.out.println("~!@ :: " + code.getValue());
     System.out.println("~!@ :: " + message.getValue());
     Assert.assertEquals(CommonStatusCodes.SIGN_IN_REQUIRED + ": Error text", message.getValue());
