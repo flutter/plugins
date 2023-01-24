@@ -2,10 +2,14 @@
 
 * Adds back use of Optional type.
 
+## 0.10.2+3
+
+* Updates code for stricter lint checks.
+
 ## 0.10.2+2
 
 * Fixes zoom computation for virtual cameras hiding physical cameras in Android 11+.
-* Removes the unused CameraZoom class from the codebase. 
+* Removes the unused CameraZoom class from the codebase.
 
 ## 0.10.2+1
 

@@ -1,3 +1,7 @@
+## 0.8.5+5
+
+* Updates code for stricter lint checks.
+
 ## 0.8.5+4
 
 * Fixes null cast exception when restoring a cancelled selection.
