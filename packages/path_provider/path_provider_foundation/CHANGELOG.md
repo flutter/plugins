@@ -1,5 +1,6 @@
-## NEXT
+## 2.1.1
 
+* Fixes a regression in the path retured by `getApplicationSupportDirectory` on iOS.
 * Updates minimum Flutter version to 3.0.
 
 ## 2.1.0
