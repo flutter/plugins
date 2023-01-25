@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 2.4.3
 
 * Updates code for stricter lint checks.

@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 0.9.0+4
 
 * Converts platform channel to Pigeon.
