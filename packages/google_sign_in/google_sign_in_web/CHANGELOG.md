@@ -1,7 +1,12 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 0.10.2+1
+
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.
 * Updates minimum Flutter version to 2.10.
+* Renames generated folder to js_interop.
 
 ## 0.10.2
 

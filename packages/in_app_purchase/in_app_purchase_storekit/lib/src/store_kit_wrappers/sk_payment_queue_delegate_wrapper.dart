@@ -10,8 +10,8 @@ import '../../store_kit_wrappers.dart';
 /// The payment queue delegate can be implementated to provide information
 /// needed to complete transactions.
 ///
-/// The [SKPaymentQueueDelegateWrapper] is only available on iOS 13 and higher.
-/// Using the delegate on older iOS version will be ignored.
+/// The [SKPaymentQueueDelegateWrapper] is available on macOS and iOS 13+.
+/// Usage with versions below iOS 13 and macOS are ignored.
 abstract class SKPaymentQueueDelegateWrapper {
   /// Called by the system to check whether the transaction should continue if
   /// the device's App Store storefront has changed during a transaction.

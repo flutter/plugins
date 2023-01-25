@@ -286,7 +286,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       bitmapIcon.complete(bitmap);
     }));
 
-    return await bitmapIcon.future;
+    return bitmapIcon.future;
   }
 
   @override

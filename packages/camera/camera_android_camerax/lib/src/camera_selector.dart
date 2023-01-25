@@ -128,15 +128,17 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
           lensFacing: original.lensFacing);
     });
 
-    final List<int> cameraInfoIds = (cameraInfos.map<int>(
-        (CameraInfo info) => instanceManager.getIdentifier(info)!)).toList();
+    final List<int> cameraInfoIds = cameraInfos
+        .map<int>((CameraInfo info) => instanceManager.getIdentifier(info)!)
+        .toList();
     final List<int?> filteredCameraInfoIds =
         await filter(identifier, cameraInfoIds);
     if (filteredCameraInfoIds.isEmpty) {
       return <CameraInfo>[];
     }
-    return (filteredCameraInfoIds.map<CameraInfo>((int? id) =>
-            instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo))
+    return filteredCameraInfoIds
+        .map<CameraInfo>((int? id) =>
+            instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo)
         .toList();
   }
 }

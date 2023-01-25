@@ -13,7 +13,7 @@ import 'package:mockito/mockito.dart';
 import 'google_sign_in_test.mocks.dart';
 
 /// Verify that [GoogleSignInAccount] can be mocked even though it's unused
-// ignore: must_be_immutable
+// ignore: avoid_implementing_value_types, must_be_immutable
 class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
 
 @GenerateMocks(<Type>[GoogleSignInPlatform])

@@ -107,9 +107,12 @@ Future<PackageChangeState> checkPackageChangeState(
 
 bool _isTestChange(List<String> pathComponents) {
   return pathComponents.contains('test') ||
+      pathComponents.contains('integration_test') ||
       pathComponents.contains('androidTest') ||
       pathComponents.contains('RunnerTests') ||
-      pathComponents.contains('RunnerUITests');
+      pathComponents.contains('RunnerUITests') ||
+      // Pigeon's custom platform tests.
+      pathComponents.first == 'platform_tests';
 }
 
 // True if the given file is an example file other than the one that will be
@@ -173,8 +176,23 @@ Future<bool> _isDevChange(List<String> pathComponents,
       pathComponents.first == 'run_tests.sh' ||
       // Ignoring lints doesn't affect clients.
       pathComponents.contains('lint-baseline.xml') ||
+      // Example build files are very unlikely to be interesting to clients.
+      _isExampleBuildFile(pathComponents) ||
+      // Test-only gradle depenedencies don't affect clients.
       await _isGradleTestDependencyChange(pathComponents,
           git: git, repoPath: repoPath);
+}
+
+bool _isExampleBuildFile(List<String> pathComponents) {
+  if (!pathComponents.contains('example')) {
+    return false;
+  }
+  return pathComponents.contains('gradle-wrapper.properties') ||
+      pathComponents.contains('gradle.properties') ||
+      pathComponents.contains('build.gradle') ||
+      pathComponents.contains('Runner.xcodeproj') ||
+      pathComponents.contains('CMakeLists.txt') ||
+      pathComponents.contains('pubspec.yaml');
 }
 
 Future<bool> _isGradleTestDependencyChange(List<String> pathComponents,

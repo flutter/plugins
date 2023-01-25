@@ -5,7 +5,7 @@
 // This file exists solely to host compiled excerpts for README.md, and is not
 // intended for use as an actual example application.
 
-// ignore_for_file: public_member_api_docs
+// ignore_for_file: public_member_api_docs, avoid_print
 
 import 'package:flutter/material.dart';
 // #docregion ErrorHandling

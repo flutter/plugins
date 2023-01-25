@@ -10,6 +10,8 @@ import '../common/web_kit.pigeon.dart';
 import '../foundation/foundation.dart';
 import 'web_kit.dart';
 
+export '../common/web_kit.pigeon.dart' show WKNavigationType;
+
 Iterable<WKWebsiteDataTypeEnumData> _toWKWebsiteDataTypeEnumData(
     Iterable<WKWebsiteDataType> types) {
   return types.map<WKWebsiteDataTypeEnumData>((WKWebsiteDataType type) {
@@ -169,6 +171,7 @@ extension _NavigationActionDataConverter on WKNavigationActionData {
     return WKNavigationAction(
       request: request.toNSUrlRequest(),
       targetFrame: targetFrame.toWKFrameInfo(),
+      navigationType: navigationType,
     );
   }
 }

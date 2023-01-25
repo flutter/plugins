@@ -1,5 +1,10 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 2.0.13
+
+* Adds compatibilty with version 6.0 of the platform interface.
 * Updates minimum Flutter version to 2.10.
 
 ## 2.0.12

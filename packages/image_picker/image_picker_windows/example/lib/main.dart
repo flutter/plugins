@@ -117,17 +117,16 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_controller != null) {
       await _controller!.setVolume(0.0);
     }
-    if (!context.mounted) {
-      return;
-    }
-    if (_isVideo) {
-      final PickedFile? file = await _picker.pickVideo(
-          source: source, maxDuration: const Duration(seconds: 10));
-      await _playVideo(file);
-    } else if (isMultiImage) {
-      await _handleMultiImagePicked(context);
-    } else {
-      await _handleSingleImagePicked(context, source);
+    if (context.mounted) {
+      if (_isVideo) {
+        final PickedFile? file = await _picker.pickVideo(
+            source: source, maxDuration: const Duration(seconds: 10));
+        await _playVideo(file);
+      } else if (isMultiImage) {
+        await _handleMultiImagePicked(context);
+      } else {
+        await _handleSingleImagePicked(context, source);
+      }
     }
   }
 

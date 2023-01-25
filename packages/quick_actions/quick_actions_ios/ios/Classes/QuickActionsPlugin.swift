@@ -15,19 +15,20 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
     registrar.addApplicationDelegate(instance)
   }
 
-  private let channel: FlutterMethodChannel
-  private let shortcutStateManager: FLTShortcutStateManager
+  private let channel: MethodChannel
+  private let shortcutItemProvider: ShortcutItemProviding
+  private let shortcutItemParser: ShortcutItemParser
   /// The type of the shortcut item selected when launching the app.
   private var launchingShortcutType: String? = nil
 
-  // TODO: (hellohuanlin) remove `@objc` attribute and make it non-public after migrating tests to Swift.
-  @objc
-  public init(
-    channel: FlutterMethodChannel,
-    shortcutStateManager: FLTShortcutStateManager = FLTShortcutStateManager()
+  init(
+    channel: MethodChannel,
+    shortcutItemProvider: ShortcutItemProviding = UIApplication.shared,
+    shortcutItemParser: ShortcutItemParser = DefaultShortcutItemParser()
   ) {
     self.channel = channel
-    self.shortcutStateManager = shortcutStateManager
+    self.shortcutItemProvider = shortcutItemProvider
+    self.shortcutItemParser = shortcutItemParser
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -35,10 +36,10 @@ public final class QuickActionsPlugin: NSObject, FlutterPlugin {
     case "setShortcutItems":
       // `arguments` must be an array of dictionaries
       let items = call.arguments as! [[String: Any]]
-      shortcutStateManager.setShortcutItems(items)
+      shortcutItemProvider.shortcutItems = shortcutItemParser.parseShortcutItems(items)
       result(nil)
     case "clearShortcutItems":
-      shortcutStateManager.setShortcutItems([])
+      shortcutItemProvider.shortcutItems = []
       result(nil)
     case "getLaunchAction":
       result(nil)

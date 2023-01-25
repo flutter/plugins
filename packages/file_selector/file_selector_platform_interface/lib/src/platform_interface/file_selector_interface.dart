@@ -36,7 +36,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  /// Open file dialog for loading files and return a file path
+  /// Opens a file dialog for loading files and returns a file path.
   /// Returns `null` if user cancels the operation.
   Future<XFile?> openFile({
     List<XTypeGroup>? acceptedTypeGroups,
@@ -46,7 +46,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
     throw UnimplementedError('openFile() has not been implemented.');
   }
 
-  /// Open file dialog for loading files and return a list of file paths
+  /// Opens a file dialog for loading files and returns a list of file paths.
   Future<List<XFile>> openFiles({
     List<XTypeGroup>? acceptedTypeGroups,
     String? initialDirectory,
@@ -55,7 +55,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
     throw UnimplementedError('openFiles() has not been implemented.');
   }
 
-  /// Open file dialog for saving files and return a file path at which to save
+  /// Opens a file dialog for saving files and returns a file path at which to save.
   /// Returns `null` if user cancels the operation.
   Future<String?> getSavePath({
     List<XTypeGroup>? acceptedTypeGroups,
@@ -66,12 +66,20 @@ abstract class FileSelectorPlatform extends PlatformInterface {
     throw UnimplementedError('getSavePath() has not been implemented.');
   }
 
-  /// Open file dialog for loading directories and return a directory path
+  /// Opens a file dialog for loading directories and returns a directory path.
   /// Returns `null` if user cancels the operation.
   Future<String?> getDirectoryPath({
     String? initialDirectory,
     String? confirmButtonText,
   }) {
     throw UnimplementedError('getDirectoryPath() has not been implemented.');
+  }
+
+  /// Opens a file dialog for loading directories and returns multiple directory paths.
+  Future<List<String>> getDirectoryPaths({
+    String? initialDirectory,
+    String? confirmButtonText,
+  }) {
+    throw UnimplementedError('getDirectoryPaths() has not been implemented.');
   }
 }
