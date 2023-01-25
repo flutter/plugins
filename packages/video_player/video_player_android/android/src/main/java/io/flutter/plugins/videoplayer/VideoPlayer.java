@@ -62,6 +62,8 @@ final class VideoPlayer {
 
   private final VideoPlayerOptions options;
 
+  private DefaultHttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSource.Factory();
+
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
@@ -75,28 +77,11 @@ final class VideoPlayer {
     this.options = options;
 
     ExoPlayer exoPlayer = new ExoPlayer.Builder(context).build();
-
     Uri uri = Uri.parse(dataSource);
 
-    DataSource.Factory dataSourceFactory;
-
-    DefaultHttpDataSource.Factory httpDataSourceFactory =
-        new DefaultHttpDataSource.Factory()
-            .setUserAgent("ExoPlayer")
-            .setAllowCrossProtocolRedirects(true);
-
-    if (httpHeaders != null && !httpHeaders.isEmpty()) {
-      if (httpHeaders.containsKey(USER_AGENT)) {
-        httpDataSourceFactory =
-            new DefaultHttpDataSource.Factory()
-                .setUserAgent(httpHeaders.get(USER_AGENT))
-                .setAllowCrossProtocolRedirects(true);
-      }
-
-      httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
-    }
-
-    dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
+    buildHttpDataSourceFactory(httpHeaders);
+    DataSource.Factory dataSourceFactory =
+        new DefaultDataSource.Factory(context, httpDataSourceFactory);
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
 
@@ -113,20 +98,29 @@ final class VideoPlayer {
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
       VideoPlayerOptions options,
-      QueuingEventSink eventSink) {
+      QueuingEventSink eventSink,
+      DefaultHttpDataSource.Factory httpDataSourceFactory) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
     this.options = options;
+    this.httpDataSourceFactory = httpDataSourceFactory;
 
     setUpVideoPlayer(exoPlayer, eventSink);
   }
 
-  private static boolean isHTTP(Uri uri) {
-    if (uri == null || uri.getScheme() == null) {
-      return false;
+  @VisibleForTesting
+  public void buildHttpDataSourceFactory(@NonNull Map<String, String> httpHeaders) {
+    final boolean httpHeadersNotEmpty = httpHeaders != null && !httpHeaders.isEmpty();
+    final String userAgent =
+        httpHeadersNotEmpty && httpHeaders.containsKey(USER_AGENT)
+            ? httpHeaders.get(USER_AGENT)
+            : "ExoPlayer";
+
+    httpDataSourceFactory.setUserAgent(userAgent).setAllowCrossProtocolRedirects(true);
+
+    if (httpHeadersNotEmpty) {
+      httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
     }
-    String scheme = uri.getScheme();
-    return scheme.equals("http") || scheme.equals("https");
   }
 
   private MediaSource buildMediaSource(
