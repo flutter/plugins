@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 2.6.2
 
 * Updates imports for `prefer_relative_imports`.

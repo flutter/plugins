@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 2.0.16
 
 * Converts `SharedPreferencesAndroid` to Pigeon.

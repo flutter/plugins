@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 2.2.3
 
 * Fixes a minor syntax error in `README.md`.

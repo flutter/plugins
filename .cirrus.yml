@@ -175,8 +175,8 @@ task:
           CHANNEL: "3.0.5"
           DART_VERSION: "2.17.6"
         env:
-          CHANNEL: "2.10.5"
-          DART_VERSION: "2.16.2"
+          CHANNEL: "3.3.10"
+          DART_VERSION: "2.18.6"
       package_prep_script:
         # Allow analyzing packages that use a dev dependency with a higher
         # minimum Flutter/Dart version than the package itself.
