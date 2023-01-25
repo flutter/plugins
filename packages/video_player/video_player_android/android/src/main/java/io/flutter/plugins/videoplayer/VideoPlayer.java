@@ -131,7 +131,6 @@ final class VideoPlayer {
 
   private MediaSource buildMediaSource(
       Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint, Context context) {
-
     int type;
     if (formatHint == null) {
       type = Util.inferContentType(uri);
@@ -245,8 +244,7 @@ final class VideoPlayer {
     Map<String, Object> event = new HashMap<>();
     event.put("event", "bufferingUpdate");
     List<? extends Number> range = Arrays.asList(0, exoPlayer.getBufferedPosition());
-    // iOS supports a list of buffered ranges, so here is a list with a single
-    // range.
+    // iOS supports a list of buffered ranges, so here is a list with a single range.
     event.put("values", Collections.singletonList(range));
     eventSink.success(event);
   }
@@ -275,8 +273,7 @@ final class VideoPlayer {
   }
 
   void setPlaybackSpeed(double value) {
-    // We do not need to consider pitch and skipSilence for now as we do not handle
-    // them and
+    // We do not need to consider pitch and skipSilence for now as we do not handle them and
     // therefore never diverge from the default values.
     final PlaybackParameters playbackParameters = new PlaybackParameters(((float) value));
 
@@ -312,11 +309,9 @@ final class VideoPlayer {
         event.put("width", width);
         event.put("height", height);
 
-        // Rotating the video with ExoPlayer does not seem to be possible with a
-        // Surface,
+        // Rotating the video with ExoPlayer does not seem to be possible with a Surface,
         // so inform the Flutter code that the widget needs to be rotated to prevent
-        // upside-down playback for videos with rotationDegrees of 180 (other
-        // orientations work
+        // upside-down playback for videos with rotationDegrees of 180 (other orientations work
         // correctly without correction).
         if (rotationDegrees == 180) {
           event.put("rotationCorrection", rotationDegrees);
