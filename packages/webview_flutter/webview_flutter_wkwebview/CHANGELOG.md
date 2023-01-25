@@ -1,3 +1,7 @@
+## 3.0.4
+
+* Renames Pigeon output files.
+
 ## 3.0.3
 
 * Updates example code for `use_build_context_synchronously` lint.
