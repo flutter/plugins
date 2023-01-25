@@ -38,7 +38,9 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
     // Set up Host APIs.
     GeneratedCameraXLibrary.CameraInfoHostApi.setup(
-        binaryMessenger, new CameraInfoHostApiImpl(instanceManager));
+        binaryMessenger,
+        new CameraInfoHostApiImpl(instanceManager),
+        pluginBinding.getTextureRegistry());
     GeneratedCameraXLibrary.CameraSelectorHostApi.setup(
         binaryMessenger, new CameraSelectorHostApiImpl(binaryMessenger, instanceManager));
     GeneratedCameraXLibrary.JavaObjectHostApi.setup(
