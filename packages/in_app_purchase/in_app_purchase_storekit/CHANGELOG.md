@@ -1,5 +1,6 @@
-## NEXT
+## 0.3.4+2
 
+* Uses the new `sharedDarwinSource` flag when available.
 * Updates minimum Flutter version to 3.0.
 
 ## 0.3.4+1
@@ -12,7 +13,7 @@
 
 ## 0.3.3
 
-* Supports adding discount information to AppStorePurchaseParam. 
+* Supports adding discount information to AppStorePurchaseParam.
 * Fixes iOS Promotional Offers bug which prevents them from working.
 
 ## 0.3.2+2
