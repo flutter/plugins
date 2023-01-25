@@ -1,3 +1,7 @@
+## 3.2.2
+
+* Updates example code for `use_build_context_synchronously` lint.
+
 ## 3.2.1
 
 * Updates code for stricter lint checks.
