@@ -11,6 +11,8 @@ import 'package:flutter/services.dart';
 import 'android_camera_camerax_flutter_api_impls.dart';
 import 'camerax_library.pigeon.dart';
 
+// Ignoring lint indicating this class only contains static members
+// as this class is a wrapper for various Android system services.
 // ignore_for_file: avoid_classes_with_only_static_members
 
 /// Utility class that offers access to Android system services needed for

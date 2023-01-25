@@ -28,13 +28,12 @@ void main() {
       final MockTestSystemServicesHostApi mockApi =
           MockTestSystemServicesHostApi();
       TestSystemServicesHostApi.setup(mockApi);
-      const bool enableAudio = true;
 
-      when(mockApi.requestCameraPermissions(enableAudio))
+      when(mockApi.requestCameraPermissions(true))
           .thenAnswer((_) async => null);
 
-      await SystemServices.requestCameraPermissions(enableAudio);
-      verify(mockApi.requestCameraPermissions(enableAudio));
+      await SystemServices.requestCameraPermissions(true);
+      verify(mockApi.requestCameraPermissions(true));
     });
 
     test(
@@ -43,35 +42,32 @@ void main() {
       final MockTestSystemServicesHostApi mockApi =
           MockTestSystemServicesHostApi();
       TestSystemServicesHostApi.setup(mockApi);
-      const bool enableAudio = true;
       final CameraPermissionsErrorData error = CameraPermissionsErrorData(
         errorCode: 'Test error code',
         description: 'Test error description',
       );
 
-      when(mockApi.requestCameraPermissions(enableAudio))
+      when(mockApi.requestCameraPermissions(true))
           .thenAnswer((_) async => error);
 
       expect(
-          () async => SystemServices.requestCameraPermissions(enableAudio),
+          () async => SystemServices.requestCameraPermissions(true),
           throwsA(isA<CameraException>()
               .having((CameraException e) => e.code, 'code', 'Test error code')
               .having((CameraException e) => e.description, 'description',
                   'Test error description')));
-      verify(mockApi.requestCameraPermissions(enableAudio));
+      verify(mockApi.requestCameraPermissions(true));
     });
 
     test('startListeningForDeviceOrientationChangeTest', () async {
       final MockTestSystemServicesHostApi mockApi =
           MockTestSystemServicesHostApi();
       TestSystemServicesHostApi.setup(mockApi);
-      const bool isFrontFacing = true;
-      const int sensorOrientation = 90;
 
       SystemServices.startListeningForDeviceOrientationChange(
-          isFrontFacing, sensorOrientation);
+          true, 90);
       verify(mockApi.startListeningForDeviceOrientationChange(
-          isFrontFacing, sensorOrientation));
+          true, 90));
     });
 
     test('stopListeningForDeviceOrientationChangeTest', () async {
@@ -84,23 +80,19 @@ void main() {
     });
 
     test('onDeviceOrientationChanged adds new orientation to stream', () {
-      const String orientation = 'LANDSCAPE_LEFT';
-
       SystemServices.deviceOrientationChangedStreamController.stream
           .listen((DeviceOrientationChangedEvent event) {
         expect(event.orientation, equals(DeviceOrientation.landscapeLeft));
       });
-      SystemServicesFlutterApiImpl().onDeviceOrientationChanged(orientation);
+      SystemServicesFlutterApiImpl().onDeviceOrientationChanged('LANDSCAPE_LEFT');
     });
 
     test(
         'onDeviceOrientationChanged throws error if new orientation is invalid',
         () {
-      const String orientation = 'FAKE_ORIENTATION';
-
       expect(
           () => SystemServicesFlutterApiImpl()
-              .onDeviceOrientationChanged(orientation),
+              .onDeviceOrientationChanged('FAKE_ORIENTATION'),
           throwsA(isA<ArgumentError>().having(
               (ArgumentError e) => e.message,
               'message',
