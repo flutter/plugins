@@ -45,4 +45,44 @@ class MockTestProcessCameraProviderHostApi extends _i1.Mock
         ),
         returnValue: <int?>[],
       ) as List<int?>);
+  @override
+  int bindToLifecycle(
+    int? identifier,
+    int? cameraSelectorIdentifier,
+    List<int?>? useCaseIds,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #bindToLifecycle,
+          [
+            identifier,
+            cameraSelectorIdentifier,
+            useCaseIds,
+          ],
+        ),
+        returnValue: 0,
+      ) as int);
+  @override
+  void unbind(
+    int? identifier,
+    List<int?>? useCaseIds,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #unbind,
+          [
+            identifier,
+            useCaseIds,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void unbindAll(int? identifier) => super.noSuchMethod(
+        Invocation.method(
+          #unbindAll,
+          [identifier],
+        ),
+        returnValueForMissingStub: null,
+      );
 }

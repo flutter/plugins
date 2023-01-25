@@ -1,3 +1,16 @@
+## 3.2.2
+
+* Updates example code for `use_build_context_synchronously` lint.
+
+## 3.2.1
+
+* Updates code for stricter lint checks.
+
+## 3.2.0
+
+* Adds support for handling file selection. See `AndroidWebViewController.setOnShowFileSelector`.
+* Updates pigeon dev dependency to `4.2.14`.
+
 ## 3.1.3
 
 * Fixes crash when the Java `InstanceManager` was used after plugin was removed from the engine.

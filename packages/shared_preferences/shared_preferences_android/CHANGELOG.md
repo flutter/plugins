@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 2.0.15
+
+* Updates code for stricter lint checks.
+
 ## 2.0.14
 
 * Fixes typo in `SharedPreferencesAndroid` docs.

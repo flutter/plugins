@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 5.5.1
 
 * Fixes passing `serverClientId` via the channelled `init` call
