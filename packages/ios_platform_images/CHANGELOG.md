@@ -1,6 +1,6 @@
-## NEXT
+## 0.2.1+1
 
-* Updates minimum Flutter version to 3.0.
+* Add lint ignore comments
 
 ## 0.2.1
 
