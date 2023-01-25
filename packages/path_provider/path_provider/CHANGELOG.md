@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 2.0.12
 
 * Switches to the new `path_provider_foundation` implementation package

@@ -108,44 +108,6 @@ class _MyAppState extends State<MyApp> {
         () => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
   }
 
-  Future<void> _authenticateWithBiometrics() async {
-    bool authenticated = false;
-    try {
-      setState(() {
-        _isAuthenticating = true;
-        _authorized = 'Authenticating';
-      });
-      authenticated = await LocalAuthPlatform.instance.authenticate(
-        localizedReason:
-            'Scan your fingerprint (or face or whatever) to authenticate',
-        authMessages: <AuthMessages>[const WindowsAuthMessages()],
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-          biometricOnly: true,
-        ),
-      );
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Authenticating';
-      });
-    } on PlatformException catch (e) {
-      print(e);
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Error - ${e.message}';
-      });
-      return;
-    }
-    if (!mounted) {
-      return;
-    }
-
-    final String message = authenticated ? 'Authorized' : 'Not Authorized';
-    setState(() {
-      _authorized = message;
-    });
-  }
-
   Future<void> _cancelAuthentication() async {
     await LocalAuthPlatform.instance.stopAuthentication();
     setState(() => _isAuthenticating = false);
@@ -206,18 +168,6 @@ class _MyAppState extends State<MyApp> {
                           children: const <Widget>[
                             Text('Authenticate'),
                             Icon(Icons.perm_device_information),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: _authenticateWithBiometrics,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(_isAuthenticating
-                                ? 'Cancel'
-                                : 'Authenticate: biometrics only'),
-                            const Icon(Icons.fingerprint),
                           ],
                         ),
                       ),

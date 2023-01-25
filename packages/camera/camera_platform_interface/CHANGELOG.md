@@ -1,5 +1,7 @@
 ## 2.3.5
+
 * Allows camera to be switched while video recording.
+* Updates minimum Flutter version to 3.0.
 
 ## 2.3.4
 

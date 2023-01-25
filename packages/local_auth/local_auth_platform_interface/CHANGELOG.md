@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 1.0.6
 
 * Removes unused `intl` dependency.
