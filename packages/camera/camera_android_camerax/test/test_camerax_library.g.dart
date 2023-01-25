@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:camera_android_camerax/src/camerax_library.pigeon.dart';
+import 'package:camera_android_camerax/src/camerax_library.g.dart';
 
 class _TestJavaObjectHostApiCodec extends StandardMessageCodec {
   const _TestJavaObjectHostApiCodec();

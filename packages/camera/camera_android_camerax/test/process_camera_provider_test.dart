@@ -10,7 +10,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'process_camera_provider_test.mocks.dart';
-import 'test_camerax_library.pigeon.dart';
+import 'test_camerax_library.g.dart';
 
 @GenerateMocks(<Type>[TestProcessCameraProviderHostApi])
 void main() {

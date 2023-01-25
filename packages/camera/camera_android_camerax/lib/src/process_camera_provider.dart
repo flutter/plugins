@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'android_camera_camerax_flutter_api_impls.dart';
 import 'camera_info.dart';
-import 'camerax_library.pigeon.dart';
+import 'camerax_library.g.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
