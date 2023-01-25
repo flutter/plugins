@@ -64,10 +64,8 @@ void main() {
           MockTestSystemServicesHostApi();
       TestSystemServicesHostApi.setup(mockApi);
 
-      SystemServices.startListeningForDeviceOrientationChange(
-          true, 90);
-      verify(mockApi.startListeningForDeviceOrientationChange(
-          true, 90));
+      SystemServices.startListeningForDeviceOrientationChange(true, 90);
+      verify(mockApi.startListeningForDeviceOrientationChange(true, 90));
     });
 
     test('stopListeningForDeviceOrientationChangeTest', () async {
@@ -84,7 +82,8 @@ void main() {
           .listen((DeviceOrientationChangedEvent event) {
         expect(event.orientation, equals(DeviceOrientation.landscapeLeft));
       });
-      SystemServicesFlutterApiImpl().onDeviceOrientationChanged('LANDSCAPE_LEFT');
+      SystemServicesFlutterApiImpl()
+          .onDeviceOrientationChanged('LANDSCAPE_LEFT');
     });
 
     test(
