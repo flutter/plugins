@@ -67,9 +67,6 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-    plugin.systemServicesHostApi.setActivity(activityPluginBinding.getActivity());
-    plugin.systemServicesHostApi.setPermissionsRegistry(
-        activityPluginBinding::addRequestPermissionsResultListener);
     setUp(pluginBinding.getBinaryMessenger(), pluginBinding.getApplicationContext());
     updateContext(pluginBinding.getApplicationContext());
     processCameraProviderHostApi.setLifecycleOwner(
