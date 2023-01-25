@@ -16,24 +16,23 @@ import 'package:shared_preferences_android/messages.g.dart';
 abstract class TestSharedPreferencesApi {
   static const MessageCodec<Object?> codec = StandardMessageCodec();
 
-  bool? remove(String key);
+  bool remove(String key);
 
-  bool? setBool(String key, bool value);
+  bool setBool(String key, bool value);
 
-  bool? setString(String key, String value);
+  bool setString(String key, String value);
 
-  bool? setInt(String key, Object value);
+  bool setInt(String key, Object value);
 
-  bool? setDouble(String key, double value);
+  bool setDouble(String key, double value);
 
-  bool? setStringList(String key, List<String?> value);
+  bool setStringList(String key, List<String?> value);
 
-  bool? clear();
+  bool clear();
 
   Map<String?, dynamic?> getAll();
 
-  static void setup(TestSharedPreferencesApi? api,
-      {BinaryMessenger? binaryMessenger}) {
+  static void setup(TestSharedPreferencesApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.SharedPreferencesApi.remove', codec,
@@ -43,12 +42,12 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.remove was null.');
+          'Argument for dev.flutter.pigeon.SharedPreferencesApi.remove was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
               'Argument for dev.flutter.pigeon.SharedPreferencesApi.remove was null, expected non-null String.');
-          final bool? output = api.remove(arg_key!);
+          final bool output = api.remove(arg_key!);
           return <Object?>[output];
         });
       }
@@ -62,7 +61,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setBool was null.');
+          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setBool was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
@@ -70,7 +69,7 @@ abstract class TestSharedPreferencesApi {
           final bool? arg_value = (args[1] as bool?);
           assert(arg_value != null,
               'Argument for dev.flutter.pigeon.SharedPreferencesApi.setBool was null, expected non-null bool.');
-          final bool? output = api.setBool(arg_key!, arg_value!);
+          final bool output = api.setBool(arg_key!, arg_value!);
           return <Object?>[output];
         });
       }
@@ -84,7 +83,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setString was null.');
+          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setString was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
@@ -92,7 +91,7 @@ abstract class TestSharedPreferencesApi {
           final String? arg_value = (args[1] as String?);
           assert(arg_value != null,
               'Argument for dev.flutter.pigeon.SharedPreferencesApi.setString was null, expected non-null String.');
-          final bool? output = api.setString(arg_key!, arg_value!);
+          final bool output = api.setString(arg_key!, arg_value!);
           return <Object?>[output];
         });
       }
@@ -106,7 +105,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setInt was null.');
+          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setInt was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
@@ -114,7 +113,7 @@ abstract class TestSharedPreferencesApi {
           final Object? arg_value = (args[1] as Object?);
           assert(arg_value != null,
               'Argument for dev.flutter.pigeon.SharedPreferencesApi.setInt was null, expected non-null Object.');
-          final bool? output = api.setInt(arg_key!, arg_value!);
+          final bool output = api.setInt(arg_key!, arg_value!);
           return <Object?>[output];
         });
       }
@@ -128,7 +127,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setDouble was null.');
+          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setDouble was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
@@ -136,7 +135,7 @@ abstract class TestSharedPreferencesApi {
           final double? arg_value = (args[1] as double?);
           assert(arg_value != null,
               'Argument for dev.flutter.pigeon.SharedPreferencesApi.setDouble was null, expected non-null double.');
-          final bool? output = api.setDouble(arg_key!, arg_value!);
+          final bool output = api.setDouble(arg_key!, arg_value!);
           return <Object?>[output];
         });
       }
@@ -150,16 +149,15 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null.');
+          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
               'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null, expected non-null String.');
-          final List<String?>? arg_value =
-              (args[1] as List<Object?>?)?.cast<String?>();
+          final List<String?>? arg_value = (args[1] as List<Object?>?)?.cast<String?>();
           assert(arg_value != null,
               'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null, expected non-null List<String?>.');
-          final bool? output = api.setStringList(arg_key!, arg_value!);
+          final bool output = api.setStringList(arg_key!, arg_value!);
           return <Object?>[output];
         });
       }
@@ -173,7 +171,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           // ignore message
-          final bool? output = api.clear();
+          final bool output = api.clear();
           return <Object?>[output];
         });
       }

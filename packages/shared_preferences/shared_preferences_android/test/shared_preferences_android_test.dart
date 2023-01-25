@@ -15,7 +15,7 @@ class _MockAPI extends TestSharedPreferencesApi {
   final Map<String, Object> items = <String, Object>{};
 
   @override
-  bool? clear() {
+  bool clear() {
     items.clear();
     return true;
   }
@@ -26,37 +26,37 @@ class _MockAPI extends TestSharedPreferencesApi {
   }
 
   @override
-  bool? remove(String key) {
+  bool remove(String key) {
     items.remove(key);
     return true;
   }
 
   @override
-  bool? setBool(String key, bool value) {
+  bool setBool(String key, bool value) {
     items[key] = value;
     return true;
   }
 
   @override
-  bool? setDouble(String key, double value) {
+  bool setDouble(String key, double value) {
     items[key] = value;
     return true;
   }
 
   @override
-  bool? setInt(String key, Object value) {
+  bool setInt(String key, Object value) {
     items[key] = value;
     return true;
   }
 
   @override
-  bool? setString(String key, String value) {
+  bool setString(String key, String value) {
     items[key] = value;
     return true;
   }
 
   @override
-  bool? setStringList(String key, List<String?> value) {
+  bool setStringList(String key, List<String?> value) {
     items[key] = value;
     return true;
   }

@@ -17,19 +17,19 @@ import 'package:pigeon/pigeon.dart';
 @HostApi(dartHostTestHandler: 'TestSharedPreferencesApi')
 abstract class SharedPreferencesApi {
   @TaskQueue(type: TaskQueueType.serialBackgroundThread)
-  bool? remove(String key);
+  bool remove(String key);
   @TaskQueue(type: TaskQueueType.serialBackgroundThread)
-  bool? setBool(String key, bool value);
+  bool setBool(String key, bool value);
   @TaskQueue(type: TaskQueueType.serialBackgroundThread)
-  bool? setString(String key, String value);
+  bool setString(String key, String value);
   @TaskQueue(type: TaskQueueType.serialBackgroundThread)
-  bool? setInt(String key, Object value);
+  bool setInt(String key, Object value);
   @TaskQueue(type: TaskQueueType.serialBackgroundThread)
-  bool? setDouble(String key, double value);
+  bool setDouble(String key, double value);
   @TaskQueue(type: TaskQueueType.serialBackgroundThread)
-  bool? setStringList(String key, List<String> value);
+  bool setStringList(String key, List<String> value);
   @TaskQueue(type: TaskQueueType.serialBackgroundThread)
-  bool? clear();
+  bool clear();
   @TaskQueue(type: TaskQueueType.serialBackgroundThread)
   Map<String, dynamic> getAll();
 }

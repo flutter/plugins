@@ -1,6 +1,6 @@
 ## 2.0.16
 
-* Converted `SharedPreferencesAndroid` to Pigeon.
+* Converts `SharedPreferencesAndroid` to Pigeon.
 
 ## 2.0.15
 

@@ -22,17 +22,17 @@ class SharedPreferencesAndroid extends SharedPreferencesStorePlatform {
 
   @override
   Future<bool> remove(String key) async {
-    return (await _api.remove(key)) ?? false;
+    return _api.remove(key);
   }
 
   @override
   Future<bool> setValue(String valueType, String key, Object value) async {
-    return (await _handleSetValue(valueType, key, value)) ?? false;
+    return await _handleSetValue(valueType, key, value) ?? false;
   }
 
   @override
   Future<bool> clear() async {
-    return (await _api.clear()) ?? false;
+    return _api.clear();
   }
 
   @override
