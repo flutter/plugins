@@ -31,6 +31,12 @@ enum ImageFormatGroup {
   /// On Android, this is `android.graphics.ImageFormat.JPEG`. See
   /// https://developer.android.com/reference/android/graphics/ImageFormat#JPEG
   jpeg,
+
+  /// YCrCb format used for images, which uses the NV21 encoding format.
+  ///
+  /// On Android, this is `android.graphics.ImageFormat.NV21`. See
+  /// https://developer.android.com/reference/android/graphics/ImageFormat#NV21
+  nv21,
 }
 
 /// Extension on [ImageFormatGroup] to stringify the enum
@@ -46,6 +52,8 @@ extension ImageFormatGroupName on ImageFormatGroup {
         return 'yuv420';
       case ImageFormatGroup.jpeg:
         return 'jpeg';
+      case ImageFormatGroup.nv21:
+        return 'nv21';
       case ImageFormatGroup.unknown:
         return 'unknown';
     }
