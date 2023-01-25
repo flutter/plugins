@@ -1,5 +1,8 @@
 ## NEXT
 
+## 0.10.3
+
+* Adds support for NV21 image format in Android.
 * Updates minimum Flutter version to 3.0.
 
 ## 0.10.2+3

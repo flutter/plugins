@@ -21,7 +21,6 @@ import android.hardware.camera2.params.OutputConfiguration;
 import android.hardware.camera2.params.SessionConfiguration;
 import android.media.CamcorderProfile;
 import android.media.EncoderProfiles;
-import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -59,19 +58,18 @@ import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
 import io.flutter.plugins.camera.features.sensororientation.DeviceOrientationManager;
 import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
+import io.flutter.plugins.camera.media.ImageStreamReader;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.Executors;
 
 @FunctionalInterface
@@ -109,6 +107,7 @@ class Camera
     supportedImageFormats = new HashMap<>();
     supportedImageFormats.put("yuv420", ImageFormat.YUV_420_888);
     supportedImageFormats.put("jpeg", ImageFormat.JPEG);
+    supportedImageFormats.put("nv21", ImageFormat.NV21);
   }
 
   /**
@@ -135,7 +134,7 @@ class Camera
   private CameraDeviceWrapper cameraDevice;
   private CameraCaptureSession captureSession;
   private ImageReader pictureImageReader;
-  private ImageReader imageStreamReader;
+  private ImageStreamReader imageStreamReader;
   /** {@link CaptureRequest.Builder} for the camera preview */
   private CaptureRequest.Builder previewRequestBuilder;
 
@@ -304,11 +303,11 @@ class Camera
       imageFormat = ImageFormat.YUV_420_888;
     }
     imageStreamReader =
-        ImageReader.newInstance(
-            resolutionFeature.getPreviewSize().getWidth(),
-            resolutionFeature.getPreviewSize().getHeight(),
-            imageFormat,
-            1);
+        new ImageStreamReader(
+                resolutionFeature.getPreviewSize().getWidth(),
+                resolutionFeature.getPreviewSize().getHeight(),
+                imageFormat,
+                1);
 
     // Open the camera.
     CameraManager cameraManager = CameraUtils.getCameraManager(activity);
@@ -1140,49 +1139,13 @@ class Camera
 
           @Override
           public void onCancel(Object o) {
-            imageStreamReader.setOnImageAvailableListener(null, backgroundHandler);
+            imageStreamReader.removeListener(backgroundHandler);
           }
         });
   }
 
   private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
-    imageStreamReader.setOnImageAvailableListener(
-        reader -> {
-          Image img = reader.acquireNextImage();
-          // Use acquireNextImage since image reader is only for one image.
-          if (img == null) return;
-
-          List<Map<String, Object>> planes = new ArrayList<>();
-          for (Image.Plane plane : img.getPlanes()) {
-            ByteBuffer buffer = plane.getBuffer();
-
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes, 0, bytes.length);
-
-            Map<String, Object> planeBuffer = new HashMap<>();
-            planeBuffer.put("bytesPerRow", plane.getRowStride());
-            planeBuffer.put("bytesPerPixel", plane.getPixelStride());
-            planeBuffer.put("bytes", bytes);
-
-            planes.add(planeBuffer);
-          }
-
-          Map<String, Object> imageBuffer = new HashMap<>();
-          imageBuffer.put("width", img.getWidth());
-          imageBuffer.put("height", img.getHeight());
-          imageBuffer.put("format", img.getFormat());
-          imageBuffer.put("planes", planes);
-          imageBuffer.put("lensAperture", this.captureProps.getLastLensAperture());
-          imageBuffer.put("sensorExposureTime", this.captureProps.getLastSensorExposureTime());
-          Integer sensorSensitivity = this.captureProps.getLastSensorSensitivity();
-          imageBuffer.put(
-              "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
-
-          final Handler handler = new Handler(Looper.getMainLooper());
-          handler.post(() -> imageStreamSink.success(imageBuffer));
-          img.close();
-        },
-        backgroundHandler);
+    imageStreamReader.subscribeListener(this.captureProps, imageStreamSink, backgroundHandler);
   }
 
   private void closeCaptureSession() {
