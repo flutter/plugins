@@ -63,7 +63,9 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
 
   @override
   ImageStreamCompleter loadBuffer(
-      _FutureMemoryImage key, DecoderBufferCallback decode) {
+    _FutureMemoryImage key,
+    DecoderBufferCallback decode, // ignore: deprecated_member_use
+  ) {
     return _FutureImageStreamCompleter(
       codec: _loadAsync(key, decode),
       futureScale: _futureScale,
@@ -72,7 +74,7 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
 
   Future<ui.Codec> _loadAsync(
     _FutureMemoryImage key,
-    DecoderBufferCallback decode,
+    DecoderBufferCallback decode, // ignore: deprecated_member_use
   ) {
     assert(key == this);
     return _futureBytes.then(ui.ImmutableBuffer.fromUint8List).then(decode);

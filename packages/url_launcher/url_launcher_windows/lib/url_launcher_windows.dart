@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
-const MethodChannel _channel =
-    MethodChannel('plugins.flutter.io/url_launcher_windows');
+import 'src/messages.g.dart';
 
 /// An implementation of [UrlLauncherPlatform] for Windows.
 class UrlLauncherWindows extends UrlLauncherPlatform {
+  /// Creates a new plugin implementation instance.
+  UrlLauncherWindows({
+    @visibleForTesting UrlLauncherApi? api,
+  }) : _hostApi = api ?? UrlLauncherApi();
+
+  final UrlLauncherApi _hostApi;
+
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith() {
     UrlLauncherPlatform.instance = UrlLauncherWindows();
@@ -23,10 +27,7 @@ class UrlLauncherWindows extends UrlLauncherPlatform {
 
   @override
   Future<bool> canLaunch(String url) {
-    return _channel.invokeMethod<bool>(
-      'canLaunch',
-      <String, Object>{'url': url},
-    ).then((bool? value) => value ?? false);
+    return _hostApi.canLaunchUrl(url);
   }
 
   @override
@@ -39,16 +40,9 @@ class UrlLauncherWindows extends UrlLauncherPlatform {
     required bool universalLinksOnly,
     required Map<String, String> headers,
     String? webOnlyWindowName,
-  }) {
-    return _channel.invokeMethod<bool>(
-      'launch',
-      <String, Object>{
-        'url': url,
-        'enableJavaScript': enableJavaScript,
-        'enableDomStorage': enableDomStorage,
-        'universalLinksOnly': universalLinksOnly,
-        'headers': headers,
-      },
-    ).then((bool? value) => value ?? false);
+  }) async {
+    await _hostApi.launchUrl(url);
+    // Failure is handled via a PlatformException from `launchUrl`.
+    return true;
   }
 }

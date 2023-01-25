@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Fixes a regression in the path retured by `getApplicationSupportDirectory` on iOS.
+
 ## 2.1.0
 
 * Renames the package previously published as
