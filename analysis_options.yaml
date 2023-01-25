@@ -241,7 +241,7 @@ linter:
     - unnecessary_to_list_in_spreads
     - unrelated_type_equality_checks
     - unsafe_html
-    # - use_build_context_synchronously # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - use_build_context_synchronously
     # - use_colored_box # not yet tested
     # - use_decorated_box # not yet tested
     # - use_enums # not yet tested
