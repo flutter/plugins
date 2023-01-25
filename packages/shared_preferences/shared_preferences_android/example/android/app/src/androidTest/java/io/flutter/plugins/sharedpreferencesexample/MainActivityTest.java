@@ -5,18 +5,20 @@
 package io.flutter.plugins.sharedpreferences;
 
 import androidx.test.rule.ActivityTestRule;
+
+import org.junit.Rule;
+import org.junit.runner.RunWith;
+
 import dev.flutter.plugins.integration_test.FlutterTestRunner;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.plugins.DartIntegrationTest;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
 
 @DartIntegrationTest
 @RunWith(FlutterTestRunner.class)
 public class MainActivityTest {
 
-  @Rule
-  public ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(
-    FlutterActivity.class
-  );
+    @Rule
+    public ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(
+            FlutterActivity.class
+    );
 }
