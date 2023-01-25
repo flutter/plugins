@@ -1,3 +1,6 @@
+## 0.10.3
+* Adds support for NV21 streaming format.
+
 ## 0.10.2+1
 
 * Updates code for stricter lint checks.
