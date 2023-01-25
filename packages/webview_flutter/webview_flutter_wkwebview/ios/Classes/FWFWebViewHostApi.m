@@ -119,6 +119,7 @@
                                             configuration:configuration
                                           binaryMessenger:self.binaryMessenger
                                           instanceManager:self.instanceManager];
+  [self applyVrtOverridesForWebViewWithIdentifier:identifier];
   [self.instanceManager addDartCreatedInstance:webView withIdentifier:identifier.longValue];
 }
 
@@ -286,5 +287,22 @@
     titleForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                             error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   return [[self webViewForIdentifier:identifier] title];
+}
+
+- (void)applyVrtOverridesForWebViewWithIdentifier:(nonnull NSNumber *)identifier {
+  FWFWebView *webView = [self webViewForIdentifier:identifier];
+  // allow link previews
+  [webView setAllowsLinkPreview:false];
+  // prefered content mode
+  if (@available(iOS 13.0, *)) {
+    WKWebpagePreferences* preferences = [[webView configuration] defaultWebpagePreferences];
+    [preferences setPreferredContentMode:WKContentModeMobile];
+    [[webView configuration] setDefaultWebpagePreferences:preferences];
+    
+  }
+  // Media playback
+  [[webView configuration] setAllowsInlineMediaPlayback:YES];
+  [[webView configuration] setAllowsPictureInPictureMediaPlayback:YES];
+  [[webView configuration] setMediaTypesRequiringUserActionForPlayback:WKAudiovisualMediaTypeNone];
 }
 @end
