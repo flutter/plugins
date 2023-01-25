@@ -11,6 +11,7 @@ void main() {
       expect(ImageFormatGroup.bgra8888.name(), 'bgra8888');
       expect(ImageFormatGroup.yuv420.name(), 'yuv420');
       expect(ImageFormatGroup.jpeg.name(), 'jpeg');
+      expect(ImageFormatGroup.nv21.name(), 'nv21');
       expect(ImageFormatGroup.unknown.name(), 'unknown');
     });
   });
