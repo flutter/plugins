@@ -156,7 +156,8 @@ class _MyAppState extends State<_MyApp> {
     }
     if (_purchasePending) {
       stack.add(
-        Stack(
+        // TODO(goderbauer): Make this const when that's available on stable.
+        Stack( // ignore: prefer_const_constructors
           children: const <Widget>[
             Opacity(
               opacity: 0.3,
