@@ -32,7 +32,8 @@ abstract class TestSharedPreferencesApi {
 
   Map<String?, dynamic?> getAll();
 
-  static void setup(TestSharedPreferencesApi? api, {BinaryMessenger? binaryMessenger}) {
+  static void setup(TestSharedPreferencesApi? api,
+      {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.SharedPreferencesApi.remove', codec,
@@ -42,7 +43,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.SharedPreferencesApi.remove was null.');
+              'Argument for dev.flutter.pigeon.SharedPreferencesApi.remove was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
@@ -61,7 +62,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setBool was null.');
+              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setBool was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
@@ -83,7 +84,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setString was null.');
+              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setString was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
@@ -105,7 +106,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setInt was null.');
+              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setInt was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
@@ -127,7 +128,7 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setDouble was null.');
+              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setDouble was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
@@ -149,12 +150,13 @@ abstract class TestSharedPreferencesApi {
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null.');
+              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
               'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null, expected non-null String.');
-          final List<String?>? arg_value = (args[1] as List<Object?>?)?.cast<String?>();
+          final List<String?>? arg_value =
+              (args[1] as List<Object?>?)?.cast<String?>();
           assert(arg_value != null,
               'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null, expected non-null List<String?>.');
           final bool output = api.setStringList(arg_key!, arg_value!);
