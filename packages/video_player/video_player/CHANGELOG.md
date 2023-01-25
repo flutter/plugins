@@ -1,6 +1,15 @@
-## 2.4.11
+## 2.5.2
 
+* Updates minimum Flutter version to 3.0.
 * Added option to configure HTTP headers via `VideoPlayerController` to fix access to M3U8 files on Android.
+
+## 2.5.1
+
+* Updates code for stricter lint checks.
+
+## 2.5.0
+
+* Exposes `VideoScrubber` so it can be used to make custom video progress indicators
 
 ## 2.4.10
 

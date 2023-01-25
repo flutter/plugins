@@ -1,3 +1,19 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 0.8.6+6
+
+* Updates code for stricter lint checks.
+
+## 0.8.6+5
+
+* Fixes crash when `imageQuality` is set.
+
+## 0.8.6+4
+
+* Fixes authorization status check for iOS14+ so it includes `PHAuthorizationStatusLimited`.
+
 ## 0.8.6+3
 
 * Returns error on image load failure.

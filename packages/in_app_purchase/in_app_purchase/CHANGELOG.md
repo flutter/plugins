@@ -1,3 +1,16 @@
+## 3.1.2
+
+* Updates example code for `use_build_context_synchronously` lint.
+* Updates minimum Flutter version to 3.0.
+
+## 3.1.1
+
+* Adds screenshots to pubspec.yaml.
+
+## 3.1.0
+
+* Adds macOS as a supported platform.
+
 ## 3.0.8
 
 * Updates minimum Flutter version to 2.10.

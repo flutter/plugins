@@ -1,3 +1,15 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 0.2.3+9
+
+* Updates `androidx.test.espresso:espresso-core` to 3.5.1.
+
+## 0.2.3+8
+
+* Updates code for stricter lint checks.
+
 ## 0.2.3+7
 
 * Updates code for new analysis options.

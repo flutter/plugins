@@ -98,7 +98,7 @@ void main() {
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>['format', ...getPackagesDirRelativePaths(plugin, files)],
               packagesDir.path),
         ]));
@@ -132,7 +132,7 @@ void main() {
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>[
                 'format',
                 ...getPackagesDirRelativePaths(plugin, formattedFiles)
@@ -141,7 +141,7 @@ void main() {
         ]));
   });
 
-  test('fails if flutter format fails', () async {
+  test('fails if dart format fails', () async {
     const List<String> files = <String>[
       'lib/a.dart',
       'lib/src/b.dart',
@@ -149,8 +149,9 @@ void main() {
     ];
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
-    processRunner.mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
-        <io.Process>[MockProcess(exitCode: 1)];
+    processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
+      MockProcess(exitCode: 1)
+    ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
         runner, <String>['format'], errorHandler: (Error e) {
@@ -465,7 +466,7 @@ void main() {
               ],
               packagesDir.path),
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>[
                 'format',
                 ...getPackagesDirRelativePaths(plugin, dartFiles)
@@ -594,7 +595,7 @@ void main() {
         processRunner.recordedCalls,
         contains(
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>[
                 'format',
                 '$pluginName\\$extraFile',
@@ -651,7 +652,7 @@ void main() {
         processRunner.recordedCalls,
         contains(
           ProcessCall(
-              getFlutterCommand(mockPlatform),
+              'dart',
               <String>[
                 'format',
                 '$pluginName/$extraFile',

@@ -56,7 +56,7 @@
                                                             camera:FLTSourceCameraRear]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
-                 fullMetadata:@(YES)
+                 fullMetadata:@YES
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -89,7 +89,7 @@
                                                             camera:FLTSourceCameraFront]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
-                 fullMetadata:@(YES)
+                 fullMetadata:@YES
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -174,7 +174,7 @@
 
   [plugin pickMultiImageWithMaxSize:[FLTMaxSize makeWithWidth:@(100) height:@(200)]
                             quality:@(50)
-                       fullMetadata:@(YES)
+                       fullMetadata:@YES
                          completion:^(NSArray<NSString *> *_Nullable result,
                                       FlutterError *_Nullable error){
                          }];
@@ -193,7 +193,7 @@
                                                             camera:FLTSourceCameraFront]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
-                 fullMetadata:@(NO)
+                 fullMetadata:@NO
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -209,7 +209,7 @@
 
   [plugin pickMultiImageWithMaxSize:[[FLTMaxSize alloc] init]
                             quality:nil
-                       fullMetadata:@(NO)
+                       fullMetadata:@NO
                          completion:^(NSArray<NSString *> *_Nullable result,
                                       FlutterError *_Nullable error){
                          }];
@@ -231,7 +231,7 @@
                                                             camera:FLTSourceCameraRear]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
-                 fullMetadata:@(YES)
+                 fullMetadata:@YES
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -394,6 +394,48 @@
 
   [plugin picker:mockPickerViewController didFinishPicking:@[ tiffResult, pngResult ]];
 
+  [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+- (void)testPickImageRequestAuthorization API_AVAILABLE(ios(14)) {
+  id mockPhotoLibrary = OCMClassMock([PHPhotoLibrary class]);
+  OCMStub([mockPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite])
+      .andReturn(PHAuthorizationStatusNotDetermined);
+  OCMExpect([mockPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelReadWrite
+                                                         handler:OCMOCK_ANY]);
+
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
+
+  [plugin pickImageWithSource:[FLTSourceSpecification makeWithType:FLTSourceTypeGallery
+                                                            camera:FLTSourceCameraFront]
+                      maxSize:[[FLTMaxSize alloc] init]
+                      quality:nil
+                 fullMetadata:@YES
+                   completion:^(NSString *result, FlutterError *error){
+                   }];
+  OCMVerifyAll(mockPhotoLibrary);
+}
+
+- (void)testPickImageAuthorizationDenied API_AVAILABLE(ios(14)) {
+  id mockPhotoLibrary = OCMClassMock([PHPhotoLibrary class]);
+  OCMStub([mockPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite])
+      .andReturn(PHAuthorizationStatusDenied);
+
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
+
+  XCTestExpectation *resultExpectation = [self expectationWithDescription:@"result"];
+
+  [plugin pickImageWithSource:[FLTSourceSpecification makeWithType:FLTSourceTypeGallery
+                                                            camera:FLTSourceCameraFront]
+                      maxSize:[[FLTMaxSize alloc] init]
+                      quality:nil
+                 fullMetadata:@YES
+                   completion:^(NSString *result, FlutterError *error) {
+                     XCTAssertNil(result);
+                     XCTAssertEqualObjects(error.code, @"photo_access_denied");
+                     XCTAssertEqualObjects(error.message, @"The user did not allow photo access.");
+                     [resultExpectation fulfill];
+                   }];
   [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 

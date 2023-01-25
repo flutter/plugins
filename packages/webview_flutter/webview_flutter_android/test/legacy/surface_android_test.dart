@@ -21,9 +21,12 @@ void main() {
         (MethodCall call) async {
           log.add(call);
           if (call.method == 'resize') {
+            final Map<String, Object?> arguments =
+                (call.arguments as Map<Object?, Object?>)
+                    .cast<String, Object?>();
             return <String, Object?>{
-              'width': call.arguments['width'],
-              'height': call.arguments['height'],
+              'width': arguments['width'],
+              'height': arguments['height'],
             };
           }
         },
