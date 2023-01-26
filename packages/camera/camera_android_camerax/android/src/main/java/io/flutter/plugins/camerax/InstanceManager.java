@@ -122,7 +122,8 @@ public class InstanceManager {
   /**
    * Adds a new instance that was instantiated from the host platform.
    *
-   * <p>If an instance has already been added, the identifier of the instance will be returned.
+   * <p>If an instance has already been added, this will re-create it. {@code #containsInstance} can
+   * be used to check if the object has already been added to avoid this.
    *
    * @param instance the instance to be stored.
    * @return the unique identifier stored with instance.
