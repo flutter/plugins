@@ -101,7 +101,9 @@ task:
       always:
         format_script: ./script/tool_runner.sh format --fail-on-change
         license_script: $PLUGIN_TOOL_COMMAND license-check
-        pubspec_script: ./script/tool_runner.sh pubspec-check
+        # The major and minor versions here should match the lowest version
+        # analyzed in legacy_version_analyze.
+        pubspec_script: ./script/tool_runner.sh pubspec-check --min-min-flutter-version=3.0.0 --min-min-dart-version=2.17.0
         readme_script:
           - ./script/tool_runner.sh readme-check
           # Re-run with --require-excerpts, skipping packages that still need
@@ -171,6 +173,7 @@ task:
     - name: legacy_version_analyze
       depends_on: analyze
       matrix:
+        # Change the arguments to pubspec-check when changing these values.
         env:
           CHANNEL: "3.0.5"
           DART_VERSION: "2.17.6"
