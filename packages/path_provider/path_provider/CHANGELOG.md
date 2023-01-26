@@ -1,7 +1,6 @@
 ## NEXT
 
 * Updates minimum Flutter version to 3.0.
-* Fixes some typos.
 
 ## 2.0.12
 

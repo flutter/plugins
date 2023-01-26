@@ -1,8 +1,3 @@
-## NEXT
-
-* Removes superfluous words from comments.
-* Fixes some typos.
-
 ## 3.0.3
 
 * Converts internal implementation to Pigeon.

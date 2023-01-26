@@ -1,7 +1,7 @@
 ## NEXT
 
 * Updates minimum Flutter version to 3.0.
-* Fixes some typos.
+* Rename the method `cameraPostionFromDictionary` to `cameraPositionFromDictionary`.
 
 ## 2.1.13
 

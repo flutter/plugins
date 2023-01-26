@@ -2,7 +2,6 @@
 
 * Updates example code for `use_build_context_synchronously` lint.
 * Updates minimum Flutter version to 3.0.
-* Fixes some typos.
 
 ## 0.9.1
 
