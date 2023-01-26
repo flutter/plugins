@@ -1,7 +1,4 @@
 ## NEXT
-
-## 2.4.0
-
 * Updates minimum Flutter version to 3.0.
 * Adds support for NV21 image format on Android.
 
