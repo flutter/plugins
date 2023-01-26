@@ -29,9 +29,9 @@ typedef NS_ENUM(NSUInteger, FLTFontWeight) {
 
 @interface FLTPlatformImage : NSObject
 + (instancetype)makeWithScale:(nullable NSNumber *)scale
-    bytes:(nullable FlutterStandardTypedData *)bytes;
-@property(nonatomic, strong, nullable) NSNumber * scale;
-@property(nonatomic, strong, nullable) FlutterStandardTypedData * bytes;
+                        bytes:(nullable FlutterStandardTypedData *)bytes;
+@property(nonatomic, strong, nullable) NSNumber *scale;
+@property(nonatomic, strong, nullable) FlutterStandardTypedData *bytes;
 @end
 
 /// The codec used by FLTPlatformImagesApi.
@@ -39,12 +39,21 @@ NSObject<FlutterMessageCodec> *FLTPlatformImagesApiGetCodec(void);
 
 @protocol FLTPlatformImagesApi
 /// @return `nil` only when `error != nil`.
-- (nullable FLTPlatformImage *)getSystemImageName:(NSString *)name size:(NSNumber *)size weight:(FLTFontWeight)weight colorsRGBA:(NSArray<NSNumber *> *)colorsRGBA preferMulticolor:(NSNumber *)preferMulticolor error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable FLTPlatformImage *)getSystemImageName:(NSString *)name
+                                             size:(NSNumber *)size
+                                           weight:(FLTFontWeight)weight
+                                       colorsRGBA:(NSArray<NSNumber *> *)colorsRGBA
+                                 preferMulticolor:(NSNumber *)preferMulticolor
+                                            error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
-- (nullable FLTPlatformImage *)getPlatformImageName:(NSString *)name error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSString *)resolveURLName:(NSString *)name extension:(nullable NSString *)extension error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable FLTPlatformImage *)getPlatformImageName:(NSString *)name
+                                              error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable NSString *)resolveURLName:(NSString *)name
+                            extension:(nullable NSString *)extension
+                                error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
-extern void FLTPlatformImagesApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTPlatformImagesApi> *_Nullable api);
+extern void FLTPlatformImagesApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
+                                      NSObject<FLTPlatformImagesApi> *_Nullable api);
 
 NS_ASSUME_NONNULL_END

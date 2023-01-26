@@ -64,7 +64,7 @@ class _PlatformImagesApiCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128: 
+      case 128:
         return PlatformImage.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -82,12 +82,22 @@ class PlatformImagesApi {
 
   static const MessageCodec<Object?> codec = _PlatformImagesApiCodec();
 
-  Future<PlatformImage> getSystemImage(String arg_name, double arg_size, FontWeight arg_weight, List<double?> arg_colorsRGBA, bool arg_preferMulticolor) async {
+  Future<PlatformImage> getSystemImage(
+      String arg_name,
+      double arg_size,
+      FontWeight arg_weight,
+      List<double?> arg_colorsRGBA,
+      bool arg_preferMulticolor) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.PlatformImagesApi.getSystemImage', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_name, arg_size, arg_weight.index, arg_colorsRGBA, arg_preferMulticolor]) as List<Object?>?;
+    final List<Object?>? replyList = await channel.send(<Object?>[
+      arg_name,
+      arg_size,
+      arg_weight.index,
+      arg_colorsRGBA,
+      arg_preferMulticolor
+    ]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -140,8 +150,8 @@ class PlatformImagesApi {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.PlatformImagesApi.resolveURL', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_name, arg_extension]) as List<Object?>?;
+    final List<Object?>? replyList = await channel
+        .send(<Object?>[arg_name, arg_extension]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
