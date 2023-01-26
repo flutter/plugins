@@ -38,9 +38,7 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
     // Set up Host APIs.
     GeneratedCameraXLibrary.CameraInfoHostApi.setup(
-        binaryMessenger,
-        new CameraInfoHostApiImpl(instanceManager),
-        pluginBinding.getTextureRegistry());
+        binaryMessenger, new CameraInfoHostApiImpl(instanceManager));
     GeneratedCameraXLibrary.CameraSelectorHostApi.setup(
         binaryMessenger, new CameraSelectorHostApiImpl(binaryMessenger, instanceManager));
     GeneratedCameraXLibrary.JavaObjectHostApi.setup(
@@ -69,7 +67,10 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-    setUp(pluginBinding.getBinaryMessenger(), pluginBinding.getApplicationContext());
+    setUp(
+        pluginBinding.getBinaryMessenger(),
+        pluginBinding.getApplicationContext(),
+        pluginBinding.getTextureRegistry());
     updateContext(pluginBinding.getApplicationContext());
     processCameraProviderHostApi.setLifecycleOwner(
         (LifecycleOwner) activityPluginBinding.getActivity());
