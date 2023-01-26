@@ -77,7 +77,7 @@
                     arguments:(id _Nullable)args
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   GMSCameraPosition *camera =
-      [FLTGoogleMapJSONConversions cameraPostionFromDictionary:args[@"initialCameraPosition"]];
+      [FLTGoogleMapJSONConversions cameraPositionFromDictionary:args[@"initialCameraPosition"]];
   GMSMapView *mapView = [GMSMapView mapWithFrame:frame camera:camera];
   return [self initWithMapView:mapView viewIdentifier:viewId arguments:args registrar:registrar];
 }

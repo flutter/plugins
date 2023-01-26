@@ -1,6 +1,7 @@
 ## NEXT
 
 * Updates minimum Flutter version to 3.0.
+* Removes superfluous words from comments.
 
 ## 0.10.2+3
 

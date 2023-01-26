@@ -450,7 +450,7 @@ class SKPaymentWrapper {
   /// Produces an "ask to buy" flow in the sandbox.
   ///
   /// Setting it to `true` will cause a transaction to be in the state [SKPaymentTransactionStateWrapper.deferred],
-  /// which produce an "ask to buy" prompt that interrupts the the payment flow.
+  /// which produce an "ask to buy" prompt that interrupts the payment flow.
   ///
   /// Default is `false`.
   ///

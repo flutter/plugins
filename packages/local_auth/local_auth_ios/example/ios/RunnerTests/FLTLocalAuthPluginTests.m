@@ -30,7 +30,7 @@ static const NSTimeInterval kTimeout = 30.0;
   self.continueAfterFailure = NO;
 }
 
-- (void)testSuccessfullAuthWithBiometrics {
+- (void)testSuccessfulAuthWithBiometrics {
   FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
   id mockAuthContext = OCMClassMock([LAContext class]);
   plugin.authContextOverrides = @[ mockAuthContext ];

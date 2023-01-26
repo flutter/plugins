@@ -60,7 +60,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
   final bool hasLongOutput = false;
 
   /// Checks that there are no unexpected analysis_options.yaml files.
-  bool _hasUnexpecetdAnalysisOptions(RepositoryPackage package) {
+  bool _hasUnexpectedAnalysisOptions(RepositoryPackage package) {
     final List<FileSystemEntity> files =
         package.directory.listSync(recursive: true);
     for (final FileSystemEntity file in files) {
@@ -143,7 +143,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
       }
     }
 
-    if (_hasUnexpecetdAnalysisOptions(package)) {
+    if (_hasUnexpectedAnalysisOptions(package)) {
       return PackageResult.fail(<String>['Unexpected local analysis options']);
     }
     final int exitCode = await processRunner.runAndStream(_dartBinaryPath,

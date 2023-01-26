@@ -54,7 +54,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   }
 }
 
-- (void)testWebViewScrollIndicatorAticautomaticallyAdjustsScrollIndicatorInsetsShouldbeNoOnIOS13 {
+- (void)testWebViewScrollIndicatorAutomaticallyAdjustsScrollIndicatorInsetsShouldBeNoOnIOS13 {
   if (@available(iOS 13, *)) {
     FLTWebViewController *controller =
         [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)

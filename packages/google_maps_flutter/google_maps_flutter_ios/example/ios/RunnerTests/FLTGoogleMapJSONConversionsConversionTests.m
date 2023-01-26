@@ -112,14 +112,14 @@
   XCTAssertEqualObjects(dictionary[@"northeast"], northeast);
 }
 
-- (void)testCameraPostionFromDictionary {
-  XCTAssertNil([FLTGoogleMapJSONConversions cameraPostionFromDictionary:nil]);
+- (void)testCameraPositionFromDictionary {
+  XCTAssertNil([FLTGoogleMapJSONConversions cameraPositionFromDictionary:nil]);
 
   NSDictionary *channelValue =
       @{@"target" : @[ @1, @2 ], @"zoom" : @3, @"bearing" : @4, @"tilt" : @5};
 
   GMSCameraPosition *cameraPosition =
-      [FLTGoogleMapJSONConversions cameraPostionFromDictionary:channelValue];
+      [FLTGoogleMapJSONConversions cameraPositionFromDictionary:channelValue];
 
   const CGFloat accuracy = 0.001;
   XCTAssertEqualWithAccuracy(cameraPosition.target.latitude, 1, accuracy);
@@ -130,7 +130,7 @@
 }
 
 - (void)testPointFromDictionary {
-  XCTAssertNil([FLTGoogleMapJSONConversions cameraPostionFromDictionary:nil]);
+  XCTAssertNil([FLTGoogleMapJSONConversions cameraPositionFromDictionary:nil]);
 
   NSDictionary *dictionary = @{
     @"x" : @1,
@@ -173,7 +173,7 @@
   id classMockCameraUpdate = OCMClassMock([GMSCameraUpdate class]);
   [FLTGoogleMapJSONConversions cameraUpdateFromChannelValue:channelValue];
   [[classMockCameraUpdate expect]
-      setCamera:[FLTGoogleMapJSONConversions cameraPostionFromDictionary:channelValue[1]]];
+      setCamera:[FLTGoogleMapJSONConversions cameraPositionFromDictionary:channelValue[1]]];
   [classMockCameraUpdate stopMocking];
 }
 

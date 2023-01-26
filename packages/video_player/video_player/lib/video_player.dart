@@ -1047,7 +1047,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
 /// ]),
 /// ```
 class ClosedCaption extends StatelessWidget {
-  /// Creates a a new closed caption, designed to be used with
+  /// Creates a new closed caption, designed to be used with
   /// [VideoPlayerValue.caption].
   ///
   /// If [text] is null or empty, nothing will be displayed.

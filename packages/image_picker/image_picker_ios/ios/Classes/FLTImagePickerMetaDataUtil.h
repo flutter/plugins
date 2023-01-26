@@ -33,7 +33,7 @@ extern const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault;
 // If creating a new image fails, returns nil.
 + (nullable NSData *)imageFromImage:(NSData *)imageData withMetaData:(NSDictionary *)metadata;
 
-// Converting UIImage to a NSData with the type proveide.
+// Converting UIImage to a NSData with the type provide.
 //
 // The quality is for JPEG type only, it defaults to 1. It throws exception if setting a non-nil
 // quality with type other than FLTImagePickerMIMETypeJPEG. Converting UIImage to

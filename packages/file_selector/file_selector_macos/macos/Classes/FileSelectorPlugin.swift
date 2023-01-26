@@ -5,7 +5,7 @@
 import FlutterMacOS
 import Foundation
 
-/// Protocol for showing panels, allowing for depenedency injection in tests.
+/// Protocol for showing panels, allowing for dependency injection in tests.
 protocol PanelController {
   /// Displays the given save panel, and provides the selected URL, or nil if the panel is
   /// cancelled, to the handler.

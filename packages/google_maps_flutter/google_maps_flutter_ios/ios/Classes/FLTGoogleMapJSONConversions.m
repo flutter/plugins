@@ -78,7 +78,7 @@
   };
 }
 
-+ (nullable GMSCameraPosition *)cameraPostionFromDictionary:(nullable NSDictionary *)data {
++ (nullable GMSCameraPosition *)cameraPositionFromDictionary:(nullable NSDictionary *)data {
   if (!data) {
     return nil;
   }
@@ -110,7 +110,7 @@
   NSString *update = channelValue[0];
   if ([update isEqualToString:@"newCameraPosition"]) {
     return [GMSCameraUpdate
-        setCamera:[FLTGoogleMapJSONConversions cameraPostionFromDictionary:channelValue[1]]];
+        setCamera:[FLTGoogleMapJSONConversions cameraPositionFromDictionary:channelValue[1]]];
   } else if ([update isEqualToString:@"newLatLng"]) {
     return [GMSCameraUpdate
         setTarget:[FLTGoogleMapJSONConversions locationFromLatLong:channelValue[1]]];

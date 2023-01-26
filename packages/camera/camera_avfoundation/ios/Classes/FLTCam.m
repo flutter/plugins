@@ -257,7 +257,7 @@ NSString *const errorMethod = @"error";
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) return;
         dispatch_async(strongSelf.captureSessionQueue, ^{
-          // cannot use the outter `strongSelf`
+          // cannot use the outer `strongSelf`
           typeof(self) strongSelf = weakSelf;
           if (!strongSelf) return;
           [strongSelf.inProgressSavePhotoDelegates removeObjectForKey:@(settings.uniqueID)];

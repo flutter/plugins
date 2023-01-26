@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes some typos.
+
 ## 4.0.3
 
 * Updates example code for `use_build_context_synchronously` lint.

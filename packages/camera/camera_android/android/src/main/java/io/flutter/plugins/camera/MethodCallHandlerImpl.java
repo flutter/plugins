@@ -403,7 +403,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   // We move catching CameraAccessException out of onMethodCall because it causes a crash
   // on plugin registration for sdks incompatible with Camera2 (< 21). We want this plugin to
-  // to be able to compile with <21 sdks for apps that want the camera and support earlier version.
+  // be able to compile with <21 sdks for apps that want the camera and support earlier version.
   @SuppressWarnings("ConstantConditions")
   private void handleException(Exception exception, Result result) {
     if (exception instanceof CameraAccessException) {

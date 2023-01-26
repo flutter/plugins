@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// The completion handler block for save photo operations.
 /// Can be called from either main queue or IO queue.
-/// If success, `error` will be present and `path` will be nil. Otherewise, `error` will be nil and
+/// If success, `error` will be present and `path` will be nil. Otherwise, `error` will be nil and
 /// `path` will be present.
 /// @param path the path for successfully saved photo file.
 /// @param error photo capture error or IO error.

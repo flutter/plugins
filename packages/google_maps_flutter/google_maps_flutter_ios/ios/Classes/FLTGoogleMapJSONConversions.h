@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
     (nullable GMSCameraPosition *)position;
 + (NSDictionary<NSString *, NSNumber *> *)dictionaryFromPoint:(CGPoint)point;
 + (nullable NSDictionary *)dictionaryFromCoordinateBounds:(nullable GMSCoordinateBounds *)bounds;
-+ (nullable GMSCameraPosition *)cameraPostionFromDictionary:(nullable NSDictionary *)channelValue;
++ (nullable GMSCameraPosition *)cameraPositionFromDictionary:(nullable NSDictionary *)channelValue;
 + (CGPoint)pointFromDictionary:(NSDictionary *)dictionary;
 + (GMSCoordinateBounds *)coordinateBoundsFromLatLongs:(NSArray *)latlongs;
 + (GMSMapViewType)mapViewTypeFromTypeValue:(NSNumber *)value;

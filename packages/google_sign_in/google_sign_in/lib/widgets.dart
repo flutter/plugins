@@ -33,7 +33,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   /// A regular expression that matches against the "size directive" path
   /// segment of Google profile image URLs.
   ///
-  /// The format is is "`/sNN-c/`", where `NN` is the max width/height of the
+  /// The format is "`/sNN-c/`", where `NN` is the max width/height of the
   /// image, and "`c`" indicates we want the image cropped.
   static final RegExp sizeDirective = fife.sizeDirective;
 

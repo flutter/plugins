@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes superfluous words from comments.
+
 ## 3.2.2
 
 * Updates example code for `use_build_context_synchronously` lint.

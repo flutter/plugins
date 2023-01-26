@@ -16,7 +16,7 @@
 // as well.
 // TODO(stuartmorgan): Add an injectable wrapper around
 // gtk_file_chooser_native_new to allow for testing values that are given as
-// construction paramaters and can't be queried later.
+// construction parameters and can't be queried later.
 
 TEST(FileSelectorPlugin, TestOpenSimple) {
   g_autoptr(FlValue) args = fl_value_new_map();

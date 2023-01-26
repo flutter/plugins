@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 /// Provides a static helper method for ensuring that platform interfaces are
 /// implemented using `extends` instead of `implements`.
 ///
-/// Platform interface classes are expected to have a private static token object which will be
+/// Platform interface classes are expected to have a private static token object which will
 /// be passed to [verify] along with a platform interface object for verification.
 ///
 /// Sample usage:

@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes superfluous words from comments.
+
 ## 2.1.3
 
 * Minor fixes for new analysis options.

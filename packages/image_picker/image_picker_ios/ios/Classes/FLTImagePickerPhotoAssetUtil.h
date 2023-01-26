@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable PHAsset *)getAssetFromPHPickerResult:(PHPickerResult *)result API_AVAILABLE(ios(14));
 
-// Save image with correct meta data and extention copied from the original asset.
+// Save image with correct meta data and extension copied from the original asset.
 // maxWidth and maxHeight are used only for GIF images.
 + (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData
                                        image:(UIImage *)image

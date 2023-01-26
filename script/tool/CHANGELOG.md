@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes superfluous words from comments.
+
 ## 0.13.3
 
 * Renames `podspecs` to `podspec-check`. The old name will continue to work.

@@ -70,7 +70,7 @@ class MethodCallHandlerImpl
   }
 
   /**
-   * Sets the activity. Should be called as soon as the the activity is available. When the activity
+   * Sets the activity. Should be called as soon as the activity is available. When the activity
    * becomes unavailable, call this method again with {@code null}.
    */
   void setActivity(@Nullable Activity activity) {

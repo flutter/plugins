@@ -65,7 +65,7 @@ abstract class PackageCommand extends Command<void> {
     argParser.addMultiOption(
       _excludeArg,
       abbr: 'e',
-      help: 'A list of packages to exclude from from this command.\n\n'
+      help: 'A list of packages to exclude from this command.\n\n'
           'Alternately, a list of one or more YAML files that contain a list '
           'of packages to exclude.',
       defaultsTo: <String>[],

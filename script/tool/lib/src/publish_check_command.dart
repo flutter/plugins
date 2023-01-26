@@ -281,7 +281,7 @@ HTTP response: ${pubVersionFinderResponse.httpResponse.body}
   }
 }
 
-/// Possible outcomes of of a publishing check.
+/// Possible outcomes of a publishing check.
 enum _PublishCheckResult {
   nothingToPublish,
   needsPublishing,

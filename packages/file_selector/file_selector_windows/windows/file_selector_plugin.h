@@ -23,7 +23,7 @@ class FileSelectorPlugin : public flutter::Plugin, public FileSelectorApi {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
-  // Creates a new plugin instance for the given registar, using the given
+  // Creates a new plugin instance for the given registrar, using the given
   // factory to create native dialog controllers.
   FileSelectorPlugin(
       FlutterRootWindowProvider window_provider,

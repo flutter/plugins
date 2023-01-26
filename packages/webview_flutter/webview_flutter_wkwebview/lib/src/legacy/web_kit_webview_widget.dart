@@ -32,7 +32,7 @@ class WebKitWebViewWidget extends StatefulWidget {
   /// The initial parameters used to setup the WebView.
   final CreationParams creationParams;
 
-  /// The handler of callbacks made made by [NavigationDelegate].
+  /// The handler of callbacks made by [NavigationDelegate].
   final WebViewPlatformCallbacksHandler callbacksHandler;
 
   /// Manager of named JavaScript channels and forwarding incoming messages on the correct channel.

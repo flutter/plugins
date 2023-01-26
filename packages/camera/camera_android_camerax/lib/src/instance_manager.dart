@@ -81,7 +81,7 @@ class InstanceManager {
   /// Returns the identifier associated with the removed instance. Otherwise,
   /// `null` if the instance was not found in this manager.
   ///
-  /// This does not remove the the strong referenced instance associated with
+  /// This does not remove the strong referenced instance associated with
   /// [instance]. This can be done with [remove].
   int? removeWeakReference(Object instance) {
     final int? identifier = getIdentifier(instance);
@@ -103,7 +103,7 @@ class InstanceManager {
   /// it was removed. Returns `null` if [identifier] was not associated with
   /// any strong reference.
   ///
-  /// This does not remove the the weak referenced instance associtated with
+  /// This does not remove the weak referenced instance associtated with
   /// [identifier]. This can be done with [removeWeakReference].
   T? remove<T extends Object>(int identifier) {
     debugPrint('Releasing strong reference with identifier: $identifier');

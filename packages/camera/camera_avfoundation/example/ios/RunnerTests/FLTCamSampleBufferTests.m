@@ -31,11 +31,11 @@
   [cam captureOutput:cam.captureVideoOutput
       didOutputSampleBuffer:capturedSampleBuffer
              fromConnection:OCMClassMock([AVCaptureConnection class])];
-  CVPixelBufferRef deliveriedPixelBuffer = [cam copyPixelBuffer];
-  XCTAssertEqual(deliveriedPixelBuffer, capturedPixelBuffer,
+  CVPixelBufferRef deliveredPixelBuffer = [cam copyPixelBuffer];
+  XCTAssertEqual(deliveredPixelBuffer, capturedPixelBuffer,
                  @"FLTCam must deliver the latest captured pixel buffer to copyPixelBuffer API.");
   CFRelease(capturedSampleBuffer);
-  CFRelease(deliveriedPixelBuffer);
+  CFRelease(deliveredPixelBuffer);
 }
 
 @end

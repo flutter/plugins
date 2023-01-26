@@ -1,6 +1,11 @@
+## NEXT
+
+* Removes superfluous words from comments.
+* Fixes some typos.
+
 ## 3.0.3
 
-* Converts internal implentation to Pigeon.
+* Converts internal implementation to Pigeon.
 * Updates minimum Flutter version to 3.0.
 
 ## 3.0.2
