@@ -4,11 +4,15 @@
 
 package io.flutter.plugins.imagepicker;
 
+import static android.os.ext.SdkExtensions.getExtensionVersion;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.provider.MediaStore;
+
 import java.util.Arrays;
 
 final class ImagePickerUtils {
@@ -24,6 +28,24 @@ final class ImagePickerUtils {
     } catch (PackageManager.NameNotFoundException e) {
       e.printStackTrace();
       return false;
+    }
+  }
+
+  static boolean isPhotoPickerAvailable() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      return getExtensionVersion(Build.VERSION_CODES.R) >= 2;
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static int getPickImagesMaxLimit() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      return MediaStore.getPickImagesMaxLimit();
+    } else {
+      return 0;
     }
   }
 
