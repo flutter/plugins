@@ -365,12 +365,15 @@ void main() {
         );
         await controller.initialize();
 
-        expect(fakeVideoPlayerPlatform.dataSources[0].uri, 'file://a.avi');
+       final String uri = fakeVideoPlayerPlatform.dataSources[0].uri!;
+        expect(uri.startsWith('file:///'), true, reason: 'Actual string: $uri');
+        expect(uri.endsWith('/a.avi'), true, reason: 'Actual string: $uri');
+      
         expect(
           fakeVideoPlayerPlatform.dataSources[0].httpHeaders,
           <String, String>{'Authorization': 'Bearer token'},
         );
-      });
+      }, skip: kIsWeb /* Web does not support file assets. */);
       test('successful initialize on controller with error clears error',
           () async {
         final VideoPlayerController controller = VideoPlayerController.network(
