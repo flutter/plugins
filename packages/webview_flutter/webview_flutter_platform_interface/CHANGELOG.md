@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 2.0.1
 
 * Improves error message when a platform interface class is used before `WebViewPlatform.instance` has been set.

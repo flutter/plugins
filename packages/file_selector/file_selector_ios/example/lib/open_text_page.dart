@@ -26,10 +26,12 @@ class OpenTextPage extends StatelessWidget {
     final String fileName = file.name;
     final String fileContent = await file.readAsString();
 
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext context) => TextDisplay(fileName, fileContent),
-    );
+    if (context.mounted) {
+      await showDialog<void>(
+        context: context,
+        builder: (BuildContext context) => TextDisplay(fileName, fileContent),
+      );
+    }
   }
 
   @override
