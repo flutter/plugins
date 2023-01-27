@@ -12,7 +12,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.MediaStore;
-
 import java.util.Arrays;
 
 final class ImagePickerUtils {
@@ -32,7 +31,8 @@ final class ImagePickerUtils {
   }
 
   static boolean isPhotoPickerAvailable() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       return getExtensionVersion(Build.VERSION_CODES.R) >= 2;
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       return true;

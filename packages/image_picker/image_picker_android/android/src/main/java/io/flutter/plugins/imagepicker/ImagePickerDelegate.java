@@ -255,7 +255,9 @@ public class ImagePickerDelegate
   private void launchPickVideoFromGalleryIntent() {
     boolean isPhotoPickerAvailable = ImagePickerUtils.isPhotoPickerAvailable();
 
-    Intent pickVideoIntent = new Intent(isPhotoPickerAvailable ? MediaStore.ACTION_PICK_IMAGES : Intent.ACTION_GET_CONTENT);
+    Intent pickVideoIntent =
+        new Intent(
+            isPhotoPickerAvailable ? MediaStore.ACTION_PICK_IMAGES : Intent.ACTION_GET_CONTENT);
     pickVideoIntent.setType("video/*");
 
     activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
@@ -328,17 +330,22 @@ public class ImagePickerDelegate
 
   private void launchPickImageFromGalleryIntent() {
     boolean isPhotoPickerAvailable = ImagePickerUtils.isPhotoPickerAvailable();
-    Intent pickImageIntent = new Intent(isPhotoPickerAvailable ? MediaStore.ACTION_PICK_IMAGES : Intent.ACTION_GET_CONTENT);
+    Intent pickImageIntent =
+        new Intent(
+            isPhotoPickerAvailable ? MediaStore.ACTION_PICK_IMAGES : Intent.ACTION_GET_CONTENT);
     pickImageIntent.setType("image/*");
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
   }
 
   private void launchMultiPickImageFromGalleryIntent() {
     boolean isPhotoPickerAvailable = ImagePickerUtils.isPhotoPickerAvailable();
-    Intent pickImageIntent = new Intent(isPhotoPickerAvailable ? MediaStore.ACTION_PICK_IMAGES : Intent.ACTION_GET_CONTENT);
+    Intent pickImageIntent =
+        new Intent(
+            isPhotoPickerAvailable ? MediaStore.ACTION_PICK_IMAGES : Intent.ACTION_GET_CONTENT);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       if (isPhotoPickerAvailable) {
-        pickImageIntent.putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, ImagePickerUtils.getPickImagesMaxLimit());
+        pickImageIntent.putExtra(
+            MediaStore.EXTRA_PICK_IMAGES_MAX, ImagePickerUtils.getPickImagesMaxLimit());
       } else {
         pickImageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
       }
