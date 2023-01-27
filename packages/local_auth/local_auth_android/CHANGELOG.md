@@ -1,5 +1,6 @@
 ## NEXT
 
+* Disables the AndroidGradlePluginVersion issue ID in all android packages.
 * Updates minimum Flutter version to 3.0.
 
 ## 1.0.17
