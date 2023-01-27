@@ -30,3 +30,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.3.2
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  webview_flutter_platform_interface:
+    path: ../../webview_flutter/webview_flutter_platform_interface

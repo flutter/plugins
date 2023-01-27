@@ -395,6 +395,14 @@ class WebView extends JavaObject {
     return api.setBackgroundColorFromInstance(this, color.value);
   }
 
+  /// Sets the scroll listener to this WebView.
+  Future<void> setScrollListener(ScrollListener? scrollListener) {
+    if(scrollListener != null) {
+      ScrollListener.api.createFromInstance(scrollListener);
+    }
+    return api.setScrollListenerFromInstance(this, scrollListener);
+  }
+
   @override
   WebView copy() {
     return WebView.detached(useHybridComposition: useHybridComposition);
@@ -865,6 +873,34 @@ class DownloadListener extends JavaObject {
   @override
   DownloadListener copy() {
     return DownloadListener.detached(onDownloadStart: onDownloadStart);
+  }
+}
+
+/// The interface is to be used to listen to the changes of scroll positions.
+class ScrollListener extends JavaObject {
+  /// Constructs a [ScrollListener].
+  ScrollListener(this.postNewOffset) : super.detached() {
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
+    api.createFromInstance(this);
+  }
+
+  /// Constructs a [ScrollListener] without creating the associated Java
+  /// object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  ScrollListener.detached(this.postNewOffset) : super.detached();
+
+  /// Pigeon Host Api implementation for [ScrollListener].
+  @visibleForTesting
+  static ScrollListenerHostApiImpl api = ScrollListenerHostApiImpl();
+
+  /// Callback method when javaScript calls `postMessage` on the object instance passed.
+  final void Function(int x, int y)? postNewOffset;
+
+  @override
+  ScrollListener copy() {
+    return ScrollListener.detached(postNewOffset);
   }
 }
 

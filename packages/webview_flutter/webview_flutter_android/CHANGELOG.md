@@ -1,3 +1,7 @@
+## 3.1.4
+
+* Adds a method `setScrollListener` to the `AndroidWebViewController` to get notified when the X and Y positions changed.
+
 ## 3.1.3
 
 * Fixes crash when the Java `InstanceManager` was used after plugin was removed from the engine.

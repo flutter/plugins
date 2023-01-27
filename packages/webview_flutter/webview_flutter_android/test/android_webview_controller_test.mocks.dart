@@ -640,6 +640,21 @@ class MockAndroidWebViewController extends _i1.Mock
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
   @override
+  _i9.Future<void> setScrollListener(
+          dynamic Function(
+    int,
+    int,
+  )?
+              onOffsetChange) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setScrollListener,
+          [onOffsetChange],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+  @override
   _i9.Future<void> setMediaPlaybackRequiresUserGesture(bool? require) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -2016,6 +2031,16 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         Invocation.method(
           #setBackgroundColor,
           [color],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+  @override
+  _i9.Future<void> setScrollListener(_i2.ScrollListener? scrollListener) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setScrollListener,
+          [scrollListener],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),

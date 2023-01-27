@@ -305,6 +305,16 @@ class AndroidWebViewController extends PlatformWebViewController {
   Future<void> setUserAgent(String? userAgent) =>
       _webView.settings.setUserAgentString(userAgent);
 
+  @override
+  Future<void> setScrollListener(void Function(int, int)? onOffsetChange) {
+    if (onOffsetChange != null) {
+      final ScrollListener scrollListener = ScrollListener(onOffsetChange);
+      return _webView.setScrollListener(scrollListener);
+    } else {
+      return _webView.setScrollListener(null);
+    }
+  }
+
   /// Sets the restrictions that apply on automatic media playback.
   Future<void> setMediaPlaybackRequiresUserGesture(bool require) {
     return _webView.settings.setMediaPlaybackRequiresUserGesture(require);

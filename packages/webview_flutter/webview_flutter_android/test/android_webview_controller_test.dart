@@ -761,6 +761,19 @@ void main() {
       verify(mockWebView.settings).called(1);
       verify(mockSettings.setUserAgentString('Test Framework')).called(1);
     });
+
+    test('setScrollListener', () async {
+      final MockWebView mockWebView = MockWebView();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+      );
+      await controller.setScrollListener((int x, int y) {});
+      verify(mockWebView.setScrollListener(
+              argThat(isA<android_webview.ScrollListener>())))
+          .called(1);
+      await controller.setScrollListener(null);
+      verify(mockWebView.setScrollListener(argThat(isNull))).called(1);
+    });
   });
 
   test('setMediaPlaybackRequiresUserGesture', () async {

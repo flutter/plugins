@@ -253,11 +253,17 @@ abstract class PlatformWebViewController extends PlatformInterface {
     throw UnimplementedError(
         'setJavaScriptMode is not implemented on the current platform');
   }
-
+  
   /// Sets the value used for the HTTP `User-Agent:` request header.
   Future<void> setUserAgent(String? userAgent) {
     throw UnimplementedError(
         'setUserAgent is not implemented on the current platform');
+  }
+  
+  /// Toggle the listener for scroll position
+  Future<void> setScrollListener(void Function(int x, int y)? onOffsetChange) {
+    throw UnimplementedError(
+        'toggleListenForScrollPos is not implemented on the current platform');
   }
 }
 

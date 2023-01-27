@@ -42,6 +42,7 @@ class AndroidWebViewFlutterApis {
     WebViewClientFlutterApiImpl? webViewClientFlutterApi,
     WebChromeClientFlutterApiImpl? webChromeClientFlutterApi,
     JavaScriptChannelFlutterApiImpl? javaScriptChannelFlutterApi,
+    ScrollListenerFlutterApiImpl? scrollListenerFlutterApi,
   }) {
     this.javaObjectFlutterApi =
         javaObjectFlutterApi ?? JavaObjectFlutterApiImpl();
@@ -53,6 +54,8 @@ class AndroidWebViewFlutterApis {
         webChromeClientFlutterApi ?? WebChromeClientFlutterApiImpl();
     this.javaScriptChannelFlutterApi =
         javaScriptChannelFlutterApi ?? JavaScriptChannelFlutterApiImpl();
+    this.scrollListenerFlutterApi =
+        scrollListenerFlutterApi ?? ScrollListenerFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -77,6 +80,9 @@ class AndroidWebViewFlutterApis {
   /// Flutter Api for [JavaScriptChannel].
   late final JavaScriptChannelFlutterApiImpl javaScriptChannelFlutterApi;
 
+  /// Flutter Api for [ScrollListener].
+  late final ScrollListenerFlutterApiImpl scrollListenerFlutterApi;
+
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
     if (!_haveBeenSetUp) {
@@ -85,6 +91,7 @@ class AndroidWebViewFlutterApis {
       WebViewClientFlutterApi.setup(webViewClientFlutterApi);
       WebChromeClientFlutterApi.setup(webChromeClientFlutterApi);
       JavaScriptChannelFlutterApi.setup(javaScriptChannelFlutterApi);
+      ScrollListenerFlutterApi.setup(scrollListenerFlutterApi);
       _haveBeenSetUp = true;
     }
   }
@@ -334,6 +341,19 @@ class WebViewHostApiImpl extends WebViewHostApi {
   /// Helper method to convert instances ids to objects.
   Future<void> setBackgroundColorFromInstance(WebView instance, int color) {
     return setBackgroundColor(instanceManager.getIdentifier(instance)!, color);
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setScrollListenerFromInstance(
+    WebView instance,
+    ScrollListener? scrollListener,
+  ) {
+    return setScrollListener(
+      instanceManager.getIdentifier(instance)!,
+      scrollListener != null
+          ? instanceManager.getIdentifier(scrollListener)
+          : null,
+    );
   }
 }
 
@@ -834,5 +854,48 @@ class WebStorageHostApiImpl extends WebStorageHostApi {
   /// Helper method to convert instances ids to objects.
   Future<void> deleteAllDataFromInstance(WebStorage instance) {
     return deleteAllData(instanceManager.getIdentifier(instance)!);
+  }
+}
+
+/// Host api implementation for [ScrollListener].
+class ScrollListenerHostApiImpl extends ScrollListenerHostApi {
+  /// Constructs a [JavaScriptChannelHostApiImpl].
+  ScrollListenerHostApiImpl({
+    super.binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+
+  /// Maintains instances stored to communicate with java objects.
+  final InstanceManager instanceManager;
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> createFromInstance(ScrollListener instance) async {
+    if (instanceManager.getIdentifier(instance) == null) {
+      final int identifier = instanceManager.addDartCreatedInstance(instance);
+      await create(
+        identifier,
+      );
+    }
+  }
+}
+
+/// Flutter api implementation for [ScrollListener].
+class ScrollListenerFlutterApiImpl extends ScrollListenerFlutterApi {
+  /// Constructs a [JavaScriptChannelFlutterApiImpl].
+  ScrollListenerFlutterApiImpl({InstanceManager? instanceManager})
+      : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+
+  /// Maintains instances stored to communicate with java objects.
+  final InstanceManager instanceManager;
+
+  @override
+  void onScrollPosChange(int instanceId, int x, int y) {
+    final ScrollListener? instance = instanceManager
+        .getInstanceWithWeakReference(instanceId) as ScrollListener?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an ScrollListener with instanceId: $instanceId',
+    );
+    instance!.postNewOffset!(x, y);
   }
 }

@@ -134,8 +134,11 @@ Page resource error:
         },
       ))
       ..loadRequest(LoadRequestParams(
-        uri: Uri.parse('https://flutter.dev'),
-      ));
+        uri: Uri.parse('https://dantri.com.vn'),
+      ))
+      ..setScrollListener((int x, int y) {
+        debugPrint('Scroll position change to x = $x y = $y');
+      });
   }
 
   @override

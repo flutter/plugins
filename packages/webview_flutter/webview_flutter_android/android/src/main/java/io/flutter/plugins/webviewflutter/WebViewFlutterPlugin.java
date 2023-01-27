@@ -132,6 +132,10 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     WebStorageHostApi.setup(
         binaryMessenger,
         new WebStorageHostApiImpl(instanceManager, new WebStorageHostApiImpl.WebStorageCreator()));
+    GeneratedAndroidWebView.ScrollListenerHostApi.setup(binaryMessenger,
+            new ScrollListenerHostApiImpl(instanceManager,
+                    new ScrollListenerHostApiImpl.ScrollListenerCreator(),
+            new ScrollListenerFlutterApiImpl(binaryMessenger, instanceManager)));
   }
 
   @Override

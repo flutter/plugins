@@ -12,13 +12,15 @@ import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import java.util.Map;
+import java.util.Objects;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Host api implementation for {@link WebView}.
@@ -77,9 +79,11 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   /** Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s. */
-  public static class WebViewPlatformView extends WebView implements PlatformView {
+  public static class WebViewPlatformView extends WebView implements PlatformView, WebViewExtendedApi {
     private WebViewClient currentWebViewClient;
     private WebChromeClientHostApiImpl.SecureWebChromeClient currentWebChromeClient;
+    private @Nullable
+    ScrollListener onScrollChangeListener;
 
     /**
      * Creates a {@link WebViewPlatformView}.
@@ -129,6 +133,19 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     public WebChromeClient getWebChromeClient() {
       return currentWebChromeClient;
     }
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldL, int oldT) {
+      super.onScrollChanged(l, t, oldL, oldT);
+      if (onScrollChangeListener != null) {
+        onScrollChangeListener.onScrollPosChange(l, t);
+      }
+    }
+
+    @Override
+    public void setScrollListener(ScrollListener onScrollChangeListener) {
+      this.onScrollChangeListener = onScrollChangeListener;
+    }
   }
 
   /**
@@ -137,9 +154,11 @@ public class WebViewHostApiImpl implements WebViewHostApi {
    */
   @SuppressLint("ViewConstructor")
   public static class InputAwareWebViewPlatformView extends InputAwareWebView
-      implements PlatformView {
+      implements PlatformView, WebViewExtendedApi {
     private WebViewClient currentWebViewClient;
     private WebChromeClientHostApiImpl.SecureWebChromeClient currentWebChromeClient;
+    private @Nullable
+    ScrollListener onScrollChangeListener;
 
     /**
      * Creates a {@link InputAwareWebViewPlatformView}.
@@ -205,6 +224,19 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       }
       currentWebChromeClient = (WebChromeClientHostApiImpl.SecureWebChromeClient) client;
       currentWebChromeClient.setWebViewClient(currentWebViewClient);
+    }
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+      super.onScrollChanged(l, t, oldl, oldt);
+      if (onScrollChangeListener != null) {
+        onScrollChangeListener.onScrollPosChange(l, t);
+      }
+    }
+
+    @Override
+    public void setScrollListener(ScrollListener onScrollChangeListener) {
+      this.onScrollChangeListener = onScrollChangeListener;
     }
   }
 
@@ -418,6 +450,18 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public void setBackgroundColor(Long instanceId, Long color) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.setBackgroundColor(color.intValue());
+  }
+
+  @Override
+  public void setScrollListener(@NonNull Long instanceId, @Nullable Long scrollListenerInstanceId) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    if(webView instanceof WebViewExtendedApi) {
+      if(scrollListenerInstanceId != null) {
+        ((WebViewExtendedApi) webView).setScrollListener((ScrollListener) instanceManager.getInstance(scrollListenerInstanceId));
+      } else {
+        ((WebViewExtendedApi) webView).setScrollListener(null);
+      }
+    }
   }
 
   /** Maintains instances used to communicate with the corresponding WebView Dart object. */

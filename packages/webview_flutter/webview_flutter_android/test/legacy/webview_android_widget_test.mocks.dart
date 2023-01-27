@@ -613,6 +613,16 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
   @override
+  _i5.Future<void> setScrollListener(_i2.ScrollListener? scrollListener) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setScrollListener,
+          [scrollListener],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+  @override
   _i2.WebView copy() => (super.noSuchMethod(
         Invocation.method(
           #copy,
