@@ -1162,55 +1162,55 @@ void main() {
     },
   );
 
-  /// Account for double precision inaccuracies introduced by the platform.
-  List<WeightedLatLng> roundHeatmapData(List<WeightedLatLng> data) {
-    return data
-        .map((WeightedLatLng e) => WeightedLatLng(
-              LatLng(
-                (e.point.latitude * 1000).round() / 1000,
-                (e.point.longitude * 1000).round() / 1000,
-              ),
-              weight: e.weight,
-            ))
-        .toList();
-  }
-
-  /// Account for double precision inaccuracies introduced by the platform.
-  double roundHeatmapOpacity(double opacity) {
-    return (opacity * 10).round() / 10;
-  }
-
-  /// Account for double precision inaccuracies introduced by the platform.
-  HeatmapGradient? roundHeatmapGradient(HeatmapGradient? gradient) {
-    if (gradient == null) {
-      return null;
+  /// Check that two lists of [WeightedLatLng] are more or less equal
+  void expectHeatmapDataMoreOrLessEquals(
+    List<WeightedLatLng> data1,
+    List<WeightedLatLng> data2,
+  ) {
+    expect(data1.length, data2.length);
+    for (int i = 0; i < data1.length; i++) {
+      final WeightedLatLng wll1 = data1[i];
+      final WeightedLatLng wll2 = data2[i];
+      expect(wll1.weight, wll2.weight);
+      expect(wll1.point.latitude, moreOrLessEquals(wll2.point.latitude));
+      expect(wll1.point.longitude, moreOrLessEquals(wll2.point.longitude));
     }
+  }
 
-    final List<HeatmapGradientColor> newColors = <HeatmapGradientColor>[];
-    for (final HeatmapGradientColor color in gradient.colors) {
-      newColors.add(
-        color.copyWith(startPointParam: (color.startPoint * 10).round() / 10),
+  /// Check that two [HeatmapGradient]s are more or less equal
+  void expectHeatmapGradientMoreOrLessEquals(
+    HeatmapGradient? gradient1,
+    HeatmapGradient? gradient2,
+  ) {
+    if (gradient1 == null) {
+      expect(gradient2, isNull);
+      return;
+    }
+    expect(gradient2, isNotNull);
+
+    expect(gradient1.colors.length, gradient2!.colors.length);
+    for (int i = 0; i < gradient1.colors.length; i++) {
+      final HeatmapGradientColor color1 = gradient1.colors[i];
+      final HeatmapGradientColor color2 = gradient2.colors[i];
+      expect(color1.color, color2.color);
+      expect(
+        color1.startPoint,
+        moreOrLessEquals(color2.startPoint, epsilon: 1e-7),
       );
     }
 
-    return HeatmapGradient(newColors, colorMapSize: gradient.colorMapSize);
+    expect(gradient1.colorMapSize, gradient2.colorMapSize);
   }
 
-  void testHeatmapEquality(Heatmap heatmap1, Heatmap heatmap2) {
-    expect(roundHeatmapData(heatmap1.data), roundHeatmapData(heatmap2.data));
+  void expectHeatmapEquals(Heatmap heatmap1, Heatmap heatmap2) {
+    expectHeatmapDataMoreOrLessEquals(heatmap1.data, heatmap2.data);
     // Web only
     // expect(heatmap1.dissipating, heatmap2.dissipating),
-    expect(
-      roundHeatmapGradient(heatmap1.gradient),
-      roundHeatmapGradient(heatmap2.gradient),
-    );
+    expectHeatmapGradientMoreOrLessEquals(heatmap1.gradient, heatmap2.gradient);
     if (Platform.isAndroid) {
       expect(heatmap1.maxIntensity, heatmap2.maxIntensity);
     }
-    expect(
-      roundHeatmapOpacity(heatmap1.opacity),
-      roundHeatmapOpacity(heatmap2.opacity),
-    );
+    expect(heatmap1.opacity, moreOrLessEquals(heatmap2.opacity, epsilon: 1e-8));
     expect(heatmap1.radius, heatmap2.radius);
     if (Platform.isIOS) {
       expect(heatmap1.minimumZoomIntensity, heatmap2.minimumZoomIntensity);
@@ -1307,8 +1307,8 @@ void main() {
       final Heatmap heatmapInfo2 =
           (await inspector.getHeatmapInfo(heatmap2.mapsId, mapId: mapId))!;
 
-      testHeatmapEquality(heatmap1, heatmapInfo1);
-      testHeatmapEquality(heatmap2, heatmapInfo2);
+      expectHeatmapEquals(heatmap1, heatmapInfo1);
+      expectHeatmapEquals(heatmap2, heatmapInfo2);
     },
   );
 
@@ -1366,7 +1366,7 @@ void main() {
       final Heatmap heatmapInfo1 =
           (await inspector.getHeatmapInfo(heatmap1.mapsId, mapId: mapId))!;
 
-      testHeatmapEquality(heatmap1New, heatmapInfo1);
+      expectHeatmapEquals(heatmap1New, heatmapInfo1);
     },
   );
 
