@@ -474,7 +474,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Enters fullscreen.
   Future<void> enterFullscreenForWeb() async {
     print(1);
-    // await _videoPlayerPlatform.enterFullscreenForWeb(_textureId);
+    _videoPlayerPlatform.ok2();
   }
 
   Future<void> _applyLooping() async {
