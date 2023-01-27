@@ -64,12 +64,6 @@ class Preview extends UseCase {
     return _api.setSurfaceProviderFromInstance(this);
   }
 
-  /// Reconfigures the preview stream to have the specified target rotation.
-  void setTargetRotation(int rotation) {
-    targetRotation = rotation;
-    _api.setTargetRotationFromInstance(this, rotation);
-  }
-
   Future<Map<String?, int?>> getResolutionInfo() {
     return _api.getResolutionInfoFromInstance(this);
   }
@@ -119,20 +113,6 @@ class PreviewHostApiImpl extends PreviewHostApi {
 
     final int surfaceTextureEntryId = await setSurfaceProvider(identifier);
     return surfaceTextureEntryId;
-  }
-
-  /// Sets the [Preview]'s target rotation to be that which is specified.
-  void setTargetRotationFromInstance(Preview instance, int targetRotation) {
-    int? identifier = instanceManager.getIdentifier(instance);
-    identifier ??= instanceManager.addDartCreatedInstance(instance,
-        onCopy: (Preview original) {
-      return Preview.detached(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-          targetRotation: original.targetRotation);
-    });
-
-    setTargetRotation(identifier, targetRotation);
   }
 
   Future<Map<String?, int?>> getResolutionInfoFromInstance(

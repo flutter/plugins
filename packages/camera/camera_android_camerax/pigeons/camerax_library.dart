@@ -78,8 +78,6 @@ abstract class PreviewHostApi {
 
   int setSurfaceProvider(int identifier);
 
-  void setTargetRotation(int identifier, int targetRotation);
-
   Map<String, int> getResolutionInfo(int identifier);
 }
 

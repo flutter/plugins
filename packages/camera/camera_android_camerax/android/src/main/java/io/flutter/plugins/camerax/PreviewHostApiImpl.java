@@ -81,12 +81,6 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   }
 
   @Override
-  public void setTargetRotation(@NonNull Long identifier, @NonNull Long targetRotation) {
-    Preview preview = (Preview) instanceManager.getInstance(identifier);
-    preview.setTargetRotation(targetRotation.intValue());
-  }
-
-  @Override
   public Map<String, Long> getResolutionInfo(@NonNull Long identifier) {
     Preview preview = (Preview) instanceManager.getInstance(identifier);
     Size resolution = preview.getResolutionInfo().getResolution();
