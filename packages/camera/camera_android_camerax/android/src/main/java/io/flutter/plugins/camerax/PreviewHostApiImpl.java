@@ -5,7 +5,6 @@
 package io.flutter.plugins.camerax;
 
 import android.graphics.SurfaceTexture;
-import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 import androidx.annotation.NonNull;
@@ -16,8 +15,6 @@ import androidx.camera.core.SurfaceRequest;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.PreviewHostApi;
 import io.flutter.view.TextureRegistry;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class PreviewHostApiImpl implements PreviewHostApi {
@@ -43,7 +40,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   public void create(
       @NonNull Long identifier,
       @Nullable Long rotation,
-      @Nullable Map<String, Long> targetResolution) {
+      @Nullable GeneratedCameraXLibrary.ResolutionInfo targetResolution) {
     Preview.Builder previewBuilder = cameraXProxy.createPreviewBuilder();
     if (rotation != null) {
       previewBuilder.setTargetRotation(rotation.intValue());
@@ -51,11 +48,9 @@ public class PreviewHostApiImpl implements PreviewHostApi {
     if (targetResolution != null) {
       previewBuilder.setTargetResolution(
           new Size(
-              ((Number) targetResolution.get(RESOLUTION_WIDTH_KEY)).intValue(),
-              ((Number) targetResolution.get(RESOLUTION_HEIGHT_KEY)).intValue()));
+              targetResolution.getWidth().intValue(), targetResolution.getHeight().intValue()));
     }
     Preview preview = previewBuilder.build();
-    Log.e("FLUTTER", "CAMILLE preview built with identifier " + identifier);
     instanceManager.addDartCreatedInstance(preview, identifier);
   }
 
@@ -71,7 +66,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
           public void onSurfaceRequested(SurfaceRequest request) {
             surfaceTexture.setDefaultBufferSize(
                 request.getResolution().getWidth(), request.getResolution().getHeight());
-            Surface flutterSurface = new Surface(surfaceTexture);
+            Surface flutterSurface = cameraXProxy.createSurface(surfaceTexture);
             request.provideSurface(
                 flutterSurface, Executors.newSingleThreadExecutor(), (result) -> {});
           };
@@ -81,19 +76,14 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   }
 
   @Override
-  public Map<String, Long> getResolutionInfo(@NonNull Long identifier) {
+  public GeneratedCameraXLibrary.ResolutionInfo getResolutionInfo(@NonNull Long identifier) {
     Preview preview = (Preview) instanceManager.getInstance(identifier);
     Size resolution = preview.getResolutionInfo().getResolution();
 
-    // TODO(camsim99): Establish constants for keys.
-    // TODO(camsim99): Determine why the values are swapped.
-    Map<String, Long> doubleBraceMap =
-        new HashMap<String, Long>() {
-          {
-            put("height", Long.valueOf(resolution.getWidth()));
-            put("width", Long.valueOf(resolution.getHeight()));
-          }
-        };
-    return doubleBraceMap;
+    GeneratedCameraXLibrary.ResolutionInfo.Builder resolutionInfo =
+        new GeneratedCameraXLibrary.ResolutionInfo.Builder()
+            .setWidth(Long.valueOf(resolution.getWidth()))
+            .setHeight(Long.valueOf(resolution.getHeight()));
+    return resolutionInfo.build();
   }
 }

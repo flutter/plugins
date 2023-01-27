@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.camerax;
 
+import android.graphics.SurfaceTexture;
+import android.view.Surface;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.Preview;
 
@@ -14,5 +16,9 @@ public class CameraXProxy {
 
   public Preview.Builder createPreviewBuilder() {
     return new Preview.Builder();
+  }
+
+  public Surface createSurface(SurfaceTexture surfaceTexture) {
+    return new Surface(surfaceTexture);
   }
 }

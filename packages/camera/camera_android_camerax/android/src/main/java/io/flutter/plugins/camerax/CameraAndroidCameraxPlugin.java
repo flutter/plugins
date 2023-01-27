@@ -11,6 +11,7 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.view.TextureRegistry;
 
 /** Platform implementation of the camera_plugin implemented with the CameraX library. */
 public final class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware {
@@ -46,7 +47,7 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
     GeneratedCameraXLibrary.ProcessCameraProviderHostApi.setup(
         binaryMessenger, processCameraProviderHostApi);
     GeneratedCameraXLibrary.PreviewHostApi.setup(
-      binaryMessenger, new PreviewHostApiImpl(binaryMessenger, instanceManager, textureRegistry));
+        binaryMessenger, new PreviewHostApiImpl(binaryMessenger, instanceManager, textureRegistry));
   }
 
   @Override
@@ -65,7 +66,10 @@ public final class CameraAndroidCameraxPlugin implements FlutterPlugin, Activity
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-    setUp(pluginBinding.getBinaryMessenger(), pluginBinding.getApplicationContext(), pluginBinding.getTextureRegistry());
+    setUp(
+        pluginBinding.getBinaryMessenger(),
+        pluginBinding.getApplicationContext(),
+        pluginBinding.getTextureRegistry());
     updateContext(pluginBinding.getApplicationContext());
     processCameraProviderHostApi.setLifecycleOwner(
         (LifecycleOwner) activityPluginBinding.getActivity());

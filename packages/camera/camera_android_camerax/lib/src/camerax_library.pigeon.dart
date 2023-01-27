@@ -10,6 +10,31 @@ import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 
+class ResolutionInfo {
+  ResolutionInfo({
+    required this.width,
+    required this.height,
+  });
+
+  int width;
+  int height;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['width'] = width;
+    pigeonMap['height'] = height;
+    return pigeonMap;
+  }
+
+  static ResolutionInfo decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return ResolutionInfo(
+      width: pigeonMap['width']! as int,
+      height: pigeonMap['height']! as int,
+    );
+  }
+}
+
 class _JavaObjectHostApiCodec extends StandardMessageCodec {
   const _JavaObjectHostApiCodec();
 }
@@ -480,6 +505,191 @@ abstract class CameraFlutterApi {
           assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.CameraFlutterApi.create was null, expected non-null int.');
           api.create(arg_identifier!);
+          return;
+        });
+      }
+    }
+  }
+}
+
+class _PreviewHostApiCodec extends StandardMessageCodec {
+  const _PreviewHostApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is ResolutionInfo) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else if (value is ResolutionInfo) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return ResolutionInfo.decode(readValue(buffer)!);
+
+      case 129:
+        return ResolutionInfo.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+class PreviewHostApi {
+  /// Constructor for [PreviewHostApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  PreviewHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
+
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec = _PreviewHostApiCodec();
+
+  Future<void> create(int arg_identifier, int? arg_rotation,
+      ResolutionInfo? arg_targetResolution) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.PreviewHostApi.create', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_identifier, arg_rotation, arg_targetResolution])
+        as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<int> setSurfaceProvider(int arg_identifier) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.PreviewHostApi.setSurfaceProvider', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_identifier]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as int?)!;
+    }
+  }
+
+  Future<ResolutionInfo> getResolutionInfo(int arg_identifier) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.PreviewHostApi.getResolutionInfo', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_identifier]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as ResolutionInfo?)!;
+    }
+  }
+}
+
+class _PreviewFlutterApiCodec extends StandardMessageCodec {
+  const _PreviewFlutterApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is ResolutionInfo) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return ResolutionInfo.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+abstract class PreviewFlutterApi {
+  static const MessageCodec<Object?> codec = _PreviewFlutterApiCodec();
+
+  void create(
+      int identifier, int targetRotation, ResolutionInfo? targetResolution);
+  static void setup(PreviewFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewFlutterApi.create', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.PreviewFlutterApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.PreviewFlutterApi.create was null, expected non-null int.');
+          final int? arg_targetRotation = (args[1] as int?);
+          assert(arg_targetRotation != null,
+              'Argument for dev.flutter.pigeon.PreviewFlutterApi.create was null, expected non-null int.');
+          final ResolutionInfo? arg_targetResolution =
+              (args[2] as ResolutionInfo?);
+          api.create(
+              arg_identifier!, arg_targetRotation!, arg_targetResolution);
           return;
         });
       }

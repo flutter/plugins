@@ -54,7 +54,7 @@ class Preview extends UseCase {
   ///
   ///  * 'width', width of resolution specification in pixels
   ///  * 'height', height of resolution specification in pixels
-  final Map<String?, int?>? targetResolution;
+  final ResolutionInfo? targetResolution;
 
   /// Sets surface provider for the preview stream.
   ///
@@ -64,7 +64,7 @@ class Preview extends UseCase {
     return _api.setSurfaceProviderFromInstance(this);
   }
 
-  Future<Map<String?, int?>> getResolutionInfo() {
+  Future<ResolutionInfo> getResolutionInfo() {
     return _api.getResolutionInfoFromInstance(this);
   }
 }
@@ -86,8 +86,8 @@ class PreviewHostApiImpl extends PreviewHostApi {
   late final InstanceManager instanceManager;
 
   /// Creates a [Preview] with the target rotation provided if specified.
-  void createFromInstance(Preview instance, int? targetRotation,
-      Map<String?, int?>? targetResolution) {
+  void createFromInstance(
+      Preview instance, int? targetRotation, ResolutionInfo? targetResolution) {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (Preview original) {
@@ -115,8 +115,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
     return surfaceTextureEntryId;
   }
 
-  Future<Map<String?, int?>> getResolutionInfoFromInstance(
-      Preview instance) async {
+  Future<ResolutionInfo> getResolutionInfoFromInstance(Preview instance) async {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,
         onCopy: (Preview original) {
@@ -126,46 +125,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
           targetRotation: original.targetRotation);
     });
 
-    final Map<String?, int?> resolutionInfo =
-        await getResolutionInfo(identifier);
+    final ResolutionInfo resolutionInfo = await getResolutionInfo(identifier);
     return resolutionInfo;
-  }
-}
-
-/// Flutter API implementation of [Preview].
-class PreviewFlutterApiImpl extends PreviewFlutterApi {
-  /// Constructs a [PreviewFlutterApiImpl].
-  PreviewFlutterApiImpl({
-    this.binaryMessenger,
-    InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
-
-  /// Receives binary data across the Flutter platform barrier.
-  ///
-  /// If it is null, the default BinaryMessenger will be used which routes to
-  /// the host platform.
-  final BinaryMessenger? binaryMessenger;
-
-  /// Maintains instances stored to communicate with native language objects.
-  final InstanceManager instanceManager;
-
-  @override
-  void create(int identifier, int? targetRotation,
-      Map<String?, int?>? targetResolution) {
-    instanceManager.addHostCreatedInstance(
-      Preview.detached(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-          targetRotation: targetRotation,
-          targetResolution: targetResolution),
-      identifier,
-      onCopy: (Preview original) {
-        return Preview.detached(
-            binaryMessenger: binaryMessenger,
-            instanceManager: instanceManager,
-            targetRotation: targetRotation,
-            targetResolution: targetResolution);
-      },
-    );
   }
 }

@@ -26,6 +26,16 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
+class ResolutionInfo {
+  ResolutionInfo({
+    required this.width,
+    required this.height,
+  });
+
+  int width;
+  int height;
+}
+
 @HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
 abstract class JavaObjectHostApi {
   void dispose(int identifier);
@@ -85,16 +95,9 @@ abstract class CameraFlutterApi {
 
 @HostApi(dartHostTestHandler: 'TestPreviewHostApi')
 abstract class PreviewHostApi {
-  void create(
-      int identifier, int? rotation, Map<String, int>? targetResolution);
+  void create(int identifier, int? rotation, ResolutionInfo? targetResolution);
 
   int setSurfaceProvider(int identifier);
 
-  Map<String, int> getResolutionInfo(int identifier);
-}
-
-@FlutterApi()
-abstract class PreviewFlutterApi {
-  void create(
-      int identifier, int targetRotation, Map<String, int>? targetResolution);
+  ResolutionInfo getResolutionInfo(int identifier);
 }

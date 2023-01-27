@@ -17,11 +17,10 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Preview', () {
-    tearDown(() => TestCameraSelectorHostApi.setup(null));
+    tearDown(() => TestPreviewHostApi.setup(null));
 
     test('detachedCreateTest', () async {
-      final MockPreviewHostApi mockApi =
-          MockTestPreviewHostApi();
+      final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
       TestPreviewHostApi.setup(mockApi);
 
       final InstanceManager instanceManager = InstanceManager(
@@ -30,41 +29,34 @@ void main() {
       Preview.detached(
         instanceManager: instanceManager,
         targetRotation: 90,
-        targetResolution: Map<String, int>{
-            width: 10,
-            height: 50,
-        },
+        targetResolution: ResolutionInfo(width: 50, height: 10),
       );
 
-      verifyNever(mockApi.create(argThat(isA<int>()), argThat(isA<int>()),argThat(isA<Map<String, int>())));
+      verifyNever(mockApi.create(argThat(isA<int>()), argThat(isA<int>()),
+          argThat(isA<ResolutionInfo>())));
     });
 
     test('createTest', () async {
-      final MockTestCPreviewHostApi mockApi =
-          MockTestPreviewHostApi();
-      TestCPreviewHostApi.setup(mockApi);
+      final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
+      TestPreviewHostApi.setup(mockApi);
 
       final InstanceManager instanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
-      CameraSelector(
+      Preview(
         instanceManager: instanceManager,
         targetRotation: 90,
-        targetResolution: Map<String, int>{
-            width: 10,
-            height: 50,
-        },
+        targetResolution: ResolutionInfo(width: 10, height: 50),
       );
 
-      verify(mockApi.create(argThat(isA<int>(), argThat(equals(90)), argThat(equals( Map<String, int>{
-            width: 10,
-            height: 50,
-        }))), null));
+      final VerificationResult createVerification = verify(
+          mockApi.create(argThat(isA<int>()), argThat(equals(90)), captureAny));
+      expect(createVerification.captured.single.width, equals(10));
+      expect(createVerification.captured.single.height, equals(50));
     });
 
     test('setSurfaceProviderTest', () async {
-      final MockTestPreviewHostApi mockApi =
-          MockTestPreviewHostApi();
+      final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
       TestPreviewHostApi.setup(mockApi);
 
       final InstanceManager instanceManager = InstanceManager(
@@ -77,20 +69,19 @@ void main() {
       instanceManager.addHostCreatedInstance(
         preview,
         0,
-        onCopy: (_) => CameraSelector.detached(),
+        onCopy: (_) => Preview.detached(),
       );
 
-      when(mockApi.setTargetRotation(instanceManager.getIdentifier(preview)
-      )).thenReturn(8);
-      expect(await preview.setSurfaceProvider(),
-          equals(8));
+      when(mockApi.setSurfaceProvider(instanceManager.getIdentifier(preview)))
+          .thenReturn(8);
+      expect(await preview.setSurfaceProvider(), equals(8));
 
-      verify(mockApi.setSurfaceProvider(instanceManager.getIdentifier(preview)));
+      verify(
+          mockApi.setSurfaceProvider(instanceManager.getIdentifier(preview)));
     });
 
     test('getResolutionInfoTest', () async {
-      final MockTestPreviewHostApi mockApi =
-          MockTestPreviewHostApi();
+      final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
       TestPreviewHostApi.setup(mockApi);
 
       final InstanceManager instanceManager = InstanceManager(
@@ -99,41 +90,23 @@ void main() {
       final Preview preview = Preview.detached(
         instanceManager: instanceManager,
       );
+      final ResolutionInfo testResolutionInfo =
+          ResolutionInfo(width: 10, height: 60);
 
       instanceManager.addHostCreatedInstance(
         preview,
         0,
-        onCopy: (_) => CameraSelector.detached(),
+        onCopy: (_) => Preview.detached(),
       );
 
-      when(mockApi.getResolutionInfo(instanceManager.getIdentifier(preview)
-      )).thenReturn(Map<String, int> {'width': 10, 'height': 60});
-      expect(await preview.getResolutionInfo(),
-          equals(Map<String, int> {'width': 10, 'height': 60}));
+      when(mockApi.getResolutionInfo(instanceManager.getIdentifier(preview)))
+          .thenReturn(testResolutionInfo);
+
+      ResolutionInfo previewResolutionInfo = await preview.getResolutionInfo();
+      expect(previewResolutionInfo.width, equals(10));
+      expect(previewResolutionInfo.height, equals(60));
 
       verify(mockApi.getResolutionInfo(instanceManager.getIdentifier(preview)));
-    });
-
-    test('flutterApiCreateTest', () {
-      final InstanceManager instanceManager = InstanceManager(
-        onWeakReferenceRemoved: (_) {},
-      );
-      final PreviewFlutterApi flutterApi = PreviewFlutterApiImpl(
-        instanceManager: instanceManager,
-      );
-
-      flutterApi.create(0, 270, Map<String, int>{'width': 60, 'height': 10});
-
-      expect(instanceManager.getInstanceWithWeakReference(0),
-          isA<Preview>());
-      expect(
-          (instanceManager.getInstanceWithWeakReference(0)! as Preview)
-              .targetRotation,
-          equals(270));
-      expect(
-          (instanceManager.getInstanceWithWeakReference(0)! as Preview)
-              .targetResolution,
-          equals(Map<String, int>{'width': 60, 'height': 10}));
     });
   });
 }
