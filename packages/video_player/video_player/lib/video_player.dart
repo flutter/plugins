@@ -230,7 +230,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null.
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
-  /// [httpHeaders] option allows to specify HTTP headers and optionally, the User-Agent
+  /// [httpHeaders] option allows to specify HTTP headers.
   /// for the request to the [dataSource].
   VideoPlayerController.network(
     this.dataSource, {
@@ -246,6 +246,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Constructs a [VideoPlayerController] playing a video from a file.
   ///
   /// This will load the file from a file:// URI constructed from [file]'s path.
+  /// [httpHeaders] option allows to specify HTTP headers, mainly used for hls files like (m3u8)
   VideoPlayerController.file(File file,
       {Future<ClosedCaptionFile>? closedCaptionFile,
       this.videoPlayerOptions,

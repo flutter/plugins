@@ -1,6 +1,12 @@
 ## NEXT
 
 * Updates minimum Flutter version to 3.0.
+  
+  
+## 2.3.11
+
+* Adds option to configure the User-Agent in the HTTP headers.
+  
 
 ## 2.3.10
 
@@ -12,9 +18,7 @@
 * Fixes violations of new analysis option use_named_constants.
 * Removes an unnecessary override in example code.
 
-## 2.3.10
 
-* Added option to configure the User-Agent in the HTTP headers for the ExoPlayer agent.
 
 ## 2.3.9
 
