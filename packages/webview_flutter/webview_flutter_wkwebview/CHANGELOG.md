@@ -1,6 +1,10 @@
-## 3.0.3
+## 3.0.4
 
 * Fixes bug where `WKWebView` could not be released.
+
+# 3.0.3
+
+* Updates example code for `use_build_context_synchronously` lint.
 
 ## 3.0.2
 

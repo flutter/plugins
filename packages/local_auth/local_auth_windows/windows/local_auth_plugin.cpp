@@ -4,23 +4,9 @@
 #include <winstring.h>
 
 #include "local_auth.h"
+#include "messages.g.h"
 
 namespace {
-
-template <typename T>
-// Helper method for getting an argument from an EncodableValue.
-T GetArgument(const std::string arg, const flutter::EncodableValue* args,
-              T fallback) {
-  T result{fallback};
-  const auto* arguments = std::get_if<flutter::EncodableMap>(args);
-  if (arguments) {
-    auto result_it = arguments->find(flutter::EncodableValue(arg));
-    if (result_it != arguments->end()) {
-      result = std::get<T>(result_it->second);
-    }
-  }
-  return result;
-}
 
 // Returns the window's HWND for a given FlutterView.
 HWND GetRootWindow(flutter::FlutterView* view) {
@@ -110,19 +96,9 @@ class UserConsentVerifierImpl : public UserConsentVerifier {
 // static
 void LocalAuthPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows* registrar) {
-  auto channel =
-      std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "plugins.flutter.io/local_auth_windows",
-          &flutter::StandardMethodCodec::GetInstance());
-
   auto plugin = std::make_unique<LocalAuthPlugin>(
       [registrar]() { return GetRootWindow(registrar->GetView()); });
-
-  channel->SetMethodCallHandler(
-      [plugin_pointer = plugin.get()](const auto& call, auto result) {
-        plugin_pointer->HandleMethodCall(call, std::move(result));
-      });
-
+  LocalAuthApi::SetUp(registrar->messenger(), plugin.get());
   registrar->AddPlugin(std::move(plugin));
 }
 
@@ -137,36 +113,22 @@ LocalAuthPlugin::LocalAuthPlugin(
 
 LocalAuthPlugin::~LocalAuthPlugin() {}
 
-void LocalAuthPlugin::HandleMethodCall(
-    const flutter::MethodCall<flutter::EncodableValue>& method_call,
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  if (method_call.method_name().compare("authenticate") == 0) {
-    Authenticate(method_call, std::move(result));
-  } else if (method_call.method_name().compare("getEnrolledBiometrics") == 0) {
-    GetEnrolledBiometrics(std::move(result));
-  } else if (method_call.method_name().compare("isDeviceSupported") == 0 ||
-             method_call.method_name().compare("deviceSupportsBiometrics") ==
-                 0) {
-    IsDeviceSupported(std::move(result));
-  } else {
-    result->NotImplemented();
-  }
+void LocalAuthPlugin::IsDeviceSupported(
+    std::function<void(ErrorOr<bool> reply)> result) {
+  IsDeviceSupportedCoroutine(std::move(result));
+}
+
+void LocalAuthPlugin::Authenticate(
+    const std::string& localized_reason,
+    std::function<void(ErrorOr<bool> reply)> result) {
+  AuthenticateCoroutine(localized_reason, std::move(result));
 }
 
 // Starts authentication process.
-winrt::fire_and_forget LocalAuthPlugin::Authenticate(
-    const flutter::MethodCall<flutter::EncodableValue>& method_call,
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  std::wstring reason = Utf16FromUtf8(GetArgument<std::string>(
-      "localizedReason", method_call.arguments(), std::string()));
-
-  bool biometric_only =
-      GetArgument<bool>("biometricOnly", method_call.arguments(), false);
-  if (biometric_only) {
-    result->Error("biometricOnlyNotSupported",
-                  "Windows doesn't support the biometricOnly parameter.");
-    co_return;
-  }
+winrt::fire_and_forget LocalAuthPlugin::AuthenticateCoroutine(
+    const std::string& localized_reason,
+    std::function<void(ErrorOr<bool> reply)> result) {
+  std::wstring reason = Utf16FromUtf8(localized_reason);
 
   winrt::Windows::Security::Credentials::UI::UserConsentVerifierAvailability
       ucv_availability =
@@ -175,17 +137,19 @@ winrt::fire_and_forget LocalAuthPlugin::Authenticate(
   if (ucv_availability ==
       winrt::Windows::Security::Credentials::UI::
           UserConsentVerifierAvailability::DeviceNotPresent) {
-    result->Error("NoHardware", "No biometric hardware found");
+    result(FlutterError("NoHardware", "No biometric hardware found"));
     co_return;
   } else if (ucv_availability ==
              winrt::Windows::Security::Credentials::UI::
                  UserConsentVerifierAvailability::NotConfiguredForUser) {
-    result->Error("NotEnrolled", "No biometrics enrolled on this device.");
+    result(
+        FlutterError("NotEnrolled", "No biometrics enrolled on this device."));
     co_return;
   } else if (ucv_availability !=
              winrt::Windows::Security::Credentials::UI::
                  UserConsentVerifierAvailability::Available) {
-    result->Error("NotAvailable", "Required security features not enabled");
+    result(
+        FlutterError("NotAvailable", "Required security features not enabled"));
     co_return;
   }
 
@@ -195,42 +159,21 @@ winrt::fire_and_forget LocalAuthPlugin::Authenticate(
             co_await user_consent_verifier_->RequestVerificationForWindowAsync(
                 reason);
 
-    result->Success(flutter::EncodableValue(
-        consent_result == winrt::Windows::Security::Credentials::UI::
-                              UserConsentVerificationResult::Verified));
+    result(consent_result == winrt::Windows::Security::Credentials::UI::
+                                 UserConsentVerificationResult::Verified);
   } catch (...) {
-    result->Success(flutter::EncodableValue(false));
-  }
-}
-
-// Returns biometric types available on device.
-winrt::fire_and_forget LocalAuthPlugin::GetEnrolledBiometrics(
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  try {
-    flutter::EncodableList biometrics;
-    winrt::Windows::Security::Credentials::UI::UserConsentVerifierAvailability
-        ucv_availability =
-            co_await user_consent_verifier_->CheckAvailabilityAsync();
-    if (ucv_availability == winrt::Windows::Security::Credentials::UI::
-                                UserConsentVerifierAvailability::Available) {
-      biometrics.push_back(flutter::EncodableValue("weak"));
-      biometrics.push_back(flutter::EncodableValue("strong"));
-    }
-    result->Success(biometrics);
-  } catch (const std::exception& e) {
-    result->Error("no_biometrics_available", e.what());
+    result(false);
   }
 }
 
 // Returns whether the device supports Windows Hello or not.
-winrt::fire_and_forget LocalAuthPlugin::IsDeviceSupported(
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+winrt::fire_and_forget LocalAuthPlugin::IsDeviceSupportedCoroutine(
+    std::function<void(ErrorOr<bool> reply)> result) {
   winrt::Windows::Security::Credentials::UI::UserConsentVerifierAvailability
       ucv_availability =
           co_await user_consent_verifier_->CheckAvailabilityAsync();
-  result->Success(flutter::EncodableValue(
-      ucv_availability == winrt::Windows::Security::Credentials::UI::
-                              UserConsentVerifierAvailability::Available));
+  result(ucv_availability == winrt::Windows::Security::Credentials::UI::
+                                 UserConsentVerifierAvailability::Available);
 }
 
 }  // namespace local_auth_windows
