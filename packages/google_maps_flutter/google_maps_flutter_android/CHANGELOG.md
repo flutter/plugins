@@ -1,6 +1,11 @@
-## 2.5.0
+## NEXT
 
 * Adds support for heatmap layers.
+* Updates minimum Flutter version to 3.0.
+
+## 2.4.3
+
+* Updates code for stricter lint checks.
 
 ## 2.4.2
 

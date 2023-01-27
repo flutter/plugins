@@ -551,7 +551,7 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
         preferredRenderer = 'legacy';
         break;
       case AndroidMapRenderer.platformDefault:
-      default:
+      case null:
         preferredRenderer = 'default';
     }
 

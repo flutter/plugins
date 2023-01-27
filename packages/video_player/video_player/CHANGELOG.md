@@ -1,3 +1,15 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 2.5.1
+
+* Updates code for stricter lint checks.
+
+## 2.5.0
+
+* Exposes `VideoScrubber` so it can be used to make custom video progress indicators
+
 ## 2.4.10
 
 * Adds compatibilty with version 6.0 of the platform interface.

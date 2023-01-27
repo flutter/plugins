@@ -47,7 +47,6 @@ extension ImageFormatGroupName on ImageFormatGroup {
       case ImageFormatGroup.jpeg:
         return 'jpeg';
       case ImageFormatGroup.unknown:
-      default:
         return 'unknown';
     }
   }

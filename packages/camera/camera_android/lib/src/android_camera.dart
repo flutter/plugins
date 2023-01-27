@@ -145,6 +145,7 @@ class AndroidCamera extends CameraPlatform {
       // ignore: body_might_complete_normally_catch_error
       (Object error, StackTrace stackTrace) {
         if (error is! PlatformException) {
+          // ignore: only_throw_errors
           throw error;
         }
         completer.completeError(
@@ -520,9 +521,14 @@ class AndroidCamera extends CameraPlatform {
         return 'always';
       case FlashMode.torch:
         return 'torch';
-      default:
-        throw ArgumentError('Unknown FlashMode value');
     }
+    // The enum comes from a different package, which could get a new value at
+    // any time, so provide a fallback that ensures this won't break when used
+    // with a version that contains new values. This is deliberately outside
+    // the switch rather than a `default` so that the linter will flag the
+    // switch as needing an update.
+    // ignore: dead_code
+    return 'off';
   }
 
   /// Returns the resolution preset as a String.
@@ -540,9 +546,14 @@ class AndroidCamera extends CameraPlatform {
         return 'medium';
       case ResolutionPreset.low:
         return 'low';
-      default:
-        throw ArgumentError('Unknown ResolutionPreset value');
     }
+    // The enum comes from a different package, which could get a new value at
+    // any time, so provide a fallback that ensures this won't break when used
+    // with a version that contains new values. This is deliberately outside
+    // the switch rather than a `default` so that the linter will flag the
+    // switch as needing an update.
+    // ignore: dead_code
+    return 'max';
   }
 
   /// Converts messages received from the native platform into device events.
