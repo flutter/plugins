@@ -365,10 +365,10 @@ void main() {
         );
         await controller.initialize();
 
-       final String uri = fakeVideoPlayerPlatform.dataSources[0].uri!;
+        final String uri = fakeVideoPlayerPlatform.dataSources[0].uri!;
         expect(uri.startsWith('file:///'), true, reason: 'Actual string: $uri');
         expect(uri.endsWith('/a.avi'), true, reason: 'Actual string: $uri');
-      
+
         expect(
           fakeVideoPlayerPlatform.dataSources[0].httpHeaders,
           <String, String>{'Authorization': 'Bearer token'},
