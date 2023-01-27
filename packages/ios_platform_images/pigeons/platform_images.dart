@@ -14,8 +14,10 @@ import 'package:pigeon/pigeon.dart';
   copyrightHeader: 'pigeons/copyright.txt',
 ))
 class PlatformImage {
-  double? scale;
-  Uint8List? bytes;
+  PlatformImage(this.scale, this.bytes);
+
+  double scale;
+  Uint8List bytes;
 }
 
 enum FontWeight {
