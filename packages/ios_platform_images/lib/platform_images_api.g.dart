@@ -82,7 +82,7 @@ class PlatformImagesApi {
 
   static const MessageCodec<Object?> codec = _PlatformImagesApiCodec();
 
-  Future<PlatformImage> getSystemImage(
+  Future<PlatformImage?> getSystemImage(
       String arg_name,
       double arg_size,
       FontWeight arg_weight,
@@ -109,17 +109,12 @@ class PlatformImagesApi {
         message: replyList[1] as String?,
         details: replyList[2],
       );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
     } else {
-      return (replyList[0] as PlatformImage?)!;
+      return (replyList[0] as PlatformImage?);
     }
   }
 
-  Future<PlatformImage> getPlatformImage(String arg_name) async {
+  Future<PlatformImage?> getPlatformImage(String arg_name) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.PlatformImagesApi.getPlatformImage', codec,
         binaryMessenger: _binaryMessenger);
@@ -136,13 +131,8 @@ class PlatformImagesApi {
         message: replyList[1] as String?,
         details: replyList[2],
       );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
     } else {
-      return (replyList[0] as PlatformImage?)!;
+      return (replyList[0] as PlatformImage?);
     }
   }
 

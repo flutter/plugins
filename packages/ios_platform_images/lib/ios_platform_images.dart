@@ -120,7 +120,7 @@ class IosPlatformImages {
   ///
   /// See [https://developer.apple.com/documentation/uikit/uiimage/1624146-imagenamed?language=objc]
   static ImageProvider load(String name) {
-    final Future<PlatformImage> image = _api.getPlatformImage(name);
+    final Future<PlatformImage?> image = _api.getPlatformImage(name);
     return _platformImageToFutureMemoryImage(image, name);
   }
 
@@ -178,17 +178,17 @@ class IosPlatformImages {
             ])
         .toList();
 
-    final Future<PlatformImage> image =
+    final Future<PlatformImage?> image =
         _api.getSystemImage(name, size, weight, colorsRGBA, preferMulticolor);
 
     return _platformImageToFutureMemoryImage(image, name);
   }
 
   static _FutureMemoryImage _platformImageToFutureMemoryImage(
-      Future<PlatformImage> image, String name) {
+      Future<PlatformImage?> image, String name) {
     final Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
     final Completer<double> scaleCompleter = Completer<double>();
-    image.then((PlatformImage image) {
+    image.then((PlatformImage? image) {
       if (image == null || image.bytes == null || image.scale == null) {
         scaleCompleter.completeError(
           ArgumentError("Image couldn't be found: $name"),

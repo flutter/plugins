@@ -65,6 +65,10 @@
           [image imageWithTintColor:colorArray.count > 0 ? colorArray[0] : [UIColor blackColor]];
     }
 
+    if (finalImage == nil) {
+      return nil;
+    }
+
     FlutterStandardTypedData *data =
         [FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(finalImage)];
     return [FLTPlatformImage makeWithScale:@(finalImage.scale) bytes:data];

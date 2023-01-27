@@ -32,8 +32,8 @@ enum FontWeight {
 
 @HostApi()
 abstract class PlatformImagesApi {
-  PlatformImage getSystemImage(String name, double size, FontWeight weight,
+  PlatformImage? getSystemImage(String name, double size, FontWeight weight,
       List<double> colorsRGBA, bool preferMulticolor);
-  PlatformImage getPlatformImage(String name);
+  PlatformImage? getPlatformImage(String name);
   String? resolveURL(String name, String? extension);
 }
