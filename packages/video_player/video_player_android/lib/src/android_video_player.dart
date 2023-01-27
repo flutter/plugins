@@ -183,15 +183,4 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
       Duration(milliseconds: pair[1] as int),
     );
   }
-
-  @override
-  Future<void> enterFullscreen(int textureId) {
-    // TODO: implement enterFullscreen
-    return super.enterFullscreen(textureId);
-  }
-
-  @override
-  void addEventListener(int textureId, String type, listener, [bool? useCapture]) {
-    // no need to implement it for platforms other than web
-  }
 }

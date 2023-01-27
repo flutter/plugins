@@ -108,7 +108,8 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('enterFullscreen() has not been implemented.');
   }
 
-  void addEventListener(int textureId, String type, EventListener? listener, [bool? useCapture]) {
+  /// add listener
+  void addEventListener(int textureId, String type, dynamic Function(Object event)? listener, [bool? useCapture]) {
     throw UnimplementedError('addEventListener() has not been implemented.');
   }
 }

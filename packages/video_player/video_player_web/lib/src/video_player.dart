@@ -130,15 +130,17 @@ class VideoPlayer {
     }, test: (Object e) => e is html.DomException);
   }
 
+  /// Attempts to enter fullscreen mode
+  /// Works only on the web
   void enterFullscreen() {
     _videoElement.enterFullscreen();
   }
 
-  void addEventListener(String type, EventListener? listener, [bool? useCapture]) {
+  void addEventListener(String type, dynamic Function(Object event)? listener, [bool? useCapture]) {
     return _videoElement.addEventListener(type, listener, useCapture);
   }
 
-  void removeEventListener(String type, EventListener? listener, [bool? useCapture]) {
+  void removeEventListener(String type, dynamic Function(Object event)? listener, [bool? useCapture]) {
     return _videoElement.removeEventListener(type, listener, useCapture);
   }
 
