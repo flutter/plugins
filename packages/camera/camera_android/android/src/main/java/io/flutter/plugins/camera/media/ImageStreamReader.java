@@ -33,16 +33,9 @@ public class ImageStreamReader {
   private final ImageReader imageReader;
   private final ImageStreamReaderUtils imageStreamReaderUtils;
 
-  // For NV21, we will be streaming YUV420 but converting the frames
-  // before sending back to dart.
-  public static ImageReader createImageReader(int width, int height, int imageFormat, int maxImages) {
-    final int _imageFormat = imageFormat == ImageFormat.NV21 ? ImageFormat.YUV_420_888 : imageFormat;
-
-    return ImageReader.newInstance(width, height, _imageFormat, maxImages);
-  }
-
   /**
    * Creates a new instance of the {@link ImageStreamReader}.
+   * Used for testing so we can provide a mock ImageReader.
    *
    * @param imageReader is the image reader that will receive frames
    * @param imageStreamReaderUtils is an instance of {@link ImageStreamReaderUtils}
@@ -73,11 +66,11 @@ public class ImageStreamReader {
   }
 
   /**
-   * Returns the image format to stream based on a requested input format.
+   * Returns the streaming image format to stream based on a requested input format.
    * Usually it's the same except when dart is requesting NV21. In that case
    * we stream YUV420 and process it into NV21 before sending the frames over.
-   * @param dartImageFormat
-   * @return
+   * @param dartImageFormat is the format we want to send to dart.
+   * @return is the image format that will be requested from the camera.
    */
   private static int computeStreamImageFormat(int dartImageFormat) {
     if (dartImageFormat == ImageFormat.NV21) {
@@ -92,8 +85,6 @@ public class ImageStreamReader {
    * frame to Dart.
    *
    * @param image is the image which needs processed as an {@link Image}
-   * @param imageFormat is the image format from the image reader as an int, a valid {@link
-   *     ImageFormat}
    * @param captureProps is the capture props from the camera class as {@link
    *     CameraCaptureProperties}
    * @param imageStreamSink is the image stream sink from dart as a dart {@link
@@ -135,6 +126,15 @@ public class ImageStreamReader {
     }
   }
 
+  /**
+   * Should be used when we do not want to alter the camera image data
+   * and just want to send it to dart exactly as received from the sensor.
+   *
+   * Generally used for YUV420 and Jpeg streaming formats.
+   * @param image is an {@link Image} from the camera.
+   * @return is the planes array list of parsed data that will be sent to dart.
+   */
+  @VisibleForTesting
   public List<Map<String, Object>> parsePlanesForYuvOrJpeg(Image image) {
     List<Map<String, Object>> planes = new ArrayList<>();
 
@@ -155,6 +155,13 @@ public class ImageStreamReader {
     return planes;
   }
 
+  /**
+   * Should be used when we want to convert the image data from 3-plane YUV
+   * to a single plane NV21 image.
+   * @param image is an {@link Image} from the camera.
+   * @return is the planes array list of parsed data that will be sent to dart.
+   */
+  @VisibleForTesting
   public List<Map<String, Object>> parsePlanesForNv21(Image image) {
     List<Map<String, Object>> planes = new ArrayList<>();
 

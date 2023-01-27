@@ -5,6 +5,7 @@
 package io.flutter.plugins.camera.media;
 
 import android.media.Image;
+import androidx.annotation.VisibleForTesting;
 import java.nio.ByteBuffer;
 import io.flutter.Log;
 
@@ -77,7 +78,8 @@ public class ImageStreamReaderUtils {
    *
    * https://github.com/googlesamples/mlkit/blob/master/android/vision-quickstart/app/src/main/java/com/google/mlkit/vision/demo/BitmapUtils.java
    */
-  private static boolean areUVPlanesNV21(Image.Plane[] planes, int width, int height) {
+  @VisibleForTesting
+  public static boolean areUVPlanesNV21(Image.Plane[] planes, int width, int height) {
     int imageSize = width * height;
 
     ByteBuffer uBuffer = planes[1].getBuffer();
@@ -125,7 +127,8 @@ public class ImageStreamReaderUtils {
    *
    * https://github.com/googlesamples/mlkit/blob/master/android/vision-quickstart/app/src/main/java/com/google/mlkit/vision/demo/BitmapUtils.java
    */
-  private static void unpackPlane(
+  @VisibleForTesting
+  public static void unpackPlane(
           Image.Plane plane, int width, int height, byte[] out, int offset, int pixelStride) throws IllegalStateException{
     ByteBuffer buffer = plane.getBuffer();
     buffer.rewind();
