@@ -89,6 +89,7 @@ targets:
   # tests are reliable on the ARM infrastructure. See discussion at
   # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
   - name: Mac_arm64 ios_build_all_plugins master
+    bringup: true
     recipe: plugins/plugins
     timeout: 30
     properties:
@@ -98,6 +99,7 @@ targets:
       channel: master
 
   - name: Mac_arm64 ios_build_all_plugins stable
+    bringup: true
     recipe: plugins/plugins
     timeout: 30
     properties:
