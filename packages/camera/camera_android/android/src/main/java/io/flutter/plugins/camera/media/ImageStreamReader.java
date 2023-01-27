@@ -41,9 +41,9 @@ public class ImageStreamReader {
    * @param imageStreamReaderUtils is an instance of {@link ImageStreamReaderUtils}
    */
   @VisibleForTesting
-  public ImageStreamReader(ImageReader imageReader, ImageStreamReaderUtils imageStreamReaderUtils) {
+  public ImageStreamReader(ImageReader imageReader, int imageFormat, ImageStreamReaderUtils imageStreamReaderUtils) {
     this.imageReader = imageReader;
-    this.dartImageFormat = imageReader.getImageFormat();
+    this.dartImageFormat = imageFormat;
     this.imageStreamReaderUtils = imageStreamReaderUtils;
   }
 
@@ -72,7 +72,8 @@ public class ImageStreamReader {
    * @param dartImageFormat is the format we want to send to dart.
    * @return is the image format that will be requested from the camera.
    */
-  private static int computeStreamImageFormat(int dartImageFormat) {
+  @VisibleForTesting
+  public static int computeStreamImageFormat(int dartImageFormat) {
     if (dartImageFormat == ImageFormat.NV21) {
       return ImageFormat.YUV_420_888;
     } else {
