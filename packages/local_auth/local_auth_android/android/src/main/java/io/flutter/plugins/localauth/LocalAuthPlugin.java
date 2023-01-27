@@ -253,9 +253,14 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   }
 
   @VisibleForTesting
-  public boolean isDeviceSupported() {
+  public boolean isDeviceSecure() {
     if (keyguardManager == null) return false;
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && keyguardManager.isDeviceSecure());
+  }
+
+  @VisibleForTesting
+  public boolean isDeviceSupported() {
+    return isDeviceSecure() || canAuthenticateWithBiometrics();
   }
 
   private boolean canAuthenticateWithBiometrics() {
@@ -270,7 +275,15 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
         != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
   }
 
-  private boolean canAuthenticateWithDeviceCredential() {
+  @VisibleForTesting
+  public boolean canAuthenticateWithDeviceCredential() {
+    if (Build.VERSION.SDK_INT < 30) {
+      // Checking for device credential only authentication via the BiometricManager
+      // is not allowed before API level 30, so we check for presence of PIN, pattern,
+      // or password instead.
+      return isDeviceSecure();
+    }
+
     if (biometricManager == null) return false;
     return biometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
         == BiometricManager.BIOMETRIC_SUCCESS;
@@ -333,5 +346,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @VisibleForTesting
   void setBiometricManager(BiometricManager biometricManager) {
     this.biometricManager = biometricManager;
+  }
+
+  @VisibleForTesting
+  void setKeyguardManager(KeyguardManager keyguardManager) {
+    this.keyguardManager = keyguardManager;
   }
 }

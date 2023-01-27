@@ -1,5 +1,22 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 2.4.0
+
+* Adds `getDirectoryPaths` method to the interface.
+
+## 2.3.0
+
+* Replaces `macUTIs` with `uniformTypeIdentifiers`. `macUTIs` is available as an alias, but will be deprecated in a future release.
+
+## 2.2.0
+
+* Makes `XTypeGroup`'s constructor constant.
+
+## 2.1.1
+
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 
 ## 2.1.0

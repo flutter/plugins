@@ -1,3 +1,62 @@
+## 3.2.2
+
+* Updates example code for `use_build_context_synchronously` lint.
+
+## 3.2.1
+
+* Updates code for stricter lint checks.
+
+## 3.2.0
+
+* Adds support for handling file selection. See `AndroidWebViewController.setOnShowFileSelector`.
+* Updates pigeon dev dependency to `4.2.14`.
+
+## 3.1.3
+
+* Fixes crash when the Java `InstanceManager` was used after plugin was removed from the engine.
+
+## 3.1.2
+
+* Fixes bug where an `AndroidWebViewController` couldn't be reused with a new `WebViewWidget`.
+
+## 3.1.1
+
+* Fixes bug where a `AndroidNavigationDelegate` was required to load a request.
+
+## 3.1.0
+
+* Adds support for selecting Hybrid Composition on versions 23+. Please use
+  `AndroidWebViewControllerCreationParams.displayWithHybridComposition`.
+
+## 3.0.0
+
+* **BREAKING CHANGE** Updates platform implementation to `2.0.0` release of
+  `webview_flutter_platform_interface`. See
+  [webview_flutter](https://pub.dev/packages/webview_flutter/versions/4.0.0) for updated usage.
+
+## 2.10.4
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+* Bumps androidx.annotation from 1.4.0 to 1.5.0.
+
+## 2.10.3
+
+* Updates imports for `prefer_relative_imports`.
+
+## 2.10.2
+
+* Adds a getter to expose the Java InstanceManager.
+
+## 2.10.1
+
+* Adds a method to the `WebView` wrapper to retrieve the X and Y positions simultaneously.
+* Removes reference to https://github.com/flutter/flutter/issues/97744 from `README`.
+
+## 2.10.0
+
+* Bumps webkit from 1.0.0 to 1.5.0.
+* Raises minimum `compileSdkVersion` to 32.
+
 ## 2.9.5
 
 * Adds dispose methods for HostApi and FlutterApi of JavaObject.

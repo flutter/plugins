@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter_example/lite_mode.dart';
 
 import 'animate_camera.dart';
+import 'lite_mode.dart';
 import 'map_click.dart';
 import 'map_coordinates.dart';
 import 'map_ui.dart';

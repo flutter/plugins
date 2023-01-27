@@ -20,22 +20,22 @@ void main() {
     pathProvider = FakePathProviderLinux();
   });
 
-  Future<String> _getFilePath() async {
+  Future<String> getFilePath() async {
     final String? directory = await pathProvider.getApplicationSupportPath();
     return path.join(directory!, 'shared_preferences.json');
   }
 
-  Future<void> _writeTestFile(String value) async {
-    fs.file(await _getFilePath())
+  Future<void> writeTestFile(String value) async {
+    fs.file(await getFilePath())
       ..createSync(recursive: true)
       ..writeAsStringSync(value);
   }
 
-  Future<String> _readTestFile() async {
-    return fs.file(await _getFilePath()).readAsStringSync();
+  Future<String> readTestFile() async {
+    return fs.file(await getFilePath()).readAsStringSync();
   }
 
-  SharedPreferencesLinux _getPreferences() {
+  SharedPreferencesLinux getPreferences() {
     final SharedPreferencesLinux prefs = SharedPreferencesLinux();
     prefs.fs = fs;
     prefs.pathProvider = pathProvider;
@@ -49,8 +49,8 @@ void main() {
   });
 
   test('getAll', () async {
-    await _writeTestFile('{"key1": "one", "key2": 2}');
-    final SharedPreferencesLinux prefs = _getPreferences();
+    await writeTestFile('{"key1": "one", "key2": 2}');
+    final SharedPreferencesLinux prefs = getPreferences();
 
     final Map<String, Object> values = await prefs.getAll();
     expect(values, hasLength(2));
@@ -59,30 +59,30 @@ void main() {
   });
 
   test('remove', () async {
-    await _writeTestFile('{"key1":"one","key2":2}');
-    final SharedPreferencesLinux prefs = _getPreferences();
+    await writeTestFile('{"key1":"one","key2":2}');
+    final SharedPreferencesLinux prefs = getPreferences();
 
     await prefs.remove('key2');
 
-    expect(await _readTestFile(), '{"key1":"one"}');
+    expect(await readTestFile(), '{"key1":"one"}');
   });
 
   test('setValue', () async {
-    await _writeTestFile('{}');
-    final SharedPreferencesLinux prefs = _getPreferences();
+    await writeTestFile('{}');
+    final SharedPreferencesLinux prefs = getPreferences();
 
     await prefs.setValue('', 'key1', 'one');
     await prefs.setValue('', 'key2', 2);
 
-    expect(await _readTestFile(), '{"key1":"one","key2":2}');
+    expect(await readTestFile(), '{"key1":"one","key2":2}');
   });
 
   test('clear', () async {
-    await _writeTestFile('{"key1":"one","key2":2}');
-    final SharedPreferencesLinux prefs = _getPreferences();
+    await writeTestFile('{"key1":"one","key2":2}');
+    final SharedPreferencesLinux prefs = getPreferences();
 
     await prefs.clear();
-    expect(await _readTestFile(), '{}');
+    expect(await readTestFile(), '{}');
   });
 }
 

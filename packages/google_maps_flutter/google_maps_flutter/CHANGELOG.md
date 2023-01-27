@@ -1,5 +1,25 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 2.2.3
+
+* Fixes a minor syntax error in `README.md`.
+
+## 2.2.2
+
+* Modified `README.md` to fix minor syntax issues and added Code Excerpt to `README.md`.
+* Updates code for new analysis options.
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 2.2.1
+
+* Updates imports for `prefer_relative_imports`.
+
+## 2.2.0
+
+* Deprecates `AndroidGoogleMapsFlutter.useAndroidViewSurface` in favor of
+  [setting the flag directly in the Android implementation](https://pub.dev/packages/google_maps_flutter_android#display-mode).
 * Updates minimum Flutter version to 2.10.
 
 ## 2.1.12

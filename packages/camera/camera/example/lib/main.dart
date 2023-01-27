@@ -31,17 +31,16 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
       return Icons.camera_front;
     case CameraLensDirection.external:
       return Icons.camera;
-    default:
-      throw ArgumentError('Unknown lens direction');
   }
+  // This enum is from a different package, so a new value could be added at
+  // any time. The example should keep working if that happens.
+  // ignore: dead_code
+  return Icons.camera;
 }
 
 void _logError(String code, String? message) {
-  if (message != null) {
-    print('Error: $code\nError Message: $message');
-  } else {
-    print('Error: $code');
-  }
+  // ignore: avoid_print
+  print('Error: $code${message == null ? '' : '\nError Message: $message'}');
 }
 
 class _CameraExampleHomeState extends State<CameraExampleHome>
@@ -72,7 +71,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   @override
   void initState() {
     super.initState();
-    _ambiguate(WidgetsBinding.instance)?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -102,7 +101,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   void dispose() {
-    _ambiguate(WidgetsBinding.instance)?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     _flashModeControlRowAnimationController.dispose();
     _exposureModeControlRowAnimationController.dispose();
     super.dispose();
@@ -585,7 +584,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     if (_cameras.isEmpty) {
-      _ambiguate(SchedulerBinding.instance)?.addPostFrameCallback((_) async {
+      SchedulerBinding.instance.addPostFrameCallback((_) async {
         showInSnackBar('No camera found.');
       });
       return const Text('None');
@@ -1079,10 +1078,3 @@ Future<void> main() async {
   }
   runApp(const CameraApp());
 }
-
-/// This allows a value of type T or T? to be treated as a value of type T?.
-///
-/// We use this so that APIs that have become non-nullable can still be used
-/// with `!` and `?` on the stable branch.
-// TODO(ianh): Remove this once we roll stable in late 2021.
-T? _ambiguate<T>(T? value) => value;

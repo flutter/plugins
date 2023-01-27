@@ -1,5 +1,23 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 2.3.8
+
+* Adds compatibilty with version 6.0 of the platform interface.
+* Fixes file URI construction in example.
+* Updates code for new analysis options.
+* Adds an integration test for a bug where the aspect ratios of some HLS videos are incorrectly inverted.
+* Removes an unnecessary override in example code.
+
+## 2.3.7
+
+* Fixes a bug where the aspect ratio of some HLS videos are incorrectly inverted.
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 2.3.6
+
+* Fixes a bug in iOS 16 where videos from protected live streams are not shown.
 * Updates minimum Flutter version to 2.10.
 * Fixes violations of new analysis option use_named_constants.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.

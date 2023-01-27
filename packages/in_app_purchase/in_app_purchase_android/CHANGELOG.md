@@ -1,6 +1,31 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 0.2.3+9
+
+* Updates `androidx.test.espresso:espresso-core` to 3.5.1.
+
+## 0.2.3+8
+
+* Updates code for stricter lint checks.
+
+## 0.2.3+7
+
+* Updates code for new analysis options.
+
+## 0.2.3+6
+
+* Updates android gradle plugin to 7.3.1.
+
+## 0.2.3+5
+
+* Updates imports for `prefer_relative_imports`.
+
+## 0.2.3+4
+
 * Updates minimum Flutter version to 2.10.
+* Adds IMMEDIATE_AND_CHARGE_FULL_PRICE to the `ProrationMode`.
 
 ## 0.2.3+3
 

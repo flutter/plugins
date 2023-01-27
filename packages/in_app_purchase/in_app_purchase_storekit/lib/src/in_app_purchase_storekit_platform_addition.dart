@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: avoid_print
+
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import '../in_app_purchase_storekit.dart';
 
 import '../store_kit_wrappers.dart';
 

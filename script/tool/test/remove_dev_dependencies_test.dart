@@ -27,7 +27,7 @@ void main() {
     runner.addCommand(command);
   });
 
-  void _addToPubspec(RepositoryPackage package, String addition) {
+  void addToPubspec(RepositoryPackage package, String addition) {
     final String originalContent = package.pubspecFile.readAsStringSync();
     package.pubspecFile.writeAsStringSync('''
 $originalContent
@@ -53,7 +53,7 @@ $addition
     final RepositoryPackage package =
         createFakePackage('a_package', packagesDir, version: '1.0.0');
 
-    _addToPubspec(package, '''
+    addToPubspec(package, '''
 dev_dependencies:
   some_dependency: ^2.1.8
   another_dependency: ^1.0.0
@@ -79,7 +79,7 @@ dev_dependencies:
         createFakePackage('a_package', packagesDir, version: '1.0.0');
 
     final RepositoryPackage example = package.getExamples().first;
-    _addToPubspec(example, '''
+    addToPubspec(example, '''
 dev_dependencies:
   some_dependency: ^2.1.8
   another_dependency: ^1.0.0

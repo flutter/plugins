@@ -5,13 +5,13 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:stream_transform/stream_transform.dart';
 
+import '../../camera_platform_interface.dart';
+import '../utils/utils.dart';
 import 'type_conversion.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
@@ -118,10 +118,10 @@ class MethodChannelCamera extends CameraPlatform {
       return channel;
     });
 
-    final Completer<void> _completer = Completer<void>();
+    final Completer<void> completer = Completer<void>();
 
     onCameraInitialized(cameraId).first.then((CameraInitializedEvent value) {
-      _completer.complete();
+      completer.complete();
     });
 
     _channel.invokeMapMethod<String, dynamic>(
@@ -130,24 +130,24 @@ class MethodChannelCamera extends CameraPlatform {
         'cameraId': cameraId,
         'imageFormatGroup': imageFormatGroup.name(),
       },
-    )
-        // TODO(srawlins): This should return a value of the future's type. This
-        // will fail upcoming analysis checks with
-        // https://github.com/flutter/flutter/issues/105750.
-        // ignore: body_might_complete_normally_catch_error
-        .catchError(
+    ).catchError(
+      // TODO(srawlins): This should return a value of the future's type. This
+      // will fail upcoming analysis checks with
+      // https://github.com/flutter/flutter/issues/105750.
+      // ignore: body_might_complete_normally_catch_error
       (Object error, StackTrace stackTrace) {
         if (error is! PlatformException) {
+          // ignore: only_throw_errors
           throw error;
         }
-        _completer.completeError(
+        completer.completeError(
           CameraException(error.code, error.message),
           stackTrace,
         );
       },
     );
 
-    return _completer.future;
+    return completer.future;
   }
 
   @override
@@ -241,13 +241,25 @@ class MethodChannelCamera extends CameraPlatform {
   @override
   Future<void> startVideoRecording(int cameraId,
       {Duration? maxVideoDuration}) async {
+    return startVideoCapturing(
+        VideoCaptureOptions(cameraId, maxDuration: maxVideoDuration));
+  }
+
+  @override
+  Future<void> startVideoCapturing(VideoCaptureOptions options) async {
     await _channel.invokeMethod<void>(
       'startVideoRecording',
       <String, dynamic>{
-        'cameraId': cameraId,
-        'maxVideoDuration': maxVideoDuration?.inMilliseconds,
+        'cameraId': options.cameraId,
+        'maxVideoDuration': options.maxDuration?.inMilliseconds,
+        'enableStream': options.streamCallback != null,
       },
     );
+
+    if (options.streamCallback != null) {
+      _installStreamController().stream.listen(options.streamCallback);
+      _startStreamListener();
+    }
   }
 
   @override
@@ -283,13 +295,19 @@ class MethodChannelCamera extends CameraPlatform {
   @override
   Stream<CameraImageData> onStreamedFrameAvailable(int cameraId,
       {CameraImageStreamOptions? options}) {
+    _installStreamController(onListen: _onFrameStreamListen);
+    return _frameStreamController!.stream;
+  }
+
+  StreamController<CameraImageData> _installStreamController(
+      {Function()? onListen}) {
     _frameStreamController = StreamController<CameraImageData>(
-      onListen: _onFrameStreamListen,
+      onListen: onListen ?? () {},
       onPause: _onFrameStreamPauseResume,
       onResume: _onFrameStreamPauseResume,
       onCancel: _onFrameStreamCancel,
     );
-    return _frameStreamController!.stream;
+    return _frameStreamController!;
   }
 
   void _onFrameStreamListen() {
@@ -298,6 +316,10 @@ class MethodChannelCamera extends CameraPlatform {
 
   Future<void> _startPlatformStream() async {
     await _channel.invokeMethod<void>('startImageStream');
+    _startStreamListener();
+  }
+
+  void _startStreamListener() {
     const EventChannel cameraEventChannel =
         EventChannel('plugins.flutter.io/camera/imageStream');
     _platformImageStreamSubscription =
@@ -498,8 +520,6 @@ class MethodChannelCamera extends CameraPlatform {
         return 'always';
       case FlashMode.torch:
         return 'torch';
-      default:
-        throw ArgumentError('Unknown FlashMode value');
     }
   }
 
@@ -518,8 +538,6 @@ class MethodChannelCamera extends CameraPlatform {
         return 'medium';
       case ResolutionPreset.low:
         return 'low';
-      default:
-        throw ArgumentError('Unknown ResolutionPreset value');
     }
   }
 
@@ -530,9 +548,9 @@ class MethodChannelCamera extends CameraPlatform {
   Future<dynamic> handleDeviceMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'orientation_changed':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         deviceEventStreamController.add(DeviceOrientationChangedEvent(
-            deserializeDeviceOrientation(
-                call.arguments['orientation']! as String)));
+            deserializeDeviceOrientation(arguments['orientation']! as String)));
         break;
       default:
         throw MissingPluginException();
@@ -547,21 +565,23 @@ class MethodChannelCamera extends CameraPlatform {
   Future<dynamic> handleCameraMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
       case 'initialized':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         cameraEventStreamController.add(CameraInitializedEvent(
           cameraId,
-          call.arguments['previewWidth']! as double,
-          call.arguments['previewHeight']! as double,
-          deserializeExposureMode(call.arguments['exposureMode']! as String),
-          call.arguments['exposurePointSupported']! as bool,
-          deserializeFocusMode(call.arguments['focusMode']! as String),
-          call.arguments['focusPointSupported']! as bool,
+          arguments['previewWidth']! as double,
+          arguments['previewHeight']! as double,
+          deserializeExposureMode(arguments['exposureMode']! as String),
+          arguments['exposurePointSupported']! as bool,
+          deserializeFocusMode(arguments['focusMode']! as String),
+          arguments['focusPointSupported']! as bool,
         ));
         break;
       case 'resolution_changed':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         cameraEventStreamController.add(CameraResolutionChangedEvent(
           cameraId,
-          call.arguments['captureWidth']! as double,
-          call.arguments['captureHeight']! as double,
+          arguments['captureWidth']! as double,
+          arguments['captureHeight']! as double,
         ));
         break;
       case 'camera_closing':
@@ -570,23 +590,32 @@ class MethodChannelCamera extends CameraPlatform {
         ));
         break;
       case 'video_recorded':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         cameraEventStreamController.add(VideoRecordedEvent(
           cameraId,
-          XFile(call.arguments['path']! as String),
-          call.arguments['maxVideoDuration'] != null
-              ? Duration(
-                  milliseconds: call.arguments['maxVideoDuration']! as int)
+          XFile(arguments['path']! as String),
+          arguments['maxVideoDuration'] != null
+              ? Duration(milliseconds: arguments['maxVideoDuration']! as int)
               : null,
         ));
         break;
       case 'error':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         cameraEventStreamController.add(CameraErrorEvent(
           cameraId,
-          call.arguments['description']! as String,
+          arguments['description']! as String,
         ));
         break;
       default:
         throw MissingPluginException();
     }
+  }
+
+  /// Returns the arguments of [call] as typed string-keyed Map.
+  ///
+  /// This does not do any type validation, so is only safe to call if the
+  /// arguments are known to be a map.
+  Map<String, Object?> _getArgumentDictionary(MethodCall call) {
+    return (call.arguments as Map<Object?, Object?>).cast<String, Object?>();
   }
 }

@@ -114,7 +114,7 @@ void main() {
   });
 
   test('Other functions pass through arguments to the channel', () async {
-    final Map<Function, Matcher> tests = <Function, Matcher>{
+    final Map<void Function(), Matcher> tests = <void Function(), Matcher>{
       () {
         googleSignIn.init(
             hostedDomain: 'example.com',
@@ -124,16 +124,19 @@ void main() {
         'hostedDomain': 'example.com',
         'scopes': <String>['two', 'scopes'],
         'clientId': 'fakeClientId',
+        'serverClientId': null,
       }),
       () {
         googleSignIn.initWithParams(const SignInInitParameters(
             hostedDomain: 'example.com',
             scopes: <String>['two', 'scopes'],
-            clientId: 'fakeClientId'));
+            clientId: 'fakeClientId',
+            serverClientId: 'fakeServerClientId'));
       }: isMethodCall('init', arguments: <String, dynamic>{
         'hostedDomain': 'example.com',
         'scopes': <String>['two', 'scopes'],
         'clientId': 'fakeClientId',
+        'serverClientId': 'fakeServerClientId',
       }),
       () {
         googleSignIn.getTokens(
@@ -152,7 +155,7 @@ void main() {
       googleSignIn.isSignedIn: isMethodCall('isSignedIn', arguments: null),
     };
 
-    for (final Function f in tests.keys) {
+    for (final void Function() f in tests.keys) {
       f();
     }
 

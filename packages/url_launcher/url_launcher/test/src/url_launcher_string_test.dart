@@ -222,7 +222,7 @@ void main() {
 
     test('cannot launch a non-web URL in a webview', () async {
       expect(
-          () async => await launchUrlString('tel:555-555-5555',
+          () async => launchUrlString('tel:555-555-5555',
               mode: LaunchMode.inAppWebView),
           throwsA(isA<ArgumentError>()));
     });

@@ -8,9 +8,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
 
 import '../common/instance_manager.dart';
+import '../common/weak_reference_utils.dart';
 import 'foundation_api_impls.dart';
 
 /// The values that can be returned in a change map.

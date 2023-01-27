@@ -68,7 +68,7 @@ void _createFakeCMakeCache(RepositoryPackage plugin, Platform platform) {
 // TODO(stuartmorgan): Rework these tests to use a mock Xcode instead of
 // doing all the process mocking and validation.
 void main() {
-  const String _kDestination = '--ios-destination';
+  const String kDestination = '--ios-destination';
 
   group('test native_test_command on Posix', () {
     late FileSystem fileSystem;
@@ -95,7 +95,7 @@ void main() {
 
     // Returns a MockProcess to provide for "xcrun xcodebuild -list" for a
     // project that contains [targets].
-    MockProcess _getMockXcodebuildListProcess(List<String> targets) {
+    MockProcess getMockXcodebuildListProcess(List<String> targets) {
       final Map<String, dynamic> projects = <String, dynamic>{
         'project': <String, dynamic>{
           'targets': targets,
@@ -106,7 +106,7 @@ void main() {
 
     // Returns the ProcessCall to expect for checking the targets present in
     // the [package]'s [platform]/Runner.xcodeproj.
-    ProcessCall _getTargetCheckCall(Directory package, String platform) {
+    ProcessCall getTargetCheckCall(Directory package, String platform) {
       return ProcessCall(
           'xcrun',
           <String>[
@@ -124,7 +124,7 @@ void main() {
 
     // Returns the ProcessCall to expect for running the tests in the
     // workspace [platform]/Runner.xcworkspace, with the given extra flags.
-    ProcessCall _getRunTestCall(
+    ProcessCall getRunTestCall(
       Directory package,
       String platform, {
       String? destination,
@@ -150,7 +150,7 @@ void main() {
 
     // Returns the ProcessCall to expect for build the Linux unit tests for the
     // given plugin.
-    ProcessCall _getLinuxBuildCall(RepositoryPackage plugin) {
+    ProcessCall getLinuxBuildCall(RepositoryPackage plugin) {
       return ProcessCall(
           'cmake',
           <String>[
@@ -212,7 +212,7 @@ void main() {
       final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-        _getMockXcodebuildListProcess(<String>['RunnerTests', 'RunnerUITests']),
+        getMockXcodebuildListProcess(<String>['RunnerTests', 'RunnerUITests']),
         // Exit code 66 from testing indicates no tests.
         MockProcess(exitCode: 66),
       ];
@@ -229,8 +229,8 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            _getTargetCheckCall(pluginExampleDirectory, 'macos'),
-            _getRunTestCall(pluginExampleDirectory, 'macos',
+            getTargetCheckCall(pluginExampleDirectory, 'macos'),
+            getRunTestCall(pluginExampleDirectory, 'macos',
                 extraFlags: <String>['-only-testing:RunnerUITests']),
           ]));
     });
@@ -243,7 +243,7 @@ void main() {
             });
 
         final List<String> output = await runCapturingPrint(runner,
-            <String>['native-test', '--ios', _kDestination, 'foo_destination']);
+            <String>['native-test', '--ios', kDestination, 'foo_destination']);
         expect(
             output,
             containsAllInOrder(<Matcher>[
@@ -260,7 +260,7 @@ void main() {
             });
 
         final List<String> output = await runCapturingPrint(runner,
-            <String>['native-test', '--ios', _kDestination, 'foo_destination']);
+            <String>['native-test', '--ios', kDestination, 'foo_destination']);
         expect(
             output,
             containsAllInOrder(<Matcher>[
@@ -279,14 +279,14 @@ void main() {
         final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']),
         ];
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
           '--ios',
-          _kDestination,
+          kDestination,
           'foo_destination',
         ]);
 
@@ -300,8 +300,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(pluginExampleDirectory, 'ios'),
-              _getRunTestCall(pluginExampleDirectory, 'ios',
+              getTargetCheckCall(pluginExampleDirectory, 'ios'),
+              getRunTestCall(pluginExampleDirectory, 'ios',
                   destination: 'foo_destination'),
             ]));
       });
@@ -316,7 +316,7 @@ void main() {
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
           MockProcess(stdout: jsonEncode(_kDeviceListMap)), // simctl
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']),
         ];
 
@@ -336,8 +336,8 @@ void main() {
                     '--json',
                   ],
                   null),
-              _getTargetCheckCall(pluginExampleDirectory, 'ios'),
-              _getRunTestCall(pluginExampleDirectory, 'ios',
+              getTargetCheckCall(pluginExampleDirectory, 'ios'),
+              getRunTestCall(pluginExampleDirectory, 'ios',
                   destination: 'id=1E76A0FD-38AC-4537-A989-EA639D7D012A'),
             ]));
       });
@@ -386,7 +386,7 @@ void main() {
         final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']),
         ];
 
@@ -403,8 +403,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
-              _getRunTestCall(pluginExampleDirectory, 'macos'),
+              getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              getRunTestCall(pluginExampleDirectory, 'macos'),
             ]));
       });
     });
@@ -918,7 +918,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getLinuxBuildCall(plugin),
+              getLinuxBuildCall(plugin),
               ProcessCall(testBinary.path, const <String>[], null),
             ]));
       });
@@ -958,7 +958,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getLinuxBuildCall(plugin),
+              getLinuxBuildCall(plugin),
               ProcessCall(releaseTestBinary.path, const <String>[], null),
             ]));
       });
@@ -1017,7 +1017,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getLinuxBuildCall(plugin),
+              getLinuxBuildCall(plugin),
             ]));
       });
 
@@ -1058,7 +1058,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getLinuxBuildCall(plugin),
+              getLinuxBuildCall(plugin),
               ProcessCall(testBinary.path, const <String>[], null),
             ]));
       });
@@ -1102,7 +1102,7 @@ void main() {
         final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']),
         ];
 
@@ -1121,8 +1121,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
-              _getRunTestCall(pluginExampleDirectory, 'macos',
+              getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              getRunTestCall(pluginExampleDirectory, 'macos',
                   extraFlags: <String>['-only-testing:RunnerTests']),
             ]));
       });
@@ -1137,7 +1137,7 @@ void main() {
         final Directory pluginExampleDirectory = getExampleDir(plugin1);
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']),
         ];
 
@@ -1156,8 +1156,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
-              _getRunTestCall(pluginExampleDirectory, 'macos',
+              getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              getRunTestCall(pluginExampleDirectory, 'macos',
                   extraFlags: <String>['-only-testing:RunnerUITests']),
             ]));
       });
@@ -1173,7 +1173,7 @@ void main() {
 
         // Simulate a project with unit tests but no integration tests...
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(<String>['RunnerTests']),
+          getMockXcodebuildListProcess(<String>['RunnerTests']),
         ];
 
         // ... then try to run only integration tests.
@@ -1193,7 +1193,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              getTargetCheckCall(pluginExampleDirectory, 'macos'),
             ]));
       });
 
@@ -1207,7 +1207,7 @@ void main() {
         final Directory pluginExampleDirectory = getExampleDir(plugin1);
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(<String>['RunnerUITests']),
+          getMockXcodebuildListProcess(<String>['RunnerUITests']),
         ];
 
         Error? commandError;
@@ -1232,7 +1232,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              getTargetCheckCall(pluginExampleDirectory, 'macos'),
             ]));
       });
 
@@ -1269,7 +1269,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              getTargetCheckCall(pluginExampleDirectory, 'macos'),
             ]));
       });
     });
@@ -1295,10 +1295,10 @@ void main() {
             pluginExampleDirectory.childDirectory('android');
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']), // iOS list
           MockProcess(), // iOS run
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']), // macOS list
           MockProcess(), // macOS run
         ];
@@ -1308,7 +1308,7 @@ void main() {
           '--android',
           '--ios',
           '--macos',
-          _kDestination,
+          kDestination,
           'foo_destination',
         ]);
 
@@ -1325,11 +1325,11 @@ void main() {
             orderedEquals(<ProcessCall>[
               ProcessCall(androidFolder.childFile('gradlew').path,
                   const <String>['testDebugUnitTest'], androidFolder.path),
-              _getTargetCheckCall(pluginExampleDirectory, 'ios'),
-              _getRunTestCall(pluginExampleDirectory, 'ios',
+              getTargetCheckCall(pluginExampleDirectory, 'ios'),
+              getRunTestCall(pluginExampleDirectory, 'ios',
                   destination: 'foo_destination'),
-              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
-              _getRunTestCall(pluginExampleDirectory, 'macos'),
+              getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              getRunTestCall(pluginExampleDirectory, 'macos'),
             ]));
       });
 
@@ -1342,7 +1342,7 @@ void main() {
         final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']),
         ];
 
@@ -1350,7 +1350,7 @@ void main() {
           'native-test',
           '--ios',
           '--macos',
-          _kDestination,
+          kDestination,
           'foo_destination',
         ]);
 
@@ -1364,8 +1364,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
-              _getRunTestCall(pluginExampleDirectory, 'macos'),
+              getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              getRunTestCall(pluginExampleDirectory, 'macos'),
             ]));
       });
 
@@ -1378,7 +1378,7 @@ void main() {
         final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']),
         ];
 
@@ -1386,7 +1386,7 @@ void main() {
           'native-test',
           '--ios',
           '--macos',
-          _kDestination,
+          kDestination,
           'foo_destination',
         ]);
 
@@ -1400,8 +1400,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(pluginExampleDirectory, 'ios'),
-              _getRunTestCall(pluginExampleDirectory, 'ios',
+              getTargetCheckCall(pluginExampleDirectory, 'ios'),
+              getRunTestCall(pluginExampleDirectory, 'ios',
                   destination: 'foo_destination'),
             ]));
       });
@@ -1415,7 +1415,7 @@ void main() {
           '--ios',
           '--macos',
           '--windows',
-          _kDestination,
+          kDestination,
           'foo_destination',
         ]);
 
@@ -1447,7 +1447,7 @@ void main() {
           'native-test',
           '--macos',
           '--windows',
-          _kDestination,
+          kDestination,
           'foo_destination',
         ]);
 
@@ -1477,7 +1477,7 @@ void main() {
         );
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          _getMockXcodebuildListProcess(
+          getMockXcodebuildListProcess(
               <String>['RunnerTests', 'RunnerUITests']),
         ];
 
@@ -1598,7 +1598,7 @@ void main() {
 
     // Returns the ProcessCall to expect for build the Windows unit tests for
     // the given plugin.
-    ProcessCall _getWindowsBuildCall(RepositoryPackage plugin) {
+    ProcessCall getWindowsBuildCall(RepositoryPackage plugin) {
       return ProcessCall(
           _fakeCmakeCommand,
           <String>[
@@ -1647,7 +1647,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getWindowsBuildCall(plugin),
+              getWindowsBuildCall(plugin),
               ProcessCall(testBinary.path, const <String>[], null),
             ]));
       });
@@ -1687,7 +1687,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getWindowsBuildCall(plugin),
+              getWindowsBuildCall(plugin),
               ProcessCall(debugTestBinary.path, const <String>[], null),
             ]));
       });
@@ -1746,7 +1746,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getWindowsBuildCall(plugin),
+              getWindowsBuildCall(plugin),
             ]));
       });
 
@@ -1787,7 +1787,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getWindowsBuildCall(plugin),
+              getWindowsBuildCall(plugin),
               ProcessCall(testBinary.path, const <String>[], null),
             ]));
       });

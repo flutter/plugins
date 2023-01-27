@@ -116,13 +116,15 @@ void main() {
           completion(true),
         );
 
-        final List<WKWebsiteDataTypeEnumData> typeData =
+        final List<dynamic> capturedArgs =
             verify(mockPlatformHostApi.removeDataOfTypes(
           instanceManager.getIdentifier(websiteDataStore),
           captureAny,
           5.0,
-        )).captured.single.cast<WKWebsiteDataTypeEnumData>()
-                as List<WKWebsiteDataTypeEnumData>;
+        )).captured;
+        final List<WKWebsiteDataTypeEnumData> typeData =
+            (capturedArgs.single as List<Object?>)
+                .cast<WKWebsiteDataTypeEnumData>();
 
         expect(typeData.single.value, WKWebsiteDataTypeEnum.cookies);
       });
@@ -575,6 +577,7 @@ void main() {
               allHttpHeaderFields: <String, String>{},
             ),
             targetFrame: WKFrameInfoData(isMainFrame: false),
+            navigationType: WKNavigationType.linkActivated,
           ),
         );
 
@@ -922,6 +925,7 @@ void main() {
               allHttpHeaderFields: <String, String>{},
             ),
             targetFrame: WKFrameInfoData(isMainFrame: false),
+            navigationType: WKNavigationType.linkActivated,
           ),
         );
 

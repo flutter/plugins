@@ -39,8 +39,7 @@
                                                                                maxWidth:nil
                                                                               maxHeight:nil
                                                                            imageQuality:nil];
-  XCTAssertNotNil(savedPathJPG);
-  XCTAssertEqualObjects([savedPathJPG substringFromIndex:savedPathJPG.length - 4], @".jpg");
+  XCTAssertEqualObjects([NSURL URLWithString:savedPathJPG].pathExtension, @"jpg");
 
   NSDictionary *originalMetaDataJPG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
   NSData *newDataJPG = [NSData dataWithContentsOfFile:savedPathJPG];
@@ -55,8 +54,7 @@
                                                                                maxWidth:nil
                                                                               maxHeight:nil
                                                                            imageQuality:nil];
-  XCTAssertNotNil(savedPathPNG);
-  XCTAssertEqualObjects([savedPathPNG substringFromIndex:savedPathPNG.length - 4], @".png");
+  XCTAssertEqualObjects([NSURL URLWithString:savedPathPNG].pathExtension, @"png");
 
   NSDictionary *originalMetaDataPNG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataPNG];
   NSData *newDataPNG = [NSData dataWithContentsOfFile:savedPathPNG];
@@ -69,8 +67,6 @@
   NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
                                                                            image:imageJPG
                                                                     imageQuality:nil];
-
-  XCTAssertNotNil(savedPathJPG);
   // should be saved as
   XCTAssertEqualObjects([savedPathJPG substringFromIndex:savedPathJPG.length - 4],
                         kFLTImagePickerDefaultSuffix);
@@ -98,7 +94,7 @@
   // test gif
   NSData *dataGIF = ImagePickerTestImages.GIFTestData;
   UIImage *imageGIF = [UIImage imageWithData:dataGIF];
-  CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)dataGIF, nil);
+  CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)dataGIF, nil);
 
   size_t numberOfFrames = CGImageSourceGetCount(imageSource);
 
@@ -107,12 +103,12 @@
                                                                                maxWidth:nil
                                                                               maxHeight:nil
                                                                            imageQuality:nil];
-  XCTAssertNotNil(savedPathGIF);
-  XCTAssertEqualObjects([savedPathGIF substringFromIndex:savedPathGIF.length - 4], @".gif");
+  XCTAssertEqualObjects([NSURL URLWithString:savedPathGIF].pathExtension, @"gif");
 
   NSData *newDataGIF = [NSData dataWithContentsOfFile:savedPathGIF];
 
-  CGImageSourceRef newImageSource = CGImageSourceCreateWithData((CFDataRef)newDataGIF, nil);
+  CGImageSourceRef newImageSource =
+      CGImageSourceCreateWithData((__bridge CFDataRef)newDataGIF, nil);
 
   size_t newNumberOfFrames = CGImageSourceGetCount(newImageSource);
 
@@ -124,7 +120,7 @@
   NSData *dataGIF = ImagePickerTestImages.GIFTestData;
   UIImage *imageGIF = [UIImage imageWithData:dataGIF];
 
-  CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)dataGIF, nil);
+  CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)dataGIF, nil);
 
   size_t numberOfFrames = CGImageSourceGetCount(imageSource);
 
@@ -139,7 +135,8 @@
   XCTAssertEqual(newImage.size.width, 3);
   XCTAssertEqual(newImage.size.height, 2);
 
-  CGImageSourceRef newImageSource = CGImageSourceCreateWithData((CFDataRef)newDataGIF, nil);
+  CGImageSourceRef newImageSource =
+      CGImageSourceCreateWithData((__bridge CFDataRef)newDataGIF, nil);
 
   size_t newNumberOfFrames = CGImageSourceGetCount(newImageSource);
 

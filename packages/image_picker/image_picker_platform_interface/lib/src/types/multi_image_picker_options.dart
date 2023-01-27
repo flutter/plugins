@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:image_picker_platform_interface/src/types/image_options.dart';
+import 'image_options.dart';
 
 /// Specifies options for picking multiple images from the device's gallery.
 class MultiImagePickerOptions {

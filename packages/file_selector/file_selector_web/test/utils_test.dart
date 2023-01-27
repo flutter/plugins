@@ -10,7 +10,7 @@ void main() {
   group('FileSelectorWeb utils', () {
     group('acceptedTypesToString', () {
       test('works', () {
-        final List<XTypeGroup> acceptedTypes = <XTypeGroup>[
+        const List<XTypeGroup> acceptedTypes = <XTypeGroup>[
           XTypeGroup(label: 'images', webWildCards: <String>['images/*']),
           XTypeGroup(label: 'jpgs', extensions: <String>['jpg', 'jpeg']),
           XTypeGroup(label: 'pngs', mimeTypes: <String>['image/png']),
@@ -20,13 +20,13 @@ void main() {
       });
 
       test('works with an empty list', () {
-        final List<XTypeGroup> acceptedTypes = <XTypeGroup>[];
+        const List<XTypeGroup> acceptedTypes = <XTypeGroup>[];
         final String accepts = acceptedTypesToString(acceptedTypes);
         expect(accepts, '');
       });
 
       test('works with extensions', () {
-        final List<XTypeGroup> acceptedTypes = <XTypeGroup>[
+        const List<XTypeGroup> acceptedTypes = <XTypeGroup>[
           XTypeGroup(label: 'jpgs', extensions: <String>['jpeg', 'jpg']),
           XTypeGroup(label: 'pngs', extensions: <String>['png']),
         ];
@@ -35,7 +35,7 @@ void main() {
       });
 
       test('works with mime types', () {
-        final List<XTypeGroup> acceptedTypes = <XTypeGroup>[
+        const List<XTypeGroup> acceptedTypes = <XTypeGroup>[
           XTypeGroup(
               label: 'jpgs', mimeTypes: <String>['image/jpeg', 'image/jpg']),
           XTypeGroup(label: 'pngs', mimeTypes: <String>['image/png']),
@@ -45,7 +45,7 @@ void main() {
       });
 
       test('works with web wild cards', () {
-        final List<XTypeGroup> acceptedTypes = <XTypeGroup>[
+        const List<XTypeGroup> acceptedTypes = <XTypeGroup>[
           XTypeGroup(label: 'images', webWildCards: <String>['image/*']),
           XTypeGroup(label: 'audios', webWildCards: <String>['audio/*']),
           XTypeGroup(label: 'videos', webWildCards: <String>['video/*']),
@@ -55,7 +55,7 @@ void main() {
       });
 
       test('throws for a type group that does not support web', () {
-        final List<XTypeGroup> acceptedTypes = <XTypeGroup>[
+        const List<XTypeGroup> acceptedTypes = <XTypeGroup>[
           XTypeGroup(label: 'text', macUTIs: <String>['public.text']),
         ];
         expect(() => acceptedTypesToString(acceptedTypes), throwsArgumentError);

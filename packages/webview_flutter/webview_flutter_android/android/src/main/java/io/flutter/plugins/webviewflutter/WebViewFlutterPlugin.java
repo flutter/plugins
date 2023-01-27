@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.View;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -16,6 +17,7 @@ import io.flutter.plugin.platform.PlatformViewRegistry;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.CookieManagerHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.FlutterAssetManagerHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaObjectHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHostApi;
@@ -76,15 +78,22 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
       Context context,
       View containerView,
       FlutterAssetManager flutterAssetManager) {
-
-    instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager =
+        InstanceManager.open(
+            identifier ->
+                new GeneratedAndroidWebView.JavaObjectFlutterApi(binaryMessenger)
+                    .dispose(identifier, reply -> {}));
 
     viewRegistry.registerViewFactory(
         "plugins.flutter.io/webview", new FlutterWebViewFactory(instanceManager));
 
     webViewHostApi =
         new WebViewHostApiImpl(
-            instanceManager, new WebViewHostApiImpl.WebViewProxy(), context, containerView);
+            instanceManager,
+            binaryMessenger,
+            new WebViewHostApiImpl.WebViewProxy(),
+            context,
+            containerView);
     javaScriptChannelHostApi =
         new JavaScriptChannelHostApiImpl(
             instanceManager,
@@ -92,6 +101,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
             new JavaScriptChannelFlutterApiImpl(binaryMessenger, instanceManager),
             new Handler(context.getMainLooper()));
 
+    JavaObjectHostApi.setup(binaryMessenger, new JavaObjectHostApiImpl(instanceManager));
     WebViewHostApi.setup(binaryMessenger, webViewHostApi);
     JavaScriptChannelHostApi.setup(binaryMessenger, javaScriptChannelHostApi);
     WebViewClientHostApi.setup(
@@ -165,5 +175,11 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private void updateContext(Context context) {
     webViewHostApi.setContext(context);
     javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(context.getMainLooper()));
+  }
+
+  /** Maintains instances used to communicate with the corresponding objects in Dart. */
+  @Nullable
+  public InstanceManager getInstanceManager() {
+    return instanceManager;
   }
 }

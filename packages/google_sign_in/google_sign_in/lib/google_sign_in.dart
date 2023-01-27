@@ -179,12 +179,16 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
+  ///
+  /// The [forceCodeForRefreshToken] is used on Android to ensure the authentication
+  /// code can be exchanged for a refresh token after the first request.
   GoogleSignIn({
     this.signInOption = SignInOption.standard,
     this.scopes = const <String>[],
     this.hostedDomain,
     this.clientId,
     this.serverClientId,
+    this.forceCodeForRefreshToken = false,
   });
 
   /// Factory for creating default sign in user experience.
@@ -250,6 +254,9 @@ class GoogleSignIn {
   /// server.
   final String? serverClientId;
 
+  /// Force the authorization code to be valid for a refresh token every time. Only needed on Android.
+  final bool forceCodeForRefreshToken;
+
   final StreamController<GoogleSignInAccount?> _currentUserController =
       StreamController<GoogleSignInAccount?>.broadcast();
 
@@ -260,7 +267,8 @@ class GoogleSignIn {
   // Future that completes when we've finished calling `init` on the native side
   Future<void>? _initialization;
 
-  Future<GoogleSignInAccount?> _callMethod(Function method) async {
+  Future<GoogleSignInAccount?> _callMethod(
+      Future<dynamic> Function() method) async {
     await _ensureInitialized();
 
     final dynamic response = await method();
@@ -286,6 +294,7 @@ class GoogleSignIn {
       hostedDomain: hostedDomain,
       clientId: clientId,
       serverClientId: serverClientId,
+      forceCodeForRefreshToken: forceCodeForRefreshToken,
     ))
           ..catchError((dynamic _) {
             // Invalidate initialization if it errors out.
@@ -316,7 +325,7 @@ class GoogleSignIn {
   /// method call may be skipped, if there's already [_currentUser] information.
   /// This is used from the [signIn] and [signInSilently] methods.
   Future<GoogleSignInAccount?> _addMethodCall(
-    Function method, {
+    Future<dynamic> Function() method, {
     bool canSkipCall = false,
   }) async {
     Future<GoogleSignInAccount?> response;

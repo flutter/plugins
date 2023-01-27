@@ -1,15 +1,30 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 1.0.2
+
+* Migrates remaining components to Swift and removes all Objective-C settings.
+* Migrates `RunnerUITests` to Swift.
+
+## 1.0.1
+
+* Removes custom modulemap file with "Test" submodule and private headers for Swift migration. 
+* Migrates `FLTQuickActionsPlugin` class to Swift.
+
+## 1.0.0
+
+* Updates version to 1.0 to reflect current status.
 * Updates minimum Flutter version to 2.10.
 
 ## 0.6.0+14
 
-* Refactors `FLTQuickActionsPlugin` class into multiple components. 
-* Increases unit tests coverage to 100%. 
+* Refactors `FLTQuickActionsPlugin` class into multiple components.
+* Increases unit tests coverage to 100%.
 
 ## 0.6.0+13
 
-* Adds some unit tests for `FLTQuickActionsPlugin` class. 
+* Adds some unit tests for `FLTQuickActionsPlugin` class.
 
 ## 0.6.0+12
 

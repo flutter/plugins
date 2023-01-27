@@ -28,7 +28,7 @@ void main() => runApp(
 
 Future<void> _launchUrl() async {
   if (!await launchUrl(_url)) {
-    throw 'Could not launch $_url';
+    throw Exception('Could not launch $_url');
   }
 }
 // #enddocregion basic-example

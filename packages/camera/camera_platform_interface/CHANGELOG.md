@@ -1,5 +1,34 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 2.3.4
+
+* Updates code for stricter lint checks.
+
+## 2.3.3
+
+* Updates code for stricter lint checks.
+
+## 2.3.2
+
+* Updates MethodChannelCamera to have startVideoRecording call the newer startVideoCapturing.
+
+## 2.3.1
+
+* Exports VideoCaptureOptions to allow dependencies to implement concurrent stream and record.
+
+## 2.3.0
+
+* Adds new capture method for a camera to allow concurrent streaming and recording.
+
+## 2.2.2
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 2.2.1
+
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).

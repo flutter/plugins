@@ -406,9 +406,9 @@ this command.
       );
 
       // The exit code from 'xcodebuild test' when there are no tests.
-      const int _xcodebuildNoTestExitCode = 66;
+      const int xcodebuildNoTestExitCode = 66;
       switch (exitCode) {
-        case _xcodebuildNoTestExitCode:
+        case xcodebuildNoTestExitCode:
           _printNoExampleTestsMessage(example, platform);
           break;
         case 0:

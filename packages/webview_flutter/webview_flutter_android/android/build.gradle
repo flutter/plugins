@@ -22,7 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
 
     defaultConfig {
         minSdkVersion 19
@@ -30,15 +30,16 @@ android {
     }
 
     lintOptions {
+        disable 'AndroidGradlePluginVersion'
         disable 'InvalidPackage'
         disable 'GradleDependency'
     }
 
     dependencies {
-        implementation 'androidx.annotation:annotation:1.4.0'
-        implementation 'androidx.webkit:webkit:1.0.0'
+        implementation 'androidx.annotation:annotation:1.5.0'
+        implementation 'androidx.webkit:webkit:1.5.0'
         testImplementation 'junit:junit:4.13.2'
-        testImplementation 'org.mockito:mockito-inline:4.7.0'
+        testImplementation 'org.mockito:mockito-inline:4.8.0'
         testImplementation 'androidx.test:core:1.3.0'
     }
 

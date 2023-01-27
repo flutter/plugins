@@ -1,5 +1,18 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 6.1.8
+
+* Updates code for stricter lint checks.
+
+## 6.1.7
+
+* Updates code for new analysis options.
+
+## 6.1.6
+
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 

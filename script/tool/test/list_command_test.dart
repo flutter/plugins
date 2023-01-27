@@ -29,17 +29,17 @@ void main() {
       runner.addCommand(command);
     });
 
-    test('lists plugins', () async {
-      createFakePlugin('plugin1', packagesDir);
+    test('lists top-level packages', () async {
+      createFakePackage('package1', packagesDir);
       createFakePlugin('plugin2', packagesDir);
 
       final List<String> plugins =
-          await runCapturingPrint(runner, <String>['list', '--type=plugin']);
+          await runCapturingPrint(runner, <String>['list', '--type=package']);
 
       expect(
         plugins,
         orderedEquals(<String>[
-          '/packages/plugin1',
+          '/packages/package1',
           '/packages/plugin2',
         ]),
       );
@@ -64,20 +64,20 @@ void main() {
       );
     });
 
-    test('lists packages', () async {
-      createFakePlugin('plugin1', packagesDir);
+    test('lists packages and subpackages', () async {
+      createFakePackage('package1', packagesDir);
       createFakePlugin('plugin2', packagesDir,
           examples: <String>['example1', 'example2']);
       createFakePlugin('plugin3', packagesDir, examples: <String>[]);
 
-      final List<String> packages =
-          await runCapturingPrint(runner, <String>['list', '--type=package']);
+      final List<String> packages = await runCapturingPrint(
+          runner, <String>['list', '--type=package-or-subpackage']);
 
       expect(
         packages,
         unorderedEquals(<String>[
-          '/packages/plugin1',
-          '/packages/plugin1/example',
+          '/packages/package1',
+          '/packages/package1/example',
           '/packages/plugin2',
           '/packages/plugin2/example/example1',
           '/packages/plugin2/example/example2',

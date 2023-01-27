@@ -15,7 +15,7 @@ class OpenImagePage extends StatelessWidget {
   const OpenImagePage({Key? key}) : super(key: key);
 
   Future<void> _openImageFile(BuildContext context) async {
-    final XTypeGroup typeGroup = XTypeGroup(
+    const XTypeGroup typeGroup = XTypeGroup(
       label: 'images',
       extensions: <String>['jpg', 'png'],
     );
@@ -28,10 +28,12 @@ class OpenImagePage extends StatelessWidget {
     final String fileName = file.name;
     final String filePath = file.path;
 
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext context) => ImageDisplay(fileName, filePath),
-    );
+    if (context.mounted) {
+      await showDialog<void>(
+        context: context,
+        builder: (BuildContext context) => ImageDisplay(fileName, filePath),
+      );
+    }
   }
 
   @override

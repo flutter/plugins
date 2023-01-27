@@ -5,12 +5,12 @@
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:git/git.dart';
 import 'package:platform/platform.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
+import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 import 'common/repository_package.dart';
@@ -206,20 +206,28 @@ class UpdateExcerptsCommand extends PackageLoopingCommand {
         .renameSync(package.pubspecFile.path);
   }
 
-  /// Checks the git state, returning an error string unless nothing has
+  /// Checks the git state, returning an error string if any .md files have
   /// changed.
   Future<String?> _validateRepositoryState() async {
-    final io.ProcessResult modifiedFiles = await processRunner.run(
+    final io.ProcessResult checkFiles = await processRunner.run(
       'git',
       <String>['ls-files', '--modified'],
       workingDir: packagesDir,
       logOnError: true,
     );
-    if (modifiedFiles.exitCode != 0) {
+    if (checkFiles.exitCode != 0) {
       return 'Unable to determine local file state';
     }
 
-    final String stdout = modifiedFiles.stdout as String;
-    return stdout.trim().isEmpty ? null : 'Snippets are out of sync';
+    final String stdout = checkFiles.stdout as String;
+    final List<String> changedFiles = stdout.trim().split('\n');
+    final Iterable<String> changedMDFiles =
+        changedFiles.where((String filePath) => filePath.endsWith('.md'));
+    if (changedMDFiles.isNotEmpty) {
+      return 'Snippets are out of sync in the following files: '
+          '${changedMDFiles.join(', ')}';
+    }
+
+    return null;
   }
 }

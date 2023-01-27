@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:camera_web/src/types/types.dart';
+import 'types.dart';
 
 /// An exception thrown when the camera with id [cameraId] reports
 /// an initialization, configuration or video streaming error,

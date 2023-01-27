@@ -18,6 +18,5 @@
 - plugin_platform_interface
 - quick_actions/quick_actions
 - shared_preferences/shared_preferences
-- webview_flutter/webview_flutter
 - webview_flutter_android
 - webview_flutter_web

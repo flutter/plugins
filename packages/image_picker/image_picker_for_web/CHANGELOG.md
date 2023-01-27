@@ -1,5 +1,14 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 2.1.10
+
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 2.1.9
+
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 * Fixes violations of new analysis option use_named_constants.
 

@@ -124,9 +124,10 @@ void main() {
   });
 
   test(
-    'Default widget is AndroidView',
+    'Does not use PlatformViewLink when using TLHC',
     () async {
       final GoogleMapsFlutterAndroid maps = GoogleMapsFlutterAndroid();
+      maps.useAndroidViewSurface = false;
       final Widget widget = maps.buildViewWithConfiguration(1, (int _) {},
           widgetConfiguration: const MapWidgetConfiguration(
               initialCameraPosition:
@@ -141,6 +142,18 @@ void main() {
       (WidgetTester tester) async {
     final GoogleMapsFlutterAndroid maps = GoogleMapsFlutterAndroid();
     maps.useAndroidViewSurface = true;
+
+    final Widget widget = maps.buildViewWithConfiguration(1, (int _) {},
+        widgetConfiguration: const MapWidgetConfiguration(
+            initialCameraPosition:
+                CameraPosition(target: LatLng(0, 0), zoom: 1),
+            textDirection: TextDirection.ltr));
+
+    expect(widget, isA<PlatformViewLink>());
+  });
+
+  testWidgets('Defaults to surface view', (WidgetTester tester) async {
+    final GoogleMapsFlutterAndroid maps = GoogleMapsFlutterAndroid();
 
     final Widget widget = maps.buildViewWithConfiguration(1, (int _) {},
         widgetConfiguration: const MapWidgetConfiguration(

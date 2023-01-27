@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import '../../google_maps_flutter_platform_interface.dart';
 
 /// Generic Event coming from the native side of Maps.
 ///

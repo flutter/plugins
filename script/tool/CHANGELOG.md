@@ -1,3 +1,78 @@
+## 0.13.4
+
+* Adds the ability to validate minimum supported Dart/Flutter versions in
+  `pubspec-check`.
+
+## 0.13.3
+
+* Renames `podspecs` to `podspec-check`. The old name will continue to work.
+* Adds validation of the Swift-in-Obj-C-projects workaround in the podspecs of
+  iOS plugin implementations that use Swift.
+
+## 0.13.2+1
+
+* Replaces deprecated `flutter format` with `dart format` in `format`
+  implementation.
+
+## 0.13.2
+
+* Falls back to other executables in PATH when `clang-format` does not run.
+
+## 0.13.1
+
+* Updates `version-check` to recognize Pigeon's platform test structure.
+* Pins `package:git` dependency to `2.0.x` until `dart >=2.18.0` becomes our
+  oldest legacy.
+* Updates test mocks.
+
+## 0.13.0
+
+* Renames `all-plugins-app` to `create-all-packages-app` to clarify what it
+  actually does. Also renames the project directory it creates from
+  `all_plugins` to `all_packages`.
+
+## 0.12.1
+
+* Modifies `publish_check_command.dart` to do a `dart pub get` in all examples
+  of the package being checked. Workaround for [dart-lang/pub#3618](https://github.com/dart-lang/pub/issues/3618).
+
+## 0.12.0
+
+* Changes the behavior of `--packages-for-branch` on main/master to run for
+  packages changed in the last commit, rather than running for all packages.
+  This allows CI to test the same filtered set of packages in post-submit as are
+  tested in presubmit.
+* Adds a `fix` command to run `dart fix --apply` in target packages.
+
+## 0.11.0
+
+* Renames `publish-plugin` to `publish`.
+* Renames arguments to `list`:
+    * `--package` now lists top-level packages (previously `--plugin`).
+    * `--package-or-subpackage` now lists top-level packages (previously
+      `--package`).
+
+## 0.10.0+1
+
+* Recognizes `run_test.sh` as a developer-only file in `version-check`.
+* Adds `readme-check` validation that the example/README.md for a federated
+  plugin's implementation packages has a warning about the intended use of the
+  example instead of the template boilerplate.
+
+## 0.10.0
+
+* Improves the logic in `version-check` to determine what changes don't require
+  version changes, as well as making any dev-only changes also not require
+  changelog changes since in practice we almost always override the check in
+  that case.
+* Removes special-case handling of Dependabot PRs, and the (fragile)
+  `--change-description-file` flag was only still used for that case, as
+  the improved diff analysis now handles that case more robustly.
+
+## 0.9.3
+
+* Raises minimum `compileSdkVersion` to 32 for the `all-plugins-app` command.
+
 ## 0.9.2
 
 * Adds checking of `code-excerpt` configuration to `readme-check`, to validate

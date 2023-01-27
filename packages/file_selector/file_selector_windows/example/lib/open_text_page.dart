@@ -12,7 +12,7 @@ class OpenTextPage extends StatelessWidget {
   const OpenTextPage({Key? key}) : super(key: key);
 
   Future<void> _openTextFile(BuildContext context) async {
-    final XTypeGroup typeGroup = XTypeGroup(
+    const XTypeGroup typeGroup = XTypeGroup(
       label: 'text',
       extensions: <String>['txt', 'json'],
     );
@@ -25,10 +25,12 @@ class OpenTextPage extends StatelessWidget {
     final String fileName = file.name;
     final String fileContent = await file.readAsString();
 
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext context) => TextDisplay(fileName, fileContent),
-    );
+    if (context.mounted) {
+      await showDialog<void>(
+        context: context,
+        builder: (BuildContext context) => TextDisplay(fileName, fileContent),
+      );
+    }
   }
 
   @override

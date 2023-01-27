@@ -1,6 +1,20 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 0.2.0+6
+
+* Updates espresso-accessibility to 3.5.1.
+* Updates espresso-idling-resource to 3.5.1.
+
+## 0.2.0+5
+
+* Updates android gradle plugin to 7.3.1.
+
+## 0.2.0+4
+
 * Updates minimum Flutter version to 2.10.
+* Bumps gson to 2.9.1
 
 ## 0.2.0+3
 

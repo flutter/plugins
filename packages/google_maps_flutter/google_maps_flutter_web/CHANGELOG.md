@@ -1,5 +1,19 @@
 ## NEXT
 
+* Updates minimum Flutter version to 3.0.
+
+## 0.4.0+5
+
+* Updates code for stricter lint checks.
+
+## 0.4.0+4
+
+* Updates code for stricter lint checks.
+* Updates code for `no_leading_underscores_for_local_identifiers` lint.
+
+## 0.4.0+3
+
+* Updates imports for `prefer_relative_imports`.
 * Updates minimum Flutter version to 2.10.
 
 ## 0.4.0+2

@@ -130,7 +130,7 @@ Future<bool> launch(
 /// details.
 @Deprecated('Use canLaunchUrl instead')
 Future<bool> canLaunch(String urlString) async {
-  return await UrlLauncherPlatform.instance.canLaunch(urlString);
+  return UrlLauncherPlatform.instance.canLaunch(urlString);
 }
 
 /// Closes the current WebView, if one was previously opened via a call to [launch].
@@ -143,7 +143,7 @@ Future<bool> canLaunch(String urlString) async {
 /// WebView/SafariViewController available to be closed.
 @Deprecated('Use closeInAppWebView instead')
 Future<void> closeWebView() async {
-  return await UrlLauncherPlatform.instance.closeWebView();
+  return UrlLauncherPlatform.instance.closeWebView();
 }
 
 /// This allows a value of type T or T? to be treated as a value of type T?.

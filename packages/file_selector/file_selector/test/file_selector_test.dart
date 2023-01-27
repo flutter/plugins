@@ -12,7 +12,7 @@ void main() {
   const String initialDirectory = '/home/flutteruser';
   const String confirmButtonText = 'Use this profile picture';
   const String suggestedName = 'suggested_name';
-  final List<XTypeGroup> acceptedTypeGroups = <XTypeGroup>[
+  const List<XTypeGroup> acceptedTypeGroups = <XTypeGroup>[
     XTypeGroup(label: 'documents', mimeTypes: <String>[
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessing',

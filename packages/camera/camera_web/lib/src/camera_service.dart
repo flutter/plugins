@@ -8,11 +8,12 @@ import 'dart:html' as html;
 import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_web/src/camera.dart';
-import 'package:camera_web/src/shims/dart_js_util.dart';
-import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
+import 'camera.dart';
+import 'shims/dart_js_util.dart';
+import 'types/types.dart';
 
 /// A service to fetch, map camera settings and
 /// obtain the camera stream.
@@ -298,9 +299,15 @@ class CameraService {
       case ResolutionPreset.medium:
         return const Size(720, 480);
       case ResolutionPreset.low:
-      default:
         return const Size(320, 240);
     }
+    // The enum comes from a different package, which could get a new value at
+    // any time, so provide a fallback that ensures this won't break when used
+    // with a version that contains new values. This is deliberately outside
+    // the switch rather than a `default` so that the linter will flag the
+    // switch as needing an update.
+    // ignore: dead_code
+    return const Size(320, 240);
   }
 
   /// Maps the given [deviceOrientation] to [OrientationType].

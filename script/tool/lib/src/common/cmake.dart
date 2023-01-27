@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:platform/platform.dart';
 
+import 'core.dart';
 import 'process_runner.dart';
 
 const String _cacheCommandKey = 'CMAKE_COMMAND:INTERNAL';

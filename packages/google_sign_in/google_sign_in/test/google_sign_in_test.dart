@@ -13,7 +13,7 @@ import 'package:mockito/mockito.dart';
 import 'google_sign_in_test.mocks.dart';
 
 /// Verify that [GoogleSignInAccount] can be mocked even though it's unused
-// ignore: must_be_immutable
+// ignore: avoid_implementing_value_types, must_be_immutable
 class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
 
 @GenerateMocks(<Type>[GoogleSignInPlatform])
@@ -77,6 +77,16 @@ void main() {
       await googleSignIn.signIn();
 
       _verifyInit(mockPlatform, serverClientId: fakeServerClientId);
+      verify(mockPlatform.signIn());
+    });
+
+    test('forceCodeForRefreshToken sent with init method call', () async {
+      final GoogleSignIn googleSignIn =
+          GoogleSignIn(forceCodeForRefreshToken: true);
+
+      await googleSignIn.signIn();
+
+      _verifyInit(mockPlatform, forceCodeForRefreshToken: true);
       verify(mockPlatform.signIn());
     });
 

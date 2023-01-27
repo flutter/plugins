@@ -49,7 +49,7 @@ void main() {
     }
   });
 
-  final List<StorageDirectory?> _allDirs = <StorageDirectory?>[
+  final List<StorageDirectory?> allDirs = <StorageDirectory?>[
     null,
     StorageDirectory.music,
     StorageDirectory.podcasts,
@@ -60,7 +60,7 @@ void main() {
     StorageDirectory.movies,
   ];
 
-  for (final StorageDirectory? type in _allDirs) {
+  for (final StorageDirectory? type in allDirs) {
     testWidgets('getExternalStorageDirectories (type: $type)',
         (WidgetTester tester) async {
       final PathProviderPlatform provider = PathProviderPlatform.instance;
