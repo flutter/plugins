@@ -1,6 +1,19 @@
-## 3.1.4
+## 3.2.3
 
-* Adds a method `setScrollListener` to the `AndroidWebViewController` to get notified when the X and Y positions changed.
+* Added `setScrollListener` method to the `AndroidWebViewController`.
+
+## 3.2.2
+
+* Updates example code for `use_build_context_synchronously` lint.
+
+## 3.2.1
+
+* Updates code for stricter lint checks.
+
+## 3.2.0
+
+* Adds support for handling file selection. See `AndroidWebViewController.setOnShowFileSelector`.
+* Updates pigeon dev dependency to `4.2.14`.
 
 ## 3.1.3
 

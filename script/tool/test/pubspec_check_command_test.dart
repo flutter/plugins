@@ -60,12 +60,16 @@ ${publishable ? '' : "publish_to: 'none'"}
 ''';
 }
 
-String _environmentSection() {
-  return '''
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.0.0"
-''';
+String _environmentSection({
+  String dartConstraint = '>=2.12.0 <3.0.0',
+  String? flutterConstraint = '>=2.0.0',
+}) {
+  return <String>[
+    'environment:',
+    '  sdk: "$dartConstraint"',
+    if (flutterConstraint != null) '  flutter: "$flutterConstraint"',
+    '',
+  ].join('\n');
 }
 
 String _flutterSection({
@@ -927,6 +931,163 @@ ${_devDependenciesSection()}
         output,
         containsAllInOrder(<Matcher>[
           contains('Running for plugin...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('fails when a Flutter package has a too-low minimum Flutter version',
+        () async {
+      final RepositoryPackage package = createFakePackage(
+          'a_package', packagesDir,
+          isFlutter: true, examples: <String>[]);
+
+      package.pubspecFile.writeAsStringSync('''
+${_headerSection('a_package')}
+${_environmentSection(flutterConstraint: '>=2.10.0')}
+${_dependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'pubspec-check',
+        '--min-min-flutter-version',
+        '3.0.0'
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Minimum allowed Flutter version 2.10.0 is less than 3.0.0'),
+        ]),
+      );
+    });
+
+    test(
+        'passes when a Flutter package requires exactly the minimum Flutter version',
+        () async {
+      final RepositoryPackage package = createFakePackage(
+          'a_package', packagesDir,
+          isFlutter: true, examples: <String>[]);
+
+      package.pubspecFile.writeAsStringSync('''
+${_headerSection('a_package')}
+${_environmentSection(flutterConstraint: '>=3.0.0')}
+${_dependenciesSection()}
+''');
+
+      final List<String> output = await runCapturingPrint(runner,
+          <String>['pubspec-check', '--min-min-flutter-version', '3.0.0']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for a_package...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test(
+        'passes when a Flutter package requires a higher minimum Flutter version',
+        () async {
+      final RepositoryPackage package = createFakePackage(
+          'a_package', packagesDir,
+          isFlutter: true, examples: <String>[]);
+
+      package.pubspecFile.writeAsStringSync('''
+${_headerSection('a_package')}
+${_environmentSection(flutterConstraint: '>=3.3.0')}
+${_dependenciesSection()}
+''');
+
+      final List<String> output = await runCapturingPrint(runner,
+          <String>['pubspec-check', '--min-min-flutter-version', '3.0.0']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for a_package...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('fails when a non-Flutter package has a too-low minimum Dart version',
+        () async {
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir, examples: <String>[]);
+
+      package.pubspecFile.writeAsStringSync('''
+${_headerSection('a_package')}
+${_environmentSection(dartConstraint: '>=2.14.0 <3.0.0', flutterConstraint: null)}
+${_dependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check', '--min-min-dart-version', '2.17.0'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Minimum allowed Dart version 2.14.0 is less than 2.17.0'),
+        ]),
+      );
+    });
+
+    test(
+        'passes when a non-Flutter package requires exactly the minimum Dart version',
+        () async {
+      final RepositoryPackage package = createFakePackage(
+          'a_package', packagesDir,
+          isFlutter: true, examples: <String>[]);
+
+      package.pubspecFile.writeAsStringSync('''
+${_headerSection('a_package')}
+${_environmentSection(dartConstraint: '>=2.17.0 <3.0.0', flutterConstraint: null)}
+${_dependenciesSection()}
+''');
+
+      final List<String> output = await runCapturingPrint(runner,
+          <String>['pubspec-check', '--min-min-dart-version', '2.17.0']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for a_package...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test(
+        'passes when a non-Flutter package requires a higher minimum Dart version',
+        () async {
+      final RepositoryPackage package = createFakePackage(
+          'a_package', packagesDir,
+          isFlutter: true, examples: <String>[]);
+
+      package.pubspecFile.writeAsStringSync('''
+${_headerSection('a_package')}
+${_environmentSection(dartConstraint: '>=2.18.0 <3.0.0', flutterConstraint: null)}
+${_dependenciesSection()}
+''');
+
+      final List<String> output = await runCapturingPrint(runner,
+          <String>['pubspec-check', '--min-min-dart-version', '2.17.0']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for a_package...'),
           contains('No issues found!'),
         ]),
       );

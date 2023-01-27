@@ -5,9 +5,7 @@
 package io.flutter.plugins.webviewflutter;
 
 import androidx.annotation.Nullable;
-/**
- * Define extending APIs for {@link android.webkit.WebView}
- */
+/** Define extending APIs for {@link android.webkit.WebView} */
 public interface WebViewExtendedApi {
-    void setScrollListener(@Nullable ScrollListener onScrollChangeListener);
+  void setScrollListener(@Nullable ScrollListener onScrollChangeListener);
 }

@@ -1189,6 +1189,9 @@ abstract class TestWebChromeClientHostApi {
 
   void create(int instanceId);
 
+  void setSynchronousReturnValueForOnShowFileChooser(
+      int instanceId, bool value);
+
   static void setup(TestWebChromeClientHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -1206,6 +1209,30 @@ abstract class TestWebChromeClientHostApi {
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.WebChromeClientHostApi.create was null, expected non-null int.');
           api.create(arg_instanceId!);
+          return <Object?>[];
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebChromeClientHostApi.setSynchronousReturnValueForOnShowFileChooser',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientHostApi.setSynchronousReturnValueForOnShowFileChooser was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientHostApi.setSynchronousReturnValueForOnShowFileChooser was null, expected non-null int.');
+          final bool? arg_value = (args[1] as bool?);
+          assert(arg_value != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientHostApi.setSynchronousReturnValueForOnShowFileChooser was null, expected non-null bool.');
+          api.setSynchronousReturnValueForOnShowFileChooser(
+              arg_instanceId!, arg_value!);
           return <Object?>[];
         });
       }

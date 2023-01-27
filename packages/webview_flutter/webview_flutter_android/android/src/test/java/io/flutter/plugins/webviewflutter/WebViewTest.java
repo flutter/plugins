@@ -4,12 +4,23 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.content.Context;
 import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
-
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
+import java.util.HashMap;
+import java.util.Objects;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,20 +29,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-
-import java.util.HashMap;
-import java.util.Objects;
-
-import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class WebViewTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();

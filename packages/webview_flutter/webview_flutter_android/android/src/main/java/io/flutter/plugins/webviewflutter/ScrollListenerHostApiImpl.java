@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.webviewflutter;
 
-
 import androidx.annotation.NonNull;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.ScrollListenerHostApi;
 
@@ -18,9 +17,7 @@ public class ScrollListenerHostApiImpl implements ScrollListenerHostApi {
   private final ScrollListenerCreator scrollListenerCreator;
   private final ScrollListenerFlutterApiImpl flutterApi;
 
-  /**
-   * Implementation of {@link ScrollListener} that passes arguments of callback methods to Dart.
-   */
+  /** Implementation of {@link ScrollListener} that passes arguments of callback methods to Dart. */
   public static class ScrollListenerImpl implements ScrollListener {
     private final ScrollListenerFlutterApiImpl flutterApi;
 
@@ -32,7 +29,7 @@ public class ScrollListenerHostApiImpl implements ScrollListenerHostApi {
     public ScrollListenerImpl(@NonNull ScrollListenerFlutterApiImpl flutterApi) {
       this.flutterApi = flutterApi;
     }
-    
+
     @Override
     public void onScrollPosChange(int x, int y) {
       flutterApi.onScrollPosChange(this, x, y, reply -> {});
@@ -56,7 +53,8 @@ public class ScrollListenerHostApiImpl implements ScrollListenerHostApi {
    * Creates a host API that handles creating {@link ScrollListener}.
    *
    * @param instanceManager maintains instances stored to communicate with Dart objects
-   * @param scrollListenerCreator handles creating {@link ScrollListenerHostApiImpl.ScrollListenerImpl}
+   * @param scrollListenerCreator handles creating {@link
+   *     ScrollListenerHostApiImpl.ScrollListenerImpl}
    * @param flutterApi handles sending messages to Dart
    */
   public ScrollListenerHostApiImpl(
@@ -70,8 +68,7 @@ public class ScrollListenerHostApiImpl implements ScrollListenerHostApi {
 
   @Override
   public void create(Long instanceId) {
-    final ScrollListener scrollListener =
-        scrollListenerCreator.createScrollListener(flutterApi);
+    final ScrollListener scrollListener = scrollListenerCreator.createScrollListener(flutterApi);
     instanceManager.addDartCreatedInstance(scrollListener, instanceId);
   }
 }

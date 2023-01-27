@@ -1,3 +1,8 @@
+## 0.13.4
+
+* Adds the ability to validate minimum supported Dart/Flutter versions in
+  `pubspec-check`.
+
 ## 0.13.3
 
 * Renames `podspecs` to `podspec-check`. The old name will continue to work.

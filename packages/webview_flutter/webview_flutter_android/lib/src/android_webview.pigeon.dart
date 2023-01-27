@@ -10,6 +10,48 @@ import 'dart:typed_data' show Float64List, Int32List, Int64List, Uint8List;
 import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
 
+/// Mode of how to select files for a file chooser.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
+enum FileChooserMode {
+  /// Open single file and requires that the file exists before allowing the
+  /// user to pick it.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN.
+  open,
+
+  /// Similar to [open] but allows multiple files to be selected.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_OPEN_MULTIPLE.
+  openMultiple,
+
+  /// Allows picking a nonexistent file and saving it.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams#MODE_SAVE.
+  save,
+}
+
+class FileChooserModeEnumData {
+  FileChooserModeEnumData({
+    required this.value,
+  });
+
+  FileChooserMode value;
+
+  Object encode() {
+    return <Object?>[
+      value.index,
+    ];
+  }
+
+  static FileChooserModeEnumData decode(Object result) {
+    result as List<Object?>;
+    return FileChooserModeEnumData(
+      value: FileChooserMode.values[result[0]! as int],
+    );
+  }
+}
+
 class WebResourceRequestData {
   WebResourceRequestData({
     required this.url,
@@ -1755,6 +1797,30 @@ class WebChromeClientHostApi {
       return;
     }
   }
+
+  Future<void> setSynchronousReturnValueForOnShowFileChooser(
+      int arg_instanceId, bool arg_value) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebChromeClientHostApi.setSynchronousReturnValueForOnShowFileChooser',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList = await channel
+        .send(<Object?>[arg_instanceId, arg_value]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
 }
 
 class FlutterAssetManagerHostApi {
@@ -1828,6 +1894,9 @@ abstract class WebChromeClientFlutterApi {
 
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
 
+  Future<List<String?>> onShowFileChooser(
+      int instanceId, int webViewInstanceId, int paramsInstanceId);
+
   static void setup(WebChromeClientFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -1854,6 +1923,33 @@ abstract class WebChromeClientFlutterApi {
           api.onProgressChanged(
               arg_instanceId!, arg_webViewInstanceId!, arg_progress!);
           return;
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebChromeClientFlutterApi.onShowFileChooser',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onShowFileChooser was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onShowFileChooser was null, expected non-null int.');
+          final int? arg_webViewInstanceId = (args[1] as int?);
+          assert(arg_webViewInstanceId != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onShowFileChooser was null, expected non-null int.');
+          final int? arg_paramsInstanceId = (args[2] as int?);
+          assert(arg_paramsInstanceId != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onShowFileChooser was null, expected non-null int.');
+          final List<String?> output = await api.onShowFileChooser(
+              arg_instanceId!, arg_webViewInstanceId!, arg_paramsInstanceId!);
+          return output;
         });
       }
     }
@@ -1911,6 +2007,77 @@ class WebStorageHostApi {
       );
     } else {
       return;
+    }
+  }
+}
+
+class _FileChooserParamsFlutterApiCodec extends StandardMessageCodec {
+  const _FileChooserParamsFlutterApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is FileChooserModeEnumData) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return FileChooserModeEnumData.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+/// Handles callbacks methods for the native Java FileChooserParams class.
+///
+/// See https://developer.android.com/reference/android/webkit/WebChromeClient.FileChooserParams.
+abstract class FileChooserParamsFlutterApi {
+  static const MessageCodec<Object?> codec =
+      _FileChooserParamsFlutterApiCodec();
+
+  void create(int instanceId, bool isCaptureEnabled, List<String?> acceptTypes,
+      FileChooserModeEnumData mode, String? filenameHint);
+
+  static void setup(FileChooserParamsFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.FileChooserParamsFlutterApi.create', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.FileChooserParamsFlutterApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.FileChooserParamsFlutterApi.create was null, expected non-null int.');
+          final bool? arg_isCaptureEnabled = (args[1] as bool?);
+          assert(arg_isCaptureEnabled != null,
+              'Argument for dev.flutter.pigeon.FileChooserParamsFlutterApi.create was null, expected non-null bool.');
+          final List<String?>? arg_acceptTypes =
+              (args[2] as List<Object?>?)?.cast<String?>();
+          assert(arg_acceptTypes != null,
+              'Argument for dev.flutter.pigeon.FileChooserParamsFlutterApi.create was null, expected non-null List<String?>.');
+          final FileChooserModeEnumData? arg_mode =
+              (args[3] as FileChooserModeEnumData?);
+          assert(arg_mode != null,
+              'Argument for dev.flutter.pigeon.FileChooserParamsFlutterApi.create was null, expected non-null FileChooserModeEnumData.');
+          final String? arg_filenameHint = (args[4] as String?);
+          api.create(arg_instanceId!, arg_isCaptureEnabled!, arg_acceptTypes!,
+              arg_mode!, arg_filenameHint);
+          return;
+        });
+      }
     }
   }
 }
