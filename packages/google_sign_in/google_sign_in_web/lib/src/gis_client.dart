@@ -199,7 +199,7 @@ class GisSdkClient {
     // If we already know the user, use their `email` as a `hint`, so they don't
     // have to pick their user again in the Authorization popup.
     final GoogleSignInUserData? knownUser =
-      utils.gisResponsesToUserData(_lastCredentialResponse);
+        utils.gisResponsesToUserData(_lastCredentialResponse);
     // This toggles a popup, so `signIn` *must* be called with
     // user activation.
     _tokenClient.requestAccessToken(OverridableTokenClientConfig(
@@ -287,7 +287,7 @@ class GisSdkClient {
 
   // The scopes initially requested by the developer.
   //
-  // We store this because we might need to add more at `signIn`, if the user
+  // We store this because we might need to add more at `signIn`. If the user
   // doesn't `silentSignIn`, we expand this list to consult the People API to
   // return some basic Authentication information.
   final List<String> _initialScopes;

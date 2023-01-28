@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_identity_services_web/id.dart';
 import 'package:google_identity_services_web/oauth2.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:google_sign_in_web/src/utils.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:jose/jose.dart';
 
+import 'src/create_jwt.dart';
 import 'src/jsify_as.dart';
 
 void main() {
@@ -78,27 +76,5 @@ void main() {
       });
       expect(gisResponsesToUserData(response), isNull);
     });
-  });
-}
-
-CredentialResponse createJwt(Map<String, Object?>? claims) {
-  String? credential;
-  if (claims != null) {
-    final JsonWebTokenClaims token = JsonWebTokenClaims.fromJson(claims);
-    final JsonWebSignatureBuilder builder = JsonWebSignatureBuilder();
-    builder.jsonContent = token.toJson();
-    builder.addRecipient(
-        JsonWebKey.fromJson(<String, Object?>{
-          'kty': 'oct',
-          'k': base64.encode('symmetric-encryption-is-weak'.codeUnits),
-        }),
-        algorithm: 'HS256'); // bogus crypto, don't use this for prod!
-    builder.setProtectedHeader('typ', 'JWT');
-    credential = builder.build().toCompactSerialization();
-    // ignore:avoid_print
-    print('Generated JWT: $credential');
-  }
-  return jsifyAs<CredentialResponse>(<String, Object?>{
-    'credential': credential,
   });
 }
