@@ -1,3 +1,19 @@
+## 0.13.4
+
+* Adds the ability to validate minimum supported Dart/Flutter versions in
+  `pubspec-check`.
+
+## 0.13.3
+
+* Renames `podspecs` to `podspec-check`. The old name will continue to work.
+* Adds validation of the Swift-in-Obj-C-projects workaround in the podspecs of
+  iOS plugin implementations that use Swift.
+
+## 0.13.2+1
+
+* Replaces deprecated `flutter format` with `dart format` in `format`
+  implementation.
+
 ## 0.13.2
 
 * Falls back to other executables in PATH when `clang-format` does not run.

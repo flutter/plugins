@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum supported Dart version.
+
 ## 2.1.3
 
 * Minor fixes for new analysis options.

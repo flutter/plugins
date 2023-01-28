@@ -353,9 +353,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       // unsupported. This also goes for `null` and `undefined` on iOS 14+. For
       // example, when running a void function. For ease of use, this specific
       // error is ignored when no return value is expected.
-      if (exception.details is! NSError ||
-          exception.details.code !=
-              WKErrorCode.javaScriptResultTypeIsUnsupported) {
+      final Object? details = exception.details;
+      if (details is! NSError ||
+          details.code != WKErrorCode.javaScriptResultTypeIsUnsupported) {
         rethrow;
       }
     }

@@ -4,20 +4,18 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i9;
-import 'dart:typed_data' as _i15;
+import 'dart:typed_data' as _i14;
 import 'dart:ui' as _i4;
 
-import 'package:flutter/foundation.dart' as _i12;
-import 'package:flutter/gestures.dart' as _i13;
-import 'package:flutter/material.dart' as _i14;
+import 'package:flutter/foundation.dart' as _i11;
+import 'package:flutter/gestures.dart' as _i12;
+import 'package:flutter/material.dart' as _i13;
 import 'package:flutter/services.dart' as _i7;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_android/src/android_navigation_delegate.dart'
-    as _i8;
-import 'package:webview_flutter_android/src/android_proxy.dart' as _i11;
+import 'package:webview_flutter_android/src/android_proxy.dart' as _i10;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
 import 'package:webview_flutter_android/src/android_webview_controller.dart'
-    as _i10;
+    as _i8;
 import 'package:webview_flutter_android/src/instance_manager.dart' as _i5;
 import 'package:webview_flutter_android/src/platform_views_service_proxy.dart'
     as _i6;
@@ -349,7 +347,7 @@ class MockAndroidNavigationDelegate extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAndroidWebViewController extends _i1.Mock
-    implements _i10.AndroidWebViewController {
+    implements _i8.AndroidWebViewController {
   @override
   _i3.PlatformWebViewControllerCreationParams get params => (super.noSuchMethod(
         Invocation.getter(#params),
@@ -649,13 +647,25 @@ class MockAndroidWebViewController extends _i1.Mock
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
+  @override
+  _i9.Future<void> setOnShowFileSelector(
+          _i9.Future<List<String>> Function(_i8.FileSelectorParams)?
+              onShowFileSelectorCallback) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setOnShowFileSelector,
+          [onShowFileSelectorCallback],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
 }
 
 /// A class which mocks [AndroidWebViewProxy].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAndroidWebViewProxy extends _i1.Mock
-    implements _i11.AndroidWebViewProxy {
+    implements _i10.AndroidWebViewProxy {
   @override
   _i2.WebView Function({required bool useHybridComposition})
       get createAndroidWebView => (super.noSuchMethod(
@@ -672,40 +682,63 @@ class MockAndroidWebViewProxy extends _i1.Mock
             ),
           ) as _i2.WebView Function({required bool useHybridComposition}));
   @override
-  _i2.WebChromeClient Function(
-      {void Function(
-        _i2.WebView,
-        int,
-      )?
-          onProgressChanged}) get createAndroidWebChromeClient =>
-      (super.noSuchMethod(
+  _i2.WebChromeClient Function({
+    void Function(
+      _i2.WebView,
+      int,
+    )?
+        onProgressChanged,
+    _i9.Future<List<String>> Function(
+      _i2.WebView,
+      _i2.FileChooserParams,
+    )?
+        onShowFileChooser,
+  }) get createAndroidWebChromeClient => (super.noSuchMethod(
         Invocation.getter(#createAndroidWebChromeClient),
-        returnValue: (
-                {void Function(
-                  _i2.WebView,
-                  int,
-                )?
-                    onProgressChanged}) =>
-            _FakeWebChromeClient_0(
-          this,
-          Invocation.getter(#createAndroidWebChromeClient),
-        ),
-        returnValueForMissingStub: (
-                {void Function(
-                  _i2.WebView,
-                  int,
-                )?
-                    onProgressChanged}) =>
-            _FakeWebChromeClient_0(
-          this,
-          Invocation.getter(#createAndroidWebChromeClient),
-        ),
-      ) as _i2.WebChromeClient Function(
-          {void Function(
+        returnValue: ({
+          void Function(
             _i2.WebView,
             int,
           )?
-              onProgressChanged}));
+              onProgressChanged,
+          _i9.Future<List<String>> Function(
+            _i2.WebView,
+            _i2.FileChooserParams,
+          )?
+              onShowFileChooser,
+        }) =>
+            _FakeWebChromeClient_0(
+          this,
+          Invocation.getter(#createAndroidWebChromeClient),
+        ),
+        returnValueForMissingStub: ({
+          void Function(
+            _i2.WebView,
+            int,
+          )?
+              onProgressChanged,
+          _i9.Future<List<String>> Function(
+            _i2.WebView,
+            _i2.FileChooserParams,
+          )?
+              onShowFileChooser,
+        }) =>
+            _FakeWebChromeClient_0(
+          this,
+          Invocation.getter(#createAndroidWebChromeClient),
+        ),
+      ) as _i2.WebChromeClient Function({
+        void Function(
+          _i2.WebView,
+          int,
+        )?
+            onProgressChanged,
+        _i9.Future<List<String>> Function(
+          _i2.WebView,
+          _i2.FileChooserParams,
+        )?
+            onShowFileChooser,
+      }));
   @override
   _i2.WebViewClient Function({
     void Function(
@@ -958,7 +991,7 @@ class MockAndroidWebViewProxy extends _i1.Mock
 /// See the documentation for Mockito's code generation for more information.
 // ignore: must_be_immutable
 class MockAndroidWebViewWidgetCreationParams extends _i1.Mock
-    implements _i10.AndroidWebViewWidgetCreationParams {
+    implements _i8.AndroidWebViewWidgetCreationParams {
   @override
   _i5.InstanceManager get instanceManager => (super.noSuchMethod(
         Invocation.getter(#instanceManager),
@@ -1009,13 +1042,13 @@ class MockAndroidWebViewWidgetCreationParams extends _i1.Mock
         returnValueForMissingStub: _i4.TextDirection.rtl,
       ) as _i4.TextDirection);
   @override
-  Set<_i12.Factory<_i13.OneSequenceGestureRecognizer>> get gestureRecognizers =>
+  Set<_i11.Factory<_i12.OneSequenceGestureRecognizer>> get gestureRecognizers =>
       (super.noSuchMethod(
         Invocation.getter(#gestureRecognizers),
-        returnValue: <_i12.Factory<_i13.OneSequenceGestureRecognizer>>{},
+        returnValue: <_i11.Factory<_i12.OneSequenceGestureRecognizer>>{},
         returnValueForMissingStub: <
-            _i12.Factory<_i13.OneSequenceGestureRecognizer>>{},
-      ) as Set<_i12.Factory<_i13.OneSequenceGestureRecognizer>>);
+            _i11.Factory<_i12.OneSequenceGestureRecognizer>>{},
+      ) as Set<_i11.Factory<_i12.OneSequenceGestureRecognizer>>);
 }
 
 /// A class which mocks [ExpensiveAndroidViewController].
@@ -1162,7 +1195,7 @@ class MockExpensiveAndroidViewController extends _i1.Mock
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
   @override
-  _i9.Future<void> dispatchPointerEvent(_i14.PointerEvent? event) =>
+  _i9.Future<void> dispatchPointerEvent(_i13.PointerEvent? event) =>
       (super.noSuchMethod(
         Invocation.method(
           #dispatchPointerEvent,
@@ -1514,7 +1547,7 @@ class MockSurfaceAndroidViewController extends _i1.Mock
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
   @override
-  _i9.Future<void> dispatchPointerEvent(_i14.PointerEvent? event) =>
+  _i9.Future<void> dispatchPointerEvent(_i13.PointerEvent? event) =>
       (super.noSuchMethod(
         Invocation.method(
           #dispatchPointerEvent,
@@ -1547,6 +1580,16 @@ class MockSurfaceAndroidViewController extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWebChromeClient extends _i1.Mock implements _i2.WebChromeClient {
+  @override
+  _i9.Future<void> setSynchronousReturnValueForOnShowFileChooser(bool? value) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setSynchronousReturnValueForOnShowFileChooser,
+          [value],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
   _i2.WebChromeClient copy() => (super.noSuchMethod(
         Invocation.method(
@@ -1793,7 +1836,7 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
   @override
   _i9.Future<void> postUrl(
     String? url,
-    _i15.Uint8List? data,
+    _i14.Uint8List? data,
   ) =>
       (super.noSuchMethod(
         Invocation.method(

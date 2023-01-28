@@ -1,3 +1,11 @@
+## 3.0.3
+
+* Updates example code for `use_build_context_synchronously` lint.
+
+## 3.0.2
+
+* Updates code for stricter lint checks.
+
 ## 3.0.1
 
 * Adds support for retrieving navigation type with internal class.

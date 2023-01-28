@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 6.1.0
 
 * Added support for picture in picture on iOS

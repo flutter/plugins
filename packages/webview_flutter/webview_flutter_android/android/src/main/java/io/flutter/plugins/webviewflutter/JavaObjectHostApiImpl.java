@@ -27,6 +27,10 @@ public class JavaObjectHostApiImpl implements GeneratedAndroidWebView.JavaObject
 
   @Override
   public void dispose(@NonNull Long identifier) {
+    final Object instance = instanceManager.getInstance(identifier);
+    if (instance instanceof WebViewHostApiImpl.WebViewPlatformView) {
+      ((WebViewHostApiImpl.WebViewPlatformView) instance).destroy();
+    }
     instanceManager.remove(identifier);
   }
 }
