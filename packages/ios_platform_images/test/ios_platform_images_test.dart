@@ -15,8 +15,10 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final PlatformImage fakePlatformImage = PlatformImage(bytes: Uint8List(1));
-  final PlatformImage fakeSystemImage = PlatformImage(bytes: Uint8List(2));
+  final PlatformImage fakePlatformImage =
+      PlatformImage(scale: 1, bytes: Uint8List(1));
+  final PlatformImage fakeSystemImage =
+      PlatformImage(scale: 1, bytes: Uint8List(2));
 
   setUp(() {
     when(api.resolveURL('foobar', null)).thenAnswer((_) async => '42');
