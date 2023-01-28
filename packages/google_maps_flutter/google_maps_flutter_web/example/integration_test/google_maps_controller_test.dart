@@ -616,7 +616,7 @@ void main() {
         when(mockGeolocation.getCurrentPosition(
                 timeout: const Duration(seconds: 30)))
             .thenAnswer(
-          (_) async => throw 'permission denied',
+          (_) async => throw Exception('permission denied'),
         );
 
         when(mockGeolocation.watchPosition()).thenAnswer((_) {
