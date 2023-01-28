@@ -45,9 +45,52 @@ See more differences in the following migration guides:
 
 ### New use cases to take into account in your app
 
+#### Enable access to the People API for your GCP project
+
+Since the GIS SDK is separating Authentication from Authorization, the
+[Oauth Implicit pop-up flow](https://developers.google.com/identity/oauth2/web/guides/use-token-model)
+used to Authorize scopes does **not** return any Authentication information
+anymore (user credential / `idToken`).
+
+If the plugin is not able to Authenticate an user from `signInSilently` (the
+OneTap UX flow), it'll add extra `scopes` to those requested by the programmer
+so it can perform a [People API request](https://developers.google.com/people/api/rest/v1/people/get)
+to retrieve basic profile information about the user that is signed-in.
+
+The information retrieved from the People API is used to complete data for the
+[`GoogleSignInAccount`](https://pub.dev/documentation/google_sign_in/latest/google_sign_in/GoogleSignInAccount-class.html)
+object that is returned after `signIn` completes successfully.
+
+#### `signInSilently` always returns `null`
+
+Previous versions of this plugin were able to return a `GoogleSignInAccount`
+object that was fully populated (signed-in and authorized) from `signInSilently`
+because the former SDK equated "is authenticated" and "is authorized".
+
+With the GIS SDK, `signInSilently` only deals with user Authentication, so users
+retrieved "silently" will only contain an `idToken`, but not an `accessToken`.
+
+Only after `signIn` or `requestScopes`, a user will be fully formed.
+
+The GIS-backed plugin always returns `null` from `signInSilently`, to force apps
+that expect the former logic to perform a full `signIn`, which will result in a
+fully Authenticated and Authorized user, and making this migration easier.
+
+#### `idToken` is `null` in the `GoogleSignInAccount` object after `signIn`
+
+Since the GIS SDK is separating Authentication and Authorization, when a user
+fails to Authenticate through `signInSilently` and the plugin performs the
+fallback request to the People API described above,
+the returned `GoogleSignInUserData` object will contain basic profile information
+(name, email, photo, ID), but its `idToken` will be `null`.
+
+This is because JWT are cryptographically signed by Google Identity Services, and
+this plugin won't spoof that signature when it retrieves the information from a
+simple REST request.
+
 #### User Sessions
 
-Since the new SDK does *not* manage user sessions anymore, apps that relied on
+Since the new SDK does _not_ manage user sessions anymore, apps that relied on
 this feature might break.
 
 If long-lived sessions are required, consider using some User authentication
@@ -58,7 +101,7 @@ Flutter web).
 
 #### Expired / Invalid Authorization Tokens
 
-Since the new SDK does *not* auto-renew authorization tokens anymore, it's now
+Since the new SDK does _not_ auto-renew authorization tokens anymore, it's now
 the responsibility of your app to do so.
 
 Apps now need to monitor the status code of their REST API requests for response
@@ -67,21 +110,10 @@ codes different to `200`. For example:
 * `401`: Missing or invalid access token.
 * `403`: Expired access token.
 
-In either case, your app needs to prompt the end user to `signIn` again, to
-interactively renew the token. The GIS SDK limits authorization token duration
-to one hour (3600 seconds).
+In either case, your app needs to prompt the end user to `signIn` or
+`requestScopes`, to interactively renew the token.
 
-#### Null `idToken`
-
-The `GoogleSignInUserData` returned after `signIn` may contain a `null` `idToken`
-field. This is not an indication of the session being invalid, it's just that
-the user canceled (or wasn't presented with) the OneTap UX from `signInSilently`.
-
-In cases where the OneTap UX does not authenticate the user, the `signIn` method
-will attempt to "fill in the gap" by requesting basic profile information of the
-currently signed-in user.
-
-In that case, the `GoogleSignInUserData` will contain a `null` `idToken`.
+The GIS SDK limits authorization token duration to one hour (3600 seconds).
 
 ## Usage
 
