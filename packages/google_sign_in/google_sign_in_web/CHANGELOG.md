@@ -2,16 +2,7 @@
 
 * **Breaking Change:** Migrates JS-interop to `package:google_identity_services_web`
   * Uses the new Google Identity Authentication and Authorization JS SDKs. [Docs](https://developers.google.com/identity).
-  * TODO: Move the below to a migration instructions doc in the README.
-  * Authentication and Authorization are now two separate concerns.
-  * `signInSilently` now displays the One Tap UX for web. The SDK no longer has
-    direct access to previously-seen users.
-  * The new SDK only provides an `idToken` when the user does `signInSilently`.
-  * The plugin attempts to mimic the old behavior (of retrieving Profile information
-    on `signIn`) but in that case, the `idToken` is not returned.
-  * The plugin no longer is able to renew Authorization sessions on the web.
-    Once the session expires, API requests will begin to fail with unauthorized,
-    and user Authorization is required again.
+    * Added "Migrating to v0.11" section to the `README.md`.
 * Updates minimum Flutter version to 3.0.
 
 ## 0.10.2+1
