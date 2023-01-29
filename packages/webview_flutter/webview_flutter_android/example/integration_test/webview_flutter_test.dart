@@ -96,6 +96,79 @@ Future<void> main() async {
     expect(gcIdentifier, 0);
   }, timeout: const Timeout(Duration(seconds: 10)));
 
+  testWidgets(
+    'WebView is released by garbage collection',
+    (WidgetTester tester) async {
+      final Completer<void> webViewGCCompleter = Completer<void>();
+
+      late final InstanceManager instanceManager;
+      instanceManager =
+          InstanceManager(onWeakReferenceRemoved: (int identifier) {
+        final Copyable instance =
+            instanceManager.getInstanceWithWeakReference(identifier)!;
+        if (instance is android.WebView && !webViewGCCompleter.isCompleted) {
+          webViewGCCompleter.complete();
+        }
+      });
+
+      android.WebView.api = WebViewHostApiImpl(
+        instanceManager: instanceManager,
+      );
+      android.WebSettings.api = WebSettingsHostApiImpl(
+        instanceManager: instanceManager,
+      );
+      android.WebChromeClient.api = WebChromeClientHostApiImpl(
+        instanceManager: instanceManager,
+      );
+
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              AndroidWebViewWidgetCreationParams(
+                instanceManager: instanceManager,
+                controller: PlatformWebViewController(
+                  const PlatformWebViewControllerCreationParams(),
+                ),
+              ),
+            ).build(context);
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              AndroidWebViewWidgetCreationParams(
+                instanceManager: instanceManager,
+                controller: PlatformWebViewController(
+                  const PlatformWebViewControllerCreationParams(),
+                ),
+              ),
+            ).build(context);
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Force garbage collection.
+      await IntegrationTestWidgetsFlutterBinding.instance
+          .watchPerformance(() async {
+        await tester.pumpAndSettle();
+      });
+
+      await tester.pumpAndSettle();
+      await expectLater(webViewGCCompleter.future, completes);
+
+      android.WebView.api = WebViewHostApiImpl();
+      android.WebSettings.api = WebSettingsHostApiImpl();
+      android.WebChromeClient.api = WebChromeClientHostApiImpl();
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
+
   testWidgets('runJavaScriptReturningResult', (WidgetTester tester) async {
     final Completer<void> pageFinished = Completer<void>();
 

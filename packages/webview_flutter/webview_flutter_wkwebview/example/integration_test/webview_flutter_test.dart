@@ -47,59 +47,73 @@ Future<void> main() async {
   final String secondaryUrl = '$prefixUrl/secondary.txt';
   final String headersUrl = '$prefixUrl/headers';
 
-  // testWidgets(
-  //     'withWeakReferenceTo allows encapsulating class to be garbage collected',
-  //     (WidgetTester tester) async {
-  //   final Completer<int> gcCompleter = Completer<int>();
-  //   final InstanceManager instanceManager = InstanceManager(
-  //     onWeakReferenceRemoved: gcCompleter.complete,
-  //   );
-  //
-  //   ClassWithCallbackClass? instance = ClassWithCallbackClass();
-  //   instanceManager.addHostCreatedInstance(instance.callbackClass, 0);
-  //   instance = null;
-  //
-  //   // Force garbage collection.
-  //   await IntegrationTestWidgetsFlutterBinding.instance
-  //       .watchPerformance(() async {
-  //     await tester.pumpAndSettle();
-  //   });
-  //
-  //   final int gcIdentifier = await gcCompleter.future;
-  //   expect(gcIdentifier, 0);
-  // }, timeout: const Timeout(Duration(seconds: 10)));
-  //
-  // testWidgets(
-  //   'WKWebView is released by garbage collection',
-  //   (WidgetTester tester) async {
-  //     final Completer<void> webViewGCCompleter = Completer<void>();
-  //
-  //     late final InstanceManager instanceManager;
-  //     instanceManager =
-  //         InstanceManager(onWeakReferenceRemoved: (int identifier) {
-  //       final Copyable instance =
-  //           instanceManager.getInstanceWithWeakReference(identifier)!;
-  //       if (instance is WKWebView && !webViewGCCompleter.isCompleted) {
-  //         webViewGCCompleter.complete();
-  //       }
-  //     });
-  //
-  //     // ignore: unused_local_variable
-  //     WebKitWebViewController? controller = WebKitWebViewController(
-  //       WebKitWebViewControllerCreationParams(instanceManager: instanceManager),
-  //     );
-  //     controller = null;
-  //
-  //     // Force garbage collection.
-  //     await IntegrationTestWidgetsFlutterBinding.instance
-  //         .watchPerformance(() async {
-  //       await tester.pumpAndSettle();
-  //     });
-  //
-  //     await expectLater(webViewGCCompleter.future, completes);
-  //   },
-  //   timeout: const Timeout(Duration(seconds: 10)),
-  // );
+  testWidgets(
+      'withWeakReferenceTo allows encapsulating class to be garbage collected',
+      (WidgetTester tester) async {
+    final Completer<int> gcCompleter = Completer<int>();
+    final InstanceManager instanceManager = InstanceManager(
+      onWeakReferenceRemoved: gcCompleter.complete,
+    );
+
+    ClassWithCallbackClass? instance = ClassWithCallbackClass();
+    instanceManager.addHostCreatedInstance(instance.callbackClass, 0);
+    instance = null;
+
+    // Force garbage collection.
+    await IntegrationTestWidgetsFlutterBinding.instance
+        .watchPerformance(() async {
+      await tester.pumpAndSettle();
+    });
+
+    final int gcIdentifier = await gcCompleter.future;
+    expect(gcIdentifier, 0);
+  }, timeout: const Timeout(Duration(seconds: 10)));
+
+  testWidgets(
+    'WKWebView is released by garbage collection',
+    (WidgetTester tester) async {
+      final Completer<void> webViewGCCompleter = Completer<void>();
+
+      late final InstanceManager instanceManager;
+      instanceManager =
+          InstanceManager(onWeakReferenceRemoved: (int identifier) {
+        final Copyable instance =
+            instanceManager.getInstanceWithWeakReference(identifier)!;
+        if (instance is WKWebView && !webViewGCCompleter.isCompleted) {
+          webViewGCCompleter.complete();
+        }
+      });
+
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              WebKitWebViewWidgetCreationParams(
+                instanceManager: instanceManager,
+                controller: PlatformWebViewController(
+                  WebKitWebViewControllerCreationParams(
+                    instanceManager: instanceManager,
+                  ),
+                ),
+              ),
+            ).build(context);
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.pumpWidget(Container());
+
+      // Force garbage collection.
+      await IntegrationTestWidgetsFlutterBinding.instance
+          .watchPerformance(() async {
+        await tester.pumpAndSettle();
+      });
+
+      await expectLater(webViewGCCompleter.future, completes);
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
 
   testWidgets('loadRequest', (WidgetTester tester) async {
     final Completer<void> pageFinished = Completer<void>();

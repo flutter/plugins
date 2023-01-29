@@ -1,3 +1,7 @@
+## 3.2.3
+
+* Fixes bug that prevented the web view from being garbage collected.
+
 ## 3.2.2
 
 * Updates example code for `use_build_context_synchronously` lint.

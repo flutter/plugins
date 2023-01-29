@@ -1,3 +1,7 @@
+## 3.0.5
+
+* Fixes bug that prevented the web view from being garbage collected.
+
 ## 3.0.4
 
 * Fixes bug where `WKWebView` could not be released.
