@@ -128,8 +128,6 @@ class AndroidWebViewController extends PlatformWebViewController {
   final Map<String, AndroidJavaScriptChannelParams> _javaScriptChannelParams =
       <String, AndroidJavaScriptChannelParams>{};
 
-  // The keeps a reference to the current NavigationDelegate so that the
-  // callback methods remain reachable.
   late AndroidNavigationDelegate _currentNavigationDelegate;
 
   Future<List<String>> Function(FileSelectorParams)?
