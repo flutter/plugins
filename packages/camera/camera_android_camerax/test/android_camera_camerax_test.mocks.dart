@@ -10,8 +10,6 @@ import 'package:camera_android_camerax/src/camera_selector.dart' as _i5;
 import 'package:camera_android_camerax/src/process_camera_provider.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
-import 'test_camerax_library.pigeon.dart' as _i6;
-
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -78,91 +76,4 @@ class MockCameraInfo extends _i1.Mock implements _i4.CameraInfo {
         ),
         returnValue: _i3.Future<int>.value(0),
       ) as _i3.Future<int>);
-}
-
-/// A class which mocks [TestProcessCameraProviderHostApi].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockTestProcessCameraProviderHostApi extends _i1.Mock
-    implements _i6.TestProcessCameraProviderHostApi {
-  MockTestProcessCameraProviderHostApi() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i3.Future<int> getInstance() => (super.noSuchMethod(
-        Invocation.method(
-          #getInstance,
-          [],
-        ),
-        returnValue: _i3.Future<int>.value(0),
-      ) as _i3.Future<int>);
-  @override
-  List<int?> getAvailableCameraInfos(int? identifier) => (super.noSuchMethod(
-        Invocation.method(
-          #getAvailableCameraInfos,
-          [identifier],
-        ),
-        returnValue: <int?>[],
-      ) as List<int?>);
-}
-
-/// A class which mocks [TestCameraSelectorHostApi].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockTestCameraSelectorHostApi extends _i1.Mock
-    implements _i6.TestCameraSelectorHostApi {
-  MockTestCameraSelectorHostApi() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  void create(
-    int? identifier,
-    int? lensFacing,
-  ) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #create,
-          [
-            identifier,
-            lensFacing,
-          ],
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
-  List<int?> filter(
-    int? identifier,
-    List<int?>? cameraInfoIds,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #filter,
-          [
-            identifier,
-            cameraInfoIds,
-          ],
-        ),
-        returnValue: <int?>[],
-      ) as List<int?>);
-}
-
-/// A class which mocks [TestCameraInfoHostApi].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockTestCameraInfoHostApi extends _i1.Mock
-    implements _i6.TestCameraInfoHostApi {
-  MockTestCameraInfoHostApi() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  int getSensorRotationDegrees(int? identifier) => (super.noSuchMethod(
-        Invocation.method(
-          #getSensorRotationDegrees,
-          [identifier],
-        ),
-        returnValue: 0,
-      ) as int);
 }

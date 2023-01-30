@@ -1,8 +1,6 @@
 import 'package:camera_android_camerax/camera_android_camerax.dart';
 import 'package:camera_android_camerax/src/camera_info.dart';
 import 'package:camera_android_camerax/src/camera_selector.dart';
-import 'package:camera_android_camerax/src/instance_manager.dart';
-import 'package:camera_android_camerax/src/java_object.dart';
 import 'package:camera_android_camerax/src/process_camera_provider.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,15 +8,11 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'android_camera_camerax_test.mocks.dart';
-import 'test_camerax_library.pigeon.dart';
 
 @GenerateMocks(<Type>[
   ProcessCameraProvider,
   CameraSelector,
   CameraInfo,
-  TestProcessCameraProviderHostApi,
-  TestCameraSelectorHostApi,
-  TestCameraInfoHostApi,
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -39,64 +33,37 @@ void main() {
       }
     ];
 
-    final MockTestProcessCameraProviderHostApi
-        mockTestProcessCameraProviderHostApi =
-        MockTestProcessCameraProviderHostApi();
-    TestProcessCameraProviderHostApi.setup(
-        mockTestProcessCameraProviderHostApi);
-
-    final MockTestCameraSelectorHostApi mockTestCameraSelectorHostApi =
-        MockTestCameraSelectorHostApi();
-    TestCameraSelectorHostApi.setup(mockTestCameraSelectorHostApi);
-
-    final MockTestCameraInfoHostApi mockTestCameraInfoHostApi =
-        MockTestCameraInfoHostApi();
-    TestCameraInfoHostApi.setup(mockTestCameraInfoHostApi);
-
-    final InstanceManager instanceManager = JavaObject.globalInstanceManager;
-    final ProcessCameraProvider processCameraProvider =
-        ProcessCameraProvider.detached(
-      instanceManager: instanceManager,
-    );
-
-    instanceManager.addHostCreatedInstance(
-      processCameraProvider,
-      0,
-      onCopy: (_) => ProcessCameraProvider.detached(),
-    );
-    final CameraInfo fakeBackCameraInfo =
-        CameraInfo.detached(instanceManager: instanceManager);
-    instanceManager.addHostCreatedInstance(
-      fakeBackCameraInfo,
-      1,
-      onCopy: (_) => CameraInfo.detached(),
-    );
-    final CameraInfo fakeFrontCameraInfo =
-        CameraInfo.detached(instanceManager: instanceManager);
-    instanceManager.addHostCreatedInstance(
-      fakeFrontCameraInfo,
-      2,
-      onCopy: (_) => CameraInfo.detached(),
-    );
-
-    when(mockTestProcessCameraProviderHostApi.getInstance())
-        .thenAnswer((_) async => 0);
-    when(mockTestProcessCameraProviderHostApi.getAvailableCameraInfos(0))
-        .thenReturn(<int>[1, 2]);
-
-    when(mockTestCameraSelectorHostApi.filter(any, [1])).thenReturn([1]);
-    final List<List<int>> responses = <List<int>>[
-      <int>[],
-      <int>[2]
-    ];
-    when(mockTestCameraSelectorHostApi.filter(any, [2]))
-        .thenAnswer((_) => responses.removeAt(0));
-
-    when(mockTestCameraInfoHostApi.getSensorRotationDegrees(1)).thenReturn(0);
-    when(mockTestCameraInfoHostApi.getSensorRotationDegrees(2)).thenReturn(90);
-
+    //Create mocks to use
+    final MockProcessCameraProvider mockProcessCameraProvider =
+        MockProcessCameraProvider();
+    final MockCameraSelector mockBackCameraSelector = MockCameraSelector();
+    final MockCameraSelector mockFrontCameraSelector = MockCameraSelector();
+    final MockCameraInfo mockFrontCameraInfo = MockCameraInfo();
+    final MockCameraInfo mockBackCameraInfo = MockCameraInfo();
     AndroidCameraCameraX.registerWith();
+
+    //Set class level ProcessCameraProvider and camera selectors to created mocks
     final AndroidCameraCameraX androidCameraCamerax = AndroidCameraCameraX();
+    androidCameraCamerax.setDefaultBackCameraSelector(mockBackCameraSelector);
+    androidCameraCamerax.setDefaultFrontCameraSelector(mockFrontCameraSelector);
+    androidCameraCamerax.setProcessCameraProvider(mockProcessCameraProvider);
+
+    //Mock calls to native platform
+    when(mockProcessCameraProvider.getAvailableCameraInfos())
+        .thenAnswer((_) async => [mockBackCameraInfo, mockFrontCameraInfo]);
+    when(mockBackCameraSelector.filter([mockFrontCameraInfo]))
+        .thenAnswer((_) async => []);
+    when(mockBackCameraSelector.filter([mockBackCameraInfo]))
+        .thenAnswer((_) async => [mockBackCameraInfo]);
+    when(mockFrontCameraSelector.filter([mockBackCameraInfo]))
+        .thenAnswer((_) async => []);
+    when(mockFrontCameraSelector.filter([mockFrontCameraInfo]))
+        .thenAnswer((_) async => [mockFrontCameraInfo]);
+    when(mockBackCameraInfo.getSensorRotationDegrees())
+        .thenAnswer((_) async => 0);
+    when(mockFrontCameraInfo.getSensorRotationDegrees())
+        .thenAnswer((_) async => 90);
+
     final List<CameraDescription> cameraDescriptions =
         await androidCameraCamerax.availableCameras();
 
