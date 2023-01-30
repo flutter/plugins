@@ -84,7 +84,7 @@ targets:
       target_file: mac_build_all_plugins.yaml
       channel: stable
 
-  - name: Mac_x64 macos_platform_tests master
+  - name: Mac_arm64 macos_platform_tests master
     bringup: true # New task
     recipe: plugins/plugins
     timeout: 60
@@ -94,7 +94,7 @@ targets:
       version_file: flutter_master.version
       target_file: macos_platform_tests.yaml
 
-  - name: Mac_x64 macos_platform_tests stable
+  - name: Mac_arm64 macos_platform_tests stable
     bringup: true # New task
     recipe: plugins/plugins
     presubmit: false
