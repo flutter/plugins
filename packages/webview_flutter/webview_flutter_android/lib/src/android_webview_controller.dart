@@ -103,7 +103,7 @@ class AndroidWebViewController extends PlatformWebViewController {
         if (weakReference.target?._currentNavigationDelegate?._onProgress !=
             null) {
           weakReference
-              .target!._currentNavigationDelegate?._onProgress!(progress);
+              .target!._currentNavigationDelegate!._onProgress!(progress);
         }
       };
     }),
