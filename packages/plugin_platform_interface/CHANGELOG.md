@@ -1,5 +1,6 @@
 ## NEXT
 
+* Updates minimum supported Dart version.
 * Removes superfluous words from comments.
 
 ## 2.1.3

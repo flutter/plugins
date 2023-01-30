@@ -133,8 +133,11 @@ void main() {
         isInitialized: true,
         isRecordingVideo: true,
         deviceOrientation: DeviceOrientation.portraitUp,
-        lockedCaptureOrientation: DeviceOrientation.landscapeRight,
-        recordingOrientation: DeviceOrientation.landscapeLeft,
+        lockedCaptureOrientation:
+            const Optional<DeviceOrientation>.fromNullable(
+                DeviceOrientation.landscapeRight),
+        recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
+            DeviceOrientation.landscapeLeft),
         previewSize: const Size(480, 640),
       );
 
@@ -164,8 +167,11 @@ void main() {
       controller.value = controller.value.copyWith(
         isInitialized: true,
         deviceOrientation: DeviceOrientation.portraitUp,
-        lockedCaptureOrientation: DeviceOrientation.landscapeRight,
-        recordingOrientation: DeviceOrientation.landscapeLeft,
+        lockedCaptureOrientation:
+            const Optional<DeviceOrientation>.fromNullable(
+                DeviceOrientation.landscapeRight),
+        recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
+            DeviceOrientation.landscapeLeft),
         previewSize: const Size(480, 640),
       );
 
@@ -195,7 +201,8 @@ void main() {
       controller.value = controller.value.copyWith(
         isInitialized: true,
         deviceOrientation: DeviceOrientation.portraitUp,
-        recordingOrientation: DeviceOrientation.landscapeLeft,
+        recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
+            DeviceOrientation.landscapeLeft),
         previewSize: const Size(480, 640),
       );
 
