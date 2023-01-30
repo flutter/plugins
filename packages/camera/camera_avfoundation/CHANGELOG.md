@@ -1,6 +1,11 @@
-## 0.9.11
+## 0.9.12
 
 * Allows camera to be switched while video recording.
+
+## 0.9.11
+
+* Adds back use of Optional type.
+* Updates minimum Flutter version to 3.0.
 
 ## 0.9.10+2
 
