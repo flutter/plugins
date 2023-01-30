@@ -64,7 +64,7 @@ targets:
       target_file: mac_lint_podspecs.yaml
 
   ### macOS desktop tasks ###
-  # macos-platform_tests builds all the plugins on M1, so this build is run
+  # macos-platform_tests builds all the plugins on ARM, so this build is run
   # on Intel to give us build coverage of both host types.
   - name: Mac_x64 build_all_plugins master
     recipe: plugins/plugins
@@ -84,33 +84,54 @@ targets:
       target_file: mac_build_all_plugins.yaml
       channel: stable
 
+  - name: Mac_x64 macos_platform_tests master
+    bringup: true # New task
+    recipe: plugins/plugins
+    timeout: 60
+    properties:
+      channel: master
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: macos_platform_tests.yaml
+
+  - name: Mac_x64 macos_platform_tests stable
+    bringup: true # New task
+    recipe: plugins/plugins
+    presubmit: false
+    timeout: 60
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: macos_platform_tests.yaml
+
   ### iOS tasks ###
-  # TODO(stuartmorgan): Swap this ios_platform_tests_* once simulator
-  # tests are reliable on the ARM infrastructure. See discussion at
-  # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
+  # TODO(stuartmorgan): Swap the architecture of this and ios_platform_tests_*
+  # once simulator tests are reliable on the ARM infrastructure. See discussion
+  # at https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
   - name: Mac_arm64 ios_build_all_plugins master
-    bringup: true
+    bringup: true # New task
     recipe: plugins/plugins
     timeout: 30
     properties:
+      channel: master
       add_recipes_cq: "true"
       version_file: flutter_master.version
       target_file: ios_build_all_plugins.yaml
-      channel: master
 
   - name: Mac_arm64 ios_build_all_plugins stable
-    bringup: true
+    bringup: true # New task
     recipe: plugins/plugins
     timeout: 30
     properties:
+      channel: stable
       add_recipes_cq: "true"
       version_file: flutter_stable.version
       target_file: ios_build_all_plugins.yaml
-      channel: stable
 
-  # TODO(stuartmorgan): Swap this and ios_build_all_plugins once simulator
-  # tests are reliable on the ARM infrastructure. See discussion at
-  # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
+  # TODO(stuartmorgan): Swap the architecture of this and ios_build_all_plugins
+  # once simulator tests are reliable on the ARM infrastructure. See discussion
+  # at https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
   - name: Mac_x64 ios_platform_tests_1_of_4 master
     recipe: plugins/plugins
     timeout: 60
