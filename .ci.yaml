@@ -117,7 +117,7 @@ targets:
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
-      target_file: mac_ios_platform_tests.yaml
+      target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 0 --shardCount 4"
 
   - name: Mac_x64 ios_platform_tests_2_of_4 master
@@ -126,7 +126,7 @@ targets:
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
-      target_file: mac_ios_platform_tests.yaml
+      target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 1 --shardCount 4"
 
   - name: Mac_x64 ios_platform_tests_3_of_4 master
@@ -135,7 +135,7 @@ targets:
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
-      target_file: mac_ios_platform_tests.yaml
+      target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 2 --shardCount 4"
 
   - name: Mac_x64 ios_platform_tests_4_of_4 master
@@ -144,7 +144,7 @@ targets:
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
-      target_file: mac_ios_platform_tests.yaml
+      target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 3 --shardCount 4"
 
   # Don't run full platform tests on both channels in pre-submit.
@@ -156,7 +156,7 @@ targets:
       channel: stable
       add_recipes_cq: "true"
       version_file: flutter_stable.version
-      target_file: mac_ios_platform_tests.yaml
+      target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 0 --shardCount 4"
 
   - name: Mac_x64 ios_platform_tests_2_of_4 stable
@@ -167,7 +167,7 @@ targets:
       channel: stable
       add_recipes_cq: "true"
       version_file: flutter_stable.version
-      target_file: mac_ios_platform_tests.yaml
+      target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 1 --shardCount 4"
 
   - name: Mac_x64 ios_platform_tests_3_of_4 stable
@@ -178,7 +178,7 @@ targets:
       channel: stable
       add_recipes_cq: "true"
       version_file: flutter_stable.version
-      target_file: mac_ios_platform_tests.yaml
+      target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 2 --shardCount 4"
 
   - name: Mac_x64 ios_platform_tests_4_of_4 stable
@@ -189,7 +189,7 @@ targets:
       channel: stable
       add_recipes_cq: "true"
       version_file: flutter_stable.version
-      target_file: mac_ios_platform_tests.yaml
+      target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 3 --shardCount 4"
 
   - name: Windows win32-platform_tests master
