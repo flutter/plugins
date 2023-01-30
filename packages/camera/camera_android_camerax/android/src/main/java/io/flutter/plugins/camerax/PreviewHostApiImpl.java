@@ -75,7 +75,8 @@ public class PreviewHostApiImpl implements PreviewHostApi {
                     case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
                     case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
                     default:
-                      // TODO(camsim99): Use onCameraError to send these errors to the Dart side.
+                      // TODO(camsim99): Use onCameraError to send the errors to the Dart side.
+                      // See https://github.com/flutter/flutter/issues/119571 for more context.
                       break;
                   }
                 });
