@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter/src/serialization.dart';
 
 class FakePlatformGoogleMap {
   FakePlatformGoogleMap(int id, Map<dynamic, dynamic> params)
@@ -390,8 +391,10 @@ class FakePlatformGoogleMap {
       final String heatmapId = heatmapData['heatmapId'] as String;
 
       final List<dynamic> dataData = heatmapData['data'] as List<dynamic>;
-      final List<WeightedLatLng> data =
-          dataData.map((dynamic e) => WeightedLatLng.fromJson(e)!).toList();
+      final List<WeightedLatLng> data = dataData
+          .map(deserializeWeightedLatLng)
+          .whereType<WeightedLatLng>()
+          .toList();
 
       final bool dissipating = heatmapData['dissipating'] as bool;
 

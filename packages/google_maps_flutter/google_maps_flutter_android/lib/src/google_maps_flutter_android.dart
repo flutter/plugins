@@ -16,6 +16,7 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 import 'package:stream_transform/stream_transform.dart';
 
 import 'google_map_inspector_android.dart';
+import 'serialization.dart';
 
 // TODO(stuartmorgan): Remove the dependency on platform interface toJson
 // methods. Channel serialization details should all be package-internal.
@@ -372,7 +373,7 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
     assert(heatmapUpdates != null);
     return _channel(mapId).invokeMethod<void>(
       'heatmaps#update',
-      heatmapUpdates.toJson(),
+      serializeMapsObjectUpdates(heatmapUpdates, serializeHeatmap),
     );
   }
 
@@ -590,7 +591,7 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
       'polygonsToAdd': serializePolygonSet(mapObjects.polygons),
       'polylinesToAdd': serializePolylineSet(mapObjects.polylines),
       'circlesToAdd': serializeCircleSet(mapObjects.circles),
-      'heatmapsToAdd': serializeHeatmapSet(mapObjects.heatmaps),
+      'heatmapsToAdd': mapObjects.heatmaps.map(serializeHeatmap),
       'tileOverlaysToAdd': serializeTileOverlaySet(mapObjects.tileOverlays),
     };
 

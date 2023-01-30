@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'serialization.dart';
+
 /// An Android of implementation of [GoogleMapsInspectorPlatform].
 @visibleForTesting
 class GoogleMapsInspectorIOS extends GoogleMapsInspectorPlatform {
@@ -96,10 +98,10 @@ class GoogleMapsInspectorIOS extends GoogleMapsInspectorPlatform {
     return Heatmap(
       heatmapId: heatmapId,
       data: (heatmapInfo['data']! as List<Object?>)
-          .map(WeightedLatLng.fromJson)
+          .map(deserializeWeightedLatLng)
           .whereType<WeightedLatLng>()
           .toList(),
-      gradient: HeatmapGradient.fromJson(heatmapInfo['gradient']),
+      gradient: deserializeHeatmapGradient(heatmapInfo['gradient']),
       opacity: heatmapInfo['opacity']! as double,
       radius: heatmapInfo['radius']! as int,
       minimumZoomIntensity: heatmapInfo['minimumZoomIntensity']! as int,

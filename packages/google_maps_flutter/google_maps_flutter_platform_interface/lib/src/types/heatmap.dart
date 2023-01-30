@@ -172,17 +172,6 @@ class WeightedLatLng {
     return <Object>[point.toJson(), weight];
   }
 
-  /// Initialize a [WeightedLatLng] from an \[location, weight\] array.
-  static WeightedLatLng? fromJson(Object? json) {
-    if (json == null) {
-      return null;
-    }
-    assert(json is List && json.length == 2);
-    final List<dynamic> list = json as List<dynamic>;
-    final LatLng latLng = LatLng.fromJson(list[0])!;
-    return WeightedLatLng(latLng, weight: list[1] as double);
-  }
-
   @override
   String toString() {
     return '${objectRuntimeType(this, 'WeightedLatLng')}($point, $weight)';
@@ -254,29 +243,6 @@ class HeatmapGradient {
     addIfPresent('colorMapSize', colorMapSize);
 
     return json;
-  }
-
-  /// Initialize a [HeatmapGradient] from a JSON object.
-  static HeatmapGradient? fromJson(Object? json) {
-    if (json == null) {
-      return null;
-    }
-    assert(json is Map);
-    final Map<String, Object?> map = (json as Map<Object?, Object?>).cast();
-    final List<Color> colors = (map['colors']! as List<Object?>)
-        .whereType<int>()
-        .map((int e) => Color(e))
-        .toList();
-    final List<double> startPoints =
-        (map['startPoints']! as List<Object?>).whereType<double>().toList();
-    final List<HeatmapGradientColor> gradientColors = <HeatmapGradientColor>[];
-    for (int i = 0; i < colors.length; i++) {
-      gradientColors.add(HeatmapGradientColor(colors[i], startPoints[i]));
-    }
-    return HeatmapGradient(
-      gradientColors,
-      colorMapSize: map['colorMapSize'] as int? ?? 256,
-    );
   }
 
   @override
