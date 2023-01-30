@@ -56,7 +56,7 @@ class Preview extends UseCase {
     return _api.setSurfaceProviderFromInstance(this);
   }
 
-  /// Gets the selected resolution information of this [Preview].
+  /// Retrieves the selected resolution information of this [Preview].
   Future<ResolutionInfo> getResolutionInfo() {
     return _api.getResolutionInfoFromInstance(this);
   }

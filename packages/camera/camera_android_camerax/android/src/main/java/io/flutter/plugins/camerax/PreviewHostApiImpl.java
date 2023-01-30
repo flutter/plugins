@@ -65,7 +65,20 @@ public class PreviewHostApiImpl implements PreviewHostApi {
                 request.getResolution().getWidth(), request.getResolution().getHeight());
             Surface flutterSurface = cameraXProxy.createSurface(surfaceTexture);
             request.provideSurface(
-                flutterSurface, Executors.newSingleThreadExecutor(), (result) -> {});
+                flutterSurface, Executors.newSingleThreadExecutor(), (result) -> {
+                  switch(result) {
+                    case SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY:
+                      flutterSurfaceTexture.release();
+                      break;
+                    case SurfaceRequest.Result.RESULT_REQUEST_CANCELLED:
+                    case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
+                    case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
+                    case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
+                    default:
+                      // TODO(camsim99): Use onCameraError to send these errors to the Dart side.
+                      break;
+                  }
+                });
           };
         };
     preview.setSurfaceProvider(surfaceProvider);
