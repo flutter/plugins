@@ -1,3 +1,8 @@
+## 0.10.4
+
+* Fixes false positive for CamcorderProfile deprecation warning
+  that was already fixed.
+
 ## 0.10.3
 
 * Adds back use of Optional type.
