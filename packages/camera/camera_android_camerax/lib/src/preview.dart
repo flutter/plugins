@@ -46,7 +46,7 @@ class Preview extends UseCase {
   late final PreviewHostApiImpl _api;
 
   /// Target rotation of the camera used for the preview stream.
-  int? targetRotation;
+  final int? targetRotation;
 
   /// Target resolution of the camera preview stream.
   ///
@@ -64,6 +64,7 @@ class Preview extends UseCase {
     return _api.setSurfaceProviderFromInstance(this);
   }
 
+  /// Gets the selected resolution information of this [Preview].
   Future<ResolutionInfo> getResolutionInfo() {
     return _api.getResolutionInfoFromInstance(this);
   }
@@ -115,6 +116,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
     return surfaceTextureEntryId;
   }
 
+  /// Gets the resolution information of the specified [Preview] instance.
   Future<ResolutionInfo> getResolutionInfoFromInstance(Preview instance) async {
     int? identifier = instanceManager.getIdentifier(instance);
     identifier ??= instanceManager.addDartCreatedInstance(instance,

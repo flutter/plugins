@@ -51,8 +51,10 @@ void main() {
 
       final VerificationResult createVerification = verify(
           mockApi.create(argThat(isA<int>()), argThat(equals(90)), captureAny));
-      expect(createVerification.captured.single.width, equals(10));
-      expect(createVerification.captured.single.height, equals(50));
+      final ResolutionInfo capturedResolutionInfo =
+          createVerification.captured.single as ResolutionInfo;
+      expect(capturedResolutionInfo.width, equals(10));
+      expect(capturedResolutionInfo.height, equals(50));
     });
 
     test('setSurfaceProviderTest', () async {
@@ -102,7 +104,8 @@ void main() {
       when(mockApi.getResolutionInfo(instanceManager.getIdentifier(preview)))
           .thenReturn(testResolutionInfo);
 
-      ResolutionInfo previewResolutionInfo = await preview.getResolutionInfo();
+      final ResolutionInfo previewResolutionInfo =
+          await preview.getResolutionInfo();
       expect(previewResolutionInfo.width, equals(10));
       expect(previewResolutionInfo.height, equals(60));
 
