@@ -17,6 +17,7 @@ import 'package:stream_transform/stream_transform.dart';
 import '../../google_maps_flutter_platform_interface.dart';
 import '../types/tile_overlay_updates.dart';
 import '../types/utils/map_configuration_serialization.dart';
+import 'serialization.dart';
 
 /// Error thrown when an unknown map ID is provided to a method channel API.
 class UnknownMapIDError extends Error {
@@ -357,7 +358,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     assert(heatmapUpdates != null);
     return channel(mapId).invokeMethod<void>(
       'heatmaps#update',
-      heatmapUpdates.toJson(),
+      serializeMapsObjectUpdates(heatmapUpdates, serializeHeatmap),
     );
   }
 
