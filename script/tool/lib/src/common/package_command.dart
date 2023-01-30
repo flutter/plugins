@@ -533,7 +533,7 @@ abstract class PackageCommand extends Command<void> {
     return packages;
   }
 
-  // Retruns true if the environment indicates that the current treeish is from
+  // Returns true if the environment indicates that the current treeish is from
   // [branch].
   //
   // This is used because CI may check out a specific hash rather than a branch,
