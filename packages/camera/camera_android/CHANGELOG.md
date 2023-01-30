@@ -1,7 +1,3 @@
-## NEXT
-
-* Disables the AndroidGradlePluginVersion issue ID in all android packages.
-
 ## 0.10.3
 
 * Adds back use of Optional type.
