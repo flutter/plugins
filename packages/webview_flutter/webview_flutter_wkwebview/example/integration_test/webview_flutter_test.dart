@@ -753,8 +753,7 @@ Future<void> main() async {
         '${base64Encode(const Utf8Encoder().convert(blankPage))}';
 
     testWidgets('can allow requests', (WidgetTester tester) async {
-      final StreamController<String> pageLoads =
-          StreamController<String>.broadcast();
+      Completer<void> pageLoaded = Completer<void>();
 
       final PlatformWebViewController controller = PlatformWebViewController(
         WebKitWebViewControllerCreationParams(),
@@ -764,7 +763,7 @@ Future<void> main() async {
           WebKitNavigationDelegate(
             const WebKitNavigationDelegateCreationParams(),
           )
-            ..setOnPageFinished((String url) => pageLoads.add(url))
+            ..setOnPageFinished((_) => pageLoaded.complete())
             ..setOnNavigationRequest((NavigationRequest navigationRequest) {
               return (navigationRequest.url.contains('youtube.com'))
                   ? NavigationDecision.prevent
@@ -783,10 +782,12 @@ Future<void> main() async {
         },
       ));
 
-      await pageLoads.stream.first; // Wait for initial page load.
-      await controller.runJavaScript('location.href = "$secondaryUrl"');
+      await pageLoaded.future; // Wait for initial page load.
 
-      await pageLoads.stream.first; // Wait for the next page load.
+      pageLoaded = Completer<void>();
+      await controller.runJavaScript('location.href = "$secondaryUrl"');
+      await pageLoaded.future;
+
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, secondaryUrl);
     });
@@ -919,8 +920,7 @@ Future<void> main() async {
     );
 
     testWidgets('can block requests', (WidgetTester tester) async {
-      final StreamController<String> pageLoads =
-          StreamController<String>.broadcast();
+      Completer<void> pageLoaded = Completer<void>();
 
       final PlatformWebViewController controller = PlatformWebViewController(
         WebKitWebViewControllerCreationParams(),
@@ -930,7 +930,7 @@ Future<void> main() async {
           WebKitNavigationDelegate(
             const WebKitNavigationDelegateCreationParams(),
           )
-            ..setOnPageFinished((String url) => pageLoads.add(url))
+            ..setOnPageFinished((_) => pageLoaded.complete())
             ..setOnNavigationRequest((NavigationRequest navigationRequest) {
               return (navigationRequest.url.contains('youtube.com'))
                   ? NavigationDecision.prevent
@@ -947,22 +947,23 @@ Future<void> main() async {
         },
       ));
 
-      await pageLoads.stream.first; // Wait for initial page load.
+      await pageLoaded.future; // Wait for initial page load.
+
+      pageLoaded = Completer<void>();
       await controller
           .runJavaScript('location.href = "https://www.youtube.com/"');
 
       // There should never be any second page load, since our new URL is
       // blocked. Still wait for a potential page change for some time in order
       // to give the test a chance to fail.
-      await pageLoads.stream.first
+      await pageLoaded.future
           .timeout(const Duration(milliseconds: 500), onTimeout: () => '');
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, isNot(contains('youtube.com')));
     });
 
     testWidgets('supports asynchronous decisions', (WidgetTester tester) async {
-      final StreamController<String> pageLoads =
-          StreamController<String>.broadcast();
+      Completer<void> pageLoaded = Completer<void>();
 
       final PlatformWebViewController controller = PlatformWebViewController(
         WebKitWebViewControllerCreationParams(),
@@ -972,7 +973,7 @@ Future<void> main() async {
           WebKitNavigationDelegate(
             const WebKitNavigationDelegateCreationParams(),
           )
-            ..setOnPageFinished((String url) => pageLoads.add(url))
+            ..setOnPageFinished((_) => pageLoaded.complete())
             ..setOnNavigationRequest(
                 (NavigationRequest navigationRequest) async {
               NavigationDecision decision = NavigationDecision.prevent;
@@ -992,10 +993,12 @@ Future<void> main() async {
         },
       ));
 
-      await pageLoads.stream.first; // Wait for initial page load.
+      await pageLoaded.future; // Wait for initial page load.
+
+      pageLoaded = Completer<void>();
       await controller.runJavaScript('location.href = "$secondaryUrl"');
 
-      await pageLoads.stream.first; // Wait for second page to load.
+      await pageLoaded.future; // Wait for second page to load.
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, secondaryUrl);
     });
