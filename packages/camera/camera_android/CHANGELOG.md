@@ -1,5 +1,6 @@
-## NEXT
+## 0.10.3
 
+* Adds back use of Optional type.
 * Updates minimum Flutter version to 3.0.
 
 ## 0.10.2+3

@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:camera_android_camerax/src/camera.dart';
 import 'package:camera_android_camerax/src/camera_info.dart';
+import 'package:camera_android_camerax/src/camera_selector.dart';
 import 'package:camera_android_camerax/src/instance_manager.dart';
 import 'package:camera_android_camerax/src/process_camera_provider.dart';
+import 'package:camera_android_camerax/src/use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -76,6 +79,114 @@ void main() {
       expect(await processCameraProvider.getAvailableCameraInfos(),
           equals(<CameraInfo>[fakeAvailableCameraInfo]));
       verify(mockApi.getAvailableCameraInfos(0));
+    });
+
+    test('bindToLifecycleTest', () async {
+      final MockTestProcessCameraProviderHostApi mockApi =
+          MockTestProcessCameraProviderHostApi();
+      TestProcessCameraProviderHostApi.setup(mockApi);
+
+      final InstanceManager instanceManager = InstanceManager(
+        onWeakReferenceRemoved: (_) {},
+      );
+      final ProcessCameraProvider processCameraProvider =
+          ProcessCameraProvider.detached(
+        instanceManager: instanceManager,
+      );
+      final CameraSelector fakeCameraSelector =
+          CameraSelector.detached(instanceManager: instanceManager);
+      final UseCase fakeUseCase =
+          UseCase.detached(instanceManager: instanceManager);
+      final Camera fakeCamera =
+          Camera.detached(instanceManager: instanceManager);
+
+      instanceManager.addHostCreatedInstance(
+        processCameraProvider,
+        0,
+        onCopy: (_) => ProcessCameraProvider.detached(),
+      );
+      instanceManager.addHostCreatedInstance(
+        fakeCameraSelector,
+        1,
+        onCopy: (_) => CameraSelector.detached(),
+      );
+      instanceManager.addHostCreatedInstance(
+        fakeUseCase,
+        2,
+        onCopy: (_) => UseCase.detached(),
+      );
+      instanceManager.addHostCreatedInstance(
+        fakeCamera,
+        3,
+        onCopy: (_) => Camera.detached(),
+      );
+
+      when(mockApi.bindToLifecycle(0, 1, <int>[2])).thenReturn(3);
+      expect(
+          await processCameraProvider
+              .bindToLifecycle(fakeCameraSelector, <UseCase>[fakeUseCase]),
+          equals(fakeCamera));
+      verify(mockApi.bindToLifecycle(0, 1, <int>[2]));
+    });
+
+    test('unbindTest', () async {
+      final MockTestProcessCameraProviderHostApi mockApi =
+          MockTestProcessCameraProviderHostApi();
+      TestProcessCameraProviderHostApi.setup(mockApi);
+
+      final InstanceManager instanceManager = InstanceManager(
+        onWeakReferenceRemoved: (_) {},
+      );
+      final ProcessCameraProvider processCameraProvider =
+          ProcessCameraProvider.detached(
+        instanceManager: instanceManager,
+      );
+      final UseCase fakeUseCase =
+          UseCase.detached(instanceManager: instanceManager);
+
+      instanceManager.addHostCreatedInstance(
+        processCameraProvider,
+        0,
+        onCopy: (_) => ProcessCameraProvider.detached(),
+      );
+      instanceManager.addHostCreatedInstance(
+        fakeUseCase,
+        1,
+        onCopy: (_) => UseCase.detached(),
+      );
+
+      processCameraProvider.unbind(<UseCase>[fakeUseCase]);
+      verify(mockApi.unbind(0, <int>[1]));
+    });
+
+    test('unbindAllTest', () async {
+      final MockTestProcessCameraProviderHostApi mockApi =
+          MockTestProcessCameraProviderHostApi();
+      TestProcessCameraProviderHostApi.setup(mockApi);
+
+      final InstanceManager instanceManager = InstanceManager(
+        onWeakReferenceRemoved: (_) {},
+      );
+      final ProcessCameraProvider processCameraProvider =
+          ProcessCameraProvider.detached(
+        instanceManager: instanceManager,
+      );
+      final UseCase fakeUseCase =
+          UseCase.detached(instanceManager: instanceManager);
+
+      instanceManager.addHostCreatedInstance(
+        processCameraProvider,
+        0,
+        onCopy: (_) => ProcessCameraProvider.detached(),
+      );
+      instanceManager.addHostCreatedInstance(
+        fakeUseCase,
+        1,
+        onCopy: (_) => UseCase.detached(),
+      );
+
+      processCameraProvider.unbind(<UseCase>[fakeUseCase]);
+      verify(mockApi.unbind(0, <int>[1]));
     });
 
     test('flutterApiCreateTest', () {

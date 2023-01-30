@@ -1,3 +1,7 @@
+## 0.10.3
+
+* Adds back use of Optional type.
+
 ## 0.10.2+1
 
 * Updates code for stricter lint checks.
