@@ -58,7 +58,6 @@ public class PreviewTest {
     final PreviewHostApiImpl previewHostApi =
         new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);
     final Preview.Builder mockPreviewBuilder = mock(Preview.Builder.class);
-    final Preview mockPreview = mock(Preview.class);
     final GeneratedCameraXLibrary.ResolutionInfo resolutionInfo =
         new GeneratedCameraXLibrary.ResolutionInfo.Builder().setWidth(10L).setHeight(50L).build();
 

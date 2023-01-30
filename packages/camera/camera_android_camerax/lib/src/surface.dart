@@ -4,7 +4,7 @@
 
 import 'java_object.dart';
 
-/// Handle onto raw buffer managed by screen compositor.
+/// Handle onto the raw buffer managed by screen compositor.
 ///
 /// See https://developer.android.com/reference/android/view/Surface.html.
 class Surface extends JavaObject {

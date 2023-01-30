@@ -22,9 +22,6 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   private final InstanceManager instanceManager;
   private final TextureRegistry textureRegistry;
 
-  private final String RESOLUTION_WIDTH_KEY = "width";
-  private final String RESOLUTION_HEIGHT_KEY = "height";
-
   @VisibleForTesting public CameraXProxy cameraXProxy = new CameraXProxy();
 
   public PreviewHostApiImpl(

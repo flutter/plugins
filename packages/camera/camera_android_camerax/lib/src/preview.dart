@@ -4,7 +4,6 @@
 
 import 'package:flutter/services.dart' show BinaryMessenger;
 
-import 'android_camera_camerax_flutter_api_impls.dart';
 import 'camerax_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
@@ -25,11 +24,10 @@ class Preview extends UseCase {
             instanceManager: instanceManager) {
     _api = PreviewHostApiImpl(
         binaryMessenger: binaryMessenger, instanceManager: instanceManager);
-    AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
     _api.createFromInstance(this, targetRotation, targetResolution);
   }
 
-  /// Constructs a [CameraInfo] that is not automatically attached to a native object.
+  /// Constructs a [Preview] that is not automatically attached to a native object.
   Preview.detached(
       {BinaryMessenger? binaryMessenger,
       InstanceManager? instanceManager,
@@ -40,7 +38,6 @@ class Preview extends UseCase {
             instanceManager: instanceManager) {
     _api = PreviewHostApiImpl(
         binaryMessenger: binaryMessenger, instanceManager: instanceManager);
-    AndroidCameraXCameraFlutterApis.instance.ensureSetUp();
   }
 
   late final PreviewHostApiImpl _api;
@@ -49,16 +46,11 @@ class Preview extends UseCase {
   final int? targetRotation;
 
   /// Target resolution of the camera preview stream.
-  ///
-  /// Should include two entries:
-  ///
-  ///  * 'width', width of resolution specification in pixels
-  ///  * 'height', height of resolution specification in pixels
   final ResolutionInfo? targetResolution;
 
-  /// Sets surface provider for the preview stream.
+  /// Sets the surface provider for the preview stream.
   ///
-  /// Returns the ID of the FlutterSurfaceTextureEntry used on the back end
+  /// Returns the ID of the FlutterSurfaceTextureEntry used on the native end
   /// used to display the preview stream on a [Texture] of the same ID.
   Future<int> setSurfaceProvider() {
     return _api.setSurfaceProviderFromInstance(this);
@@ -89,8 +81,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
   /// Creates a [Preview] with the target rotation provided if specified.
   void createFromInstance(
       Preview instance, int? targetRotation, ResolutionInfo? targetResolution) {
-    int? identifier = instanceManager.getIdentifier(instance);
-    identifier ??= instanceManager.addDartCreatedInstance(instance,
+    final int identifier = instanceManager.addDartCreatedInstance(instance,
         onCopy: (Preview original) {
       return Preview.detached(
           binaryMessenger: binaryMessenger,
@@ -100,34 +91,24 @@ class PreviewHostApiImpl extends PreviewHostApi {
     create(identifier, targetRotation, targetResolution);
   }
 
-  /// Sets the surface provider of the provided [Preview] instance and returns
+  /// Sets the surface provider of the specified [Preview] instance and returns
   /// the ID corresponding to the surface it will provide.
   Future<int> setSurfaceProviderFromInstance(Preview instance) async {
-    int? identifier = instanceManager.getIdentifier(instance);
-    identifier ??= instanceManager.addDartCreatedInstance(instance,
-        onCopy: (Preview original) {
-      return Preview.detached(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-          targetRotation: original.targetRotation);
-    });
+    final int? identifier = instanceManager.getIdentifier(instance);
+    assert(identifier != null,
+        'No Preview has the identifer of that requested to set the surface provider on.');
 
-    final int surfaceTextureEntryId = await setSurfaceProvider(identifier);
+    final int surfaceTextureEntryId = await setSurfaceProvider(identifier!);
     return surfaceTextureEntryId;
   }
 
   /// Gets the resolution information of the specified [Preview] instance.
   Future<ResolutionInfo> getResolutionInfoFromInstance(Preview instance) async {
-    int? identifier = instanceManager.getIdentifier(instance);
-    identifier ??= instanceManager.addDartCreatedInstance(instance,
-        onCopy: (Preview original) {
-      return Preview.detached(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-          targetRotation: original.targetRotation);
-    });
+    final int? identifier = instanceManager.getIdentifier(instance);
+    assert(identifier != null,
+        'No Preview has the identifer of that requested to get the resolution information for.');
 
-    final ResolutionInfo resolutionInfo = await getResolutionInfo(identifier);
+    final ResolutionInfo resolutionInfo = await getResolutionInfo(identifier!);
     return resolutionInfo;
   }
 }
