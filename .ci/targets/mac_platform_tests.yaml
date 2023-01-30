@@ -1,0 +1,19 @@
+tasks:
+  - name: prepare tool
+    script: .ci/scripts/prepare_tool.sh
+  - name: build examples
+    script: script/tool_runner.sh
+    args: ["build-examples", "--macos"]
+  - name: xcode analyze
+    script: script/tool_runner.sh
+    args: ["xcode-analyze", "--macos"]
+  - name: xcode analyze deprecation
+    # Ensure we don't accidentally introduce deprecated code.
+    script: script/tool_runner.sh
+    args: ["xcode-analyze", "--macos", "--macos-min-version=12.3"]
+  - name: native test
+    script: script/tool_runner.sh
+    args: ["native-test", "--macos"]
+  - name: drive examples
+    script: script/tool_runner.sh
+    args: ["drive-examples", "--macos", "--exclude=script/configs/exclude_integration_macos.yaml"]
