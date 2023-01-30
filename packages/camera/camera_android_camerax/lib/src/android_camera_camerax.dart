@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 import 'camera_info.dart';
 import 'camera_selector.dart';
