@@ -1204,8 +1204,6 @@ void main() {
 
   void expectHeatmapEquals(Heatmap heatmap1, Heatmap heatmap2) {
     expectHeatmapDataMoreOrLessEquals(heatmap1.data, heatmap2.data);
-    // Web only
-    // expect(heatmap1.dissipating, heatmap2.dissipating),
     expectHeatmapGradientMoreOrLessEquals(heatmap1.gradient, heatmap2.gradient);
     if (Platform.isAndroid) {
       expect(heatmap1.maxIntensity, heatmap2.maxIntensity);

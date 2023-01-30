@@ -48,8 +48,6 @@ class Heatmap implements MapsObject<Heatmap> {
   /// By default, the radius of influence of a data point is specified by the
   /// radius option only. When dissipating is disabled, the radius option is
   /// interpreted as a radius at zoom level 0.
-  ///
-  /// Web only.
   final bool dissipating;
 
   /// The color gradient of the heatmap
@@ -60,8 +58,6 @@ class Heatmap implements MapsObject<Heatmap> {
   /// By default, heatmap colors are dynamically scaled according to the
   /// greatest concentration of points at any particular pixel on the map.
   /// This property allows you to specify a fixed maximum.
-  ///
-  /// Web and Android only.
   final double? maxIntensity;
 
   /// The opacity of the heatmap, expressed as a number between 0 and 1.
@@ -71,13 +67,9 @@ class Heatmap implements MapsObject<Heatmap> {
   final int radius;
 
   /// The minimum zoom intensity used for normalizing intensities.
-  ///
-  /// iOS only.
   final int minimumZoomIntensity;
 
   /// The maximum zoom intensity used for normalizing intensities.
-  ///
-  /// iOS only.
   final int maximumZoomIntensity;
 
   /// Creates a new [Heatmap] object whose values are the same as this
@@ -225,8 +217,6 @@ class HeatmapGradient {
   final List<HeatmapGradientColor> colors;
 
   /// Number of entries in the generated color map.
-  ///
-  /// Android and iOS only.
   final int colorMapSize;
 
   /// Creates a new [HeatmapGradient] object whose values are the same as this

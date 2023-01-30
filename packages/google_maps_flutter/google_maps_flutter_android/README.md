@@ -70,6 +70,16 @@ AndroidMapRenderer mapRenderer = AndroidMapRenderer.platformDefault;
 Available values are `AndroidMapRenderer.latest`, `AndroidMapRenderer.legacy`, `AndroidMapRenderer.platformDefault`.
 Note that getting the requested renderer as a response is not guaranteed.
 
+## Supported Heatmap Options
+
+| Field                        | Supported |
+| ---------------------------- | :-------: |
+| Heatmap.dissipating          |     x     |
+| Heatmap.maxIntensity         |     ✓     |
+| Heatmap.minimumZoomIntensity |     x     |
+| Heatmap.maximumZoomIntensity |     x     |
+| HeatmapGradient.colorMapSize |     ✓     |
+
 [1]: https://pub.dev/packages/google_maps_flutter
 [2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
 [3]: https://docs.flutter.dev/development/platform-integration/android/platform-views
