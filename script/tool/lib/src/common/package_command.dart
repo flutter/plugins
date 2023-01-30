@@ -533,8 +533,7 @@ abstract class PackageCommand extends Command<void> {
     return packages;
   }
 
-  // Returns true if the environment indicates that the current treeish is from
-  // [branch].
+  // Returns true if the current checkout is on an ancestor of [branch].
   //
   // This is used because CI may check out a specific hash rather than a branch,
   // in which case branch-name detection won't work.
