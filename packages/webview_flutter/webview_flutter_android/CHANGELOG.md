@@ -1,7 +1,3 @@
-## NEXT
-
-* Disables the AndroidGradlePluginVersion issue ID in all android packages.
-
 ## 3.2.2
 
 * Updates example code for `use_build_context_synchronously` lint.

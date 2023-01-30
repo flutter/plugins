@@ -1,8 +1,3 @@
-## NEXT
-
-* Disables the AndroidGradlePluginVersion issue ID in all android packages.
-* Updates minimum Flutter version to 3.0.
-
 ## 6.1.5
 
 * Updates play-services-auth version to 20.4.1.
