@@ -4,8 +4,10 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -15,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
+import java.util.Objects;
 
 /**
  * Host api implementation for {@link WebChromeClient}.
@@ -31,6 +34,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
    */
   public static class WebChromeClientImpl extends SecureWebChromeClient {
     private final WebChromeClientFlutterApiImpl flutterApi;
+    private boolean returnValueForOnShowFileChooser = false;
 
     /**
      * Creates a {@link WebChromeClient} that passes arguments of callbacks methods to Dart.
@@ -44,6 +48,36 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     @Override
     public void onProgressChanged(WebView view, int progress) {
       flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public boolean onShowFileChooser(
+        WebView webView,
+        ValueCallback<Uri[]> filePathCallback,
+        FileChooserParams fileChooserParams) {
+      final boolean currentReturnValueForOnShowFileChooser = returnValueForOnShowFileChooser;
+      flutterApi.onShowFileChooser(
+          this,
+          webView,
+          fileChooserParams,
+          reply -> {
+            // The returned list of file paths can only be passed to `filePathCallback` if the
+            // `onShowFileChooser` method returned true.
+            if (currentReturnValueForOnShowFileChooser) {
+              final Uri[] filePaths = new Uri[reply.size()];
+              for (int i = 0; i < reply.size(); i++) {
+                filePaths[i] = Uri.parse(reply.get(i));
+              }
+              filePathCallback.onReceiveValue(filePaths);
+            }
+          });
+      return currentReturnValueForOnShowFileChooser;
+    }
+
+    /** Sets return value for {@link #onShowFileChooser}. */
+    public void setReturnValueForOnShowFileChooser(boolean value) {
+      returnValueForOnShowFileChooser = value;
     }
   }
 
@@ -162,5 +196,13 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     final WebChromeClient webChromeClient =
         webChromeClientCreator.createWebChromeClient(flutterApi);
     instanceManager.addDartCreatedInstance(webChromeClient, instanceId);
+  }
+
+  @Override
+  public void setSynchronousReturnValueForOnShowFileChooser(
+      @NonNull Long instanceId, @NonNull Boolean value) {
+    final WebChromeClientImpl webChromeClient =
+        Objects.requireNonNull(instanceManager.getInstance(instanceId));
+    webChromeClient.setReturnValueForOnShowFileChooser(value);
   }
 }

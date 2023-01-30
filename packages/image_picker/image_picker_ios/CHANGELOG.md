@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 0.8.6+6
+
+* Updates code for stricter lint checks.
+
 ## 0.8.6+5
 
 * Fixes crash when `imageQuality` is set.

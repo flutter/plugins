@@ -468,17 +468,19 @@ class _MyAppState extends State<_MyApp> {
           await androidAddition.launchPriceChangeConfirmationFlow(
         sku: 'purchaseId',
       );
-      if (priceChangeConfirmationResult.responseCode == BillingResponse.ok) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Price change accepted'),
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            priceChangeConfirmationResult.debugMessage ??
-                'Price change failed with code ${priceChangeConfirmationResult.responseCode}',
-          ),
-        ));
+      if (context.mounted) {
+        if (priceChangeConfirmationResult.responseCode == BillingResponse.ok) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Price change accepted'),
+          ));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              priceChangeConfirmationResult.debugMessage ??
+                  'Price change failed with code ${priceChangeConfirmationResult.responseCode}',
+            ),
+          ));
+        }
       }
     }
     if (Platform.isIOS) {

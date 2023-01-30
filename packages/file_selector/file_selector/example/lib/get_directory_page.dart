@@ -22,10 +22,12 @@ class GetDirectoryPage extends StatelessWidget {
       // Operation was canceled by the user.
       return;
     }
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext context) => TextDisplay(directoryPath),
-    );
+    if (context.mounted) {
+      await showDialog<void>(
+        context: context,
+        builder: (BuildContext context) => TextDisplay(directoryPath),
+      );
+    }
   }
 
   @override

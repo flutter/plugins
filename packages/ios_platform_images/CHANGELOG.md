@@ -1,3 +1,7 @@
+## 0.2.1+1
+
+* Add lint ignore comments
+
 ## 0.2.1
 
 * Updates minimum Flutter version to 3.3.0.
