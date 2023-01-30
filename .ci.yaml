@@ -85,7 +85,6 @@ targets:
       channel: stable
 
   - name: Mac_arm64 macos_platform_tests master
-    bringup: true # New task
     recipe: plugins/plugins
     timeout: 60
     properties:
@@ -95,7 +94,6 @@ targets:
       target_file: macos_platform_tests.yaml
 
   - name: Mac_arm64 macos_platform_tests stable
-    bringup: true # New task
     recipe: plugins/plugins
     presubmit: false
     timeout: 60
@@ -110,7 +108,6 @@ targets:
   # once simulator tests are reliable on the ARM infrastructure. See discussion
   # at https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
   - name: Mac_arm64 ios_build_all_plugins master
-    bringup: true # New task
     recipe: plugins/plugins
     timeout: 30
     properties:
@@ -120,7 +117,6 @@ targets:
       target_file: ios_build_all_plugins.yaml
 
   - name: Mac_arm64 ios_build_all_plugins stable
-    bringup: true # New task
     recipe: plugins/plugins
     timeout: 30
     properties:
