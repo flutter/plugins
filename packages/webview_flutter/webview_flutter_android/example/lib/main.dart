@@ -83,7 +83,7 @@ class WebViewExample extends StatefulWidget {
 }
 
 class _WebViewExampleState extends State<WebViewExample> {
-  late final PlatformWebViewController _controller;
+  late final PlatformWebViewController _controller;z
 
   @override
   void initState() {

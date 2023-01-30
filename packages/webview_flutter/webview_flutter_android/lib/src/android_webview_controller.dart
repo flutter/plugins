@@ -100,10 +100,10 @@ class AndroidWebViewController extends PlatformWebViewController {
     onProgressChanged: withWeakReferenceTo(this,
         (WeakReference<AndroidWebViewController> weakReference) {
       return (android_webview.WebView webView, int progress) {
-        if (weakReference.target?._currentNavigationDelegate._onProgress !=
+        if (weakReference.target?._currentNavigationDelegate?._onProgress !=
             null) {
           weakReference
-              .target!._currentNavigationDelegate._onProgress!(progress);
+              .target!._currentNavigationDelegate?._onProgress!(progress);
         }
       };
     }),
@@ -128,7 +128,7 @@ class AndroidWebViewController extends PlatformWebViewController {
   final Map<String, AndroidJavaScriptChannelParams> _javaScriptChannelParams =
       <String, AndroidJavaScriptChannelParams>{};
 
-  late AndroidNavigationDelegate _currentNavigationDelegate;
+  AndroidNavigationDelegate? _currentNavigationDelegate;
 
   Future<List<String>> Function(FileSelectorParams)?
       _onShowFileSelectorCallback;
