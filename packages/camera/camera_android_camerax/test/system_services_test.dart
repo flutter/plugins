@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:camera_android_camerax/src/camerax_library.pigeon.dart'
+import 'package:camera_android_camerax/src/camerax_library.g.dart'
     show CameraPermissionsErrorData;
 import 'package:camera_android_camerax/src/system_services.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart'
@@ -13,7 +13,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'system_services_test.mocks.dart';
-import 'test_camerax_library.pigeon.dart';
+import 'test_camerax_library.g.dart';
 
 @GenerateMocks(<Type>[TestSystemServicesHostApi])
 void main() {
