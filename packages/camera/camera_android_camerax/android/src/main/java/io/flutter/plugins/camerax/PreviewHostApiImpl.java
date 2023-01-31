@@ -82,13 +82,13 @@ public class PreviewHostApiImpl implements PreviewHostApi {
                   int resultCode = result.getResultCode();
                   switch (resultCode) {
                     case SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY:
-                      // flutterSurfaceTexture.release();
+                      flutterSurface.release();
                       break;
                     case SurfaceRequest.Result.RESULT_REQUEST_CANCELLED:
                     case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
                     case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
                     case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
-                      flutterSurfaceTexture.release();
+                      flutterSurface.release();
                     default:
                       break;
                   }
