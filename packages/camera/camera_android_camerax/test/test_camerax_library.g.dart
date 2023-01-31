@@ -392,6 +392,7 @@ abstract class TestPreviewHostApi {
 
   void create(int identifier, int? rotation, ResolutionInfo? targetResolution);
   int setSurfaceProvider(int identifier);
+  void releaseFlutterSurfaceTexture();
   ResolutionInfo getResolutionInfo(int identifier);
   static void setup(TestPreviewHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
@@ -433,6 +434,21 @@ abstract class TestPreviewHostApi {
               'Argument for dev.flutter.pigeon.PreviewHostApi.setSurfaceProvider was null, expected non-null int.');
           final int output = api.setSurfaceProvider(arg_identifier!);
           return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewHostApi.releaseFlutterSurfaceTexture',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          // ignore message
+          api.releaseFlutterSurfaceTexture();
+          return <Object?, Object?>{};
         });
       }
     }

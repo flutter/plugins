@@ -7,7 +7,6 @@ package io.flutter.plugins.camerax;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -100,7 +99,6 @@ public class PreviewTest {
     when(mockTextureRegistry.createSurfaceTexture()).thenReturn(mockSurfaceTextureEntry);
     when(mockSurfaceTextureEntry.surfaceTexture()).thenReturn(mockSurfaceTexture);
     when(mockSurfaceTextureEntry.id()).thenReturn(120L);
-    doNothing().when(mockSurfaceTextureEntry).release();
     when(mockSurfaceRequest.getResolution()).thenReturn(new Size(200, 500));
     when(mockCameraXProxy.createSurface(mockSurfaceTexture)).thenReturn(mockSurface);
     when(mockCameraXProxy.createSystemServicesFlutterApi(mockBinaryMessenger))
@@ -144,7 +142,7 @@ public class PreviewTest {
         .thenReturn(SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED);
     capturedConsumer.accept(mockSurfaceRequestResult);
 
-    verify(mockSurfaceTextureEntry, times(4)).release();
+    verify(mockSurface, times(4)).release();
     verify(mockSystemServicesFlutterApi, times(4)).onCameraError(anyString(), any(Reply.class));
   }
 

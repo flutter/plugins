@@ -56,6 +56,12 @@ class Preview extends UseCase {
     return _api.setSurfaceProviderFromInstance(this);
   }
 
+  /// Releases Flutter surface texture used to provide a surface for the preview
+  /// stream.
+  void releaseFlutterSurfaceTexture() {
+    _api.releaseFlutterSurfaceTextureFromInstance();
+  }
+
   /// Retrieves the selected resolution information of this [Preview].
   Future<ResolutionInfo> getResolutionInfo() {
     return _api.getResolutionInfoFromInstance(this);
@@ -100,6 +106,12 @@ class PreviewHostApiImpl extends PreviewHostApi {
 
     final int surfaceTextureEntryId = await setSurfaceProvider(identifier!);
     return surfaceTextureEntryId;
+  }
+
+  /// Releases Flutter surface texture used to provide a surface for the preview
+  /// stream if so requested.
+  void releaseFlutterSurfaceTextureFromInstance() {
+    releaseFlutterSurfaceTexture();
   }
 
   /// Gets the resolution information of the specified [Preview] instance.

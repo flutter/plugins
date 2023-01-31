@@ -24,6 +24,8 @@ public class PreviewHostApiImpl implements PreviewHostApi {
 
   @VisibleForTesting public CameraXProxy cameraXProxy = new CameraXProxy();
 
+  private TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture;
+
   public PreviewHostApiImpl(
       BinaryMessenger binaryMessenger,
       InstanceManager instanceManager,
@@ -59,8 +61,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   @Override
   public Long setSurfaceProvider(@NonNull Long identifier) {
     Preview preview = (Preview) instanceManager.getInstance(identifier);
-    TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
-        textureRegistry.createSurfaceTexture();
+    flutterSurfaceTexture = textureRegistry.createSurfaceTexture();
     SurfaceTexture surfaceTexture = flutterSurfaceTexture.surfaceTexture();
     Preview.SurfaceProvider surfaceProvider =
         new Preview.SurfaceProvider() {
@@ -78,12 +79,12 @@ public class PreviewHostApiImpl implements PreviewHostApi {
                   int resultCode = result.getResultCode();
                   switch (resultCode) {
                     case SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY:
-                      flutterSurfaceTexture.release();
+                      flutterSurface.release();
                       break;
                     case SurfaceRequest.Result.RESULT_REQUEST_CANCELLED:
                     case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
                     case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
-                      flutterSurfaceTexture.release();
+                      flutterSurface.release();
                     case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
                     default:
                       systemServicesFlutterApi.onCameraError(
@@ -113,6 +114,17 @@ public class PreviewHostApiImpl implements PreviewHostApi {
         return "Surface was not attached to the camera because the SurfaceRequest was marked as 'will not provide surface'.";
       default:
         return "There was an error with providing a surface for the camera preview.";
+    }
+  }
+
+  /**
+   * Releases the Flutter {@link TextureRegistry.SurfaceTextureEntry} if used to provide a surface
+   * for a {@link Preview}.
+   */
+  @Override
+  public void releaseFlutterSurfaceTexture() {
+    if (flutterSurfaceTexture != null) {
+      flutterSurfaceTexture.release();
     }
   }
 

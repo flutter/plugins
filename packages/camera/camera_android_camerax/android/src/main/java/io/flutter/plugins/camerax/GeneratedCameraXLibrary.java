@@ -977,6 +977,8 @@ public class GeneratedCameraXLibrary {
     @NonNull
     Long setSurfaceProvider(@NonNull Long identifier);
 
+    void releaseFlutterSurfaceTexture();
+
     @NonNull
     ResolutionInfo getResolutionInfo(@NonNull Long identifier);
 
@@ -1037,6 +1039,28 @@ public class GeneratedCameraXLibrary {
                       api.setSurfaceProvider(
                           (identifierArg == null) ? null : identifierArg.longValue());
                   wrapped.put("result", output);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.PreviewHostApi.releaseFlutterSurfaceTexture",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  api.releaseFlutterSurfaceTexture();
+                  wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }

@@ -127,5 +127,7 @@ abstract class PreviewHostApi {
 
   int setSurfaceProvider(int identifier);
 
+  void releaseFlutterSurfaceTexture();
+
   ResolutionInfo getResolutionInfo(int identifier);
 }
