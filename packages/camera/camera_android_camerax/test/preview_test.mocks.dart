@@ -65,6 +65,14 @@ class MockTestPreviewHostApi extends _i1.Mock
         returnValue: 0,
       ) as int);
   @override
+  void releaseFlutterSurfaceTexture() => super.noSuchMethod(
+        Invocation.method(
+          #releaseFlutterSurfaceTexture,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
   _i2.ResolutionInfo getResolutionInfo(int? identifier) => (super.noSuchMethod(
         Invocation.method(
           #getResolutionInfo,

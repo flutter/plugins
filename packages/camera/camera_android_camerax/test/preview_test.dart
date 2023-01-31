@@ -82,6 +82,17 @@ void main() {
           mockApi.setSurfaceProvider(instanceManager.getIdentifier(preview)));
     });
 
+    test('setSurfaceProviderTest', () async {
+      final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
+      TestPreviewHostApi.setup(mockApi);
+
+      final Preview preview = Preview.detached();
+
+      preview.releaseFlutterSurfaceTexture();
+
+      verify(mockApi.releaseFlutterSurfaceTexture());
+    });
+
     test('getResolutionInfoTest', () async {
       final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
       TestPreviewHostApi.setup(mockApi);
