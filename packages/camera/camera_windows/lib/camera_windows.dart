@@ -206,7 +206,7 @@ class CameraWindows extends CameraPlatform {
       <String, dynamic>{'cameraId': cameraId},
     );
 
-    return XFile(path!);
+    return XFile(path);
   }
 
   @override
@@ -245,7 +245,7 @@ class CameraWindows extends CameraPlatform {
       <String, dynamic>{'cameraId': cameraId},
     );
 
-    return XFile(path!);
+    return XFile(path);
   }
 
   @override
