@@ -16,7 +16,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show BinaryMessenger;
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
-import 'android_webview.pigeon.dart';
+import 'android_webview.g.dart';
 import 'android_webview_api_impls.dart';
 import 'instance_manager.dart';
 

@@ -5,10 +5,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:camera_android_camerax/src/camerax_library.pigeon.dart' as _i4;
+import 'package:camera_android_camerax/src/camerax_library.g.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 
-import 'test_camerax_library.pigeon.dart' as _i2;
+import 'test_camerax_library.g.dart' as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values

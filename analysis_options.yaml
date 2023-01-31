@@ -47,9 +47,7 @@ analyzer:
   exclude:
     # Ignore generated files
     - '**/*.g.dart'
-    - 'lib/src/generated/*.dart'
     - '**/*.mocks.dart' # Mockito @GenerateMocks
-    - '**/*.pigeon.dart' # Pigeon generated file
 
 linter:
   rules:

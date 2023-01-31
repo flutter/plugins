@@ -5,7 +5,7 @@
 import 'camera.dart';
 import 'camera_info.dart';
 import 'camera_selector.dart';
-import 'camerax_library.pigeon.dart';
+import 'camerax_library.g.dart';
 import 'java_object.dart';
 import 'process_camera_provider.dart';
 import 'system_services.dart';

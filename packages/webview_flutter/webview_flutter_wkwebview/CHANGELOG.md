@@ -1,3 +1,7 @@
+## 3.0.5
+
+* Renames Pigeon output files.
+
 ## 3.0.4
 
 * Fixes bug that prevented the web view from being garbage collected.
