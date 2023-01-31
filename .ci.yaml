@@ -283,7 +283,7 @@ targets:
       target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 3 --shardCount 4"
 
-  - name: Mac_arm64 ios_platform_tests_1_of_4 stable
+  - name: Mac_arm64 ios_platform_tests_shard_1 stable - plugins
     bringup: true # New task; will replace Intel version
     recipe: plugins/plugins
     presubmit: false
@@ -293,9 +293,9 @@ targets:
       add_recipes_cq: "true"
       version_file: flutter_stable.version
       target_file: ios_platform_tests.yaml
-      package_sharding: "--shardIndex 0 --shardCount 4"
+      package_sharding: "--shardIndex 0 --shardCount 5"
 
-  - name: Mac_arm64 ios_platform_tests_2_of_4 stable
+  - name: Mac_arm64 ios_platform_tests_shard_2 stable - plugins
     bringup: true # New task; will replace Intel version
     recipe: plugins/plugins
     presubmit: false
@@ -305,9 +305,9 @@ targets:
       add_recipes_cq: "true"
       version_file: flutter_stable.version
       target_file: ios_platform_tests.yaml
-      package_sharding: "--shardIndex 1 --shardCount 4"
+      package_sharding: "--shardIndex 1 --shardCount 5"
 
-  - name: Mac_arm64 ios_platform_tests_3_of_4 stable
+  - name: Mac_arm64 ios_platform_tests_shard_3 stable - plugins
     bringup: true # New task; will replace Intel version
     recipe: plugins/plugins
     presubmit: false
@@ -317,9 +317,9 @@ targets:
       add_recipes_cq: "true"
       version_file: flutter_stable.version
       target_file: ios_platform_tests.yaml
-      package_sharding: "--shardIndex 2 --shardCount 4"
+      package_sharding: "--shardIndex 2 --shardCount 5"
 
-  - name: Mac_arm64 ios_platform_tests_4_of_4 stable
+  - name: Mac_arm64 ios_platform_tests_shard_4 stable - plugins
     bringup: true # New task; will replace Intel version
     recipe: plugins/plugins
     presubmit: false
@@ -329,7 +329,19 @@ targets:
       add_recipes_cq: "true"
       version_file: flutter_stable.version
       target_file: ios_platform_tests.yaml
-      package_sharding: "--shardIndex 3 --shardCount 4"
+      package_sharding: "--shardIndex 3 --shardCount 5"
+
+  - name: Mac_arm64 ios_platform_tests_shard_5 stable - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    presubmit: false
+    timeout: 60
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 4 --shardCount 5"
 
   - name: Windows win32-platform_tests master
     recipe: plugins/plugins
