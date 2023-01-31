@@ -20,6 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import java.util.concurrent.Executor;
+import android.os.Handler;
+import android.os.Looper;
+
 public class PreviewHostApiImpl implements PreviewHostApi {
   private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
@@ -73,11 +77,35 @@ public class PreviewHostApiImpl implements PreviewHostApi {
                 request.getResolution().getWidth(), request.getResolution().getHeight());
             Surface flutterSurface = new Surface(surfaceTexture);
             request.provideSurface(
-                flutterSurface, Executors.newSingleThreadExecutor(), (result) -> {});
+                flutterSurface, new UiThreadExecutor(),
+                (result) -> {
+                  int resultCode = result.getResultCode();
+                  switch (resultCode) {
+                    case SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY:
+                      // flutterSurfaceTexture.release();
+                      break;
+                    case SurfaceRequest.Result.RESULT_REQUEST_CANCELLED:
+                    case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
+                    case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
+                    case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
+                      flutterSurfaceTexture.release();
+                    default:
+                      break;
+                  }
+                  });
           };
         };
     preview.setSurfaceProvider(surfaceProvider);
     return flutterSurfaceTexture.id();
+  }
+
+  private static class UiThreadExecutor implements Executor {
+    final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    public void execute(Runnable command) {
+      handler.post(command);
+    }
   }
 
   @Override

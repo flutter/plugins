@@ -55,7 +55,7 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
             (String newOrientation) -> {
               final SystemServicesFlutterApiImpl api =
                   new SystemServicesFlutterApiImpl(binaryMessenger, instanceManager);
-              api.onDeviceOrientationChanged(newOrientation, reply -> {});
+              api.onDeviceOrientationChanged2(newOrientation, reply -> {});
             });
     deviceOrientationManager.start();
   }
