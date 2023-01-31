@@ -7,8 +7,11 @@ package io.flutter.plugins.webviewflutter;
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
+import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -33,11 +36,42 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
  * <p>Call {@link #registerWith} to use the stable {@code io.flutter.plugin.common} package instead.
  */
 public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
-  private InstanceManager instanceManager;
+  @Nullable private InstanceManager instanceManager;
 
   private FlutterPluginBinding pluginBinding;
   private WebViewHostApiImpl webViewHostApi;
   private JavaScriptChannelHostApiImpl javaScriptChannelHostApi;
+
+  /**
+   * Retrieves the {@link WebView} that is associated with `identifer`.
+   *
+   * <p>See the Dart method `AndroidWebViewController.webViewIdentifier` to get the identifier of an
+   * underlying `WebView`.
+   *
+   * @param engine the execution environment the {@link WebViewFlutterPlugin} should belong to. If
+   *     the engine doesn't contain an attached instance of {@link WebViewFlutterPlugin}, this
+   *     method returns null.
+   * @param identifier the associated identifier of the `WebView`.
+   * @return the `WebView` associated with `identifier` or null if a `WebView` instance associated
+   *     with `identifier` could not be found.
+   */
+  @SuppressWarnings("unused")
+  @Nullable
+  public static WebView getWebView(FlutterEngine engine, long identifier) {
+    final WebViewFlutterPlugin webViewPlugin =
+        (WebViewFlutterPlugin) engine.getPlugins().get(WebViewFlutterPlugin.class);
+
+    if (webViewPlugin == null || webViewPlugin.instanceManager == null) {
+      return null;
+    }
+
+    final Object instance = webViewPlugin.instanceManager.getInstance(identifier);
+    if (instance instanceof WebView) {
+      return (WebView) instance;
+    }
+
+    return null;
+  }
 
   /**
    * Add an instance of this to {@link io.flutter.embedding.engine.plugins.PluginRegistry} to
@@ -148,7 +182,10 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    instanceManager.close();
+    if (instanceManager != null) {
+      instanceManager.close();
+      instanceManager = null;
+    }
   }
 
   @Override
@@ -179,6 +216,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   /** Maintains instances used to communicate with the corresponding objects in Dart. */
   @Nullable
+  @VisibleForTesting
   public InstanceManager getInstanceManager() {
     return instanceManager;
   }
