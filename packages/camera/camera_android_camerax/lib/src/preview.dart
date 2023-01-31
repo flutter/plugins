@@ -109,7 +109,7 @@ class PreviewHostApiImpl extends PreviewHostApi {
   }
 
   /// Releases Flutter surface texture used to provide a surface for the preview
-  /// stream if so requested.
+  /// stream if a surface provider was set for a [Preview] instance.
   void releaseFlutterSurfaceTextureFromInstance() {
     releaseFlutterSurfaceTexture();
   }
