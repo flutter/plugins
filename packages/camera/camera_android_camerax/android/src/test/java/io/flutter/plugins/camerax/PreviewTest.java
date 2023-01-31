@@ -147,6 +147,19 @@ public class PreviewTest {
   }
 
   @Test
+  public void releaseFlutterSurfaceTextureTest() {
+    final PreviewHostApiImpl previewHostApi =
+        new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);
+    final TextureRegistry.SurfaceTextureEntry mockSurfaceTextureEntry =
+        mock(TextureRegistry.SurfaceTextureEntry.class);
+
+    previewHostApi.flutterSurfaceTexture = mockSurfaceTextureEntry;
+
+    previewHostApi.releaseFlutterSurfaceTexture();
+    verify(mockSurfaceTextureEntry).release();
+  }
+
+  @Test
   public void getResolutionInfo() {
     final PreviewHostApiImpl previewHostApi =
         new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);

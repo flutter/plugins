@@ -24,7 +24,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
 
   @VisibleForTesting public CameraXProxy cameraXProxy = new CameraXProxy();
 
-  private TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture;
+  @VisibleForTesting public TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture;
 
   public PreviewHostApiImpl(
       BinaryMessenger binaryMessenger,
