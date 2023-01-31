@@ -8,6 +8,7 @@ import 'camera_selector.dart';
 import 'camerax_library.pigeon.dart';
 import 'java_object.dart';
 import 'process_camera_provider.dart';
+import 'system_services.dart';
 
 /// Handles initialization of Flutter APIs for the Android CameraX library.
 class AndroidCameraXCameraFlutterApis {
@@ -18,6 +19,7 @@ class AndroidCameraXCameraFlutterApis {
     CameraInfoFlutterApiImpl? cameraInfoFlutterApi,
     CameraSelectorFlutterApiImpl? cameraSelectorFlutterApi,
     ProcessCameraProviderFlutterApiImpl? processCameraProviderFlutterApi,
+    SystemServicesFlutterApiImpl? systemServicesFlutterApi,
   }) {
     this.javaObjectFlutterApi =
         javaObjectFlutterApi ?? JavaObjectFlutterApiImpl();
@@ -28,6 +30,8 @@ class AndroidCameraXCameraFlutterApis {
     this.processCameraProviderFlutterApi = processCameraProviderFlutterApi ??
         ProcessCameraProviderFlutterApiImpl();
     this.cameraFlutterApi = cameraFlutterApi ?? CameraFlutterApiImpl();
+    this.systemServicesFlutterApi =
+        systemServicesFlutterApi ?? SystemServicesFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -54,6 +58,9 @@ class AndroidCameraXCameraFlutterApis {
   /// Flutter Api for [Camera].
   late final CameraFlutterApiImpl cameraFlutterApi;
 
+  /// Flutter Api for [SystemServices].
+  late final SystemServicesFlutterApiImpl systemServicesFlutterApi;
+
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
     if (!_haveBeenSetUp) {
@@ -62,6 +69,7 @@ class AndroidCameraXCameraFlutterApis {
       CameraSelectorFlutterApi.setup(cameraSelectorFlutterApi);
       ProcessCameraProviderFlutterApi.setup(processCameraProviderFlutterApi);
       CameraFlutterApi.setup(cameraFlutterApi);
+      SystemServicesFlutterApi.setup(systemServicesFlutterApi);
       _haveBeenSetUp = true;
     }
   }
