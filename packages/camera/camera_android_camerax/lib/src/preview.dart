@@ -4,7 +4,7 @@
 
 import 'package:flutter/services.dart' show BinaryMessenger;
 
-import 'camerax_library.pigeon.dart';
+import 'camerax_library.g.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 import 'use_case.dart';
