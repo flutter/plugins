@@ -22,21 +22,6 @@ tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
     - .ci/scripts/prepare_tool.sh
 
-macos_template: &MACOS_TEMPLATE
-  # Only one macOS task can run in parallel without credits, so use them for
-  # PRs on macOS.
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
-
-macos_intel_template: &MACOS_INTEL_TEMPLATE
-  << : *MACOS_TEMPLATE
-  osx_instance:
-    image: big-sur-xcode-13
-
-macos_arm_template: &MACOS_ARM_TEMPLATE
-  << : *MACOS_TEMPLATE
-  macos_instance:
-    image: ghcr.io/cirruslabs/macos-ventura-xcode:14
-
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
     # Channels that are part of our normal test matrix use a pinned,
@@ -306,37 +291,3 @@ task:
         - ./script/tool_runner.sh build-examples --web
       drive_script:
         - ./script/tool_runner.sh drive-examples --web --exclude=script/configs/exclude_integration_web.yaml
-
-# ARM macOS tasks.
-task:
-  << : *MACOS_ARM_TEMPLATE
-  << : *FLUTTER_UPGRADE_TEMPLATE
-  matrix:
-    ### iOS tasks ###
-    - name: ios-build_all_plugins
-      env:
-        BUILD_ALL_ARGS: "ios --no-codesign"
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
-    ### macOS desktop tasks ###
-    - name: macos-platform_tests
-      # Don't run full platform tests on both channels in pre-submit.
-      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-        PATH: $PATH:/usr/local/bin
-      build_script:
-        - ./script/tool_runner.sh build-examples --macos
-      xcode_analyze_script:
-        - ./script/tool_runner.sh xcode-analyze --macos
-      xcode_analyze_deprecation_script:
-        # Ensure we don't accidentally introduce deprecated code.
-        - ./script/tool_runner.sh xcode-analyze --macos --macos-min-version=12.3
-      native_test_script:
-        - ./script/tool_runner.sh native-test --macos
-      drive_script:
-        - ./script/tool_runner.sh drive-examples --macos --exclude=script/configs/exclude_integration_macos.yaml
