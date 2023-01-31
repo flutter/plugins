@@ -75,10 +75,20 @@ enum CameraDevice {
 public class ImagePickerDelegate
     implements PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
+  @VisibleForTesting
+  static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY_USING_PHOTO_PICKER = 2341;
+
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
   @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY = 2346;
+
+  @VisibleForTesting
+  static final int REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY_USING_PHOTO_PICKER = 2347;
+
+  @VisibleForTesting
+  static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY_USING_PHOTO_PICKER = 2351;
+
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
@@ -259,8 +269,12 @@ public class ImagePickerDelegate
         new Intent(
             isPhotoPickerAvailable ? MediaStore.ACTION_PICK_IMAGES : Intent.ACTION_GET_CONTENT);
     pickVideoIntent.setType("video/*");
+    int requestCode =
+        isPhotoPickerAvailable
+            ? REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY_USING_PHOTO_PICKER
+            : REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY;
 
-    activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
+    activity.startActivityForResult(pickVideoIntent, requestCode);
   }
 
   public void takeVideoWithCamera(MethodCall methodCall, MethodChannel.Result result) {
@@ -333,8 +347,12 @@ public class ImagePickerDelegate
     Intent pickImageIntent =
         new Intent(
             isPhotoPickerAvailable ? MediaStore.ACTION_PICK_IMAGES : Intent.ACTION_GET_CONTENT);
+    int requestCode =
+        isPhotoPickerAvailable
+            ? REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY_USING_PHOTO_PICKER
+            : REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY;
     pickImageIntent.setType("image/*");
-    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
+    activity.startActivityForResult(pickImageIntent, requestCode);
   }
 
   private void launchMultiPickImageFromGalleryIntent() {
@@ -342,6 +360,7 @@ public class ImagePickerDelegate
     Intent pickImageIntent =
         new Intent(
             isPhotoPickerAvailable ? MediaStore.ACTION_PICK_IMAGES : Intent.ACTION_GET_CONTENT);
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       if (isPhotoPickerAvailable) {
         pickImageIntent.putExtra(
@@ -351,8 +370,11 @@ public class ImagePickerDelegate
       }
     }
     pickImageIntent.setType("image/*");
-
-    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY);
+    int requestCode =
+        isPhotoPickerAvailable
+            ? REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY_USING_PHOTO_PICKER
+            : REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY;
+    activity.startActivityForResult(pickImageIntent, requestCode);
   }
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
