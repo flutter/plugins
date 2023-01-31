@@ -1,7 +1,11 @@
-## 0.3.4+2
+## 0.3.5+1
 
 * Uses the new `sharedDarwinSource` flag when available.
+
+## 0.3.5
+
 * Updates minimum Flutter version to 3.0.
+* Ignores a lint in the example app for backwards compatibility.
 
 ## 0.3.4+1
 

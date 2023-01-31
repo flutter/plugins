@@ -10,6 +10,31 @@ import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 
+class CameraPermissionsErrorData {
+  CameraPermissionsErrorData({
+    required this.errorCode,
+    required this.description,
+  });
+
+  String errorCode;
+  String description;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['errorCode'] = errorCode;
+    pigeonMap['description'] = description;
+    return pigeonMap;
+  }
+
+  static CameraPermissionsErrorData decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return CameraPermissionsErrorData(
+      errorCode: pigeonMap['errorCode']! as String,
+      description: pigeonMap['description']! as String,
+    );
+  }
+}
+
 class _JavaObjectHostApiCodec extends StandardMessageCodec {
   const _JavaObjectHostApiCodec();
 }
@@ -338,6 +363,89 @@ class ProcessCameraProviderHostApi {
       return (replyMap['result'] as List<Object?>?)!.cast<int?>();
     }
   }
+
+  Future<int> bindToLifecycle(int arg_identifier,
+      int arg_cameraSelectorIdentifier, List<int?> arg_useCaseIds) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.ProcessCameraProviderHostApi.bindToLifecycle',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(<Object?>[
+      arg_identifier,
+      arg_cameraSelectorIdentifier,
+      arg_useCaseIds
+    ]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as int?)!;
+    }
+  }
+
+  Future<void> unbind(int arg_identifier, List<int?> arg_useCaseIds) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.ProcessCameraProviderHostApi.unbind', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_identifier, arg_useCaseIds])
+            as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> unbindAll(int arg_identifier) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.ProcessCameraProviderHostApi.unbindAll', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_identifier]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
 }
 
 class _ProcessCameraProviderFlutterApiCodec extends StandardMessageCodec {
@@ -366,6 +474,184 @@ abstract class ProcessCameraProviderFlutterApi {
           assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.ProcessCameraProviderFlutterApi.create was null, expected non-null int.');
           api.create(arg_identifier!);
+          return;
+        });
+      }
+    }
+  }
+}
+
+class _CameraFlutterApiCodec extends StandardMessageCodec {
+  const _CameraFlutterApiCodec();
+}
+
+abstract class CameraFlutterApi {
+  static const MessageCodec<Object?> codec = _CameraFlutterApiCodec();
+
+  void create(int identifier);
+  static void setup(CameraFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.CameraFlutterApi.create', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.CameraFlutterApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.CameraFlutterApi.create was null, expected non-null int.');
+          api.create(arg_identifier!);
+          return;
+        });
+      }
+    }
+  }
+}
+
+class _SystemServicesHostApiCodec extends StandardMessageCodec {
+  const _SystemServicesHostApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is CameraPermissionsErrorData) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return CameraPermissionsErrorData.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+class SystemServicesHostApi {
+  /// Constructor for [SystemServicesHostApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  SystemServicesHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
+
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec = _SystemServicesHostApiCodec();
+
+  Future<CameraPermissionsErrorData?> requestCameraPermissions(
+      bool arg_enableAudio) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_enableAudio]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return (replyMap['result'] as CameraPermissionsErrorData?);
+    }
+  }
+
+  Future<void> startListeningForDeviceOrientationChange(
+      bool arg_isFrontFacing, int arg_sensorOrientation) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_isFrontFacing, arg_sensorOrientation])
+            as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> stopListeningForDeviceOrientationChange() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.SystemServicesHostApi.stopListeningForDeviceOrientationChange',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(null) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
+class _SystemServicesFlutterApiCodec extends StandardMessageCodec {
+  const _SystemServicesFlutterApiCodec();
+}
+
+abstract class SystemServicesFlutterApi {
+  static const MessageCodec<Object?> codec = _SystemServicesFlutterApiCodec();
+
+  void onDeviceOrientationChanged(String orientation);
+  static void setup(SystemServicesFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_orientation = (args[0] as String?);
+          assert(arg_orientation != null,
+              'Argument for dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged was null, expected non-null String.');
+          api.onDeviceOrientationChanged(arg_orientation!);
           return;
         });
       }

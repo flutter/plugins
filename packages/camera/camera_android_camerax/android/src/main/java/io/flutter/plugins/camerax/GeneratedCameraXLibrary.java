@@ -13,6 +13,8 @@ import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MessageCodec;
 import io.flutter.plugin.common.StandardMessageCodec;
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +24,78 @@ import java.util.Map;
 /** Generated class from Pigeon. */
 @SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression"})
 public class GeneratedCameraXLibrary {
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class CameraPermissionsErrorData {
+    private @NonNull String errorCode;
+
+    public @NonNull String getErrorCode() {
+      return errorCode;
+    }
+
+    public void setErrorCode(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"errorCode\" is null.");
+      }
+      this.errorCode = setterArg;
+    }
+
+    private @NonNull String description;
+
+    public @NonNull String getDescription() {
+      return description;
+    }
+
+    public void setDescription(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"description\" is null.");
+      }
+      this.description = setterArg;
+    }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private CameraPermissionsErrorData() {}
+
+    public static final class Builder {
+      private @Nullable String errorCode;
+
+      public @NonNull Builder setErrorCode(@NonNull String setterArg) {
+        this.errorCode = setterArg;
+        return this;
+      }
+
+      private @Nullable String description;
+
+      public @NonNull Builder setDescription(@NonNull String setterArg) {
+        this.description = setterArg;
+        return this;
+      }
+
+      public @NonNull CameraPermissionsErrorData build() {
+        CameraPermissionsErrorData pigeonReturn = new CameraPermissionsErrorData();
+        pigeonReturn.setErrorCode(errorCode);
+        pigeonReturn.setDescription(description);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("errorCode", errorCode);
+      toMapResult.put("description", description);
+      return toMapResult;
+    }
+
+    static @NonNull CameraPermissionsErrorData fromMap(@NonNull Map<String, Object> map) {
+      CameraPermissionsErrorData pigeonResult = new CameraPermissionsErrorData();
+      Object errorCode = map.get("errorCode");
+      pigeonResult.setErrorCode((String) errorCode);
+      Object description = map.get("description");
+      pigeonResult.setDescription((String) description);
+      return pigeonResult;
+    }
+  }
 
   public interface Result<T> {
     void success(T result);
@@ -332,6 +406,16 @@ public class GeneratedCameraXLibrary {
     @NonNull
     List<Long> getAvailableCameraInfos(@NonNull Long identifier);
 
+    @NonNull
+    Long bindToLifecycle(
+        @NonNull Long identifier,
+        @NonNull Long cameraSelectorIdentifier,
+        @NonNull List<Long> useCaseIds);
+
+    void unbind(@NonNull Long identifier, @NonNull List<Long> useCaseIds);
+
+    void unbindAll(@NonNull Long identifier);
+
     /** The codec used by ProcessCameraProviderHostApi. */
     static MessageCodec<Object> getCodec() {
       return ProcessCameraProviderHostApiCodec.INSTANCE;
@@ -405,6 +489,107 @@ public class GeneratedCameraXLibrary {
           channel.setMessageHandler(null);
         }
       }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.ProcessCameraProviderHostApi.bindToLifecycle",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
+                  }
+                  Number cameraSelectorIdentifierArg = (Number) args.get(1);
+                  if (cameraSelectorIdentifierArg == null) {
+                    throw new NullPointerException(
+                        "cameraSelectorIdentifierArg unexpectedly null.");
+                  }
+                  List<Long> useCaseIdsArg = (List<Long>) args.get(2);
+                  if (useCaseIdsArg == null) {
+                    throw new NullPointerException("useCaseIdsArg unexpectedly null.");
+                  }
+                  Long output =
+                      api.bindToLifecycle(
+                          (identifierArg == null) ? null : identifierArg.longValue(),
+                          (cameraSelectorIdentifierArg == null)
+                              ? null
+                              : cameraSelectorIdentifierArg.longValue(),
+                          useCaseIdsArg);
+                  wrapped.put("result", output);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.ProcessCameraProviderHostApi.unbind",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
+                  }
+                  List<Long> useCaseIdsArg = (List<Long>) args.get(1);
+                  if (useCaseIdsArg == null) {
+                    throw new NullPointerException("useCaseIdsArg unexpectedly null.");
+                  }
+                  api.unbind(
+                      (identifierArg == null) ? null : identifierArg.longValue(), useCaseIdsArg);
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.ProcessCameraProviderHostApi.unbindAll",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
+                  }
+                  api.unbindAll((identifierArg == null) ? null : identifierArg.longValue());
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
     }
   }
 
@@ -439,6 +624,221 @@ public class GeneratedCameraXLibrary {
               getCodec());
       channel.send(
           new ArrayList<Object>(Arrays.asList(identifierArg)),
+          channelReply -> {
+            callback.reply(null);
+          });
+    }
+  }
+
+  private static class CameraFlutterApiCodec extends StandardMessageCodec {
+    public static final CameraFlutterApiCodec INSTANCE = new CameraFlutterApiCodec();
+
+    private CameraFlutterApiCodec() {}
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class CameraFlutterApi {
+    private final BinaryMessenger binaryMessenger;
+
+    public CameraFlutterApi(BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+
+    static MessageCodec<Object> getCodec() {
+      return CameraFlutterApiCodec.INSTANCE;
+    }
+
+    public void create(@NonNull Long identifierArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.CameraFlutterApi.create", getCodec());
+      channel.send(
+          new ArrayList<Object>(Arrays.asList(identifierArg)),
+          channelReply -> {
+            callback.reply(null);
+          });
+    }
+  }
+
+  private static class SystemServicesHostApiCodec extends StandardMessageCodec {
+    public static final SystemServicesHostApiCodec INSTANCE = new SystemServicesHostApiCodec();
+
+    private SystemServicesHostApiCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return CameraPermissionsErrorData.fromMap((Map<String, Object>) readValue(buffer));
+
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(ByteArrayOutputStream stream, Object value) {
+      if (value instanceof CameraPermissionsErrorData) {
+        stream.write(128);
+        writeValue(stream, ((CameraPermissionsErrorData) value).toMap());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface SystemServicesHostApi {
+    void requestCameraPermissions(
+        @NonNull Boolean enableAudio, Result<CameraPermissionsErrorData> result);
+
+    void startListeningForDeviceOrientationChange(
+        @NonNull Boolean isFrontFacing, @NonNull Long sensorOrientation);
+
+    void stopListeningForDeviceOrientationChange();
+
+    /** The codec used by SystemServicesHostApi. */
+    static MessageCodec<Object> getCodec() {
+      return SystemServicesHostApiCodec.INSTANCE;
+    }
+
+    /**
+     * Sets up an instance of `SystemServicesHostApi` to handle messages through the
+     * `binaryMessenger`.
+     */
+    static void setup(BinaryMessenger binaryMessenger, SystemServicesHostApi api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Boolean enableAudioArg = (Boolean) args.get(0);
+                  if (enableAudioArg == null) {
+                    throw new NullPointerException("enableAudioArg unexpectedly null.");
+                  }
+                  Result<CameraPermissionsErrorData> resultCallback =
+                      new Result<CameraPermissionsErrorData>() {
+                        public void success(CameraPermissionsErrorData result) {
+                          wrapped.put("result", result);
+                          reply.reply(wrapped);
+                        }
+
+                        public void error(Throwable error) {
+                          wrapped.put("error", wrapError(error));
+                          reply.reply(wrapped);
+                        }
+                      };
+
+                  api.requestCameraPermissions(enableAudioArg, resultCallback);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                  reply.reply(wrapped);
+                }
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Boolean isFrontFacingArg = (Boolean) args.get(0);
+                  if (isFrontFacingArg == null) {
+                    throw new NullPointerException("isFrontFacingArg unexpectedly null.");
+                  }
+                  Number sensorOrientationArg = (Number) args.get(1);
+                  if (sensorOrientationArg == null) {
+                    throw new NullPointerException("sensorOrientationArg unexpectedly null.");
+                  }
+                  api.startListeningForDeviceOrientationChange(
+                      isFrontFacingArg,
+                      (sensorOrientationArg == null) ? null : sensorOrientationArg.longValue());
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.SystemServicesHostApi.stopListeningForDeviceOrientationChange",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  api.stopListeningForDeviceOrientationChange();
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class SystemServicesFlutterApiCodec extends StandardMessageCodec {
+    public static final SystemServicesFlutterApiCodec INSTANCE =
+        new SystemServicesFlutterApiCodec();
+
+    private SystemServicesFlutterApiCodec() {}
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class SystemServicesFlutterApi {
+    private final BinaryMessenger binaryMessenger;
+
+    public SystemServicesFlutterApi(BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+
+    static MessageCodec<Object> getCodec() {
+      return SystemServicesFlutterApiCodec.INSTANCE;
+    }
+
+    public void onDeviceOrientationChanged(@NonNull String orientationArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger,
+              "dev.flutter.pigeon.SystemServicesFlutterApi.onDeviceOrientationChanged",
+              getCodec());
+      channel.send(
+          new ArrayList<Object>(Arrays.asList(orientationArg)),
           channelReply -> {
             callback.reply(null);
           });

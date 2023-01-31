@@ -26,6 +26,16 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
+class CameraPermissionsErrorData {
+  CameraPermissionsErrorData({
+    required this.errorCode,
+    required this.description,
+  });
+
+  String errorCode;
+  String description;
+}
+
 @HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
 abstract class JavaObjectHostApi {
   void dispose(int identifier);
@@ -64,9 +74,37 @@ abstract class ProcessCameraProviderHostApi {
   int getInstance();
 
   List<int> getAvailableCameraInfos(int identifier);
+
+  int bindToLifecycle(
+      int identifier, int cameraSelectorIdentifier, List<int> useCaseIds);
+
+  void unbind(int identifier, List<int> useCaseIds);
+
+  void unbindAll(int identifier);
 }
 
 @FlutterApi()
 abstract class ProcessCameraProviderFlutterApi {
   void create(int identifier);
+}
+
+@FlutterApi()
+abstract class CameraFlutterApi {
+  void create(int identifier);
+}
+
+@HostApi(dartHostTestHandler: 'TestSystemServicesHostApi')
+abstract class SystemServicesHostApi {
+  @async
+  CameraPermissionsErrorData? requestCameraPermissions(bool enableAudio);
+
+  void startListeningForDeviceOrientationChange(
+      bool isFrontFacing, int sensorOrientation);
+
+  void stopListeningForDeviceOrientationChange();
+}
+
+@FlutterApi()
+abstract class SystemServicesFlutterApi {
+  void onDeviceOrientationChanged(String orientation);
 }
