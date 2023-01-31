@@ -316,17 +316,28 @@ abstract class PackageCommand extends Command<void> {
     } else if (getBoolArg(_packagesForBranchArg)) {
       final String? branch = await _getBranch();
       if (branch == null) {
-        printError('Unabled to determine branch; --$_packagesForBranchArg can '
+        printError('Unable to determine branch; --$_packagesForBranchArg can '
             'only be used in a git repository.');
         throw ToolExit(exitInvalidArguments);
       } else {
         // Configure the change finder the correct mode for the branch.
-        final bool lastCommitOnly = branch == 'main' || branch == 'master';
+        // Log the mode to make it easier to audit logs to see that the
+        // intended diff was used (or why).
+        final bool lastCommitOnly;
+        if (branch == 'main' || branch == 'master') {
+          print('--$_packagesForBranchArg: running on default branch.');
+          lastCommitOnly = true;
+        } else if (await _isCheckoutFromBranch('main')) {
+          print(
+              '--$_packagesForBranchArg: running on a commit from default branch.');
+          lastCommitOnly = true;
+        } else {
+          print('--$_packagesForBranchArg: running on branch "$branch".');
+          lastCommitOnly = false;
+        }
         if (lastCommitOnly) {
-          // Log the mode to make it easier to audit logs to see that the
-          // intended diff was used.
-          print('--$_packagesForBranchArg: running on default branch; '
-              'using parent commit as the diff base.');
+          print(
+              '--$_packagesForBranchArg: using parent commit as the diff base.');
           changedFileFinder = GitVersionFinder(await gitDir, 'HEAD~');
         } else {
           changedFileFinder = await retrieveVersionFinder();
@@ -520,6 +531,17 @@ abstract class PackageCommand extends Command<void> {
       print('Changed packages: $changedPackages');
     }
     return packages;
+  }
+
+  // Returns true if the current checkout is on an ancestor of [branch].
+  //
+  // This is used because CI may check out a specific hash rather than a branch,
+  // in which case branch-name detection won't work.
+  Future<bool> _isCheckoutFromBranch(String branchName) async {
+    final io.ProcessResult result = await (await gitDir).runCommand(
+        <String>['merge-base', '--is-ancestor', 'HEAD', branchName],
+        throwOnError: false);
+    return result.exitCode == 0;
   }
 
   Future<String?> _getBranch() async {

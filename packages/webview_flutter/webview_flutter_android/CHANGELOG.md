@@ -1,6 +1,11 @@
-## 3.2.3
+## 3.2.4
 
 * Renames Pigeon output files.
+
+## 3.2.3
+
+* Fixes bug that prevented the web view from being garbage collected.
+* Fixes bug causing a `LateInitializationError` when a `PlatformNavigationDelegate` is not provided.
 
 ## 3.2.2
 

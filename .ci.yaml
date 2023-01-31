@@ -61,7 +61,7 @@ targets:
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
-      target_file: mac_lint_podspecs.yaml
+      target_file: macos_lint_podspecs.yaml
 
   ### macOS desktop tasks ###
   # macos-platform_tests builds all the plugins on ARM, so this build is run
@@ -72,7 +72,7 @@ targets:
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
-      target_file: mac_build_all_plugins.yaml
+      target_file: macos_build_all_plugins.yaml
       channel: master
 
   - name: Mac_x64 build_all_plugins stable
@@ -81,11 +81,10 @@ targets:
     properties:
       add_recipes_cq: "true"
       version_file: flutter_stable.version
-      target_file: mac_build_all_plugins.yaml
+      target_file: macos_build_all_plugins.yaml
       channel: stable
 
   - name: Mac_arm64 macos_platform_tests master
-    bringup: true # New task
     recipe: plugins/plugins
     timeout: 60
     properties:
@@ -95,7 +94,6 @@ targets:
       target_file: macos_platform_tests.yaml
 
   - name: Mac_arm64 macos_platform_tests stable
-    bringup: true # New task
     recipe: plugins/plugins
     presubmit: false
     timeout: 60
@@ -110,7 +108,6 @@ targets:
   # once simulator tests are reliable on the ARM infrastructure. See discussion
   # at https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
   - name: Mac_arm64 ios_build_all_plugins master
-    bringup: true # New task
     recipe: plugins/plugins
     timeout: 30
     properties:
@@ -120,7 +117,26 @@ targets:
       target_file: ios_build_all_plugins.yaml
 
   - name: Mac_arm64 ios_build_all_plugins stable
-    bringup: true # New task
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: ios_build_all_plugins.yaml
+
+  - name: Mac_x64 ios_build_all_plugins master
+    bringup: true # New task, replaces ARM version
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      channel: master
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: ios_build_all_plugins.yaml
+
+  - name: Mac_x64 ios_build_all_plugins stable
+    bringup: true # New task, replaces ARM version
     recipe: plugins/plugins
     timeout: 30
     properties:
@@ -168,6 +184,56 @@ targets:
       target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 3 --shardCount 4"
 
+  - name: Mac_arm64 ios_platform_tests_shard_1 master - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    timeout: 60
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 0 --shardCount 5"
+
+  - name: Mac_arm64 ios_platform_tests_shard_2 master - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    timeout: 60
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 1 --shardCount 5"
+
+  - name: Mac_arm64 ios_platform_tests_shard_3 master - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    timeout: 60
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 2 --shardCount 5"
+
+  - name: Mac_arm64 ios_platform_tests_shard_4 master - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    timeout: 60
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 3 --shardCount 5"
+
+  - name: Mac_arm64 ios_platform_tests_shard_5 master - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    timeout: 60
+    properties:
+      add_recipes_cq: "true"
+      version_file: flutter_master.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 4 --shardCount 5"
+
   # Don't run full platform tests on both channels in pre-submit.
   - name: Mac_x64 ios_platform_tests_1_of_4 stable
     recipe: plugins/plugins
@@ -212,6 +278,66 @@ targets:
       version_file: flutter_stable.version
       target_file: ios_platform_tests.yaml
       package_sharding: "--shardIndex 3 --shardCount 4"
+
+  - name: Mac_arm64 ios_platform_tests_shard_1 stable - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    presubmit: false
+    timeout: 60
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 0 --shardCount 5"
+
+  - name: Mac_arm64 ios_platform_tests_shard_2 stable - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    presubmit: false
+    timeout: 60
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 1 --shardCount 5"
+
+  - name: Mac_arm64 ios_platform_tests_shard_3 stable - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    presubmit: false
+    timeout: 60
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 2 --shardCount 5"
+
+  - name: Mac_arm64 ios_platform_tests_shard_4 stable - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    presubmit: false
+    timeout: 60
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 3 --shardCount 5"
+
+  - name: Mac_arm64 ios_platform_tests_shard_5 stable - plugins
+    bringup: true # New task; will replace Intel version
+    recipe: plugins/plugins
+    presubmit: false
+    timeout: 60
+    properties:
+      channel: stable
+      add_recipes_cq: "true"
+      version_file: flutter_stable.version
+      target_file: ios_platform_tests.yaml
+      package_sharding: "--shardIndex 4 --shardCount 5"
 
   - name: Windows win32-platform_tests master
     recipe: plugins/plugins
