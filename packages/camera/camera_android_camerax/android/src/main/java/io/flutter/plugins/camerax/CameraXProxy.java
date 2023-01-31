@@ -6,12 +6,25 @@ package io.flutter.plugins.camerax;
 
 import android.graphics.SurfaceTexture;
 import android.view.Surface;
+import android.app.Activity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.Preview;
 
 public class CameraXProxy {
   public CameraSelector.Builder createCameraSelectorBuilder() {
     return new CameraSelector.Builder();
+  }
+
+  public CameraPermissionsManager createCameraPermissionsManager() {
+    return new CameraPermissionsManager();
+  }
+
+  public DeviceOrientationManager createDeviceOrientationManager(
+      Activity activity,
+      Boolean isFrontFacing,
+      int sensorOrientation,
+      DeviceOrientationManager.DeviceOrientationChangeCallback callback) {
+    return new DeviceOrientationManager(activity, isFrontFacing, sensorOrientation, callback);
   }
 
   public Preview.Builder createPreviewBuilder() {

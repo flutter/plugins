@@ -2,7 +2,7 @@ name: shared_preferences_foundation
 description: iOS and macOS implementation of the shared_preferences plugin.
 repository: https://github.com/flutter/plugins/tree/main/packages/shared_preferences/shared_preferences_foundation
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+shared_preferences%22
-version: 2.1.2
+version: 2.1.3
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -12,14 +12,14 @@ flutter:
   plugin:
     implements: shared_preferences
     platforms:
-      # TODO(stuartmorgan): Add sharedDarwinSource to these once
-      # https://github.com/flutter/flutter/pull/115337 lands.
       ios:
         pluginClass: SharedPreferencesPlugin
         dartPluginClass: SharedPreferencesFoundation
+        sharedDarwinSource: true
       macos:
         pluginClass: SharedPreferencesPlugin
         dartPluginClass: SharedPreferencesFoundation
+        sharedDarwinSource: true
 
 dependencies:
   flutter:

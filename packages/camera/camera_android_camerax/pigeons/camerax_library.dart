@@ -6,8 +6,8 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(
   PigeonOptions(
-    dartOut: 'lib/src/camerax_library.pigeon.dart',
-    dartTestOut: 'test/test_camerax_library.pigeon.dart',
+    dartOut: 'lib/src/camerax_library.g.dart',
+    dartTestOut: 'test/test_camerax_library.g.dart',
     dartOptions: DartOptions(copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
       'Use of this source code is governed by a BSD-style license that can be',
@@ -34,6 +34,16 @@ class ResolutionInfo {
 
   int width;
   int height;
+}
+
+class CameraPermissionsErrorData {
+  CameraPermissionsErrorData({
+    required this.errorCode,
+    required this.description,
+  });
+
+  String errorCode;
+  String description;
 }
 
 @HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
@@ -91,6 +101,22 @@ abstract class ProcessCameraProviderFlutterApi {
 @FlutterApi()
 abstract class CameraFlutterApi {
   void create(int identifier);
+}
+
+@HostApi(dartHostTestHandler: 'TestSystemServicesHostApi')
+abstract class SystemServicesHostApi {
+  @async
+  CameraPermissionsErrorData? requestCameraPermissions(bool enableAudio);
+
+  void startListeningForDeviceOrientationChange(
+      bool isFrontFacing, int sensorOrientation);
+
+  void stopListeningForDeviceOrientationChange();
+}
+
+@FlutterApi()
+abstract class SystemServicesFlutterApi {
+  void onDeviceOrientationChanged(String orientation);
 }
 
 @HostApi(dartHostTestHandler: 'TestPreviewHostApi')
