@@ -87,7 +87,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
                       flutterSurface.release();
                     case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
                     default:
-                      systemServicesFlutterApi.onCameraError(
+                      systemServicesFlutterApi.sendCameraError(
                           getProvideSurfaceErrorDescription(resultCode), reply -> {});
                       break;
                   }

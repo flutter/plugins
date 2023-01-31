@@ -85,7 +85,7 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
             isFrontFacing,
             sensorOrientation.intValue(),
             (DeviceOrientation newOrientation) -> {
-              systemServicesFlutterApi.onDeviceOrientationChanged(
+              systemServicesFlutterApi.sendDeviceOrientationChanged(
                   serializeDeviceOrientation(newOrientation), reply -> {});
             });
     deviceOrientationManager.start();
