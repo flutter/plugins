@@ -1,50 +1,21 @@
-# This is a copy (as of March 2021) of flutter/flutter's analysis_options file,
-# with minimal changes for this repository. The goal is to move toward using a
-# shared set of analysis options as much as possible, and eventually a shared
-# file.
-
 # Specify analysis options.
 #
-# For a list of lints, see: http://dart-lang.github.io/linter/lints/
-# See the configuration guide for more
-# https://github.com/dart-lang/sdk/tree/main/pkg/analyzer#configuring-the-analyzer
-#
-# There are other similar analysis options files in the flutter repos,
-# which should be kept in sync with this file:
-#
-#   - analysis_options.yaml (this file)
-#   - packages/flutter/lib/analysis_options_user.yaml
-#   - https://github.com/flutter/flutter/blob/master/analysis_options.yaml
-#   - https://github.com/flutter/engine/blob/main/analysis_options.yaml
-#   - https://github.com/flutter/packages/blob/main/analysis_options.yaml
-#
-# This file contains the analysis options used for code in the flutter/plugins
-# repository.
+# This file is a copy of analysis_options.yaml from flutter repo
+# as of 2022-07-27, but with some modifications marked with
+# "DIFFERENT FROM FLUTTER/FLUTTER" below. The file is expected to
+# be kept in sync with the master file from the flutter repo.
 
 analyzer:
   language:
     strict-casts: true
     strict-raw-types: true
   errors:
-    # treat missing required parameters as a warning (not a hint)
-    missing_required_param: warning
-    # treat missing returns as a warning (not a hint)
-    missing_return: warning
-    # allow having TODO comments in the code
-    todo: ignore
     # allow self-reference to deprecated members (we do this because otherwise we have
     # to annotate every member in every test, assert, etc, when we deprecate something)
     deprecated_member_use_from_same_package: ignore
-    # Ignore analyzer hints for updating pubspecs when using Future or
-    # Stream and not importing dart:async
-    # Please see https://github.com/flutter/flutter/pull/24528 for details.
-    sdk_version_async_exported_from_core: ignore
     # Turned off until null-safe rollout is complete.
     unnecessary_null_comparison: ignore
-    ### Local flutter/plugins changes ###
-    # Allow null checks for as long as mixed mode is officially supported.
-    always_require_non_null_named_parameters: false # not needed with nnbd
-  exclude:
+  exclude: # DIFFERENT FROM FLUTTER/FLUTTER
     # Ignore generated files
     - '**/*.g.dart'
     - '**/*.mocks.dart' # Mockito @GenerateMocks
