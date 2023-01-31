@@ -6,8 +6,11 @@ package io.flutter.plugins.camerax;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +22,7 @@ import androidx.camera.core.SurfaceRequest;
 import androidx.core.util.Consumer;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ResolutionInfo;
+import io.flutter.plugins.camerax.GeneratedCameraXLibrary.SystemServicesFlutterApi.Reply;
 import io.flutter.view.TextureRegistry;
 import java.util.concurrent.Executor;
 import org.junit.After;
@@ -86,6 +90,9 @@ public class PreviewTest {
     final SurfaceTexture mockSurfaceTexture = mock(SurfaceTexture.class);
     final SurfaceRequest mockSurfaceRequest = mock(SurfaceRequest.class);
     final Surface mockSurface = mock(Surface.class);
+    final SystemServicesFlutterApiImpl mockSystemServicesFlutterApi =
+        mock(SystemServicesFlutterApiImpl.class);
+    final SurfaceRequest.Result mockSurfaceRequestResult = mock(SurfaceRequest.Result.class);
 
     previewHostApi.cameraXProxy = mockCameraXProxy;
     testInstanceManager.addDartCreatedInstance(mockPreview, 5L);
@@ -93,12 +100,16 @@ public class PreviewTest {
     when(mockTextureRegistry.createSurfaceTexture()).thenReturn(mockSurfaceTextureEntry);
     when(mockSurfaceTextureEntry.surfaceTexture()).thenReturn(mockSurfaceTexture);
     when(mockSurfaceTextureEntry.id()).thenReturn(120L);
+    doNothing().when(mockSurfaceTextureEntry).release();
     when(mockSurfaceRequest.getResolution()).thenReturn(new Size(200, 500));
     when(mockCameraXProxy.createSurface(mockSurfaceTexture)).thenReturn(mockSurface);
+    when(mockCameraXProxy.createSystemServicesFlutterApi(mockBinaryMessenger))
+        .thenReturn(mockSystemServicesFlutterApi);
 
     final ArgumentCaptor<Preview.SurfaceProvider> surfaceProviderCaptor =
         ArgumentCaptor.forClass(Preview.SurfaceProvider.class);
     final ArgumentCaptor<Surface> surfaceCaptor = ArgumentCaptor.forClass(Surface.class);
+    final ArgumentCaptor<Consumer> consumerCaptor = ArgumentCaptor.forClass(Consumer.class);
 
     // Test that surface provider was set and the surface texture ID was returned.
     assertEquals((long) previewHostApi.setSurfaceProvider(5L), 120L);
@@ -107,12 +118,34 @@ public class PreviewTest {
     Preview.SurfaceProvider surfaceProvider = surfaceProviderCaptor.getValue();
     surfaceProvider.onSurfaceRequested(mockSurfaceRequest);
 
-    // Test that the surface derived from the surface texture entry will be provided to the surface request.
     verify(mockSurfaceTexture).setDefaultBufferSize(200, 500);
     verify(mockSurfaceRequest)
-        .provideSurface(surfaceCaptor.capture(), any(Executor.class), any(Consumer.class));
+        .provideSurface(surfaceCaptor.capture(), any(Executor.class), consumerCaptor.capture());
 
+    // Test that the surface derived from the surface texture entry will be provided to the surface request.
     assertEquals(surfaceCaptor.getValue(), mockSurface);
+
+    // Test that the Consumer used to handle surface request result releases Flutter surface texture appropriately
+    // and sends camera errors appropriately.
+    Consumer<SurfaceRequest.Result> capturedConsumer = consumerCaptor.getValue();
+    when(mockSurfaceRequestResult.getResultCode())
+        .thenReturn(SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY);
+    capturedConsumer.accept(mockSurfaceRequestResult);
+    when(mockSurfaceRequestResult.getResultCode())
+        .thenReturn(SurfaceRequest.Result.RESULT_REQUEST_CANCELLED);
+    capturedConsumer.accept(mockSurfaceRequestResult);
+    when(mockSurfaceRequestResult.getResultCode())
+        .thenReturn(SurfaceRequest.Result.RESULT_INVALID_SURFACE);
+    capturedConsumer.accept(mockSurfaceRequestResult);
+    when(mockSurfaceRequestResult.getResultCode())
+        .thenReturn(SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE);
+    capturedConsumer.accept(mockSurfaceRequestResult);
+    when(mockSurfaceRequestResult.getResultCode())
+        .thenReturn(SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED);
+    capturedConsumer.accept(mockSurfaceRequestResult);
+
+    verify(mockSurfaceTextureEntry, times(4)).release();
+    verify(mockSystemServicesFlutterApi, times(4)).onCameraError(anyString(), any(Reply.class));
   }
 
   @Test

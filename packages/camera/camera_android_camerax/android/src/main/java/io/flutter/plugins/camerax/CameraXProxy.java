@@ -4,11 +4,12 @@
 
 package io.flutter.plugins.camerax;
 
+import android.app.Activity;
 import android.graphics.SurfaceTexture;
 import android.view.Surface;
-import android.app.Activity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.Preview;
+import io.flutter.plugin.common.BinaryMessenger;
 
 public class CameraXProxy {
   public CameraSelector.Builder createCameraSelectorBuilder() {
@@ -33,5 +34,10 @@ public class CameraXProxy {
 
   public Surface createSurface(SurfaceTexture surfaceTexture) {
     return new Surface(surfaceTexture);
+  }
+
+  public SystemServicesFlutterApiImpl createSystemServicesFlutterApi(
+      BinaryMessenger binaryMessenger) {
+    return new SystemServicesFlutterApiImpl(binaryMessenger);
   }
 }

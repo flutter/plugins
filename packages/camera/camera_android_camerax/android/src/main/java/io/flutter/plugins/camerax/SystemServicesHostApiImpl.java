@@ -28,8 +28,7 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
       BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     this.binaryMessenger = binaryMessenger;
     this.instanceManager = instanceManager;
-    this.systemServicesFlutterApi =
-        new SystemServicesFlutterApiImpl(binaryMessenger, instanceManager);
+    this.systemServicesFlutterApi = new SystemServicesFlutterApiImpl(binaryMessenger);
   }
 
   public void setActivity(Activity activity) {

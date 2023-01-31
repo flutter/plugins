@@ -97,5 +97,13 @@ void main() {
               'message',
               '"FAKE_ORIENTATION" is not a valid DeviceOrientation value')));
     });
+
+    test('onCameraError adds new error to stream', () {
+      SystemServices.cameraErrorStreamController.stream
+          .listen((String errorDescription) {
+        expect(errorDescription, equals('Test error description!'));
+      });
+      SystemServicesFlutterApiImpl().onCameraError('Test error description!');
+    });
   });
 }

@@ -117,6 +117,8 @@ abstract class SystemServicesHostApi {
 @FlutterApi()
 abstract class SystemServicesFlutterApi {
   void onDeviceOrientationChanged(String orientation);
+
+  void onCameraError(String errorDescription);
 }
 
 @HostApi(dartHostTestHandler: 'TestPreviewHostApi')
