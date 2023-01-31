@@ -17,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:webview_flutter_android/src/android_webview.dart' as android;
+import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/src/weak_reference_utils.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -58,15 +60,13 @@ Future<void> main() async {
       )
       ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
 
-    await tester.pumpWidget(
-      Builder(
-        builder: (BuildContext context) {
-          return PlatformWebViewWidget(
-            PlatformWebViewWidgetCreationParams(controller: controller),
-          ).build(context);
-        },
-      ),
-    );
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     await pageFinished.future;
 
@@ -96,6 +96,79 @@ Future<void> main() async {
     expect(gcIdentifier, 0);
   }, timeout: const Timeout(Duration(seconds: 10)));
 
+  testWidgets(
+    'WebView is released by garbage collection',
+    (WidgetTester tester) async {
+      final Completer<void> webViewGCCompleter = Completer<void>();
+
+      late final InstanceManager instanceManager;
+      instanceManager =
+          InstanceManager(onWeakReferenceRemoved: (int identifier) {
+        final Copyable instance =
+            instanceManager.getInstanceWithWeakReference(identifier)!;
+        if (instance is android.WebView && !webViewGCCompleter.isCompleted) {
+          webViewGCCompleter.complete();
+        }
+      });
+
+      android.WebView.api = WebViewHostApiImpl(
+        instanceManager: instanceManager,
+      );
+      android.WebSettings.api = WebSettingsHostApiImpl(
+        instanceManager: instanceManager,
+      );
+      android.WebChromeClient.api = WebChromeClientHostApiImpl(
+        instanceManager: instanceManager,
+      );
+
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              AndroidWebViewWidgetCreationParams(
+                instanceManager: instanceManager,
+                controller: PlatformWebViewController(
+                  const PlatformWebViewControllerCreationParams(),
+                ),
+              ),
+            ).build(context);
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              AndroidWebViewWidgetCreationParams(
+                instanceManager: instanceManager,
+                controller: PlatformWebViewController(
+                  const PlatformWebViewControllerCreationParams(),
+                ),
+              ),
+            ).build(context);
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Force garbage collection.
+      await IntegrationTestWidgetsFlutterBinding.instance
+          .watchPerformance(() async {
+        await tester.pumpAndSettle();
+      });
+
+      await tester.pumpAndSettle();
+      await expectLater(webViewGCCompleter.future, completes);
+
+      android.WebView.api = WebViewHostApiImpl();
+      android.WebSettings.api = WebSettingsHostApiImpl();
+      android.WebChromeClient.api = WebChromeClientHostApiImpl();
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
+
   testWidgets('runJavaScriptReturningResult', (WidgetTester tester) async {
     final Completer<void> pageFinished = Completer<void>();
 
@@ -110,15 +183,13 @@ Future<void> main() async {
       )
       ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
 
-    await tester.pumpWidget(
-      Builder(
-        builder: (BuildContext context) {
-          return PlatformWebViewWidget(
-            PlatformWebViewWidgetCreationParams(controller: controller),
-          ).build(context);
-        },
-      ),
-    );
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     await pageFinished.future;
 
@@ -151,15 +222,13 @@ Future<void> main() async {
         ),
       );
 
-    await tester.pumpWidget(
-      Builder(
-        builder: (BuildContext context) {
-          return PlatformWebViewWidget(
-            PlatformWebViewWidgetCreationParams(controller: controller),
-          ).build(context);
-        },
-      ),
-    );
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     await pageLoads.stream.firstWhere((String url) => url == headersUrl);
 
@@ -195,15 +264,13 @@ Future<void> main() async {
       'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
     );
 
-    await tester.pumpWidget(
-      Builder(
-        builder: (BuildContext context) {
-          return PlatformWebViewWidget(
-            PlatformWebViewWidgetCreationParams(controller: controller),
-          ).build(context);
-        },
-      ),
-    );
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     await pageFinished.future;
 
@@ -258,15 +325,13 @@ Future<void> main() async {
       ..setUserAgent('Custom_User_Agent1')
       ..loadRequest(LoadRequestParams(uri: Uri.parse('about:blank')));
 
-    await tester.pumpWidget(
-      Builder(
-        builder: (BuildContext context) {
-          return PlatformWebViewWidget(
-            PlatformWebViewWidgetCreationParams(controller: controller),
-          ).build(context);
-        },
-      ),
-    );
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     await pageFinished.future;
 
@@ -335,15 +400,13 @@ Future<void> main() async {
           ),
         );
 
-      await tester.pumpWidget(
-        Builder(
-          builder: (BuildContext context) {
-            return PlatformWebViewWidget(
-              PlatformWebViewWidgetCreationParams(controller: controller),
-            ).build(context);
-          },
-        ),
-      );
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       await pageLoaded.future;
 
@@ -369,15 +432,13 @@ Future<void> main() async {
           ),
         );
 
-      await tester.pumpWidget(
-        Builder(
-          builder: (BuildContext context) {
-            return PlatformWebViewWidget(
-              PlatformWebViewWidgetCreationParams(controller: controller),
-            ).build(context);
-          },
-        ),
-      );
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       await pageLoaded.future;
 
@@ -491,15 +552,13 @@ Future<void> main() async {
           ),
         );
 
-      await tester.pumpWidget(
-        Builder(
-          builder: (BuildContext context) {
-            return PlatformWebViewWidget(
-              PlatformWebViewWidgetCreationParams(controller: controller),
-            ).build(context);
-          },
-        ),
-      );
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       await pageLoaded.future;
 
@@ -525,15 +584,13 @@ Future<void> main() async {
           ),
         );
 
-      await tester.pumpWidget(
-        Builder(
-          builder: (BuildContext context) {
-            return PlatformWebViewWidget(
-              PlatformWebViewWidgetCreationParams(controller: controller),
-            ).build(context);
-          },
-        ),
-      );
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       await pageLoaded.future;
 
@@ -573,15 +630,13 @@ Future<void> main() async {
         ),
       );
 
-    await tester.pumpWidget(
-      Builder(
-        builder: (BuildContext context) {
-          return PlatformWebViewWidget(
-            PlatformWebViewWidgetCreationParams(controller: controller),
-          ).build(context);
-        },
-      ),
-    );
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     await pageLoaded.future;
 

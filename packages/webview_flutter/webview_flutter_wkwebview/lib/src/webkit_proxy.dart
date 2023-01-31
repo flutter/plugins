@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'common/instance_manager.dart';
 import 'foundation/foundation.dart';
 import 'web_kit/web_kit.dart';
 
@@ -39,10 +40,13 @@ class WebKitProxy {
       Map<NSKeyValueChangeKey, Object?> change,
     )?
         observeValue,
+    InstanceManager? instanceManager,
   }) createWebView;
 
   /// Constructs a [WKWebViewConfiguration].
-  final WKWebViewConfiguration Function() createWebViewConfiguration;
+  final WKWebViewConfiguration Function({
+    InstanceManager? instanceManager,
+  }) createWebViewConfiguration;
 
   /// Constructs a [WKScriptMessageHandler].
   final WKScriptMessageHandler Function({
@@ -72,7 +76,7 @@ class WebKitProxy {
     void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
   }) createNavigationDelegate;
 
-  /// Contructs a [WKUIDelegate].
+  /// Constructs a [WKUIDelegate].
   final WKUIDelegate Function({
     void Function(
       WKWebView webView,
