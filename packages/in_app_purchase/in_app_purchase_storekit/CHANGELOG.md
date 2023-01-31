@@ -1,6 +1,7 @@
-## NEXT
+## 0.3.5
 
 * Updates minimum Flutter version to 3.0.
+* Ignores a lint in the example app for backwards compatibility.
 
 ## 0.3.4+1
 
