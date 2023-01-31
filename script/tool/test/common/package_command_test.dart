@@ -778,7 +778,8 @@ packages/b_package/lib/src/foo.dart
         MockProcess(stdout: 'a-branch'),
       ];
       processRunner.mockProcessesForExecutable['git-merge-base'] = <Process>[
-        MockProcess(stdout: 'abc123'),
+        MockProcess(exitCode: 1), // --is-ancestor check
+        MockProcess(stdout: 'abc123'), // finding merge base
       ];
       final RepositoryPackage plugin1 =
           createFakePlugin('plugin1', packagesDir);
@@ -791,6 +792,7 @@ packages/b_package/lib/src/foo.dart
       expect(
           output,
           containsAllInOrder(<Matcher>[
+            contains('--packages-for-branch: running on branch "a-branch"'),
             contains(
                 'Running for all packages that have diffs relative to "abc123"'),
           ]));
@@ -822,8 +824,9 @@ packages/b_package/lib/src/foo.dart
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('--packages-for-branch: running on default branch; '
-                'using parent commit as the diff base'),
+            contains('--packages-for-branch: running on default branch.'),
+            contains(
+                '--packages-for-branch: using parent commit as the diff base'),
             contains(
                 'Running for all packages that have diffs relative to "HEAD~"'),
           ]));
@@ -836,7 +839,45 @@ packages/b_package/lib/src/foo.dart
           ));
     });
 
-    test('tests all packages on master', () async {
+    test(
+        'only tests changed packages relative to the previous commit if '
+        'running on a specific hash from main', () async {
+      processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
+        MockProcess(stdout: 'packages/plugin1/plugin1.dart'),
+      ];
+      processRunner.mockProcessesForExecutable['git-rev-parse'] = <Process>[
+        MockProcess(stdout: 'HEAD'),
+      ];
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['sample', '--packages-for-branch']);
+
+      expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains(
+                '--packages-for-branch: running on a commit from default branch.'),
+            contains(
+                '--packages-for-branch: using parent commit as the diff base'),
+            contains(
+                'Running for all packages that have diffs relative to "HEAD~"'),
+          ]));
+      // Ensure that it's diffing against the prior commit.
+      expect(
+          processRunner.recordedCalls,
+          contains(
+            const ProcessCall(
+                'git-diff', <String>['--name-only', 'HEAD~', 'HEAD'], null),
+          ));
+    });
+
+    test(
+        'only tests changed packages relative to the previous commit on master',
+        () async {
       processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
         MockProcess(stdout: 'packages/plugin1/plugin1.dart'),
       ];
@@ -854,8 +895,9 @@ packages/b_package/lib/src/foo.dart
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('--packages-for-branch: running on default branch; '
-                'using parent commit as the diff base'),
+            contains('--packages-for-branch: running on default branch.'),
+            contains(
+                '--packages-for-branch: using parent commit as the diff base'),
             contains(
                 'Running for all packages that have diffs relative to "HEAD~"'),
           ]));
@@ -887,7 +929,7 @@ packages/b_package/lib/src/foo.dart
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Unabled to determine branch'),
+            contains('Unable to determine branch'),
           ]));
     });
   });
