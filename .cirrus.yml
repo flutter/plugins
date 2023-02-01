@@ -254,7 +254,7 @@ task:
       lint_script:
         - ./script/tool_runner.sh lint-android # must come after build-examples
       native_unit_test_script:
-        # Native integration tests are handled by firebase-test-lab below, so
+        # Native integration tests are handled by Firebase Test Lab below, so
         # only run unit tests.
         # Must come after build-examples.
         - ./script/tool_runner.sh native-test --android --no-integration --exclude script/configs/exclude_native_unit_android.yaml
