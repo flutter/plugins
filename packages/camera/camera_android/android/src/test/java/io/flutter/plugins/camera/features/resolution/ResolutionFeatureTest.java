@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import android.media.CamcorderProfile;
 import android.media.EncoderProfiles;
+import android.util.Size;
 import io.flutter.plugins.camera.CameraProperties;
 import java.util.ArrayList;
 import java.util.List;
@@ -336,11 +337,50 @@ public class ResolutionFeatureTest {
     mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_QVGA));
   }
 
-  // @Config(minSdk = 31)
-  // @Test
-  // public void computeBestPreviewSize_shouldUseLegacyBehaviorWhenEncoderProfilesNull() {
+  @Config(minSdk = 31)
+  @Test
+  public void computeBestPreviewSize_shouldUseLegacyBehaviorWhenEncoderProfilesNull() {
+    try (MockedStatic<ResolutionFeature> mockedResolutionFeature =
+        mockStatic(ResolutionFeature.class)) {
+      mockedResolutionFeature
+          .when(
+              () ->
+                  ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset(
+                      anyInt(), any(ResolutionPreset.class)))
+          .thenAnswer(
+              (Answer<EncoderProfiles>)
+                  invocation -> {
+                    EncoderProfiles mockEncoderProfiles = mock(EncoderProfiles.class);
+                    List<EncoderProfiles.VideoProfile> videoProfiles =
+                        new ArrayList<EncoderProfiles.VideoProfile>() {
+                          {
+                            add(null);
+                          }
+                        };
+                    when(mockEncoderProfiles.getVideoProfiles()).thenReturn(videoProfiles);
+                    return mockEncoderProfiles;
+                  });
 
-  // }
+      mockedResolutionFeature
+        .when(
+          () ->
+          ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPresetLegacy(
+            anyInt(), any(ResolutionPreset.class)))
+        .thenAnswer(
+          (Answer<CamcorderProfile>)
+          invocation -> {
+            CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
+            mockCamcorderProfile.videoFrameWidth = 10;
+            mockCamcorderProfile.videoFrameHeight = 50;
+            return mockCamcorderProfile;
+          }
+        );
+
+        Size testPreviewSize = ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
+        assertEquals(testPreviewSize.getWidth(), 10);
+        assertEquals(testPreviewSize.getHeight(), 50);
+    }
+  }
 
   @Config(minSdk = 31)
   @Test
@@ -366,7 +406,6 @@ public class ResolutionFeatureTest {
                     return mockEncoderProfiles;
                   });
 
-      beforeLegacy();
       CameraProperties mockCameraProperties = mock(CameraProperties.class);
       ResolutionPreset mockResolutionPreset = mock(ResolutionPreset.class);
       ResolutionFeature resolutionFeature =
