@@ -143,7 +143,7 @@ public class PreviewTest {
     capturedConsumer.accept(mockSurfaceRequestResult);
 
     verify(mockSurface, times(4)).release();
-    verify(mockSystemServicesFlutterApi, times(4)).onCameraError(anyString(), any(Reply.class));
+    verify(mockSystemServicesFlutterApi, times(4)).sendCameraError(anyString(), any(Reply.class));
   }
 
   @Test

@@ -12,7 +12,7 @@ public class SystemServicesFlutterApiImpl extends SystemServicesFlutterApi {
     super(binaryMessenger);
   }
 
-  public void sendDeviceOrientationChanged(String orientation, Reply<Void> reply) {
+  public void sendDeviceOrientationChangedEvent(String orientation, Reply<Void> reply) {
     super.onDeviceOrientationChanged(orientation, reply);
   }
 
