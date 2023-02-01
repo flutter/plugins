@@ -11,6 +11,7 @@ import androidx.camera.core.CameraSelector;
 import androidx.camera.core.Preview;
 import io.flutter.plugin.common.BinaryMessenger;
 
+/** Utility class used to create CameraX-related objects primarily for testing purposes. */
 public class CameraXProxy {
   public CameraSelector.Builder createCameraSelectorBuilder() {
     return new CameraSelector.Builder();
@@ -36,7 +37,13 @@ public class CameraXProxy {
     return new Surface(surfaceTexture);
   }
 
-  public SystemServicesFlutterApiImpl createSystemServicesFlutterApi(
+  /**
+   * Creates an instance of the {@code SystemServicesFlutterApiImpl}.
+   *
+   * <p>Included in this class to utilize the callback methods it provides, e.g. {@code
+   * onCameraError(String)}.
+   */
+  public SystemServicesFlutterApiImpl createSystemServicesFlutterApiImpl(
       BinaryMessenger binaryMessenger) {
     return new SystemServicesFlutterApiImpl(binaryMessenger);
   }

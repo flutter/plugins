@@ -19,7 +19,7 @@ void main() {
   group('Preview', () {
     tearDown(() => TestPreviewHostApi.setup(null));
 
-    test('detachedCreateTest', () async {
+    test('detached create does not call create on the Java side', () async {
       final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
       TestPreviewHostApi.setup(mockApi);
 
@@ -36,7 +36,7 @@ void main() {
           argThat(isA<ResolutionInfo>())));
     });
 
-    test('createTest', () async {
+    test('create calls create on the Java side', () async {
       final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
       TestPreviewHostApi.setup(mockApi);
 
@@ -57,7 +57,9 @@ void main() {
       expect(capturedResolutionInfo.height, equals(50));
     });
 
-    test('setSurfaceProviderTest', () async {
+    test(
+        'setSurfaceProvider makes call to set surface provider for preview instance',
+        () async {
       final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
       TestPreviewHostApi.setup(mockApi);
 
@@ -82,7 +84,9 @@ void main() {
           mockApi.setSurfaceProvider(instanceManager.getIdentifier(preview)));
     });
 
-    test('setSurfaceProviderTest', () async {
+    test(
+        'releaseFlutterSurfaceTexture makes call to relase flutter surface texture entry',
+        () async {
       final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
       TestPreviewHostApi.setup(mockApi);
 
@@ -93,7 +97,9 @@ void main() {
       verify(mockApi.releaseFlutterSurfaceTexture());
     });
 
-    test('getResolutionInfoTest', () async {
+    test(
+        'getResolutionInfo makes call to get resolution information for preview instance',
+        () async {
       final MockTestPreviewHostApi mockApi = MockTestPreviewHostApi();
       TestPreviewHostApi.setup(mockApi);
 

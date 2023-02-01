@@ -15,6 +15,7 @@ import androidx.camera.core.SurfaceRequest;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.PreviewHostApi;
 import io.flutter.view.TextureRegistry;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 public class PreviewHostApiImpl implements PreviewHostApi {
@@ -59,42 +60,50 @@ public class PreviewHostApiImpl implements PreviewHostApi {
    */
   @Override
   public Long setSurfaceProvider(@NonNull Long identifier) {
-    Preview preview = (Preview) instanceManager.getInstance(identifier);
+    Preview preview = (Preview) Objects.requireNonNull(instanceManager.getInstance(identifier));
     flutterSurfaceTexture = textureRegistry.createSurfaceTexture();
     SurfaceTexture surfaceTexture = flutterSurfaceTexture.surfaceTexture();
-    Preview.SurfaceProvider surfaceProvider =
-        new Preview.SurfaceProvider() {
-          @Override
-          public void onSurfaceRequested(SurfaceRequest request) {
-            surfaceTexture.setDefaultBufferSize(
-                request.getResolution().getWidth(), request.getResolution().getHeight());
-            Surface flutterSurface = cameraXProxy.createSurface(surfaceTexture);
-            request.provideSurface(
-                flutterSurface,
-                Executors.newSingleThreadExecutor(),
-                (result) -> {
-                  SystemServicesFlutterApiImpl systemServicesFlutterApi =
-                      cameraXProxy.createSystemServicesFlutterApi(binaryMessenger);
-                  int resultCode = result.getResultCode();
-                  switch (resultCode) {
-                    case SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY:
-                      flutterSurface.release();
-                      break;
-                    case SurfaceRequest.Result.RESULT_REQUEST_CANCELLED:
-                    case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
-                    case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
-                      flutterSurface.release();
-                    case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
-                    default:
-                      systemServicesFlutterApi.sendCameraError(
-                          getProvideSurfaceErrorDescription(resultCode), reply -> {});
-                      break;
-                  }
-                });
-          };
-        };
+    Preview.SurfaceProvider surfaceProvider = createSurfaceProvider(surfaceTexture);
     preview.setSurfaceProvider(surfaceProvider);
+
     return flutterSurfaceTexture.id();
+  }
+
+  /**
+   * Creates a {@link Preview.SurfaceProvider} that specifies how to provide a {@link Surface} to a
+   * {@code Preview} that is backed by a Flutter {@link TextureRegistry.SurfaceTextureEntry}.
+   */
+  @VisibleForTesting
+  public Preview.SurfaceProvider createSurfaceProvider(SurfaceTexture surfaceTexture) {
+    return new Preview.SurfaceProvider() {
+      @Override
+      public void onSurfaceRequested(SurfaceRequest request) {
+        surfaceTexture.setDefaultBufferSize(
+            request.getResolution().getWidth(), request.getResolution().getHeight());
+        Surface flutterSurface = cameraXProxy.createSurface(surfaceTexture);
+        request.provideSurface(
+            flutterSurface,
+            Executors.newSingleThreadExecutor(),
+            (result) -> {
+              SystemServicesFlutterApiImpl systemServicesFlutterApi =
+                  cameraXProxy.createSystemServicesFlutterApiImpl(binaryMessenger);
+              int resultCode = result.getResultCode();
+              switch (resultCode) {
+                case SurfaceRequest.Result.RESULT_REQUEST_CANCELLED:
+                case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
+                case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
+                case SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY:
+                  flutterSurface.release();
+                  break;
+                case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
+                default:
+                  systemServicesFlutterApi.sendCameraError(
+                      getProvideSurfaceErrorDescription(resultCode), reply -> {});
+                  break;
+              }
+            });
+      };
+    };
   }
 
   /**
@@ -103,16 +112,10 @@ public class PreviewHostApiImpl implements PreviewHostApi {
    */
   private String getProvideSurfaceErrorDescription(int resultCode) {
     switch (resultCode) {
-      case SurfaceRequest.Result.RESULT_REQUEST_CANCELLED:
-        return "Provided surface was never attached to the camera becausethe SurfaceRequest was cancelled by the camera.";
       case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
-        return "Provided surface could not be used by the camera.";
-      case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
-        return "Provided surface was never attached to the camera because the SurfaceRequest was cancelled by the camera.";
-      case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
-        return "Surface was not attached to the camera because the SurfaceRequest was marked as 'will not provide surface'.";
+        return resultCode + ": Provided surface could not be used by the camera.";
       default:
-        return "There was an error with providing a surface for the camera preview.";
+        return resultCode + ": Attempt to provide a surface resulted with unrecognizable code.";
     }
   }
 
@@ -130,7 +133,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   /** Returns the resolution information for the specified {@link Preview}. */
   @Override
   public GeneratedCameraXLibrary.ResolutionInfo getResolutionInfo(@NonNull Long identifier) {
-    Preview preview = (Preview) instanceManager.getInstance(identifier);
+    Preview preview = (Preview) Objects.requireNonNull(instanceManager.getInstance(identifier));
     Size resolution = preview.getResolutionInfo().getResolution();
 
     GeneratedCameraXLibrary.ResolutionInfo.Builder resolutionInfo =

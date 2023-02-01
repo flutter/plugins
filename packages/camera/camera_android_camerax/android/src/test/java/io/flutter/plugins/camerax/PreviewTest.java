@@ -57,7 +57,7 @@ public class PreviewTest {
   }
 
   @Test
-  public void createTest() {
+  public void create_createsPreviewWithCorrectConfiguration() {
     final PreviewHostApiImpl previewHostApi =
         new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);
     final Preview.Builder mockPreviewBuilder = mock(Preview.Builder.class);
@@ -81,17 +81,12 @@ public class PreviewTest {
   }
 
   @Test
-  public void setSurfaceProviderTest() {
+  public void setSurfaceProviderTest_createsSurfaceProviderAndReturnsTextureEntryId() {
     final PreviewHostApiImpl previewHostApi =
-        new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);
+        spy(new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry));
     final TextureRegistry.SurfaceTextureEntry mockSurfaceTextureEntry =
         mock(TextureRegistry.SurfaceTextureEntry.class);
     final SurfaceTexture mockSurfaceTexture = mock(SurfaceTexture.class);
-    final SurfaceRequest mockSurfaceRequest = mock(SurfaceRequest.class);
-    final Surface mockSurface = mock(Surface.class);
-    final SystemServicesFlutterApiImpl mockSystemServicesFlutterApi =
-        mock(SystemServicesFlutterApiImpl.class);
-    final SurfaceRequest.Result mockSurfaceRequestResult = mock(SurfaceRequest.Result.class);
 
     previewHostApi.cameraXProxy = mockCameraXProxy;
     testInstanceManager.addDartCreatedInstance(mockPreview, 5L);
@@ -99,10 +94,6 @@ public class PreviewTest {
     when(mockTextureRegistry.createSurfaceTexture()).thenReturn(mockSurfaceTextureEntry);
     when(mockSurfaceTextureEntry.surfaceTexture()).thenReturn(mockSurfaceTexture);
     when(mockSurfaceTextureEntry.id()).thenReturn(120L);
-    when(mockSurfaceRequest.getResolution()).thenReturn(new Size(200, 500));
-    when(mockCameraXProxy.createSurface(mockSurfaceTexture)).thenReturn(mockSurface);
-    when(mockCameraXProxy.createSystemServicesFlutterApi(mockBinaryMessenger))
-        .thenReturn(mockSystemServicesFlutterApi);
 
     final ArgumentCaptor<Preview.SurfaceProvider> surfaceProviderCaptor =
         ArgumentCaptor.forClass(Preview.SurfaceProvider.class);
@@ -112,9 +103,32 @@ public class PreviewTest {
     // Test that surface provider was set and the surface texture ID was returned.
     assertEquals((long) previewHostApi.setSurfaceProvider(5L), 120L);
     verify(mockPreview).setSurfaceProvider(surfaceProviderCaptor.capture());
+    verify(previewHostApi).createSurfaceProvider(mockSurfaceTexture);
+  }
 
-    Preview.SurfaceProvider surfaceProvider = surfaceProviderCaptor.getValue();
-    surfaceProvider.onSurfaceRequested(mockSurfaceRequest);
+  @Test
+  public void createSurfaceProvider_createsExpectedPreviewSurfaceProvider() {
+    final PreviewHostApiImpl previewHostApi =
+        new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);
+    final SurfaceTexture mockSurfaceTexture = mock(SurfaceTexture.class);
+    final Surface mockSurface = mock(Surface.class);
+    final SurfaceRequest mockSurfaceRequest = mock(SurfaceRequest.class);
+    final SurfaceRequest.Result mockSurfaceRequestResult = mock(SurfaceRequest.Result.class);
+    final SystemServicesFlutterApiImpl mockSystemServicesFlutterApi =
+        mock(SystemServicesFlutterApiImpl.class);
+
+    previewHostApi.cameraXProxy = mockCameraXProxy;
+    when(mockCameraXProxy.createSurface(mockSurfaceTexture)).thenReturn(mockSurface);
+    when(mockSurfaceRequest.getResolution()).thenReturn(new Size(200, 500));
+    when(mockCameraXProxy.createSystemServicesFlutterApiImpl(mockBinaryMessenger))
+        .thenReturn(mockSystemServicesFlutterApi);
+
+    final ArgumentCaptor<Surface> surfaceCaptor = ArgumentCaptor.forClass(Surface.class);
+    final ArgumentCaptor<Consumer> consumerCaptor = ArgumentCaptor.forClass(Consumer.class);
+
+    Preview.SurfaceProvider previewSurfaceProvider =
+        previewHostApi.createSurfaceProvider(mockSurfaceTexture);
+    previewSurfaceProvider.onSurfaceRequested(mockSurfaceRequest);
 
     verify(mockSurfaceTexture).setDefaultBufferSize(200, 500);
     verify(mockSurfaceRequest)
@@ -126,28 +140,34 @@ public class PreviewTest {
     // Test that the Consumer used to handle surface request result releases Flutter surface texture appropriately
     // and sends camera errors appropriately.
     Consumer<SurfaceRequest.Result> capturedConsumer = consumerCaptor.getValue();
-    when(mockSurfaceRequestResult.getResultCode())
-        .thenReturn(SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY);
-    capturedConsumer.accept(mockSurfaceRequestResult);
+
+    // Case where Surface should be released.
     when(mockSurfaceRequestResult.getResultCode())
         .thenReturn(SurfaceRequest.Result.RESULT_REQUEST_CANCELLED);
     capturedConsumer.accept(mockSurfaceRequestResult);
+    verify(mockSurface, times(1)).release();
     when(mockSurfaceRequestResult.getResultCode())
-        .thenReturn(SurfaceRequest.Result.RESULT_INVALID_SURFACE);
+        .thenReturn(SurfaceRequest.Result.RESULT_REQUEST_CANCELLED);
     capturedConsumer.accept(mockSurfaceRequestResult);
+    verify(mockSurface, times(2)).release();
     when(mockSurfaceRequestResult.getResultCode())
         .thenReturn(SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE);
     capturedConsumer.accept(mockSurfaceRequestResult);
+    verify(mockSurface, times(3)).release();
     when(mockSurfaceRequestResult.getResultCode())
-        .thenReturn(SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED);
+        .thenReturn(SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY);
     capturedConsumer.accept(mockSurfaceRequestResult);
-
     verify(mockSurface, times(4)).release();
-    verify(mockSystemServicesFlutterApi, times(4)).sendCameraError(anyString(), any(Reply.class));
+
+    // Case where error must be sent.
+    when(mockSurfaceRequestResult.getResultCode())
+        .thenReturn(SurfaceRequest.Result.RESULT_INVALID_SURFACE);
+    capturedConsumer.accept(mockSurfaceRequestResult);
+    verify(mockSystemServicesFlutterApi, times(1)).sendCameraError(anyString(), any(Reply.class));
   }
 
   @Test
-  public void releaseFlutterSurfaceTextureTest() {
+  public void releaseFlutterSurfaceTexture_makesCallToReleaseFlutterSurfaceTexture() {
     final PreviewHostApiImpl previewHostApi =
         new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);
     final TextureRegistry.SurfaceTextureEntry mockSurfaceTextureEntry =
@@ -160,7 +180,7 @@ public class PreviewTest {
   }
 
   @Test
-  public void getResolutionInfo() {
+  public void getResolutionInfo_makesCallToRetrievePreviewResolutionInfo() {
     final PreviewHostApiImpl previewHostApi =
         new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);
     final androidx.camera.core.ResolutionInfo mockResolutionInfo =
