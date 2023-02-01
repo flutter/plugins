@@ -23,6 +23,7 @@ RUN apt-get install -y clang-format
 # - build tools.
 RUN apt-get install -y clang cmake ninja-build file pkg-config
 # - libraries.
+RUN apt-get -o Debug::pkgProblemResolver=true install -y libegl-mesa0
 RUN apt-get -o Debug::pkgProblemResolver=true install -y libegl1-mesa-dev
 RUN apt-get -o Debug::pkgProblemResolver=true install -y libgtk-3-dev
 RUN apt-get -o Debug::pkgProblemResolver=true install -y libblkid-dev
