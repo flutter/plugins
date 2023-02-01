@@ -1,3 +1,7 @@
+## 0.3.5+2
+
+* Fix a crash when `appStoreReceiptURL` is nil.
+
 ## 0.3.5+1
 
 * Uses the new `sharedDarwinSource` flag when available.
