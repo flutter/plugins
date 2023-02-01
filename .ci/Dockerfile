@@ -23,7 +23,10 @@ RUN apt-get install -y clang-format
 # - build tools.
 RUN apt-get install -y clang cmake ninja-build file pkg-config
 # - libraries.
-RUN apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libgcrypt20-dev
+RUN apt-get -o Debug::pkgProblemResolver=true install -y libgtk-3-dev
+RUN apt-get -o Debug::pkgProblemResolver=true install -y libblkid-dev
+RUN apt-get -o Debug::pkgProblemResolver=true install -y liblzma-dev
+RUN apt-get -o Debug::pkgProblemResolver=true install -y libgcrypt20-dev
 # - xvfb to allow running headless.
 RUN apt-get install -y xvfb libegl1-mesa
 
