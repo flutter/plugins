@@ -538,10 +538,28 @@ abstract class PackageCommand extends Command<void> {
   // This is used because CI may check out a specific hash rather than a branch,
   // in which case branch-name detection won't work.
   Future<bool> _isCheckoutFromBranch(String branchName) async {
-    final io.ProcessResult result = await (await gitDir).runCommand(
-        <String>['merge-base', '--is-ancestor', 'HEAD', branchName],
-        throwOnError: false);
-    return result.exitCode == 0;
+    // The target branch may not exist locally; try some common remote names for
+    // the branch as well.
+    final List<String> candidateBranchNames = <String>[
+      branchName,
+      'origin/$branchName',
+      'upstream/$branchName',
+    ];
+    for (final String branch in candidateBranchNames) {
+      final io.ProcessResult result = await (await gitDir).runCommand(
+          <String>['merge-base', '--is-ancestor', 'HEAD', branch],
+          throwOnError: false);
+      if (result.exitCode == 0) {
+        return true;
+      } else if (result.exitCode == 1) {
+        // 1 indicates that the branch was successfully checked, but it's not
+        // an ancestor.
+        return false;
+      }
+      // Any other return code is an error, such as `branch` not being a valid
+      // name in the repository, so try other name variants.
+    }
+    return false;
   }
 
   Future<String?> _getBranch() async {
