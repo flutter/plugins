@@ -1,3 +1,7 @@
+## 3.2.5
+
+* Bumps webkit dependency from 1.5.0 to 1.6.0 and compileSdkVersion to 33.
+
 ## 3.2.4
 
 * Renames Pigeon output files.
