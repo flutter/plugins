@@ -360,7 +360,6 @@ public class ResolutionFeatureTest {
                     when(mockEncoderProfiles.getVideoProfiles()).thenReturn(videoProfiles);
                     return mockEncoderProfiles;
                   });
-
       mockedResolutionFeature
           .when(
               () ->
@@ -374,6 +373,9 @@ public class ResolutionFeatureTest {
                     mockCamcorderProfile.videoFrameHeight = 50;
                     return mockCamcorderProfile;
                   });
+      mockedResolutionFeature
+          .when(() -> ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max))
+          .thenCallRealMethod();
 
       Size testPreviewSize = ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
       assertEquals(testPreviewSize.getWidth(), 10);
@@ -383,7 +385,8 @@ public class ResolutionFeatureTest {
 
   @Config(minSdk = 31)
   @Test
-  public void resolutionFeatureShouldUseLegacyBehaviorWhenEconderProfilesNull() {
+  public void resolutionFeatureShouldUseLegacyBehaviorWhenEncoderProfilesNull() {
+    beforeLegacy();
     try (MockedStatic<ResolutionFeature> mockedResolutionFeature =
         mockStatic(ResolutionFeature.class)) {
       mockedResolutionFeature
@@ -404,11 +407,21 @@ public class ResolutionFeatureTest {
                     when(mockEncoderProfiles.getVideoProfiles()).thenReturn(videoProfiles);
                     return mockEncoderProfiles;
                   });
+      mockedResolutionFeature
+          .when(
+              () ->
+                  ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPresetLegacy(
+                      anyInt(), any(ResolutionPreset.class)))
+          .thenAnswer(
+              (Answer<CamcorderProfile>)
+                  invocation -> {
+                    CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
+                    return mockCamcorderProfile;
+                  });
 
       CameraProperties mockCameraProperties = mock(CameraProperties.class);
-      ResolutionPreset mockResolutionPreset = mock(ResolutionPreset.class);
       ResolutionFeature resolutionFeature =
-          new ResolutionFeature(mockCameraProperties, mockResolutionPreset, "testCameraName");
+          new ResolutionFeature(mockCameraProperties, ResolutionPreset.max, cameraName);
 
       assertNotNull(resolutionFeature.getRecordingProfileLegacy());
       assertNull(resolutionFeature.getRecordingProfile());
