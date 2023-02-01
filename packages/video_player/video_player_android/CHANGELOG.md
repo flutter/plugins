@@ -1,5 +1,6 @@
 
 ## 2.3.11
+
 * Updates minimum Flutter version to 3.0.
 * Adds option to configure the User-Agent in the HTTP headers.
   
