@@ -539,6 +539,19 @@ void main() {
       expect(callbackProgress, 42);
     });
 
+    test('onProgress does not cause LateInitializationError', () {
+      // ignore: unused_local_variable
+      final AndroidWebViewController controller = createControllerWithMocks(
+        createWebChromeClient: CapturingWebChromeClient.new,
+      );
+
+      // Should not cause LateInitializationError
+      CapturingWebChromeClient.lastCreatedDelegate.onProgressChanged!(
+        android_webview.WebView.detached(),
+        42,
+      );
+    });
+
     test('setOnShowFileSelector', () async {
       late final Future<List<String>> Function(
         android_webview.WebView webView,

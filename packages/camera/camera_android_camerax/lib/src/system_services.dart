@@ -9,7 +9,7 @@ import 'package:camera_platform_interface/camera_platform_interface.dart'
 import 'package:flutter/services.dart';
 
 import 'android_camera_camerax_flutter_api_impls.dart';
-import 'camerax_library.pigeon.dart';
+import 'camerax_library.g.dart';
 
 // Ignoring lint indicating this class only contains static members
 // as this class is a wrapper for various Android system services.

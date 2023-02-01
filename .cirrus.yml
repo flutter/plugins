@@ -228,7 +228,7 @@ task:
     zone: us-central1-a
     namespace: default
     cpu: 4
-    memory: 12G
+    memory: 16G
   matrix:
     ### Android tasks ###
     - name: android-platform_tests

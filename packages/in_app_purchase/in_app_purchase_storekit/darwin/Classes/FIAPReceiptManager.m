@@ -21,6 +21,9 @@
 
 - (NSString *)retrieveReceiptWithError:(FlutterError **)flutterError {
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+  if (!receiptURL) {
+    return nil;
+  }
   NSError *receiptError;
   NSData *receipt = [self getReceiptData:receiptURL error:&receiptError];
   if (!receipt || receiptError) {
