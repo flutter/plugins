@@ -362,23 +362,22 @@ public class ResolutionFeatureTest {
                   });
 
       mockedResolutionFeature
-        .when(
-          () ->
-          ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPresetLegacy(
-            anyInt(), any(ResolutionPreset.class)))
-        .thenAnswer(
-          (Answer<CamcorderProfile>)
-          invocation -> {
-            CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
-            mockCamcorderProfile.videoFrameWidth = 10;
-            mockCamcorderProfile.videoFrameHeight = 50;
-            return mockCamcorderProfile;
-          }
-        );
+          .when(
+              () ->
+                  ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPresetLegacy(
+                      anyInt(), any(ResolutionPreset.class)))
+          .thenAnswer(
+              (Answer<CamcorderProfile>)
+                  invocation -> {
+                    CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
+                    mockCamcorderProfile.videoFrameWidth = 10;
+                    mockCamcorderProfile.videoFrameHeight = 50;
+                    return mockCamcorderProfile;
+                  });
 
-        Size testPreviewSize = ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
-        assertEquals(testPreviewSize.getWidth(), 10);
-        assertEquals(testPreviewSize.getHeight(), 50);
+      Size testPreviewSize = ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
+      assertEquals(testPreviewSize.getWidth(), 10);
+      assertEquals(testPreviewSize.getHeight(), 50);
     }
   }
 
