@@ -259,7 +259,7 @@ class Camera
     MediaRecorderBuilder mediaRecorderBuilder;
 
     // TODO(camsim99): Revert changes that allow legacy code to be used when recordingProfile is null
-    // once this has largely been fixed on the Android side.
+    // once this has largely been fixed on the Android side. https://github.com/flutter/flutter/issues/119668
     EncoderProfiles recordingProfile = getRecordingProfile();
     if (Build.VERSION.SDK_INT >= 31 && recordingProfile != null) {
       mediaRecorderBuilder = new MediaRecorderBuilder(recordingProfile, outputFilePath);
