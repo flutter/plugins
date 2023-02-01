@@ -120,13 +120,15 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
       List<EncoderProfiles.VideoProfile> videoProfiles = profile.getVideoProfiles();
       EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
 
-      return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
-    } else {
-      @SuppressWarnings("deprecation")
-      CamcorderProfile profile =
-          getBestAvailableCamcorderProfileForResolutionPresetLegacy(cameraId, preset);
-      return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
+      if (defaultVideoProfile != null) {
+        return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
+      }
     }
+
+    @SuppressWarnings("deprecation")
+    CamcorderProfile profile =
+        getBestAvailableCamcorderProfileForResolutionPresetLegacy(cameraId, preset);
+    return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
   }
 
   /**
@@ -234,15 +236,24 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     if (!checkIsSupported()) {
       return;
     }
+    boolean captureSizeCalculated = false;
 
     if (Build.VERSION.SDK_INT >= 31) {
+      recordingProfileLegacy = null;
       recordingProfile =
           getBestAvailableCamcorderProfileForResolutionPreset(cameraId, resolutionPreset);
       List<EncoderProfiles.VideoProfile> videoProfiles = recordingProfile.getVideoProfiles();
 
       EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
-      captureSize = new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
-    } else {
+
+      if (defaultVideoProfile != null) {
+        captureSizeCalculated = true;
+        captureSize = new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
+      }
+    }
+
+    if (!captureSizeCalculated) {
+      recordingProfile = null;
       @SuppressWarnings("deprecation")
       CamcorderProfile camcorderProfile =
           getBestAvailableCamcorderProfileForResolutionPresetLegacy(cameraId, resolutionPreset);
