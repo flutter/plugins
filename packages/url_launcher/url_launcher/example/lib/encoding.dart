@@ -22,8 +22,14 @@ String? encodeQueryParameters(Map<String, String> params) {
 // #enddocregion encode-query-parameters
 
 void main() => runApp(
+      // TODO(goderbauer): Make this const when this package requires Flutter 3.8 or later.
+      // ignore: prefer_const_constructors
       MaterialApp(
+        // TODO(goderbauer): Make this const when this package requires Flutter 3.8 or later.
+        // ignore: prefer_const_constructors
         home: Material(
+          // TODO(goderbauer): Make this const when this package requires Flutter 3.8 or later.
+          // ignore: prefer_const_constructors
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: const <Widget>[

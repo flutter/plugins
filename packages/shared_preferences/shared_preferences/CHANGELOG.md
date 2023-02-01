@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 2.0.17
+
+* Updates code for stricter lint checks.
+
 ## 2.0.16
 
 * Switches to the new `shared_preferences_foundation` implementation package

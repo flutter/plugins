@@ -9,9 +9,9 @@ import 'dart:ui' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
-import 'package:webview_flutter_android/src/android_webview.pigeon.dart' as _i3;
+import 'package:webview_flutter_android/src/android_webview.g.dart' as _i3;
 
-import 'test_android_webview.pigeon.dart' as _i6;
+import 'test_android_webview.g.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -301,6 +301,21 @@ class MockTestWebChromeClientHostApi extends _i1.Mock
         Invocation.method(
           #create,
           [instanceId],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void setSynchronousReturnValueForOnShowFileChooser(
+    int? instanceId,
+    bool? value,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setSynchronousReturnValueForOnShowFileChooser,
+          [
+            instanceId,
+            value,
+          ],
         ),
         returnValueForMissingStub: null,
       );
@@ -952,6 +967,16 @@ class MockWebChromeClient extends _i1.Mock implements _i2.WebChromeClient {
     _i1.throwOnMissingStub(this);
   }
 
+  @override
+  _i5.Future<void> setSynchronousReturnValueForOnShowFileChooser(bool? value) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setSynchronousReturnValueForOnShowFileChooser,
+          [value],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
   @override
   _i2.WebChromeClient copy() => (super.noSuchMethod(
         Invocation.method(

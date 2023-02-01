@@ -6,7 +6,7 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/src/messages.g.dart',
-  dartTestOut: 'test/test_api.dart',
+  dartTestOut: 'test/test_api.g.dart',
   cppOptions: CppOptions(namespace: 'file_selector_windows'),
   cppHeaderOut: 'windows/messages.g.h',
   cppSourceOut: 'windows/messages.g.cpp',

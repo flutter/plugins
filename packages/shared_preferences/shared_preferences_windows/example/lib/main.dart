@@ -66,9 +66,11 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
               future: _counter,
               builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                 switch (snapshot.connectionState) {
+                  case ConnectionState.none:
                   case ConnectionState.waiting:
                     return const CircularProgressIndicator();
-                  default:
+                  case ConnectionState.active:
+                  case ConnectionState.done:
                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else {

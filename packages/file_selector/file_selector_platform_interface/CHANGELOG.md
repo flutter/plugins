@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 2.4.0
 
 * Adds `getDirectoryPaths` method to the interface.

@@ -9,11 +9,13 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "messages.g.h"
 #include "url_launcher_plugin.h"
 
-namespace url_launcher_plugin {
+namespace url_launcher_windows {
 namespace test {
 
 namespace {
@@ -42,30 +44,10 @@ class MockSystemApis : public SystemApis {
               (override));
 };
 
-class MockMethodResult : public flutter::MethodResult<> {
- public:
-  MOCK_METHOD(void, SuccessInternal, (const EncodableValue* result),
-              (override));
-  MOCK_METHOD(void, ErrorInternal,
-              (const std::string& error_code, const std::string& error_message,
-               const EncodableValue* details),
-              (override));
-  MOCK_METHOD(void, NotImplementedInternal, (), (override));
-};
-
-std::unique_ptr<EncodableValue> CreateArgumentsWithUrl(const std::string& url) {
-  EncodableMap args = {
-      {EncodableValue("url"), EncodableValue(url)},
-  };
-  return std::make_unique<EncodableValue>(args);
-}
-
 }  // namespace
 
 TEST(UrlLauncherPlugin, CanLaunchSuccessTrue) {
   std::unique_ptr<MockSystemApis> system = std::make_unique<MockSystemApis>();
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   // Return success values from the registery commands.
   HKEY fake_key = reinterpret_cast<HKEY>(1);
@@ -73,20 +55,16 @@ TEST(UrlLauncherPlugin, CanLaunchSuccessTrue) {
       .WillOnce(DoAll(SetArgPointee<4>(fake_key), Return(ERROR_SUCCESS)));
   EXPECT_CALL(*system, RegQueryValueExW).WillOnce(Return(ERROR_SUCCESS));
   EXPECT_CALL(*system, RegCloseKey(fake_key)).WillOnce(Return(ERROR_SUCCESS));
-  // Expect a success response.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(true))));
 
   UrlLauncherPlugin plugin(std::move(system));
-  plugin.HandleMethodCall(
-      flutter::MethodCall("canLaunch",
-                          CreateArgumentsWithUrl("https://some.url.com")),
-      std::move(result));
+  ErrorOr<bool> result = plugin.CanLaunchUrl("https://some.url.com");
+
+  ASSERT_FALSE(result.has_error());
+  EXPECT_TRUE(result.value());
 }
 
 TEST(UrlLauncherPlugin, CanLaunchQueryFailure) {
   std::unique_ptr<MockSystemApis> system = std::make_unique<MockSystemApis>();
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   // Return success values from the registery commands, except for the query,
   // to simulate a scheme that is in the registry, but has no URL handler.
@@ -95,68 +73,52 @@ TEST(UrlLauncherPlugin, CanLaunchQueryFailure) {
       .WillOnce(DoAll(SetArgPointee<4>(fake_key), Return(ERROR_SUCCESS)));
   EXPECT_CALL(*system, RegQueryValueExW).WillOnce(Return(ERROR_FILE_NOT_FOUND));
   EXPECT_CALL(*system, RegCloseKey(fake_key)).WillOnce(Return(ERROR_SUCCESS));
-  // Expect a success response.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(false))));
 
   UrlLauncherPlugin plugin(std::move(system));
-  plugin.HandleMethodCall(
-      flutter::MethodCall("canLaunch",
-                          CreateArgumentsWithUrl("https://some.url.com")),
-      std::move(result));
+  ErrorOr<bool> result = plugin.CanLaunchUrl("https://some.url.com");
+
+  ASSERT_FALSE(result.has_error());
+  EXPECT_FALSE(result.value());
 }
 
 TEST(UrlLauncherPlugin, CanLaunchHandlesOpenFailure) {
   std::unique_ptr<MockSystemApis> system = std::make_unique<MockSystemApis>();
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   // Return failure for opening.
   EXPECT_CALL(*system, RegOpenKeyExW).WillOnce(Return(ERROR_BAD_PATHNAME));
-  // Expect a success response.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(false))));
 
   UrlLauncherPlugin plugin(std::move(system));
-  plugin.HandleMethodCall(
-      flutter::MethodCall("canLaunch",
-                          CreateArgumentsWithUrl("https://some.url.com")),
-      std::move(result));
+  ErrorOr<bool> result = plugin.CanLaunchUrl("https://some.url.com");
+
+  ASSERT_FALSE(result.has_error());
+  EXPECT_FALSE(result.value());
 }
 
 TEST(UrlLauncherPlugin, LaunchSuccess) {
   std::unique_ptr<MockSystemApis> system = std::make_unique<MockSystemApis>();
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   // Return a success value (>32) from launching.
   EXPECT_CALL(*system, ShellExecuteW)
       .WillOnce(Return(reinterpret_cast<HINSTANCE>(33)));
-  // Expect a success response.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(true))));
 
   UrlLauncherPlugin plugin(std::move(system));
-  plugin.HandleMethodCall(
-      flutter::MethodCall("launch",
-                          CreateArgumentsWithUrl("https://some.url.com")),
-      std::move(result));
+  std::optional<FlutterError> error = plugin.LaunchUrl("https://some.url.com");
+
+  EXPECT_FALSE(error.has_value());
 }
 
 TEST(UrlLauncherPlugin, LaunchReportsFailure) {
   std::unique_ptr<MockSystemApis> system = std::make_unique<MockSystemApis>();
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   // Return a faile value (<=32) from launching.
   EXPECT_CALL(*system, ShellExecuteW)
       .WillOnce(Return(reinterpret_cast<HINSTANCE>(32)));
-  // Expect an error response.
-  EXPECT_CALL(*result, ErrorInternal);
 
   UrlLauncherPlugin plugin(std::move(system));
-  plugin.HandleMethodCall(
-      flutter::MethodCall("launch",
-                          CreateArgumentsWithUrl("https://some.url.com")),
-      std::move(result));
+  std::optional<FlutterError> error = plugin.LaunchUrl("https://some.url.com");
+
+  EXPECT_TRUE(error.has_value());
 }
 
 }  // namespace test
-}  // namespace url_launcher_plugin
+}  // namespace url_launcher_windows

@@ -5,6 +5,7 @@ version: 1.0.0
 
 environment:
   sdk: ">=2.14.4 <3.0.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   # The following adds the Cupertino Icons font to your application.
