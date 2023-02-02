@@ -72,21 +72,27 @@ class WebWebViewController extends PlatformWebViewController {
       throw ArgumentError(
           'LoadRequestParams#uri is required to have a scheme.');
     }
-    final HttpRequest httpReq =
-        await _webWebViewParams.httpRequestFactory.request(
-      params.uri.toString(),
-      method: params.method.serialize(),
-      requestHeaders: params.headers,
-      sendData: params.body,
-    );
-    final String contentType =
-        httpReq.getResponseHeader('content-type') ?? 'text/html';
-    // ignore: unsafe_html
-    _webWebViewParams.iFrame.src = Uri.dataFromString(
-      httpReq.responseText ?? '',
-      mimeType: contentType,
-      encoding: utf8,
-    ).toString();
+
+    if (params.headers.isEmpty && params.method == LoadRequestMethod.get) {
+      // ignore: unsafe_html
+      _webWebViewParams.iFrame.src = params.uri.toString();
+    } else {
+      final HttpRequest httpReq =
+          await _webWebViewParams.httpRequestFactory.request(
+        params.uri.toString(),
+        method: params.method.serialize(),
+        requestHeaders: params.headers,
+        sendData: params.body,
+      );
+      final String contentType =
+          httpReq.getResponseHeader('content-type') ?? 'text/html';
+      // ignore: unsafe_html
+      _webWebViewParams.iFrame.src = Uri.dataFromString(
+        httpReq.responseText ?? '',
+        mimeType: contentType,
+        encoding: utf8,
+      ).toString();
+    }
   }
 }
 

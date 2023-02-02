@@ -1,6 +1,8 @@
-## NEXT
+## 0.2.2
 
 * Updates minimum Flutter version to 3.0.
+* Updates `WebWebViewController.loadRequest` to only set the src of the iFrame when
+  `LoadRequestParams.headers` is empty and is using the HTTP GET request method.
 
 ## 0.2.1
 
