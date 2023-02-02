@@ -54,9 +54,11 @@ class MapIdBodyState extends State<MapIdBody> {
         return 'latest';
       case AndroidMapRenderer.legacy:
         return 'legacy';
-      default:
-        return 'unknown';
+      case AndroidMapRenderer.platformDefault:
+      case null:
+        break;
     }
+    return 'unknown';
   }
 
   void _setMapId() {
