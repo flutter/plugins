@@ -173,6 +173,7 @@ API_AVAILABLE(ios(14))
     }
   } else {
     // Image picked without an original asset (e.g. User pick image without permission)
+    // maxWidth and maxHeight are used only for GIF images.
     NSString *savedPath =
         [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:pickerImageData
                                                                image:localImage
