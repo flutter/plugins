@@ -99,7 +99,7 @@ import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 ```
 
 Now, additional features can be accessed through the platform implementations. Classes
-`WebViewController`, `WebViewWidget`, `NavigationDelegate`, and `WebViewCookieManager` pass their
+[WebViewController], [WebViewWidget], [NavigationDelegate], and [WebViewCookieManager] pass their
 functionality to a class provided by the current platform. Below are a couple of ways to access
 additional functionality provided by the platform and is followed by an example.
 
@@ -212,11 +212,17 @@ Below is a non-exhaustive list of changes to the API:
   * `WebView.userAgent` -> `WebViewController.setUserAgent`
   * `WebView.backgroundColor` -> `WebViewController.setBackgroundColor`
 * The following features have been moved to an Android implementation class. See section
-  `Platform-Specific Features` for details on accessing Android platform specific features.
+  `Platform-Specific Features` for details on accessing Android platform-specific features.
   * `WebView.debuggingEnabled` -> `static AndroidWebViewController.enableDebugging`
   * `WebView.initialMediaPlaybackPolicy` -> `AndroidWebViewController.setMediaPlaybackRequiresUserGesture`
 * The following features have been moved to an iOS implementation class. See section
-  `Platform-Specific Features` for details on accessing iOS platform specific features.
+  `Platform-Specific Features` for details on accessing iOS platform-specific features.
   * `WebView.gestureNavigationEnabled` -> `WebKitWebViewController.setAllowsBackForwardNavigationGestures`
   * `WebView.initialMediaPlaybackPolicy` -> `WebKitWebViewControllerCreationParams.mediaTypesRequiringUserAction`
   * `WebView.allowsInlineMediaPlayback` -> `WebKitWebViewControllerCreationParams.allowsInlineMediaPlayback`
+
+<!-- Links -->
+[WebViewController]: https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewController-class.html
+[WebViewWidget]: https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewWidget-class.html
+[NavigationDelegate]: https://pub.dev/documentation/webview_flutter/latest/webview_flutter/NavigationDelegate-class.html
+[WebViewCookieManager]: https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewCookieManager-class.html

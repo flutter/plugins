@@ -12,7 +12,28 @@ import 'webview_controller.dart';
 /// Displays a native WebView as a Widget.
 ///
 /// ## Platform-Specific Features
+/// This class contains an underlying implementation provided by the current
+/// platform. Once a platform implementation is imported, the examples below
+/// can be followed to use features provided by a platform's implementation.
+///
 /// {@macro webview_flutter.WebViewWidget.fromPlatformCreationParams}
+///
+/// Below is an example of accessing the platform-specific implementation for
+/// iOS and Android:
+///
+/// ```dart
+/// final WebViewController controller = WebViewController();
+///
+/// final WebViewWidget webViewWidget = WebViewWidget(controller: controller);
+///
+/// if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+///   final WebKitWebViewWidget webKitWidget =
+///       webViewWidget.platform as WebKitWebViewWidget;
+/// } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+///   final AndroidWebViewWidget androidWidget =
+///       webViewWidget.platform as AndroidWebViewWidget;
+/// }
+/// ```
 class WebViewWidget extends StatelessWidget {
   /// Constructs a [WebViewWidget].
   ///
@@ -36,8 +57,8 @@ class WebViewWidget extends StatelessWidget {
   /// Constructs a [WebViewWidget] from creation params for a specific platform.
   ///
   /// {@template webview_flutter.WebViewWidget.fromPlatformCreationParams}
-  /// Below is an example of setting platform specific parameters for iOS and
-  /// Android:
+  /// Below is an example of setting platform-specific creation parameters for
+  /// iOS and Android:
   ///
   /// ```dart
   /// final WebViewController controller = WebViewController();
@@ -58,7 +79,6 @@ class WebViewWidget extends StatelessWidget {
   ///   params = AndroidWebViewWidgetCreationParams
   ///       .fromPlatformWebViewWidgetCreationParams(
   ///     params,
-  ///     displayWithHybridComposition: true,
   ///   );
   /// }
   ///

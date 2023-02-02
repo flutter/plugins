@@ -7,7 +7,26 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 /// Manages cookies pertaining to all WebViews.
 ///
 /// ## Platform-Specific Features
+/// This class contains an underlying implementation provided by the current
+/// platform. Once a platform implementation is imported, the examples below
+/// can be followed to use features provided by a platform's implementation.
+///
 /// {@macro webview_flutter.WebViewCookieManager.fromPlatformCreationParams}
+///
+/// Below is an example of accessing the platform-specific implementation for
+/// iOS and Android:
+///
+/// ```dart
+/// final WebViewCookieManager cookieManager = WebViewCookieManager();
+///
+/// if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+///   final WebKitWebViewCookieManager webKitManager =
+///       cookieManager.platform as WebKitWebViewCookieManager;
+/// } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+///   final AndroidWebViewCookieManager androidManager =
+///       cookieManager.platform as AndroidWebViewCookieManager;
+/// }
+/// ```
 class WebViewCookieManager {
   /// Constructs a [WebViewCookieManager].
   ///
@@ -22,8 +41,8 @@ class WebViewCookieManager {
   /// platform.
   ///
   /// {@template webview_flutter.WebViewCookieManager.fromPlatformCreationParams}
-  /// Below is an example of setting platform specific parameters for iOS and
-  /// Android:
+  /// Below is an example of setting platform-specific creation parameters for
+  /// iOS and Android:
   ///
   /// ```dart
   /// PlatformWebViewCookieManagerCreationParams params =

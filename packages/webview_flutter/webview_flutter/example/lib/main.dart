@@ -163,27 +163,6 @@ Page resource error:
 
   @override
   Widget build(BuildContext context) {
-PlatformWebViewControllerCreationParams params =
-    const PlatformWebViewControllerCreationParams();
-
-if (WebViewPlatform.instance is WebKitWebViewPlatform) {
-  params = WebKitWebViewControllerCreationParams
-      .fromPlatformWebViewControllerCreationParams(
-    params,
-    allowsInlineMediaPlayback: true,
-  );
-} else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
-  params = AndroidWebViewControllerCreationParams
-      .fromPlatformWebViewControllerCreationParams(
-    params,
-  );
-}
-
-final WebViewController webViewController =
-    WebViewController.fromPlatformCreationParams(
-  params,
-);
-
     return Scaffold(
       backgroundColor: Colors.green,
       appBar: AppBar(

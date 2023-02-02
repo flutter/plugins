@@ -10,13 +10,36 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'navigation_delegate.dart';
+import 'webview_widget.dart';
 
 /// Controls a WebView provided by the host platform.
 ///
 /// Pass this to a [WebViewWidget] to display the WebView.
 ///
+/// A [WebViewController] can only be used by a single [WebViewWidget] at a
+/// time.
+///
 /// ## Platform-Specific Features
+/// This class contains an underlying implementation provided by the current
+/// platform. Once a platform implementation is imported, the examples below
+/// can be followed to use features provided by a platform's implementation.
+///
 /// {@macro webview_flutter.WebViewController.fromPlatformCreationParams}
+///
+/// Below is an example of accessing the platform-specific implementation for
+/// iOS and Android:
+///
+/// ```dart
+/// final WebViewController webViewController = WebViewController();
+///
+/// if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+///   final WebKitWebViewController webKitController =
+///       webViewController.platform as WebKitWebViewController;
+/// } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+///   final AndroidWebViewController androidController =
+///       webViewController.platform as AndroidWebViewController;
+/// }
+/// ```
 class WebViewController {
   /// Constructs a [WebViewController].
   ///
@@ -31,8 +54,8 @@ class WebViewController {
   /// platform.
   ///
   /// {@template webview_flutter.WebViewCookieManager.fromPlatformCreationParams}
-  /// Below is an example of setting platform specific parameters for iOS and
-  /// Android:
+  /// Below is an example of setting platform-specific creation parameters for
+  /// iOS and Android:
   ///
   /// ```dart
   /// PlatformWebViewControllerCreationParams params =
@@ -42,7 +65,6 @@ class WebViewController {
   ///   params = WebKitWebViewControllerCreationParams
   ///       .fromPlatformWebViewControllerCreationParams(
   ///     params,
-  ///     allowsInlineMediaPlayback: true,
   ///   );
   /// } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
   ///   params = AndroidWebViewControllerCreationParams
