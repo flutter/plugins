@@ -350,7 +350,7 @@ class ExampleGoogleMap extends StatefulWidget {
   /// Which gestures should be consumed by the map.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
-  /// Identifier that's associated with a specific cloud bases map style.
+  /// Identifier that's associated with a specific cloud-based map style.
   ///
   /// See https://developers.google.com/maps/documentation/get-map-id
   /// for more details.

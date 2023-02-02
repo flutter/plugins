@@ -91,7 +91,7 @@ class MapConfiguration {
   /// True if 3D building display should be enabled.
   final bool? buildingsEnabled;
 
-  /// Identifier that's associated with a specific cloud bases map style.
+  /// Identifier that's associated with a specific cloud-based map style.
   ///
   /// See https://developers.google.com/maps/documentation/get-map-id
   /// for more details.

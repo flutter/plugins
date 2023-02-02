@@ -17,7 +17,7 @@ const LatLng _kInitialMapCenter = LatLng(0, 0);
 const double _kInitialZoomLevel = 5;
 const CameraPosition _kInitialCameraPosition =
     CameraPosition(target: _kInitialMapCenter, zoom: _kInitialZoomLevel);
-const String _kCloudMapId = '8e0a97af9386fef';
+const String _kCloudMapId = '000000000000000'; // Dummy map ID.
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
