@@ -89,16 +89,15 @@ public class PreviewHostApiImpl implements PreviewHostApi {
                   cameraXProxy.createSystemServicesFlutterApiImpl(binaryMessenger);
               int resultCode = result.getResultCode();
               switch (resultCode) {
+                case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
+                  systemServicesFlutterApi.sendCameraError(
+                      getProvideSurfaceErrorDescription(resultCode), reply -> {});
                 case SurfaceRequest.Result.RESULT_REQUEST_CANCELLED:
                 case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
                 case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
                 case SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY:
                   flutterSurface.release();
-                  break;
-                case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
                 default:
-                  systemServicesFlutterApi.sendCameraError(
-                      getProvideSurfaceErrorDescription(resultCode), reply -> {});
                   break;
               }
             });

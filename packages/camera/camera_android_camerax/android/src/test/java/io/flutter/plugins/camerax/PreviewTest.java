@@ -163,6 +163,7 @@ public class PreviewTest {
     when(mockSurfaceRequestResult.getResultCode())
         .thenReturn(SurfaceRequest.Result.RESULT_INVALID_SURFACE);
     capturedConsumer.accept(mockSurfaceRequestResult);
+    verify(mockSurface, times(5)).release();
     verify(mockSystemServicesFlutterApi, times(1)).sendCameraError(anyString(), any(Reply.class));
   }
 
