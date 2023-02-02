@@ -59,7 +59,7 @@ The Android implementation supports multiple
 For details, see [the Android README](https://pub.dev/packages/google_maps_flutter_android#display-mode).
 
 #### Cloud-based map styling
-Cloud-based map styling works on Android platform only if `AndroidMapRenderer.latest` has been initialized.
+Cloud-based map styling works on Android platform only if `AndroidMapRenderer.latest` map renderer has been initialized.
 For details, see [the Android README](https://pub.dev/packages/google_maps_flutter_android#map-renderer).
 
 ### iOS
