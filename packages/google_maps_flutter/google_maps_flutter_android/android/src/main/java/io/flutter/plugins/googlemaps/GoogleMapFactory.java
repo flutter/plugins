@@ -17,11 +17,15 @@ public class GoogleMapFactory extends PlatformViewFactory {
 
   private final BinaryMessenger binaryMessenger;
   private final LifecycleProvider lifecycleProvider;
+  private final GoogleMapInitializer googleMapInitializer;
 
-  GoogleMapFactory(BinaryMessenger binaryMessenger, LifecycleProvider lifecycleProvider) {
+  GoogleMapFactory(
+      BinaryMessenger binaryMessenger, Context context, LifecycleProvider lifecycleProvider) {
     super(StandardMessageCodec.INSTANCE);
+
     this.binaryMessenger = binaryMessenger;
     this.lifecycleProvider = lifecycleProvider;
+    this.googleMapInitializer = new GoogleMapInitializer(context, binaryMessenger);
   }
 
   @SuppressWarnings("unchecked")

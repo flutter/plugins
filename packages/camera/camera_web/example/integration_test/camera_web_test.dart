@@ -1191,6 +1191,33 @@ void main() {
       });
     });
 
+    group('startVideoCapturing', () {
+      late Camera camera;
+
+      setUp(() {
+        camera = MockCamera();
+
+        when(camera.startVideoRecording).thenAnswer((Invocation _) async {});
+
+        when(() => camera.onVideoRecordingError)
+            .thenAnswer((Invocation _) => const Stream<ErrorEvent>.empty());
+      });
+
+      testWidgets('fails if trying to stream', (WidgetTester tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        expect(
+          () => CameraPlatform.instance.startVideoCapturing(VideoCaptureOptions(
+              cameraId,
+              streamCallback: (CameraImageData imageData) {})),
+          throwsA(
+            isA<UnimplementedError>(),
+          ),
+        );
+      });
+    });
+
     group('stopVideoRecording', () {
       testWidgets('stops a video recording', (WidgetTester tester) async {
         final MockCamera camera = MockCamera();

@@ -31,13 +31,20 @@ void main() {
     setUp(() async {
       testData = InMemorySharedPreferencesStore.empty();
 
+      Map<String, Object?> getArgumentDictionary(MethodCall call) {
+        return (call.arguments as Map<Object?, Object?>)
+            .cast<String, Object?>();
+      }
+
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         if (methodCall.method == 'getAll') {
           return testData.getAll();
         }
         if (methodCall.method == 'remove') {
-          final String key = (methodCall.arguments['key'] as String?)!;
+          final Map<String, Object?> arguments =
+              getArgumentDictionary(methodCall);
+          final String key = arguments['key']! as String;
           return testData.remove(key);
         }
         if (methodCall.method == 'clear') {
@@ -47,8 +54,10 @@ void main() {
         final Match? match = setterRegExp.matchAsPrefix(methodCall.method);
         if (match?.groupCount == 1) {
           final String valueType = match!.group(1)!;
-          final String key = (methodCall.arguments['key'] as String?)!;
-          final Object value = (methodCall.arguments['value'] as Object?)!;
+          final Map<String, Object?> arguments =
+              getArgumentDictionary(methodCall);
+          final String key = arguments['key']! as String;
+          final Object value = arguments['value']!;
           return testData.setValue(valueType, key, value);
         }
         fail('Unexpected method call: ${methodCall.method}');

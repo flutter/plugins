@@ -15,6 +15,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -621,11 +622,18 @@ public class ImagePickerDelegate
     return true;
   }
 
-  private void finishWithSuccess(String imagePath) {
+  // Handles completion of selection with a single result.
+  //
+  // A null imagePath indicates that the image picker was cancelled without
+  // selection.
+  private void finishWithSuccess(@Nullable String imagePath) {
     if (pendingResult == null) {
-      ArrayList<String> pathList = new ArrayList<>();
-      pathList.add(imagePath);
-      cache.saveResult(pathList, null, null);
+      // Only save data for later retrieval if something was actually selected.
+      if (imagePath != null) {
+        ArrayList<String> pathList = new ArrayList<>();
+        pathList.add(imagePath);
+        cache.saveResult(pathList, null, null);
+      }
       return;
     }
     pendingResult.success(imagePath);

@@ -5,6 +5,7 @@
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:platform/platform.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';
@@ -29,7 +30,23 @@ class PubspecCheckCommand extends PackageLoopingCommand {
           processRunner: processRunner,
           platform: platform,
           gitDir: gitDir,
-        );
+        ) {
+    argParser.addOption(
+      _minMinDartVersionFlag,
+      help:
+          'The minimum Dart version to allow as the minimum SDK constraint.\n\n'
+          'This is only enforced for non-Flutter packages; Flutter packages '
+          'use --$_minMinFlutterVersionFlag',
+    );
+    argParser.addOption(
+      _minMinFlutterVersionFlag,
+      help:
+          'The minimum Flutter version to allow as the minimum SDK constraint.',
+    );
+  }
+
+  static const String _minMinDartVersionFlag = 'min-min-dart-version';
+  static const String _minMinFlutterVersionFlag = 'min-min-flutter-version';
 
   // Section order for plugins. Because the 'flutter' section is critical
   // information for plugins, and usually small, it goes near the top unlike in
@@ -98,6 +115,24 @@ class PubspecCheckCommand extends PackageLoopingCommand {
           'repository ordering:');
       final String listIndentation = indentation * 2;
       printError('$listIndentation${sectionOrder.join('\n$listIndentation')}');
+    }
+
+    final String minMinDartVersionString = getStringArg(_minMinDartVersionFlag);
+    final String minMinFlutterVersionString =
+        getStringArg(_minMinFlutterVersionFlag);
+    final String? minVersionError = _checkForMinimumVersionError(
+      pubspec,
+      package,
+      minMinDartVersion: minMinDartVersionString.isEmpty
+          ? null
+          : Version.parse(minMinDartVersionString),
+      minMinFlutterVersion: minMinFlutterVersionString.isEmpty
+          ? null
+          : Version.parse(minMinFlutterVersionString),
+    );
+    if (minVersionError != null) {
+      printError('$indentation$minVersionError');
+      passing = false;
     }
 
     if (isPlugin) {
@@ -244,8 +279,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     required RepositoryPackage package,
   }) {
     if (_isImplementationPackage(package)) {
-      final String? implements =
-          pubspec.flutter!['plugin']!['implements'] as String?;
+      final YamlMap pluginSection = pubspec.flutter!['plugin'] as YamlMap;
+      final String? implements = pluginSection['implements'] as String?;
       final String expectedImplements = package.directory.parent.basename;
       if (implements == null) {
         return 'Missing "implements: $expectedImplements" in "plugin" section.';
@@ -265,19 +300,20 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     Pubspec pubspec, {
     required RepositoryPackage package,
   }) {
-    final dynamic platformsEntry = pubspec.flutter!['plugin']!['platforms'];
-    if (platformsEntry == null) {
+    final YamlMap pluginSection = pubspec.flutter!['plugin'] as YamlMap;
+    final YamlMap? platforms = pluginSection['platforms'] as YamlMap?;
+    if (platforms == null) {
       logWarning('Does not implement any platforms');
       return null;
     }
-    final YamlMap platforms = platformsEntry as YamlMap;
     final String packageName = package.directory.basename;
 
     // Validate that the default_package entries look correct (e.g., no typos).
     final Set<String> defaultPackages = <String>{};
-    for (final MapEntry<dynamic, dynamic> platformEntry in platforms.entries) {
+    for (final MapEntry<Object?, Object?> platformEntry in platforms.entries) {
+      final YamlMap platformDetails = platformEntry.value! as YamlMap;
       final String? defaultPackage =
-          platformEntry.value['default_package'] as String?;
+          platformDetails['default_package'] as String?;
       if (defaultPackage != null) {
         defaultPackages.add(defaultPackage);
         if (!defaultPackage.startsWith('${packageName}_')) {
@@ -318,5 +354,44 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     };
     final String suffix = packageName.substring(parentName.length);
     return !nonImplementationSuffixes.contains(suffix);
+  }
+
+  /// Validates that a Flutter package has a minimum SDK version constraint of
+  /// at least [minMinFlutterVersion] (if provided), or that a non-Flutter
+  /// package has a minimum SDK version constraint of [minMinDartVersion]
+  /// (if provided).
+  ///
+  /// Returns an error string if validation fails.
+  String? _checkForMinimumVersionError(
+    Pubspec pubspec,
+    RepositoryPackage package, {
+    Version? minMinDartVersion,
+    Version? minMinFlutterVersion,
+  }) {
+    final VersionConstraint? dartConstraint = pubspec.environment?['sdk'];
+    final VersionConstraint? flutterConstraint =
+        pubspec.environment?['flutter'];
+
+    if (flutterConstraint != null) {
+      // Validate Flutter packages against the Flutter requirement.
+      if (minMinFlutterVersion != null) {
+        final Version? constraintMin =
+            flutterConstraint is VersionRange ? flutterConstraint.min : null;
+        if ((constraintMin ?? Version(0, 0, 0)) < minMinFlutterVersion) {
+          return 'Minimum allowed Flutter version $constraintMin is less than $minMinFlutterVersion';
+        }
+      }
+    } else {
+      // Validate non-Flutter packages against the Dart requirement.
+      if (minMinDartVersion != null) {
+        final Version? constraintMin =
+            dartConstraint is VersionRange ? dartConstraint.min : null;
+        if ((constraintMin ?? Version(0, 0, 0)) < minMinDartVersion) {
+          return 'Minimum allowed Dart version $constraintMin is less than $minMinDartVersion';
+        }
+      }
+    }
+
+    return null;
   }
 }

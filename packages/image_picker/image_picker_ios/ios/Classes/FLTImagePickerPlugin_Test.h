@@ -54,12 +54,18 @@ typedef void (^FlutterResultAdapter)(NSArray<NSString *> *_Nullable, FlutterErro
 #pragma mark -
 
 /** Methods exposed for unit testing. */
-@interface FLTImagePickerPlugin () <FLTImagePickerApi>
+@interface FLTImagePickerPlugin () <FLTImagePickerApi,
+                                    UINavigationControllerDelegate,
+                                    UIImagePickerControllerDelegate,
+                                    PHPickerViewControllerDelegate,
+                                    UIAdaptivePresentationControllerDelegate>
 
 /**
  * The context of the Flutter method call that is currently being handled, if any.
  */
 @property(strong, nonatomic, nullable) FLTImagePickerMethodCallContext *callContext;
+
+- (UIViewController *)viewControllerWithWindow:(nullable UIWindow *)window;
 
 /**
  * Validates the provided paths list, then sends it via `callContext.result` as the result of the

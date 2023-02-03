@@ -158,8 +158,8 @@ class InAppPurchaseAndroidPlatformAddition
   ///
   /// The skuDetails needs to have already been fetched in a
   /// [InAppPurchaseAndroidPlatform.queryProductDetails] call.
-  Future<BillingResultWrapper> launchPriceChangeConfirmationFlow({
-      required String sku}) {
+  Future<BillingResultWrapper> launchPriceChangeConfirmationFlow(
+      {required String sku}) {
     return _billingClientManager.run(
       (BillingClient client) =>
           client.launchPriceChangeConfirmationFlow(sku: sku),

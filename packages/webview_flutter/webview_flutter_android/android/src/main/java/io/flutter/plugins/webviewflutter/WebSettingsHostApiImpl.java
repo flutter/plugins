@@ -50,11 +50,6 @@ public class WebSettingsHostApiImpl implements WebSettingsHostApi {
   }
 
   @Override
-  public void dispose(Long instanceId) {
-    instanceManager.remove(instanceId);
-  }
-
-  @Override
   public void setDomStorageEnabled(Long instanceId, Boolean flag) {
     final WebSettings webSettings = (WebSettings) instanceManager.getInstance(instanceId);
     webSettings.setDomStorageEnabled(flag);

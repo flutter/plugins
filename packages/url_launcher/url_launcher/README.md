@@ -38,7 +38,7 @@ void main() => runApp(
 
 Future<void> _launchUrl() async {
   if (!await launchUrl(_url)) {
-    throw 'Could not launch $_url';
+    throw Exception('Could not launch $_url');
   }
 }
 ```
@@ -198,10 +198,10 @@ final String filePath = testFile.absolute.path;
 final Uri uri = Uri.file(filePath);
 
 if (!File(uri.toFilePath()).existsSync()) {
-  throw '$uri does not exist!';
+  throw Exception('$uri does not exist!');
 }
 if (!await launchUrl(uri)) {
-  throw 'Could not launch $uri';
+  throw Exception('Could not launch $uri');
 }
 ```
 
