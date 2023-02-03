@@ -1,3 +1,8 @@
+## 0.2.4+1
+
+* Updates Google Play Billing Library to 5.1.0.
+* Updates androidx.annotation to 1.5.0.
+
 ## 0.2.4
 
 * Updates minimum Flutter version to 3.0.
