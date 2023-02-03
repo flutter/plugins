@@ -6,8 +6,6 @@ package io.flutter.plugins.webviewflutter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.os.Handler;
@@ -62,10 +60,5 @@ public class JavaScriptChannelTest {
   public void postMessage() {
     javaScriptChannel.postMessage("A message post.");
     verify(mockFlutterApi).postMessage(eq(javaScriptChannel), eq("A message post."), any());
-
-    reset(mockFlutterApi);
-    javaScriptChannel.release();
-    javaScriptChannel.postMessage("a message");
-    verify(mockFlutterApi, never()).postMessage((JavaScriptChannel) any(), any(), any());
   }
 }

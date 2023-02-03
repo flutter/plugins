@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -86,9 +85,6 @@ public class QuickActionsTest {
     }
   }
 
-  // TODO(bparrishMines): The test is ignored because it fails when ran on Firebase Test Lab. See
-  // https://github.com/flutter/flutter/issues/114246.
-  @Ignore
   @Test
   public void appShortcutLaunchActivityAfterStarting() {
     // Arrange
@@ -119,7 +115,7 @@ public class QuickActionsTest {
         "AppShortcut:" + firstShortcut.getId() + " does not launch the correct activity",
         // We can only find the shortcut type in content description while inspecting it in Ui
         // Automator Viewer.
-        device.hasObject(By.desc(firstShortcut.getId() + appReadySentinel)));
+        device.hasObject(By.descContains(firstShortcut.getId() + appReadySentinel)));
     // This is Android SingleTop behavior in which Android does not destroy the initial activity and
     // launch a new activity.
     Assert.assertEquals(initialActivity.get(), currentActivity.get());

@@ -22,12 +22,14 @@ void main() {
     gitDir = MockGitDir();
     when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
         .thenAnswer((Invocation invocation) {
-      gitDirCommands.add(invocation.positionalArguments[0] as List<String>?);
+      final List<String> arguments =
+          invocation.positionalArguments[0]! as List<String>;
+      gitDirCommands.add(arguments);
       final MockProcessResult mockProcessResult = MockProcessResult();
-      if (invocation.positionalArguments[0][0] == 'diff') {
+      if (arguments[0] == 'diff') {
         when<String?>(mockProcessResult.stdout as String?)
             .thenReturn(gitDiffResponse);
-      } else if (invocation.positionalArguments[0][0] == 'merge-base') {
+      } else if (arguments[0] == 'merge-base') {
         when<String?>(mockProcessResult.stdout as String?)
             .thenReturn(mergeBaseResponse);
       }

@@ -16,9 +16,12 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		E092A7ED28D10802005C7F67 /* MockMethodChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7EA28D10801005C7F67 /* MockMethodChannel.swift */; };
+		E092A7EE28D10802005C7F67 /* QuickActionsPluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7EB28D10802005C7F67 /* QuickActionsPluginTests.swift */; };
+		E092A7F128D10890005C7F67 /* MockShortcutItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7F028D10890005C7F67 /* MockShortcutItemProvider.swift */; };
+		E092A7F428D110B3005C7F67 /* DefaultShortcutItemParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7F328D110B3005C7F67 /* DefaultShortcutItemParserTests.swift */; };
 		E092A7F628D128EB005C7F67 /* RunnerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E092A7F528D128EB005C7F67 /* RunnerUITests.swift */; };
-		E0C09C29289C729D00E6977E /* FLTQuickActionsPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C09C28289C729D00E6977E /* FLTQuickActionsPluginTests.m */; };
-		E0C09C32289DBFCA00E6977E /* FLTShortcutStateManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C09C31289DBFCA00E6977E /* FLTShortcutStateManagerTests.m */; };
+		E0A075D529147FE200329BAE /* MockShortcutItemParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A075D429147FE200329BAE /* MockShortcutItemParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,9 +78,12 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9D27FE1F0F21D4D47DDA16DE /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C35AD3650AB6BF850E016715 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E092A7EA28D10801005C7F67 /* MockMethodChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockMethodChannel.swift; sourceTree = "<group>"; };
+		E092A7EB28D10802005C7F67 /* QuickActionsPluginTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickActionsPluginTests.swift; sourceTree = "<group>"; };
+		E092A7F028D10890005C7F67 /* MockShortcutItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockShortcutItemProvider.swift; sourceTree = "<group>"; };
+		E092A7F328D110B3005C7F67 /* DefaultShortcutItemParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultShortcutItemParserTests.swift; sourceTree = "<group>"; };
 		E092A7F528D128EB005C7F67 /* RunnerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerUITests.swift; sourceTree = "<group>"; };
-		E0C09C28289C729D00E6977E /* FLTQuickActionsPluginTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLTQuickActionsPluginTests.m; sourceTree = "<group>"; };
-		E0C09C31289DBFCA00E6977E /* FLTShortcutStateManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLTShortcutStateManagerTests.m; sourceTree = "<group>"; };
+		E0A075D429147FE200329BAE /* MockShortcutItemParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockShortcutItemParser.swift; sourceTree = "<group>"; };
 		F0609304FBCAEC2289164BD5 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -111,9 +117,10 @@
 		33E20B3326EFCDFC00A4A191 /* RunnerTests */ = {
 			isa = PBXGroup;
 			children = (
+				E092A7F228D10908005C7F67 /* Mocks */,
 				33E20B3626EFCDFC00A4A191 /* Info.plist */,
-				E0C09C31289DBFCA00E6977E /* FLTShortcutStateManagerTests.m */,
-				E0C09C28289C729D00E6977E /* FLTQuickActionsPluginTests.m */,
+				E092A7EB28D10802005C7F67 /* QuickActionsPluginTests.swift */,
+				E092A7F328D110B3005C7F67 /* DefaultShortcutItemParserTests.swift */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -205,6 +212,16 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		E092A7F228D10908005C7F67 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				E092A7EA28D10801005C7F67 /* MockMethodChannel.swift */,
+				E092A7F028D10890005C7F67 /* MockShortcutItemProvider.swift */,
+				E0A075D429147FE200329BAE /* MockShortcutItemParser.swift */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -277,6 +294,7 @@
 				TargetAttributes = {
 					33E20B3126EFCDFC00A4A191 = {
 						CreatedOnToolsVersion = 12.5;
+						LastSwiftMigration = 1330;
 						TestTargetID = 97C146ED1CF9000F007C117D;
 					};
 					686BE82C25E58CCF00862533 = {
@@ -416,8 +434,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E0C09C32289DBFCA00E6977E /* FLTShortcutStateManagerTests.m in Sources */,
-				E0C09C29289C729D00E6977E /* FLTQuickActionsPluginTests.m in Sources */,
+				E092A7EE28D10802005C7F67 /* QuickActionsPluginTests.swift in Sources */,
+				E092A7ED28D10802005C7F67 /* MockMethodChannel.swift in Sources */,
+				E092A7F128D10890005C7F67 /* MockShortcutItemProvider.swift in Sources */,
+				E0A075D529147FE200329BAE /* MockShortcutItemParser.swift in Sources */,
+				E092A7F428D110B3005C7F67 /* DefaultShortcutItemParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -479,6 +500,7 @@
 			baseConfigurationReference = 9D27FE1F0F21D4D47DDA16DE /* Pods-RunnerTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = RunnerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -487,6 +509,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
 			name = Debug;
@@ -496,6 +520,7 @@
 			baseConfigurationReference = 96F949A6B78E2DC62B93C4F8 /* Pods-RunnerTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = RunnerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -504,6 +529,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
 			name = Release;

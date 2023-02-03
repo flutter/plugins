@@ -29,9 +29,14 @@ String serializeDeviceOrientation(DeviceOrientation orientation) {
       return 'landscapeRight';
     case DeviceOrientation.landscapeLeft:
       return 'landscapeLeft';
-    default:
-      throw ArgumentError('Unknown DeviceOrientation value');
   }
+  // The enum comes from a different package, which could get a new value at
+  // any time, so provide a fallback that ensures this won't break when used
+  // with a version that contains new values. This is deliberately outside
+  // the switch rather than a `default` so that the linter will flag the
+  // switch as needing an update.
+  // ignore: dead_code
+  return 'portraitUp';
 }
 
 /// Returns the device orientation for a given String.

@@ -11,7 +11,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../../camera_platform_interface.dart';
 import '../method_channel/method_channel_camera.dart';
-import '../types/video_capture_options.dart';
 
 /// The interface that implementations of camera must implement.
 ///

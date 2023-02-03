@@ -1,55 +1,24 @@
-# This is a copy (as of March 2021) of flutter/flutter's analysis_options file,
-# with minimal changes for this repository. The goal is to move toward using a
-# shared set of analysis options as much as possible, and eventually a shared
-# file.
-
 # Specify analysis options.
 #
-# For a list of lints, see: http://dart-lang.github.io/linter/lints/
-# See the configuration guide for more
-# https://github.com/dart-lang/sdk/tree/main/pkg/analyzer#configuring-the-analyzer
-#
-# There are other similar analysis options files in the flutter repos,
-# which should be kept in sync with this file:
-#
-#   - analysis_options.yaml (this file)
-#   - packages/flutter/lib/analysis_options_user.yaml
-#   - https://github.com/flutter/flutter/blob/master/analysis_options.yaml
-#   - https://github.com/flutter/engine/blob/main/analysis_options.yaml
-#   - https://github.com/flutter/packages/blob/main/analysis_options.yaml
-#
-# This file contains the analysis options used for code in the flutter/plugins
-# repository.
+# This file is a copy of analysis_options.yaml from flutter repo
+# as of 2022-07-27, but with some modifications marked with
+# "DIFFERENT FROM FLUTTER/FLUTTER" below. The file is expected to
+# be kept in sync with the master file from the flutter repo.
 
 analyzer:
   language:
     strict-casts: true
     strict-raw-types: true
   errors:
-    # treat missing required parameters as a warning (not a hint)
-    missing_required_param: warning
-    # treat missing returns as a warning (not a hint)
-    missing_return: warning
-    # allow having TODO comments in the code
-    todo: ignore
     # allow self-reference to deprecated members (we do this because otherwise we have
     # to annotate every member in every test, assert, etc, when we deprecate something)
     deprecated_member_use_from_same_package: ignore
-    # Ignore analyzer hints for updating pubspecs when using Future or
-    # Stream and not importing dart:async
-    # Please see https://github.com/flutter/flutter/pull/24528 for details.
-    sdk_version_async_exported_from_core: ignore
     # Turned off until null-safe rollout is complete.
     unnecessary_null_comparison: ignore
-    ### Local flutter/plugins changes ###
-    # Allow null checks for as long as mixed mode is officially supported.
-    always_require_non_null_named_parameters: false # not needed with nnbd
-  exclude:
+  exclude: # DIFFERENT FROM FLUTTER/FLUTTER
     # Ignore generated files
     - '**/*.g.dart'
-    - 'lib/src/generated/*.dart'
     - '**/*.mocks.dart' # Mockito @GenerateMocks
-    - '**/*.pigeon.dart' # Pigeon generated file
 
 linter:
   rules:
@@ -68,26 +37,26 @@ linter:
     # - avoid_catching_errors # blocked on https://github.com/dart-lang/linter/issues/3023
     - avoid_classes_with_only_static_members
     - avoid_double_and_int_checks
-    # - avoid_dynamic_calls # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - avoid_dynamic_calls
     - avoid_empty_else
     - avoid_equals_and_hash_code_on_mutable_classes
     - avoid_escaping_inner_quotes
     - avoid_field_initializers_in_const_classes
     # - avoid_final_parameters # incompatible with prefer_final_parameters
     - avoid_function_literals_in_foreach_calls
-    # - avoid_implementing_value_types # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - avoid_implementing_value_types
     - avoid_init_to_null
     - avoid_js_rounded_ints
     # - avoid_multiple_declarations_per_line # seems to be a stylistic choice we don't subscribe to
     - avoid_null_checks_in_equality_operators
     # - avoid_positional_boolean_parameters # would have been nice to enable this but by now there's too many places that break it
-    # - avoid_print # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - avoid_print
     # - avoid_private_typedef_functions # we prefer having typedef (discussion in https://github.com/flutter/flutter/pull/16356)
     - avoid_redundant_argument_values
     - avoid_relative_lib_imports
     - avoid_renaming_method_parameters
     - avoid_return_types_on_setters
-    # - avoid_returning_null # still violated by some pre-nnbd code that we haven't yet migrated
+    - avoid_returning_null
     - avoid_returning_null_for_future
     - avoid_returning_null_for_void
     # - avoid_returning_this # there are enough valid reasons to return `this` that this lint ends up with too many false positives
@@ -109,15 +78,17 @@ linter:
     # - cascade_invocations # doesn't match the typical style of this repo
     - cast_nullable_to_non_nullable
     # - close_sinks # not reliable enough
+    # - combinators_ordering # DIFFERENT FROM FLUTTER/FLUTTER: This isn't available on stable yet.
     # - comment_references # blocked on https://github.com/dart-lang/linter/issues/1142
-    # - conditional_uri_does_not_exist # not yet tested
+    - conditional_uri_does_not_exist
     # - constant_identifier_names # needs an opt-out https://github.com/dart-lang/linter/issues/204
     - control_flow_in_finally
-    # - curly_braces_in_flow_control_structures # not required by flutter style
+    - curly_braces_in_flow_control_structures
     - depend_on_referenced_packages
     - deprecated_consistency
     # - diagnostic_describe_all_properties # enabled only at the framework level (packages/flutter/lib)
     - directives_ordering
+    # - discarded_futures # not yet tested
     # - do_not_use_environment # there are appropriate times to use the environment, especially in our tests and build logic
     - empty_catches
     - empty_constructor_bodies
@@ -128,7 +99,6 @@ linter:
     - flutter_style_todos
     - hash_and_equals
     - implementation_imports
-    # - invariant_booleans # too many false positives: https://github.com/dart-lang/linter/issues/811
     - iterable_contains_unrelated_type
     # - join_return_with_assignment # not required by flutter style
     - leading_newlines_in_multiline_strings
@@ -140,19 +110,19 @@ linter:
     # - literal_only_boolean_expressions # too many false positives: https://github.com/dart-lang/linter/issues/453
     - missing_whitespace_between_adjacent_strings
     - no_adjacent_strings_in_list
-    # - no_default_cases # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - no_default_cases
     - no_duplicate_case_values
     - no_leading_underscores_for_library_prefixes
     - no_leading_underscores_for_local_identifiers
     - no_logic_in_create_state
-    # - no_runtimeType_toString # ok in tests; we enable this only in packages/
+    - no_runtimeType_toString # DIFFERENT FROM FLUTTER/FLUTTER
     - non_constant_identifier_names
     - noop_primitive_operations
     - null_check_on_nullable_type_parameter
     - null_closures
     # - omit_local_variable_types # opposite of always_specify_types
     # - one_member_abstracts # too many false positives
-    # - only_throw_errors # this does get disabled in a few places where we have legacy code that uses strings et al # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - only_throw_errors # this does get disabled in a few places where we have legacy code that uses strings et al
     - overridden_fields
     - package_api_docs
     - package_names
@@ -199,16 +169,16 @@ linter:
     - prefer_typing_uninitialized_variables
     - prefer_void_to_null
     - provide_deprecation_message
-    # - public_member_api_docs # enabled on a case-by-case basis; see e.g. packages/analysis_options.yaml
+    - public_member_api_docs # DIFFERENT FROM FLUTTER/FLUTTER
     - recursive_getters
     # - require_trailing_commas # blocked on https://github.com/dart-lang/sdk/issues/47441
     - secure_pubspec_urls
-    # - sized_box_for_whitespace # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - sized_box_for_whitespace
     # - sized_box_shrink_expand # not yet tested
     - slash_for_doc_comments
     - sort_child_properties_last
     - sort_constructors_first
-    # - sort_pub_dependencies # prevents separating pinned transitive dependencies
+    - sort_pub_dependencies # DIFFERENT FROM FLUTTER/FLUTTER: Flutter's use case for not sorting does not apply to this repository.
     - sort_unnamed_constructors_first
     - test_types_in_equals
     - throw_in_finally
@@ -216,7 +186,7 @@ linter:
     # - type_annotate_public_apis # subset of always_specify_types
     - type_init_formals
     # - unawaited_futures # too many false positives, especially with the way AnimationController works
-    # - unnecessary_await_in_return # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - unnecessary_await_in_return
     - unnecessary_brace_in_string_interps
     - unnecessary_const
     - unnecessary_constructor_name
@@ -226,6 +196,7 @@ linter:
     - unnecessary_late
     - unnecessary_new
     - unnecessary_null_aware_assignments
+    - unnecessary_null_aware_operator_on_extension_on_nullable
     - unnecessary_null_checks
     - unnecessary_null_in_if_null_operators
     - unnecessary_nullable_for_final_variable_declarations
@@ -236,9 +207,10 @@ linter:
     - unnecessary_string_escapes
     - unnecessary_string_interpolations
     - unnecessary_this
+    - unnecessary_to_list_in_spreads
     - unrelated_type_equality_checks
     - unsafe_html
-    # - use_build_context_synchronously # LOCAL CHANGE - Needs to be enabled and violations fixed.
+    - use_build_context_synchronously
     # - use_colored_box # not yet tested
     # - use_decorated_box # not yet tested
     # - use_enums # not yet tested
@@ -258,11 +230,3 @@ linter:
     # - use_to_and_as_if_applicable # has false positives, so we prefer to catch this by code-review
     - valid_regexps
     - void_checks
-    ### Local flutter/plugins additions ###
-    # These are from flutter/flutter/packages, so will need to be preserved
-    # separately when moving to a shared file.
-    - no_runtimeType_toString # use objectRuntimeType from package:foundation
-    - public_member_api_docs # see https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#documentation-dartdocs-javadocs-etc
-    # Flutter has a specific use case for dependencies that are intentionally
-    # not sorted, which doesn't apply to this repo.
-    - sort_pub_dependencies

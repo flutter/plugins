@@ -6,9 +6,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../common/instance_manager.dart';
-import '../common/web_kit.pigeon.dart';
+import '../common/web_kit.g.dart';
 import '../foundation/foundation.dart';
 import 'web_kit.dart';
+
+export '../common/web_kit.g.dart' show WKNavigationType;
 
 Iterable<WKWebsiteDataTypeEnumData> _toWKWebsiteDataTypeEnumData(
     Iterable<WKWebsiteDataType> types) {
@@ -169,6 +171,7 @@ extension _NavigationActionDataConverter on WKNavigationActionData {
     return WKNavigationAction(
       request: request.toNSUrlRequest(),
       targetFrame: targetFrame.toWKFrameInfo(),
+      navigationType: navigationType,
     );
   }
 }

@@ -180,8 +180,7 @@ void main() {
   testWidgets('Update non platform related attr', (WidgetTester tester) async {
     Circle c1 = const Circle(circleId: CircleId('circle_1'));
     final Set<Circle> prev = <Circle>{c1};
-    c1 = Circle(
-        circleId: const CircleId('circle_1'), onTap: () => print('hello'));
+    c1 = Circle(circleId: const CircleId('circle_1'), onTap: () {});
     final Set<Circle> cur = <Circle>{c1};
 
     await tester.pumpWidget(_mapWithCircles(prev));

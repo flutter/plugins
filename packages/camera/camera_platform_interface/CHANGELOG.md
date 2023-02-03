@@ -1,3 +1,23 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 2.3.4
+
+* Updates code for stricter lint checks.
+
+## 2.3.3
+
+* Updates code for stricter lint checks.
+
+## 2.3.2
+
+* Updates MethodChannelCamera to have startVideoRecording call the newer startVideoCapturing.
+
+## 2.3.1
+
+* Exports VideoCaptureOptions to allow dependencies to implement concurrent stream and record.
+
 ## 2.3.0
 
 * Adds new capture method for a camera to allow concurrent streaming and recording.

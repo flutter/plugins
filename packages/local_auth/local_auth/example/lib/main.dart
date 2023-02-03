@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: public_member_api_docs
+// ignore_for_file: public_member_api_docs, avoid_print
 
 import 'dart:async';
 
@@ -183,6 +183,8 @@ class _MyAppState extends State<MyApp> {
                 if (_isAuthenticating)
                   ElevatedButton(
                     onPressed: _cancelAuthentication,
+                    // TODO(goderbauer): Make this const when this package requires Flutter 3.8 or later.
+                    // ignore: prefer_const_constructors
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: const <Widget>[
@@ -196,6 +198,8 @@ class _MyAppState extends State<MyApp> {
                     children: <Widget>[
                       ElevatedButton(
                         onPressed: _authenticate,
+                        // TODO(goderbauer): Make this const when this package requires Flutter 3.8 or later.
+                        // ignore: prefer_const_constructors
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const <Widget>[

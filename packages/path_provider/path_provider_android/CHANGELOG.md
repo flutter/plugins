@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 2.0.22
+
+* Removes unused Guava dependency.
+
 ## 2.0.21
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.

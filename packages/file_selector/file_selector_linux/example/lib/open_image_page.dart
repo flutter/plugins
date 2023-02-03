@@ -28,10 +28,12 @@ class OpenImagePage extends StatelessWidget {
     final String fileName = file.name;
     final String filePath = file.path;
 
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext context) => ImageDisplay(fileName, filePath),
-    );
+    if (context.mounted) {
+      await showDialog<void>(
+        context: context,
+        builder: (BuildContext context) => ImageDisplay(fileName, filePath),
+      );
+    }
   }
 
   @override

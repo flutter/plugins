@@ -107,9 +107,12 @@ Future<PackageChangeState> checkPackageChangeState(
 
 bool _isTestChange(List<String> pathComponents) {
   return pathComponents.contains('test') ||
+      pathComponents.contains('integration_test') ||
       pathComponents.contains('androidTest') ||
       pathComponents.contains('RunnerTests') ||
-      pathComponents.contains('RunnerUITests');
+      pathComponents.contains('RunnerUITests') ||
+      // Pigeon's custom platform tests.
+      pathComponents.first == 'platform_tests';
 }
 
 // True if the given file is an example file other than the one that will be
@@ -168,6 +171,9 @@ Future<bool> _isDevChange(List<String> pathComponents,
       // The top-level "tool" directory is for non-client-facing utility
       // code, such as test scripts.
       pathComponents.first == 'tool' ||
+      // The top-level "pigeons" directory is the repo convention for storing
+      // pigeon input files.
+      pathComponents.first == 'pigeons' ||
       // Entry point for the 'custom-test' command, which is only for CI and
       // local testing.
       pathComponents.first == 'run_tests.sh' ||
