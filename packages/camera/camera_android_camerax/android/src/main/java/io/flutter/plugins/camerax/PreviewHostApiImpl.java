@@ -27,9 +27,9 @@ public class PreviewHostApiImpl implements PreviewHostApi {
   @VisibleForTesting public TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture;
 
   public PreviewHostApiImpl(
-      BinaryMessenger binaryMessenger,
-      InstanceManager instanceManager,
-      TextureRegistry textureRegistry) {
+      @NonNull BinaryMessenger binaryMessenger,
+      @NonNull InstanceManager instanceManager,
+      @NonNull TextureRegistry textureRegistry) {
     this.binaryMessenger = binaryMessenger;
     this.instanceManager = instanceManager;
     this.textureRegistry = textureRegistry;
@@ -74,7 +74,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
    * {@code Preview} that is backed by a Flutter {@link TextureRegistry.SurfaceTextureEntry}.
    */
   @VisibleForTesting
-  public Preview.SurfaceProvider createSurfaceProvider(SurfaceTexture surfaceTexture) {
+  public Preview.SurfaceProvider createSurfaceProvider(@NonNull SurfaceTexture surfaceTexture) {
     return new Preview.SurfaceProvider() {
       @Override
       public void onSurfaceRequested(SurfaceRequest request) {
@@ -85,19 +85,24 @@ public class PreviewHostApiImpl implements PreviewHostApi {
             flutterSurface,
             Executors.newSingleThreadExecutor(),
             (result) -> {
-              SystemServicesFlutterApiImpl systemServicesFlutterApi =
-                  cameraXProxy.createSystemServicesFlutterApiImpl(binaryMessenger);
+              // See https://developer.android.com/reference/androidx/camera/core/SurfaceRequest.Result for documentation.
+              // Always attempt a release.
+              flutterSurface.release();
               int resultCode = result.getResultCode();
               switch (resultCode) {
-                case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
-                  systemServicesFlutterApi.sendCameraError(
-                      getProvideSurfaceErrorDescription(resultCode), reply -> {});
                 case SurfaceRequest.Result.RESULT_REQUEST_CANCELLED:
                 case SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE:
                 case SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED:
                 case SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY:
-                  flutterSurface.release();
+                  // Only need to release, do nothing.
+                  break;
+                case SurfaceRequest.Result.RESULT_INVALID_SURFACE: // Intentional fall through.
                 default:
+                  // Release and send error.
+                  SystemServicesFlutterApiImpl systemServicesFlutterApi =
+                      cameraXProxy.createSystemServicesFlutterApiImpl(binaryMessenger);
+                  systemServicesFlutterApi.sendCameraError(
+                      getProvideSurfaceErrorDescription(resultCode), reply -> {});
                   break;
               }
             });
@@ -109,7 +114,7 @@ public class PreviewHostApiImpl implements PreviewHostApi {
    * Returns an error description for each {@link SurfaceRequest.Result} that represents an error
    * with providing a surface.
    */
-  private String getProvideSurfaceErrorDescription(int resultCode) {
+  private String getProvideSurfaceErrorDescription(@Nullable int resultCode) {
     switch (resultCode) {
       case SurfaceRequest.Result.RESULT_INVALID_SURFACE:
         return resultCode + ": Provided surface could not be used by the camera.";

@@ -7,6 +7,7 @@ package io.flutter.plugins.camerax;
 import android.app.Activity;
 import android.graphics.SurfaceTexture;
 import android.view.Surface;
+import androidx.annotation.NonNull;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.Preview;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -22,10 +23,10 @@ public class CameraXProxy {
   }
 
   public DeviceOrientationManager createDeviceOrientationManager(
-      Activity activity,
-      Boolean isFrontFacing,
-      int sensorOrientation,
-      DeviceOrientationManager.DeviceOrientationChangeCallback callback) {
+      @NonNull Activity activity,
+      @NonNull Boolean isFrontFacing,
+      @NonNull int sensorOrientation,
+      @NonNull DeviceOrientationManager.DeviceOrientationChangeCallback callback) {
     return new DeviceOrientationManager(activity, isFrontFacing, sensorOrientation, callback);
   }
 
@@ -33,7 +34,7 @@ public class CameraXProxy {
     return new Preview.Builder();
   }
 
-  public Surface createSurface(SurfaceTexture surfaceTexture) {
+  public Surface createSurface(@NonNull SurfaceTexture surfaceTexture) {
     return new Surface(surfaceTexture);
   }
 
@@ -44,7 +45,7 @@ public class CameraXProxy {
    * onCameraError(String)}.
    */
   public SystemServicesFlutterApiImpl createSystemServicesFlutterApiImpl(
-      BinaryMessenger binaryMessenger) {
+      @NonNull BinaryMessenger binaryMessenger) {
     return new SystemServicesFlutterApiImpl(binaryMessenger);
   }
 }

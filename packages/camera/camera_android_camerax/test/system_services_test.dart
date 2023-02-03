@@ -99,11 +99,12 @@ void main() {
     });
 
     test('onCameraError adds new error to stream', () {
+      const String testErrorDescription = 'Test error description!';
       SystemServices.cameraErrorStreamController.stream
           .listen((String errorDescription) {
-        expect(errorDescription, equals('Test error description!'));
+        expect(errorDescription, equals(testErrorDescription));
       });
-      SystemServicesFlutterApiImpl().onCameraError('Test error description!');
+      SystemServicesFlutterApiImpl().onCameraError(testErrorDescription);
     });
   });
 }

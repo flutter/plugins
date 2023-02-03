@@ -43,18 +43,22 @@ void main() {
       final InstanceManager instanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
+      const int targetRotation = 90;
+      const int targetResolutionWidth = 10;
+      const int targetResolutionHeight = 50;
       Preview(
         instanceManager: instanceManager,
-        targetRotation: 90,
-        targetResolution: ResolutionInfo(width: 10, height: 50),
+        targetRotation: targetRotation,
+        targetResolution: ResolutionInfo(
+            width: targetResolutionWidth, height: targetResolutionHeight),
       );
 
-      final VerificationResult createVerification = verify(
-          mockApi.create(argThat(isA<int>()), argThat(equals(90)), captureAny));
+      final VerificationResult createVerification = verify(mockApi.create(
+          argThat(isA<int>()), argThat(equals(targetRotation)), captureAny));
       final ResolutionInfo capturedResolutionInfo =
           createVerification.captured.single as ResolutionInfo;
-      expect(capturedResolutionInfo.width, equals(10));
-      expect(capturedResolutionInfo.height, equals(50));
+      expect(capturedResolutionInfo.width, equals(targetResolutionWidth));
+      expect(capturedResolutionInfo.height, equals(targetResolutionHeight));
     });
 
     test(
@@ -66,10 +70,10 @@ void main() {
       final InstanceManager instanceManager = InstanceManager(
         onWeakReferenceRemoved: (_) {},
       );
+      const int textureId = 8;
       final Preview preview = Preview.detached(
         instanceManager: instanceManager,
       );
-
       instanceManager.addHostCreatedInstance(
         preview,
         0,
@@ -77,8 +81,8 @@ void main() {
       );
 
       when(mockApi.setSurfaceProvider(instanceManager.getIdentifier(preview)))
-          .thenReturn(8);
-      expect(await preview.setSurfaceProvider(), equals(8));
+          .thenReturn(textureId);
+      expect(await preview.setSurfaceProvider(), equals(textureId));
 
       verify(
           mockApi.setSurfaceProvider(instanceManager.getIdentifier(preview)));
@@ -109,8 +113,10 @@ void main() {
       final Preview preview = Preview.detached(
         instanceManager: instanceManager,
       );
+      const int resolutionWidth = 10;
+      const int resolutionHeight = 60;
       final ResolutionInfo testResolutionInfo =
-          ResolutionInfo(width: 10, height: 60);
+          ResolutionInfo(width: resolutionWidth, height: resolutionHeight);
 
       instanceManager.addHostCreatedInstance(
         preview,
@@ -123,8 +129,8 @@ void main() {
 
       final ResolutionInfo previewResolutionInfo =
           await preview.getResolutionInfo();
-      expect(previewResolutionInfo.width, equals(10));
-      expect(previewResolutionInfo.height, equals(60));
+      expect(previewResolutionInfo.width, equals(resolutionWidth));
+      expect(previewResolutionInfo.height, equals(resolutionHeight));
 
       verify(mockApi.getResolutionInfo(instanceManager.getIdentifier(preview)));
     });

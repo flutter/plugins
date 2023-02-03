@@ -61,8 +61,15 @@ public class PreviewTest {
     final PreviewHostApiImpl previewHostApi =
         new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);
     final Preview.Builder mockPreviewBuilder = mock(Preview.Builder.class);
+    final int targetRotation = 90;
+    final int targetResolutionWidth = 10;
+    final int targetResolutionHeight = 50;
+    final Long previewIdentifier = 3L;
     final GeneratedCameraXLibrary.ResolutionInfo resolutionInfo =
-        new GeneratedCameraXLibrary.ResolutionInfo.Builder().setWidth(10L).setHeight(50L).build();
+        new GeneratedCameraXLibrary.ResolutionInfo.Builder()
+            .setWidth(Long.valueOf(targetResolutionWidth))
+            .setHeight(Long.valueOf(targetResolutionHeight))
+            .build();
 
     previewHostApi.cameraXProxy = mockCameraXProxy;
     when(mockCameraXProxy.createPreviewBuilder()).thenReturn(mockPreviewBuilder);
@@ -70,14 +77,14 @@ public class PreviewTest {
 
     final ArgumentCaptor<Size> sizeCaptor = ArgumentCaptor.forClass(Size.class);
 
-    previewHostApi.create(3L, 90L, resolutionInfo);
+    previewHostApi.create(previewIdentifier, Long.valueOf(targetRotation), resolutionInfo);
 
-    verify(mockPreviewBuilder).setTargetRotation(90);
+    verify(mockPreviewBuilder).setTargetRotation(targetRotation);
     verify(mockPreviewBuilder).setTargetResolution(sizeCaptor.capture());
-    assertEquals(sizeCaptor.getValue().getWidth(), 10);
-    assertEquals(sizeCaptor.getValue().getHeight(), 50);
+    assertEquals(sizeCaptor.getValue().getWidth(), targetResolutionWidth);
+    assertEquals(sizeCaptor.getValue().getHeight(), targetResolutionHeight);
     verify(mockPreviewBuilder).build();
-    verify(testInstanceManager).addDartCreatedInstance(mockPreview, 3L);
+    verify(testInstanceManager).addDartCreatedInstance(mockPreview, previewIdentifier);
   }
 
   @Test
@@ -87,13 +94,15 @@ public class PreviewTest {
     final TextureRegistry.SurfaceTextureEntry mockSurfaceTextureEntry =
         mock(TextureRegistry.SurfaceTextureEntry.class);
     final SurfaceTexture mockSurfaceTexture = mock(SurfaceTexture.class);
+    final Long previewIdentifier = 5L;
+    final Long surfaceTextureEntryId = 120L;
 
     previewHostApi.cameraXProxy = mockCameraXProxy;
-    testInstanceManager.addDartCreatedInstance(mockPreview, 5L);
+    testInstanceManager.addDartCreatedInstance(mockPreview, previewIdentifier);
 
     when(mockTextureRegistry.createSurfaceTexture()).thenReturn(mockSurfaceTextureEntry);
     when(mockSurfaceTextureEntry.surfaceTexture()).thenReturn(mockSurfaceTexture);
-    when(mockSurfaceTextureEntry.id()).thenReturn(120L);
+    when(mockSurfaceTextureEntry.id()).thenReturn(surfaceTextureEntryId);
 
     final ArgumentCaptor<Preview.SurfaceProvider> surfaceProviderCaptor =
         ArgumentCaptor.forClass(Preview.SurfaceProvider.class);
@@ -101,7 +110,7 @@ public class PreviewTest {
     final ArgumentCaptor<Consumer> consumerCaptor = ArgumentCaptor.forClass(Consumer.class);
 
     // Test that surface provider was set and the surface texture ID was returned.
-    assertEquals((long) previewHostApi.setSurfaceProvider(5L), 120L);
+    assertEquals(previewHostApi.setSurfaceProvider(previewIdentifier), surfaceTextureEntryId);
     verify(mockPreview).setSurfaceProvider(surfaceProviderCaptor.capture());
     verify(previewHostApi).createSurfaceProvider(mockSurfaceTexture);
   }
@@ -116,10 +125,13 @@ public class PreviewTest {
     final SurfaceRequest.Result mockSurfaceRequestResult = mock(SurfaceRequest.Result.class);
     final SystemServicesFlutterApiImpl mockSystemServicesFlutterApi =
         mock(SystemServicesFlutterApiImpl.class);
+    final int resolutionWidth = 200;
+    final int resolutionHeight = 500;
 
     previewHostApi.cameraXProxy = mockCameraXProxy;
     when(mockCameraXProxy.createSurface(mockSurfaceTexture)).thenReturn(mockSurface);
-    when(mockSurfaceRequest.getResolution()).thenReturn(new Size(200, 500));
+    when(mockSurfaceRequest.getResolution())
+        .thenReturn(new Size(resolutionWidth, resolutionHeight));
     when(mockCameraXProxy.createSystemServicesFlutterApiImpl(mockBinaryMessenger))
         .thenReturn(mockSystemServicesFlutterApi);
 
@@ -130,7 +142,7 @@ public class PreviewTest {
         previewHostApi.createSurfaceProvider(mockSurfaceTexture);
     previewSurfaceProvider.onSurfaceRequested(mockSurfaceRequest);
 
-    verify(mockSurfaceTexture).setDefaultBufferSize(200, 500);
+    verify(mockSurfaceTexture).setDefaultBufferSize(resolutionWidth, resolutionHeight);
     verify(mockSurfaceRequest)
         .provideSurface(surfaceCaptor.capture(), any(Executor.class), consumerCaptor.capture());
 
@@ -186,13 +198,17 @@ public class PreviewTest {
         new PreviewHostApiImpl(mockBinaryMessenger, testInstanceManager, mockTextureRegistry);
     final androidx.camera.core.ResolutionInfo mockResolutionInfo =
         mock(androidx.camera.core.ResolutionInfo.class);
+    final Long previewIdentifier = 23L;
+    final int resolutionWidth = 500;
+    final int resolutionHeight = 200;
 
-    testInstanceManager.addDartCreatedInstance(mockPreview, 23L);
+    testInstanceManager.addDartCreatedInstance(mockPreview, previewIdentifier);
     when(mockPreview.getResolutionInfo()).thenReturn(mockResolutionInfo);
-    when(mockResolutionInfo.getResolution()).thenReturn(new Size(500, 200));
+    when(mockResolutionInfo.getResolution())
+        .thenReturn(new Size(resolutionWidth, resolutionHeight));
 
-    ResolutionInfo resolutionInfo = previewHostApi.getResolutionInfo(23L);
-    assertEquals((long) resolutionInfo.getWidth(), 500L);
-    assertEquals((long) resolutionInfo.getHeight(), 200L);
+    ResolutionInfo resolutionInfo = previewHostApi.getResolutionInfo(previewIdentifier);
+    assertEquals(resolutionInfo.getWidth(), Long.valueOf(resolutionWidth));
+    assertEquals(resolutionInfo.getHeight(), Long.valueOf(resolutionHeight));
   }
 }
