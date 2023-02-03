@@ -60,7 +60,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     MarkerUpdates markerUpdates, {
     required int mapId,
   }) async {
-    _map(mapId).updateMarkers(markerUpdates);
+    await _map(mapId).updateMarkers(markerUpdates);
   }
 
   /// Applies the passed in `polygonUpdates` to the `mapId`.

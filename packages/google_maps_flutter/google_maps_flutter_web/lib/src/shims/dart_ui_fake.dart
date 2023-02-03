@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:html' as html;
+import 'dart:typed_data';
 
 // Fake interface for the logic that this package needs from (web-only) dart:ui.
 // This is conditionally exported so the analyzer sees these methods as available.
@@ -25,8 +26,13 @@ class platformViewRegistry {
 /// https://github.com/flutter/engine/blob/main/lib/web_ui/lib/src/engine/assets.dart#L12
 class webOnlyAssetManager {
   /// Shim for getAssetUrl.
-  /// https://github.com/flutter/engine/blob/main/lib/web_ui/lib/src/engine/assets.dart#L45
+  /// https://github.com/flutter/engine/blob/main/lib/web_ui/lib/src/engine/assets.dart#L59
   static String getAssetUrl(String asset) => '';
+
+  /// Shim for load.
+  /// https://github.com/flutter/engine/blob/main/lib/web_ui/lib/src/engine/assets.dart#L67
+  static Future<ByteData> load(String asset) async =>
+      Future<ByteData>.value(ByteData(0));
 }
 
 /// Signature of callbacks that have no arguments and return no data.

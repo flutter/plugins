@@ -7,11 +7,11 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'custom_marker_icon.dart';
 import 'example_google_map.dart';
 import 'page.dart';
 
@@ -267,26 +267,10 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
-    final Completer<BitmapDescriptor> bitmapIcon =
-        Completer<BitmapDescriptor>();
-    final ImageConfiguration config = createLocalImageConfiguration(context);
-
-    const AssetImage('assets/red_square.png')
-        .resolve(config)
-        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
-      final ByteData? bytes =
-          await image.image.toByteData(format: ImageByteFormat.png);
-      if (bytes == null) {
-        bitmapIcon.completeError(Exception('Unable to encode icon'));
-        return;
-      }
-      final BitmapDescriptor bitmap =
-          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
-      bitmapIcon.complete(bitmap);
-    }));
-
-    return bitmapIcon.future;
+  Future<BitmapDescriptor> _getMarkerIcon(BuildContext context) async {
+    const Size canvasSize = Size(48, 48);
+    final ByteData bytes = await createCustomMarkerIconImage(size: canvasSize);
+    return BitmapDescriptor.createFromBytes(bytes.buffer.asUint8List());
   }
 
   @override
@@ -383,7 +367,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                 onPressed: selectedId == null
                     ? null
                     : () {
-                        _getAssetIcon(context).then(
+                        _getMarkerIcon(context).then(
                           (BitmapDescriptor icon) {
                             _setMarkerIcon(selectedId, icon);
                           },

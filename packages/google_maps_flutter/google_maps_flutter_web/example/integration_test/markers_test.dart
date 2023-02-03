@@ -38,7 +38,7 @@ void main() {
         const Marker(markerId: MarkerId('2')),
       };
 
-      controller.addMarkers(markers);
+      await controller.addMarkers(markers);
 
       expect(controller.markers.length, 2);
       expect(controller.markers, contains(const MarkerId('1')));
@@ -50,7 +50,7 @@ void main() {
       final Set<Marker> markers = <Marker>{
         const Marker(markerId: MarkerId('1')),
       };
-      controller.addMarkers(markers);
+      await controller.addMarkers(markers);
 
       expect(
           controller.markers[const MarkerId('1')]?.marker?.draggable, isFalse);
@@ -59,7 +59,7 @@ void main() {
       final Set<Marker> updatedMarkers = <Marker>{
         const Marker(markerId: MarkerId('1'), draggable: true),
       };
-      controller.changeMarkers(updatedMarkers);
+      await controller.changeMarkers(updatedMarkers);
 
       expect(controller.markers.length, 1);
       expect(
@@ -73,7 +73,7 @@ void main() {
         const Marker(markerId: MarkerId('3')),
       };
 
-      controller.addMarkers(markers);
+      await controller.addMarkers(markers);
 
       expect(controller.markers.length, 3);
 
@@ -99,7 +99,7 @@ void main() {
         ),
       };
 
-      controller.addMarkers(markers);
+      await controller.addMarkers(markers);
 
       expect(controller.markers[const MarkerId('1')]?.infoWindowShown, isFalse);
 
@@ -125,7 +125,7 @@ void main() {
           infoWindow: InfoWindow(title: 'Title', snippet: 'Snippet'),
         ),
       };
-      controller.addMarkers(markers);
+      await controller.addMarkers(markers);
 
       expect(controller.markers[const MarkerId('1')]?.infoWindowShown, isFalse);
       expect(controller.markers[const MarkerId('2')]?.infoWindowShown, isFalse);
@@ -148,11 +148,11 @@ void main() {
       final Set<Marker> markers = <Marker>{
         Marker(
           markerId: const MarkerId('1'),
-          icon: BitmapDescriptor.fromBytes(bytes),
+          icon: BitmapDescriptor.createFromBytes(bytes),
         ),
       };
 
-      controller.addMarkers(markers);
+      await controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
       final gmaps.Icon? icon =
@@ -175,11 +175,12 @@ void main() {
       final Set<Marker> markers = <Marker>{
         Marker(
           markerId: const MarkerId('1'),
-          icon: BitmapDescriptor.fromBytes(bytes, size: const Size(20, 30)),
+          icon:
+              BitmapDescriptor.createFromBytes(bytes, size: const Size(20, 30)),
         ),
       };
 
-      controller.addMarkers(markers);
+      await controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
       final gmaps.Icon? icon =
@@ -208,7 +209,7 @@ void main() {
         ),
       };
 
-      controller.addMarkers(markers);
+      await controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
       final html.HtmlElement? content = controller.markers[const MarkerId('1')]
@@ -233,7 +234,7 @@ void main() {
         ),
       };
 
-      controller.addMarkers(markers);
+      await controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
       final html.HtmlElement? content = controller.markers[const MarkerId('1')]

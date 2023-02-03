@@ -21,6 +21,7 @@ export 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
         ArgumentCallbacks,
         ArgumentCallback,
         BitmapDescriptor,
+        BitmapScaling,
         CameraPosition,
         CameraPositionCallback,
         CameraTargetBounds,

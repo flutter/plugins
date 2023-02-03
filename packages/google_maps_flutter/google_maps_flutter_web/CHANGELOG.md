@@ -1,5 +1,6 @@
-## NEXT
+## 0.4.1
 
+* Adds support for BitmapDescriptors created with `BitmapDescriptor.createFromAsset` or `BitmapDescriptor.createFromBytes`.
 * Updates minimum Flutter version to 3.0.
 
 ## 0.4.0+5

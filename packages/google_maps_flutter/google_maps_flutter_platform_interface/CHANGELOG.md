@@ -1,5 +1,8 @@
-## NEXT
+## 2.3.0
 
+* Adds better support for marker size and scaling behaviour with `BitmapDescriptor.createFromAsset` and `BitmapDescriptor.createFromBytes`.
+* Deprecates `BitmapDescriptor.fromAssetImage` in favor of `BitmapDescriptor.createFromAsset`
+* Deprecates `BitmapDescriptor.fromBytes` in favor of `BitmapDescriptor.createFromBytes`
 * Updates minimum Flutter version to 3.0.
 
 ## 2.2.5

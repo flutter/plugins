@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.googlemaps;
 
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -24,7 +25,8 @@ import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.SquareCap;
 import com.google.android.gms.maps.model.Tile;
-import io.flutter.view.FlutterMain;
+import io.flutter.FlutterInjector;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,10 +36,8 @@ import java.util.Map;
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
 
-  // TODO(hamdikahloun): FlutterMain has been deprecated and should be replaced with FlutterLoader
-  //  when it's available in Stable channel: https://github.com/flutter/flutter/issues/70923.
-  @SuppressWarnings("deprecation")
-  private static BitmapDescriptor toBitmapDescriptor(Object o) {
+  private static BitmapDescriptor toBitmapDescriptor(
+      Object o, AssetManager assetManager, float density) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
       case "defaultMarker":
@@ -49,27 +49,40 @@ class Convert {
       case "fromAsset":
         if (data.size() == 2) {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+              FlutterInjector.instance()
+                  .flutterLoader()
+                  .getLookupKeyForAsset(toString(data.get(1))));
         } else {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+              FlutterInjector.instance()
+                  .flutterLoader()
+                  .getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
       case "fromAssetImage":
         if (data.size() == 3) {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+              FlutterInjector.instance()
+                  .flutterLoader()
+                  .getLookupKeyForAsset(toString(data.get(1))));
         } else {
           throw new IllegalArgumentException(
               "'fromAssetImage' Expected exactly 3 arguments, got: " + data.size());
         }
       case "fromBytes":
-        return getBitmapFromBytes(data);
+        return getBitmapFromBytesLegacy(data);
+      case "asset":
+        return getBitmapFromAsset(data, assetManager, density);
+      case "bytes":
+        return getBitmapFromBytes(data, density);
       default:
         throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
     }
   }
 
-  private static BitmapDescriptor getBitmapFromBytes(List<?> data) {
+  // Used for deprecated fromBytes bitmap descriptor.
+  // Can be removed after support for "fromBytes" bitmap descriptor type is
+  // removed.
+  private static BitmapDescriptor getBitmapFromBytesLegacy(List<?> data) {
     if (data.size() == 2) {
       try {
         Bitmap bitmap = toBitmap(data.get(1));
@@ -82,6 +95,81 @@ class Convert {
           "fromBytes should have exactly one argument, interpretTileOverlayOptions the bytes. Got: "
               + data.size());
     }
+  }
+
+  private static BitmapDescriptor getBitmapFromBytes(List<?> data, float density) {
+    if (data.size() == 4 || data.size() == 5) {
+      try {
+        Bitmap bitmap = toBitmap(data.get(1));
+        switch (toString(data.get(2))) {
+          case "auto":
+            if (data.size() == 4) {
+              // Scales image using given scale ratio
+              final float scale = density / toFloat(data.get(3));
+              return BitmapDescriptorFactory.fromBitmap(toScaledBitmap(bitmap, scale));
+            } else if (data.size() == 5) {
+              // Scales image using physical size parameter
+              final List<?> size = toList(data.get(4));
+              final int width = toInt((double) size.get(0) * density);
+              final int height = toInt((double) size.get(1) * density);
+              return BitmapDescriptorFactory.fromBitmap(
+                  toScaledBitmap(bitmap, toInt(width), toInt(height)));
+            }
+            break;
+          case "noScaling":
+            break;
+        }
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("Unable to interpret bytes as a valid image.", e);
+      }
+    } else {
+      throw new IllegalArgumentException(
+          "bytes should have exactly 4 or 5 arguments, the bytes, scaling type, scale and size. Got: "
+              + data.size());
+    }
+  }
+
+  private static BitmapDescriptor getBitmapFromAsset(
+      List<?> data, AssetManager assetManager, float density) {
+    if (data.size() != 4 && data.size() != 5) {
+      throw new IllegalArgumentException(
+          "'asset' Expected exactly 4 or 5 arguments, got: " + data.size());
+    }
+
+    String asset =
+        FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(toString(data.get(1)));
+
+    switch (toString(data.get(2))) {
+      case "auto":
+        float scale = density / toFloat(data.get(3));
+        // Scale image if size is given or scale is other than 1.0
+        if (data.size() == 5 || Math.abs(scale - 1) > 0.001) {
+          try {
+            InputStream inputStream = assetManager.open(asset);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            inputStream.close();
+            if (data.size() == 5) {
+              // Scales asset image to exact size.
+              final List<?> size = toList(data.get(4));
+              final int width = toInt((double) size.get(0) * density);
+              final int height = toInt((double) size.get(1) * density);
+              return BitmapDescriptorFactory.fromBitmap(toScaledBitmap(bitmap, width, height));
+            } else {
+              // Scales asset image to using given scale.
+              return BitmapDescriptorFactory.fromBitmap(toScaledBitmap(bitmap, scale));
+            }
+          } catch (Exception e) {
+            throw new IllegalArgumentException(
+                "'asset' cannot open asset: " + toString(data.get(1)));
+          }
+        }
+        break;
+      case "noScaling":
+        break;
+    }
+
+    return BitmapDescriptorFactory.fromAsset(asset);
   }
 
   private static boolean toBoolean(Object o) {
@@ -284,6 +372,18 @@ class Convert {
     }
   }
 
+  private static Bitmap toScaledBitmap(Bitmap bitmap, float scale) {
+    return toScaledBitmap(
+        bitmap, (int) (bitmap.getWidth() * scale), (int) (bitmap.getHeight() * scale));
+  }
+
+  private static Bitmap toScaledBitmap(Bitmap bitmap, int width, int height) {
+    if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
+      return Bitmap.createScaledBitmap(bitmap, width, height, true);
+    }
+    return bitmap;
+  }
+
   private static Point toPoint(Object o, float density) {
     final List<?> data = toList(o);
     return new Point(toPixels(data.get(0), density), toPixels(data.get(1), density));
@@ -379,7 +479,8 @@ class Convert {
   }
 
   /** Returns the dartMarkerId of the interpreted marker. */
-  static String interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
+  static String interpretMarkerOptions(
+      Object o, MarkerOptionsSink sink, AssetManager assetManager, float density) {
     final Map<?, ?> data = toMap(o);
     final Object alpha = data.get("alpha");
     if (alpha != null) {
@@ -404,7 +505,7 @@ class Convert {
     }
     final Object icon = data.get("icon");
     if (icon != null) {
-      sink.setIcon(toBitmapDescriptor(icon));
+      sink.setIcon(toBitmapDescriptor(icon, assetManager, density));
     }
 
     final Object infoWindow = data.get("infoWindow");
@@ -496,7 +597,8 @@ class Convert {
     }
   }
 
-  static String interpretPolylineOptions(Object o, PolylineOptionsSink sink) {
+  static String interpretPolylineOptions(
+      Object o, PolylineOptionsSink sink, AssetManager assetManager, float density) {
     final Map<?, ?> data = toMap(o);
     final Object consumeTapEvents = data.get("consumeTapEvents");
     if (consumeTapEvents != null) {
@@ -508,7 +610,7 @@ class Convert {
     }
     final Object endCap = data.get("endCap");
     if (endCap != null) {
-      sink.setEndCap(toCap(endCap));
+      sink.setEndCap(toCap(endCap, assetManager, density));
     }
     final Object geodesic = data.get("geodesic");
     if (geodesic != null) {
@@ -520,7 +622,7 @@ class Convert {
     }
     final Object startCap = data.get("startCap");
     if (startCap != null) {
-      sink.setStartCap(toCap(startCap));
+      sink.setStartCap(toCap(startCap, assetManager, density));
     }
     final Object visible = data.get("visible");
     if (visible != null) {
@@ -642,7 +744,7 @@ class Convert {
     return pattern;
   }
 
-  private static Cap toCap(Object o) {
+  private static Cap toCap(Object o, AssetManager assetManager, float density) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
       case "buttCap":
@@ -653,9 +755,10 @@ class Convert {
         return new SquareCap();
       case "customCap":
         if (data.size() == 2) {
-          return new CustomCap(toBitmapDescriptor(data.get(1)));
+          return new CustomCap(toBitmapDescriptor(data.get(1), assetManager, density));
         } else {
-          return new CustomCap(toBitmapDescriptor(data.get(1)), toFloat(data.get(2)));
+          return new CustomCap(
+              toBitmapDescriptor(data.get(1), assetManager, density), toFloat(data.get(2)));
         }
       default:
         throw new IllegalArgumentException("Cannot interpret " + o + " as Cap");
