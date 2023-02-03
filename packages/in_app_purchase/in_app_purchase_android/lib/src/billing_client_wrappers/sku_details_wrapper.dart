@@ -5,7 +5,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../billing_client_wrappers.dart';
+import 'billing_client_manager.dart';
+import 'billing_client_wrapper.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to

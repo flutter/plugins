@@ -59,6 +59,7 @@ void main() {
       //await iapAndroidPlatform.isAvailable();
       expect(stubPlatform.countPreviousCalls(startConnectionCall), equals(1));
     });
+
     test('re-connects when client sends onBillingServiceDisconnected', () {
       iapAndroidPlatform.billingClientManager.client.callHandler(
         const MethodCall(onBillingServiceDisconnectedCallback,
@@ -66,6 +67,7 @@ void main() {
       );
       expect(stubPlatform.countPreviousCalls(startConnectionCall), equals(2));
     });
+
     test(
         're-connects when operation returns BillingResponse.clientDisconnected',
         () async {

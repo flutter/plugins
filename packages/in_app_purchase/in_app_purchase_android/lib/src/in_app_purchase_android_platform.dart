@@ -62,14 +62,13 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
 
   @override
   Future<bool> isAvailable() async {
-    return await billingClientManager
+    return billingClientManager
         .runRaw((BillingClient client) => client.isReady());
   }
 
   @override
   Future<ProductDetailsResponse> queryProductDetails(
-    Set<String> identifiers,
-  ) async {
+      Set<String> identifiers) async {
     List<SkuDetailsResponseWrapper> responses;
     PlatformException? exception;
 
@@ -156,8 +155,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
 
   @override
   Future<BillingResultWrapper> completePurchase(
-    PurchaseDetails purchase,
-  ) async {
+      PurchaseDetails purchase) async {
     assert(
       purchase is GooglePlayPurchaseDetails,
       'On Android, the `purchase` should always be of type `GooglePlayPurchaseDetails`.',
@@ -175,14 +173,16 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
           'completePurchase unsuccessful. The `purchase.verificationData` is not valid');
     }
 
-    return await billingClientManager.run(
+    return billingClientManager.run(
       (BillingClient client) => client.acknowledgePurchase(
           purchase.verificationData.serverVerificationData),
     );
   }
 
   @override
-  Future<void> restorePurchases({String? applicationUserName}) async {
+  Future<void> restorePurchases({
+    String? applicationUserName,
+  }) async {
     List<PurchasesResultWrapper> responses;
 
     responses = await Future.wait(<Future<PurchasesResultWrapper>>[
@@ -253,8 +253,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
   }
 
   Future<List<PurchaseDetails>> _getPurchaseDetailsFromResult(
-    PurchasesResultWrapper resultWrapper,
-  ) async {
+      PurchasesResultWrapper resultWrapper) async {
     IAPError? error;
     if (resultWrapper.responseCode != BillingResponse.ok) {
       error = IAPError(

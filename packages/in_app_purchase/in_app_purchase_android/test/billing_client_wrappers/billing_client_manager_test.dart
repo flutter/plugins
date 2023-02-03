@@ -49,6 +49,7 @@ void main() {
     test('connects on initialization', () {
       expect(stubPlatform.countPreviousCalls(startConnectionCall), equals(1));
     });
+
     test('waits for connection before executing the operations', () {
       bool runCalled = false;
       bool runRawCalled = false;
@@ -63,6 +64,7 @@ void main() {
       expect(runCalled, equals(true));
       expect(runRawCalled, equals(true));
     });
+
     test('re-connects when client sends onBillingServiceDisconnected', () {
       connectedCompleter.complete();
       manager.client.callHandler(
@@ -71,6 +73,7 @@ void main() {
       );
       expect(stubPlatform.countPreviousCalls(startConnectionCall), equals(2));
     });
+
     test(
       're-connects when operation returns BillingResponse.serviceDisconnected',
       () async {
@@ -91,6 +94,7 @@ void main() {
         expect(result.responseCode, equals(BillingResponse.ok));
       },
     );
+
     test('does not re-connect when disposed', () {
       connectedCompleter.complete();
       manager.dispose();

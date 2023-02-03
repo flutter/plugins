@@ -79,7 +79,7 @@ class BillingClientManager {
     if (result.responseCode == BillingResponse.serviceDisconnected &&
         !_isDisposed) {
       await _connect();
-      return await run(block);
+      return run(block);
     } else {
       return result;
     }
@@ -97,7 +97,7 @@ class BillingClientManager {
   Future<R> runRaw<R>(Future<R> Function(BillingClient client) block) async {
     assert(_debugAssertNotDisposed());
     await _readyFuture;
-    return await block(client);
+    return block(client);
   }
 
   /// Ends connection to the [BillingClient].
