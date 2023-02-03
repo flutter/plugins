@@ -8,6 +8,7 @@ import 'dart:html' as html;
 import 'package:flutter/cupertino.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'content_type.dart';
 import 'http_request_factory.dart';
 import 'shims/dart_ui.dart' as ui;
 
@@ -79,22 +80,31 @@ class WebWebViewController extends PlatformWebViewController {
       // ignore: unsafe_html
       _webWebViewParams.iFrame.src = params.uri.toString();
     } else {
-      final HttpRequest httpReq =
-          await _webWebViewParams.httpRequestFactory.request(
-        params.uri.toString(),
-        method: params.method.serialize(),
-        requestHeaders: params.headers,
-        sendData: params.body,
-      );
-      final String contentType =
-          httpReq.getResponseHeader('content-type') ?? 'text/html';
-      // ignore: unsafe_html
-      _webWebViewParams.iFrame.src = Uri.dataFromString(
-        httpReq.responseText ?? '',
-        mimeType: contentType,
-        encoding: utf8,
-      ).toString();
+      await _updateIFrameFromXhr(params);
     }
+  }
+
+  /// Performs an AJAX request defined by [params].
+  Future<void> _updateIFrameFromXhr(LoadRequestParams params) async {
+    final html.HttpRequest httpReq =
+        await _webWebViewParams.httpRequestFactory.request(
+      params.uri.toString(),
+      method: params.method.serialize(),
+      requestHeaders: params.headers,
+      sendData: params.body,
+    );
+
+    final String header =
+        httpReq.getResponseHeader('content-type') ?? 'text/html';
+    final ContentType contentType = ContentType.parse(header);
+    final Encoding encoding = Encoding.getByName(contentType.charset) ?? utf8;
+
+    // ignore: unsafe_html
+    _webWebViewParams.iFrame.src = Uri.dataFromString(
+      httpReq.responseText ?? '',
+      mimeType: contentType.mimeType,
+      encoding: encoding,
+    ).toString();
   }
 }
 

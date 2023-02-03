@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
 import 'dart:html';
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
 // ignore: unnecessary_import
@@ -139,7 +140,41 @@ void main() {
         );
       });
 
-      test('loadRequest escapes "#" correctly', () async {
+      test('parses content-type response header correctly', () async {
+        final MockHttpRequestFactory mockHttpRequestFactory =
+            MockHttpRequestFactory();
+        final WebWebViewController controller =
+            WebWebViewController(WebWebViewControllerCreationParams(
+          httpRequestFactory: mockHttpRequestFactory,
+        ));
+
+        final Encoding iso = Encoding.getByName('latin1')!;
+
+        final MockHttpRequest mockHttpRequest = MockHttpRequest();
+        when(mockHttpRequest.responseText)
+            .thenReturn(String.fromCharCodes(iso.encode('España')));
+        when(mockHttpRequest.getResponseHeader('content-type'))
+            .thenReturn('Text/HTmL; charset=latin1');
+
+        when(mockHttpRequestFactory.request(
+          any,
+          method: anyNamed('method'),
+          requestHeaders: anyNamed('requestHeaders'),
+          sendData: anyNamed('sendData'),
+        )).thenAnswer((_) => Future<HttpRequest>.value(mockHttpRequest));
+
+        await controller.loadRequest(LoadRequestParams(
+          uri: Uri.parse('https://flutter.dev'),
+          method: LoadRequestMethod.post,
+        ));
+
+        expect(
+          (controller.params as WebWebViewControllerCreationParams).iFrame.src,
+          'data:text/html;charset=iso-8859-1,Espa%F1a',
+        );
+      });
+
+      test('escapes "#" correctly', () async {
         final MockHttpRequestFactory mockHttpRequestFactory =
             MockHttpRequestFactory();
         final WebWebViewController controller =
