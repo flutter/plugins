@@ -97,11 +97,11 @@ class _MyHomePageState extends State<MyHomePage> {
     if (isVideo) {
       final XFile? file = await _picker.getVideo(
           source: source, maxDuration: const Duration(seconds: 10));
-      if (file != null) {
+      if (file != null && context.mounted) {
         _showPickedSnackBar(context, <XFile>[file]);
       }
       await _playVideo(file);
-    } else if (isMultiImage) {
+    } else if (isMultiImage && context.mounted) {
       await _displayPickImageDialog(context,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
             maxHeight: maxHeight,
             imageQuality: quality,
           );
-          if (pickedFileList != null) {
+          if (pickedFileList != null && context.mounted) {
             _showPickedSnackBar(context, pickedFileList);
           }
           setState(() => _imageFileList = pickedFileList);
@@ -128,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
             maxHeight: maxHeight,
             imageQuality: quality,
           );
-          if (pickedFile != null) {
+          if (pickedFile != null && context.mounted) {
             _showPickedSnackBar(context, <XFile>[pickedFile]);
           }
           setState(() => _setImageFileListFromFile(pickedFile));
