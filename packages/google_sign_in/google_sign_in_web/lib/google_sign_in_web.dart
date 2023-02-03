@@ -11,7 +11,7 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:js/js.dart';
 
-import 'src/generated/gapiauth2.dart' as auth2;
+import 'src/js_interop/gapiauth2.dart' as auth2;
 import 'src/load_gapi.dart' as gapi;
 import 'src/utils.dart' show gapiUserToPluginUserData;
 

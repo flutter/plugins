@@ -1,1 +1,1 @@
-../../shared/Classes/FIAObjectTranslator.m
+../../darwin/Classes/FIAObjectTranslator.m

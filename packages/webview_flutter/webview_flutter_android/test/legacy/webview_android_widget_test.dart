@@ -16,7 +16,7 @@ import 'package:webview_flutter_android/src/legacy/webview_android_widget.dart';
 import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
 
 import '../android_webview_test.mocks.dart' show MockTestWebViewHostApi;
-import '../test_android_webview.pigeon.dart';
+import '../test_android_webview.g.dart';
 import 'webview_android_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[
@@ -210,8 +210,10 @@ void main() {
           ),
         );
 
-        final List<dynamic> javaScriptChannels =
-            verify(mockWebView.addJavaScriptChannel(captureAny)).captured;
+        final List<android_webview.JavaScriptChannel> javaScriptChannels =
+            verify(mockWebView.addJavaScriptChannel(captureAny))
+                .captured
+                .cast<android_webview.JavaScriptChannel>();
         expect(javaScriptChannels[0].channelName, 'a');
         expect(javaScriptChannels[1].channelName, 'b');
       });
@@ -656,8 +658,10 @@ void main() {
         await buildWidget(tester);
 
         await testController.addJavascriptChannels(<String>{'c', 'd'});
-        final List<dynamic> javaScriptChannels =
-            verify(mockWebView.addJavaScriptChannel(captureAny)).captured;
+        final List<android_webview.JavaScriptChannel> javaScriptChannels =
+            verify(mockWebView.addJavaScriptChannel(captureAny))
+                .captured
+                .cast<android_webview.JavaScriptChannel>();
         expect(javaScriptChannels[0].channelName, 'c');
         expect(javaScriptChannels[1].channelName, 'd');
       });
@@ -667,8 +671,10 @@ void main() {
 
         await testController.addJavascriptChannels(<String>{'c', 'd'});
         await testController.removeJavascriptChannels(<String>{'c', 'd'});
-        final List<dynamic> javaScriptChannels =
-            verify(mockWebView.removeJavaScriptChannel(captureAny)).captured;
+        final List<android_webview.JavaScriptChannel> javaScriptChannels =
+            verify(mockWebView.removeJavaScriptChannel(captureAny))
+                .captured
+                .cast<android_webview.JavaScriptChannel>();
         expect(javaScriptChannels[0].channelName, 'c');
         expect(javaScriptChannels[1].channelName, 'd');
       });

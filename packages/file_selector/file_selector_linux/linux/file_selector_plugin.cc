@@ -192,10 +192,10 @@ static void method_call_cb(FlMethodChannel* channel, FlMethodCall* method_call,
   FlValue* args = fl_method_call_get_args(method_call);
 
   g_autoptr(FlMethodResponse) response = nullptr;
-  if (strcmp(method, kOpenFileMethod) == 0) {
+  if (strcmp(method, kOpenFileMethod) == 0 ||
+      strcmp(method, kGetDirectoryPathMethod) == 0) {
     response = show_dialog(self, method, args, true);
-  } else if (strcmp(method, kGetDirectoryPathMethod) == 0 ||
-             strcmp(method, kGetSavePathMethod) == 0) {
+  } else if (strcmp(method, kGetSavePathMethod) == 0) {
     response = show_dialog(self, method, args, false);
   } else {
     response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
