@@ -47,17 +47,19 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     - flutter doctor -v
   << : *TOOL_SETUP_TEMPLATE
 
-build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
-  create_all_plugins_app_script:
-    - $PLUGIN_TOOL_COMMAND create-all-packages-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
-  build_all_plugins_debug_script:
+# Ensures that the latest versions of all of the 1P packages can be used
+# together. See script/configs/exclude_all_packages_app.yaml for exceptions.
+build_all_packages_app_template: &BUILD_ALL_PACKAGES_APP_TEMPLATE
+  create_all_packages_app_script:
+    - $PLUGIN_TOOL_COMMAND create-all-packages-app --output-dir=. --exclude script/configs/exclude_all_packages_app.yaml
+  build_all_packages_debug_script:
     - cd all_packages
     - if [[ "$BUILD_ALL_ARGS" == "web" ]]; then
     -   echo "Skipping; web does not support debug builds"
     - else
     -   flutter build $BUILD_ALL_ARGS --debug
     - fi
-  build_all_plugins_release_script:
+  build_all_packages_release_script:
     - cd all_packages
     - flutter build $BUILD_ALL_ARGS --release
 
@@ -117,13 +119,6 @@ task:
           - else
           -   echo "Only run in presubmit"
           - fi
-    - name: dart_unit_tests
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      unit_test_script:
-        - ./script/tool_runner.sh test
     - name: analyze
       env:
         matrix:
@@ -186,21 +181,21 @@ task:
         CIRRUS_CLONE_SUBMODULES: true
       script: ./script/tool_runner.sh update-excerpts --fail-on-change
     ### Web tasks ###
-    - name: web-build_all_plugins
+    - name: web-build_all_packages
       env:
         BUILD_ALL_ARGS: "web"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+      << : *BUILD_ALL_PACKAGES_APP_TEMPLATE
     ### Linux desktop tasks ###
-    - name: linux-build_all_plugins
+    - name: linux-build_all_packages
       env:
         BUILD_ALL_ARGS: "linux"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+      << : *BUILD_ALL_PACKAGES_APP_TEMPLATE
     - name: linux-platform_tests
       # Don't run full platform tests on both channels in pre-submit.
       skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
@@ -230,6 +225,14 @@ task:
     cpu: 4
     memory: 16G
   matrix:
+    ### Platform-agnostic tasks ###
+    - name: dart_unit_tests
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      unit_test_script:
+        - ./script/tool_runner.sh test
     ### Android tasks ###
     - name: android-platform_tests
       # Don't run full platform tests on both channels in pre-submit.
@@ -251,7 +254,7 @@ task:
       lint_script:
         - ./script/tool_runner.sh lint-android # must come after build-examples
       native_unit_test_script:
-        # Native integration tests are handled by firebase-test-lab below, so
+        # Native integration tests are handled by Firebase Test Lab below, so
         # only run unit tests.
         # Must come after build-examples.
         - ./script/tool_runner.sh native-test --android --no-integration --exclude script/configs/exclude_native_unit_android.yaml
@@ -268,13 +271,13 @@ task:
           path: "**/reports/lint-results-debug.xml"
           type: text/xml
           format: android-lint
-    - name: android-build_all_plugins
+    - name: android-build_all_packages
       env:
         BUILD_ALL_ARGS: "apk"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+      << : *BUILD_ALL_PACKAGES_APP_TEMPLATE
     ### Web tasks ###
     - name: web-platform_tests
       env:
