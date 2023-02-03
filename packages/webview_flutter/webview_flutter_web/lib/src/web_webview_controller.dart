@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:html';
+import 'dart:html' as html;
 
 import 'package:flutter/cupertino.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
@@ -37,7 +37,7 @@ class WebWebViewControllerCreationParams
 
   /// The underlying element used as the WebView.
   @visibleForTesting
-  final IFrameElement iFrame = IFrameElement()
+  final html.IFrameElement iFrame = html.IFrameElement()
     ..id = 'webView${_nextIFrameId++}'
     ..width = '100%'
     ..height = '100%'
@@ -73,7 +73,9 @@ class WebWebViewController extends PlatformWebViewController {
           'LoadRequestParams#uri is required to have a scheme.');
     }
 
-    if (params.headers.isEmpty && params.method == LoadRequestMethod.get) {
+    if (params.headers.isEmpty &&
+        (params.body == null || params.body!.isEmpty) &&
+        params.method == LoadRequestMethod.get) {
       // ignore: unsafe_html
       _webWebViewParams.iFrame.src = params.uri.toString();
     } else {

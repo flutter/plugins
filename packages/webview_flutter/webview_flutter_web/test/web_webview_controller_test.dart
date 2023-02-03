@@ -17,9 +17,9 @@ import 'package:webview_flutter_web/webview_flutter_web.dart';
 
 import 'web_webview_controller_test.mocks.dart';
 
-@GenerateMocks(<Type>[
-  HttpRequest,
-  HttpRequestFactory,
+@GenerateMocks(<Type>[], customMocks: <MockSpec<Object>>[
+  MockSpec<HttpRequest>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<HttpRequestFactory>(onMissingStub: OnMissingStub.returnDefault),
 ])
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,7 +62,7 @@ void main() {
     });
 
     group('loadRequest', () {
-      test('loadRequest throws ArgumentError on missing scheme', () async {
+      test('throws ArgumentError on missing scheme', () async {
         final WebWebViewController controller =
             WebWebViewController(WebWebViewControllerCreationParams());
 
@@ -73,8 +73,33 @@ void main() {
             throwsA(const TypeMatcher<ArgumentError>()));
       });
 
-      test('loadRequest makes request and loads response into iframe',
-          () async {
+      test('skips XHR for simple GETs (no headers, no data)', () async {
+        final MockHttpRequestFactory mockHttpRequestFactory =
+            MockHttpRequestFactory();
+        final WebWebViewController controller =
+            WebWebViewController(WebWebViewControllerCreationParams(
+          httpRequestFactory: mockHttpRequestFactory,
+        ));
+
+        when(mockHttpRequestFactory.request(
+          any,
+          method: anyNamed('method'),
+          requestHeaders: anyNamed('requestHeaders'),
+          sendData: anyNamed('sendData'),
+        )).thenThrow(
+            StateError('The `request` method should not have been called.'));
+
+        await controller.loadRequest(LoadRequestParams(
+          uri: Uri.parse('https://flutter.dev'),
+        ));
+
+        expect(
+          (controller.params as WebWebViewControllerCreationParams).iFrame.src,
+          'https://flutter.dev/',
+        );
+      });
+
+      test('makes request and loads response into iframe', () async {
         final MockHttpRequestFactory mockHttpRequestFactory =
             MockHttpRequestFactory();
         final WebWebViewController controller =
