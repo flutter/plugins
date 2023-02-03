@@ -32,8 +32,8 @@ void main() {
             WebWebViewControllerCreationParams();
 
         expect(params.iFrame.id, contains('webView'));
-        expect(params.iFrame.width, '100%');
-        expect(params.iFrame.height, '100%');
+        expect(params.iFrame.style.width, '100%');
+        expect(params.iFrame.style.height, '100%');
         expect(params.iFrame.style.border, 'none');
       });
     });

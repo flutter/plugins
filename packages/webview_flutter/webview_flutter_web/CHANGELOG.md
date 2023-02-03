@@ -5,6 +5,8 @@
   using the HTTP GET request method. [#118573](https://github.com/flutter/flutter/issues/118573).
 * Parses the `content-type` header of XHR responses to extract the correct
   MIME-type and charset. [#118090](https://github.com/flutter/flutter/issues/118090).
+* Sets `width` and `height` of widget the way the Engine wants, to remove distracting
+  warnings from the development console.
 * Updates minimum Flutter version to 3.0.
 
 ## 0.2.1
