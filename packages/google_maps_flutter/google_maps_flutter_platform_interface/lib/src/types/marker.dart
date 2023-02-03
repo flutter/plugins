@@ -140,42 +140,23 @@ class Marker implements MapsObject<Marker> {
   /// * reports [onDragEnd] events
   const Marker({
     required this.markerId,
-    this.alpha = _defaultAlphaValue,
-    this.anchor = _defaultAnchorValue,
-    this.consumeTapEvents = _defaultConsumeTapEventsValue,
-    this.draggable = _defaultDraggableValue,
-    this.flat = _defaultFlatValue,
-    this.icon = _defaultIconValue,
-    this.infoWindow = _defaultInfoWindowValue,
-    this.position = _defaultPositionValue,
-    this.rotation = _defaultRotationValue,
-    this.visible = _defaultVisibleValue,
-    this.zIndex = _defaultZIndexValue,
-    this.clusterManagerId = _defaultClusterManagerId,
-    this.onTap = _defaultOnTap,
-    this.onDrag = _defaultOnDrag,
-    this.onDragStart = _defaultOnDragStart,
-    this.onDragEnd = _defaultOnDragEnd,
+    this.alpha = 1.0,
+    this.anchor = const Offset(0.5, 1.0),
+    this.consumeTapEvents = false,
+    this.draggable = false,
+    this.flat = false,
+    this.icon = BitmapDescriptor.defaultMarker,
+    this.infoWindow = InfoWindow.noText,
+    this.position = const LatLng(0.0, 0.0),
+    this.rotation = 0.0,
+    this.visible = true,
+    this.zIndex = 0.0,
+    this.clusterManagerId,
+    this.onTap,
+    this.onDrag,
+    this.onDragStart,
+    this.onDragEnd,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
-
-  // Defaults used by constructor and copyWithDefaults method.
-  static const double _defaultAlphaValue = 1.0;
-  static const Offset _defaultAnchorValue = Offset(0.5, 1.0);
-  static const bool _defaultConsumeTapEventsValue = false;
-  static const bool _defaultDraggableValue = false;
-  static const bool _defaultFlatValue = false;
-  static const BitmapDescriptor _defaultIconValue =
-      BitmapDescriptor.defaultMarker;
-  static const InfoWindow _defaultInfoWindowValue = InfoWindow.noText;
-  static const LatLng _defaultPositionValue = LatLng(0.0, 0.0);
-  static const double _defaultRotationValue = 0.0;
-  static const bool _defaultVisibleValue = true;
-  static const double _defaultZIndexValue = 0.0;
-  static const VoidCallback? _defaultOnTap = null;
-  static const ValueChanged<LatLng>? _defaultOnDrag = null;
-  static const ValueChanged<LatLng>? _defaultOnDragStart = null;
-  static const ValueChanged<LatLng>? _defaultOnDragEnd = null;
-  static const ClusterManagerId? _defaultClusterManagerId = null;
 
   /// Uniquely identifies a [Marker].
   final MarkerId markerId;
@@ -284,54 +265,6 @@ class Marker implements MapsObject<Marker> {
       onDrag: onDragParam ?? onDrag,
       onDragEnd: onDragEndParam ?? onDragEnd,
       clusterManagerId: clusterManagerIdParam ?? clusterManagerId,
-    );
-  }
-
-  /// Creates a new [Marker] object whose values are the same as this instance,
-  /// unless overwritten by the default values for specified parameters.
-  Marker copyWithDefaults({
-    bool? defaultAlpha,
-    bool? defaultAnchor,
-    bool? defaultConsumeTapEvents,
-    bool? defaultDraggable,
-    bool? defaultFlat,
-    bool? defaultIcon,
-    bool? defaultInfoWindow,
-    bool? defaultPosition,
-    bool? defaultRotation,
-    bool? defaultVisible,
-    bool? defaultZIndex,
-    bool? defaultOnTap,
-    bool? defaultOnDragStart,
-    bool? defaultOnDrag,
-    bool? defaultOnDragEnd,
-    bool? defaultClusterManagerId,
-  }) {
-    return Marker(
-      markerId: markerId,
-      alpha: (defaultAlpha ?? false) ? _defaultAlphaValue : alpha,
-      anchor: (defaultAnchor ?? false) ? _defaultAnchorValue : anchor,
-      consumeTapEvents: (defaultConsumeTapEvents ?? false)
-          ? _defaultConsumeTapEventsValue
-          : consumeTapEvents,
-      draggable:
-          (defaultDraggable ?? false) ? _defaultDraggableValue : draggable,
-      flat: (defaultFlat ?? false) ? _defaultFlatValue : flat,
-      icon: (defaultIcon ?? false) ? _defaultIconValue : icon,
-      infoWindow:
-          (defaultInfoWindow ?? false) ? _defaultInfoWindowValue : infoWindow,
-      position: (defaultPosition ?? false) ? _defaultPositionValue : position,
-      rotation: (defaultRotation ?? false) ? _defaultRotationValue : rotation,
-      visible: (defaultVisible ?? false) ? _defaultVisibleValue : visible,
-      zIndex: (defaultZIndex ?? false) ? _defaultZIndexValue : zIndex,
-      onTap: (defaultOnTap ?? false) ? _defaultOnTap : onTap,
-      onDragStart:
-          (defaultOnDragStart ?? false) ? _defaultOnDragStart : onDragStart,
-      onDrag: (defaultOnDrag ?? false) ? _defaultOnDrag : onDrag,
-      onDragEnd: (defaultOnDragEnd ?? false) ? _defaultOnDragEnd : onDragEnd,
-      clusterManagerId: (defaultClusterManagerId ?? false)
-          ? _defaultClusterManagerId
-          : clusterManagerId,
     );
   }
 

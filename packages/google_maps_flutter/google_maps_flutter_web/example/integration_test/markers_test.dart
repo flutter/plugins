@@ -320,7 +320,7 @@ void main() {
 
       // Update the marker with null clusterManagerId.
       final Set<Marker> updatedMarkers = <Marker>{
-        markers.first.copyWithDefaults(defaultClusterManagerId: true)
+        _copyMarkerWithClusterManagerId(markers.first, null)
       };
       markersController.changeMarkers(updatedMarkers);
 
@@ -329,4 +329,27 @@ void main() {
       expect(clusterManagersController.getClusters(clusterManagerId).length, 0);
     });
   });
+}
+
+Marker _copyMarkerWithClusterManagerId(
+    Marker marker, ClusterManagerId? clusterManagerId) {
+  return Marker(
+    markerId: marker.markerId,
+    alpha: marker.alpha,
+    anchor: marker.anchor,
+    consumeTapEvents: marker.consumeTapEvents,
+    draggable: marker.draggable,
+    flat: marker.flat,
+    icon: marker.icon,
+    infoWindow: marker.infoWindow,
+    position: marker.position,
+    rotation: marker.rotation,
+    visible: marker.visible,
+    zIndex: marker.zIndex,
+    onTap: marker.onTap,
+    onDragStart: marker.onDragStart,
+    onDrag: marker.onDrag,
+    onDragEnd: marker.onDragEnd,
+    clusterManagerId: clusterManagerId,
+  );
 }

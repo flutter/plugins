@@ -1222,8 +1222,7 @@ void main() {
 
     // Remove markers from clusterManagers and test that clusterManagers are empty.
     for (final MapEntry<MarkerId, Marker> entry in markers.entries) {
-      markers[entry.key] =
-          entry.value.copyWithDefaults(defaultClusterManagerId: true);
+      markers[entry.key] = _copyMarkerWithClusterManagerId(entry.value, null);
     }
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -1240,6 +1239,29 @@ void main() {
       expect(clusters.length, 0);
     }
   });
+}
+
+Marker _copyMarkerWithClusterManagerId(
+    Marker marker, ClusterManagerId? clusterManagerId) {
+  return Marker(
+    markerId: marker.markerId,
+    alpha: marker.alpha,
+    anchor: marker.anchor,
+    consumeTapEvents: marker.consumeTapEvents,
+    draggable: marker.draggable,
+    flat: marker.flat,
+    icon: marker.icon,
+    infoWindow: marker.infoWindow,
+    position: marker.position,
+    rotation: marker.rotation,
+    visible: marker.visible,
+    zIndex: marker.zIndex,
+    onTap: marker.onTap,
+    onDragStart: marker.onDragStart,
+    onDrag: marker.onDrag,
+    onDragEnd: marker.onDragEnd,
+    clusterManagerId: clusterManagerId,
+  );
 }
 
 class _DebugTileProvider implements TileProvider {
