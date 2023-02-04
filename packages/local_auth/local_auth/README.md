@@ -244,7 +244,7 @@ Update your project's `AndroidManifest.xml` file to include the
 <manifest>
 ```
 
-### Compatibilitypopup
+### Compatibility
 
 On Android, you can check only for existence of fingerprint hardware prior
 to API 29 (Android Q). Therefore, if you would like to support other biometrics
