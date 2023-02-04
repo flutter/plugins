@@ -5,6 +5,8 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 set(PLUGIN_NAME "${PROJECT_NAME}_plugin")
 
 list(APPEND PLUGIN_SOURCES
+  "messages.g.cpp"
+  "messages.g.h"
   "system_apis.cpp"
   "system_apis.h"
   "url_launcher_plugin.cpp"

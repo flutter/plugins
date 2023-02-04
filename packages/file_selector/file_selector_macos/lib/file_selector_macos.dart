@@ -3,17 +3,12 @@
 // found in the LICENSE file.
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
-import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:flutter/services.dart';
 
-const MethodChannel _channel =
-    MethodChannel('plugins.flutter.io/file_selector_macos');
+import 'src/messages.g.dart';
 
 /// An implementation of [FileSelectorPlatform] for macOS.
 class FileSelectorMacOS extends FileSelectorPlatform {
-  /// The MethodChannel that is being used by this implementation of the plugin.
-  @visibleForTesting
-  MethodChannel get channel => _channel;
+  final FileSelectorApi _hostApi = FileSelectorApi();
 
   /// Registers the macOS implementation.
   static void registerWith() {
@@ -26,16 +21,17 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String>? path = await _channel.invokeListMethod<String>(
-      'openFile',
-      <String, dynamic>{
-        'acceptedTypes': _allowedTypeListFromTypeGroups(acceptedTypeGroups),
-        'initialDirectory': initialDirectory,
-        'confirmButtonText': confirmButtonText,
-        'multiple': false,
-      },
-    );
-    return path == null ? null : XFile(path.first);
+    final List<String?> paths =
+        await _hostApi.displayOpenPanel(OpenPanelOptions(
+            allowsMultipleSelection: false,
+            canChooseDirectories: false,
+            canChooseFiles: true,
+            baseOptions: SavePanelOptions(
+              allowedFileTypes: _allowedTypesFromTypeGroups(acceptedTypeGroups),
+              directoryPath: initialDirectory,
+              prompt: confirmButtonText,
+            )));
+    return paths.isEmpty ? null : XFile(paths.first!);
   }
 
   @override
@@ -44,16 +40,17 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String>? pathList = await _channel.invokeListMethod<String>(
-      'openFile',
-      <String, dynamic>{
-        'acceptedTypes': _allowedTypeListFromTypeGroups(acceptedTypeGroups),
-        'initialDirectory': initialDirectory,
-        'confirmButtonText': confirmButtonText,
-        'multiple': true,
-      },
-    );
-    return pathList?.map((String path) => XFile(path)).toList() ?? <XFile>[];
+    final List<String?> paths =
+        await _hostApi.displayOpenPanel(OpenPanelOptions(
+            allowsMultipleSelection: true,
+            canChooseDirectories: false,
+            canChooseFiles: true,
+            baseOptions: SavePanelOptions(
+              allowedFileTypes: _allowedTypesFromTypeGroups(acceptedTypeGroups),
+              directoryPath: initialDirectory,
+              prompt: confirmButtonText,
+            )));
+    return paths.map((String? path) => XFile(path!)).toList();
   }
 
   @override
@@ -63,15 +60,12 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     String? suggestedName,
     String? confirmButtonText,
   }) async {
-    return _channel.invokeMethod<String>(
-      'getSavePath',
-      <String, dynamic>{
-        'acceptedTypes': _allowedTypeListFromTypeGroups(acceptedTypeGroups),
-        'initialDirectory': initialDirectory,
-        'suggestedName': suggestedName,
-        'confirmButtonText': confirmButtonText,
-      },
-    );
+    return _hostApi.displaySavePanel(SavePanelOptions(
+      allowedFileTypes: _allowedTypesFromTypeGroups(acceptedTypeGroups),
+      directoryPath: initialDirectory,
+      nameFieldStringValue: suggestedName,
+      prompt: confirmButtonText,
+    ));
   }
 
   @override
@@ -79,30 +73,29 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    return _channel.invokeMethod<String>(
-      'getDirectoryPath',
-      <String, dynamic>{
-        'initialDirectory': initialDirectory,
-        'confirmButtonText': confirmButtonText,
-      },
-    );
+    final List<String?> paths =
+        await _hostApi.displayOpenPanel(OpenPanelOptions(
+            allowsMultipleSelection: false,
+            canChooseDirectories: true,
+            canChooseFiles: false,
+            baseOptions: SavePanelOptions(
+              directoryPath: initialDirectory,
+              prompt: confirmButtonText,
+            )));
+    return paths.isEmpty ? null : paths.first;
   }
 
   // Converts the type group list into a flat list of all allowed types, since
   // macOS doesn't support filter groups.
-  Map<String, List<String>>? _allowedTypeListFromTypeGroups(
-      List<XTypeGroup>? typeGroups) {
-    const String extensionKey = 'extensions';
-    const String mimeTypeKey = 'mimeTypes';
-    const String utiKey = 'UTIs';
+  AllowedTypes? _allowedTypesFromTypeGroups(List<XTypeGroup>? typeGroups) {
     if (typeGroups == null || typeGroups.isEmpty) {
       return null;
     }
-    final Map<String, List<String>> allowedTypes = <String, List<String>>{
-      extensionKey: <String>[],
-      mimeTypeKey: <String>[],
-      utiKey: <String>[],
-    };
+    final AllowedTypes allowedTypes = AllowedTypes(
+      extensions: <String>[],
+      mimeTypes: <String>[],
+      utis: <String>[],
+    );
     for (final XTypeGroup typeGroup in typeGroups) {
       // If any group allows everything, no filtering should be done.
       if (typeGroup.allowsAny) {
@@ -119,9 +112,9 @@ class FileSelectorMacOS extends FileSelectorPlatform {
             '"mimeTypes" must be non-empty for macOS if anything is '
             'non-empty.');
       }
-      allowedTypes[extensionKey]!.addAll(typeGroup.extensions ?? <String>[]);
-      allowedTypes[mimeTypeKey]!.addAll(typeGroup.mimeTypes ?? <String>[]);
-      allowedTypes[utiKey]!.addAll(typeGroup.macUTIs ?? <String>[]);
+      allowedTypes.extensions.addAll(typeGroup.extensions ?? <String>[]);
+      allowedTypes.mimeTypes.addAll(typeGroup.mimeTypes ?? <String>[]);
+      allowedTypes.utis.addAll(typeGroup.macUTIs ?? <String>[]);
     }
 
     return allowedTypes;

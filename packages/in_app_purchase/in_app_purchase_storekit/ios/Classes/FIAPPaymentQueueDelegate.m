@@ -1,1 +1,1 @@
-../../shared/Classes/FIAPPaymentQueueDelegate.m
+../../darwin/Classes/FIAPPaymentQueueDelegate.m

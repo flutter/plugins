@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
 ## 1.0.2
 
 * Migrates remaining components to Swift and removes all Objective-C settings.

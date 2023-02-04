@@ -184,7 +184,6 @@
  * Creates a mock picker result using NSItemProvider.
  *
  * @param itemProvider an item provider that will be used as picker result
- * @param identifier local identifier of the asset
  */
 - (PHPickerResult *)createPickerResultWithProvider:(NSItemProvider *)itemProvider
     API_AVAILABLE(ios(14)) {

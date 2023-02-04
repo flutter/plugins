@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 0.2.1
+
+* Adds auto registration of the `WebViewPlatform` implementation.
+
 ## 0.2.0
 
 * **BREAKING CHANGE** Updates platform implementation to `2.0.0` release of

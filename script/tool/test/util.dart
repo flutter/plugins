@@ -453,7 +453,7 @@ class ProcessCall {
   final String? workingDir;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return other is ProcessCall &&
         executable == other.executable &&
         listsEqual(args, other.args) &&

@@ -1,3 +1,12 @@
+## 5.4.4
+
+* Adds documentation for iOS auth with SERVER_CLIENT_ID
+* Updates minimum Flutter version to 3.0.
+
+## 5.4.3
+
+* Updates code for stricter lint checks.
+
 ## 5.4.2
 
 * Updates minimum Flutter version to 2.10.

@@ -6,8 +6,8 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(
   PigeonOptions(
-    dartOut: 'lib/src/common/web_kit.pigeon.dart',
-    dartTestOut: 'test/src/common/test_web_kit.pigeon.dart',
+    dartOut: 'lib/src/common/web_kit.g.dart',
+    dartTestOut: 'test/src/common/test_web_kit.g.dart',
     dartOptions: DartOptions(copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
       'Use of this source code is governed by a BSD-style license that can be',
