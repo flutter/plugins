@@ -244,7 +244,7 @@ Update your project's `AndroidManifest.xml` file to include the
 <manifest>
 ```
 
-### Compatibility
+### Compatibilitypopup
 
 On Android, you can check only for existence of fingerprint hardware prior
 to API 29 (Android Q). Therefore, if you would like to support other biometrics
@@ -254,12 +254,19 @@ This will return an error if there was no hardware available.
 
 #### Android theme
 
-On Android you need to update the `LaunchTheme` parent style with the `Theme.AppCompat.Light` theme to be compatible with **Android version 8 and below**; otherwise the app crashes for those versions. To do that go to `android > app > src > main > res > values > styles.xml` and look for the style with name `LaunchTheme` (Notice that `LaunchTheme` must be referenced in the `AndroidManifest.xml` file). Then, change the parent style with the new value and you should have set up something like this:
+You need to update the `LaunchTheme` parent style with a valid `Theme.AppCompat`
+theme to be compatible with **Android version 8 and below**, otherwise the app
+crashes for those versions. For example, use `Theme.AppCompat.DayNight` to
+enable light/dark modes for the biometric dialog. To do that go to
+`android/app/src/main/res/values/styles.xml` and look for the style with name
+`LaunchTheme` (Notice that `LaunchTheme` must be referenced in the
+`AndroidManifest.xml` file to apply the changes made in `styles.xml`).
+Then change the parent for that style as follows:
 
 ```xml
 ...
 <resources>
-  <style name="LaunchTheme" parent="Theme.AppCompat.Light">
+  <style name="LaunchTheme" parent="Theme.AppCompat.DayNight">
     ...
   </style>
   ...
@@ -267,7 +274,7 @@ On Android you need to update the `LaunchTheme` parent style with the `Theme.App
 ...
 ```
 
-In case you don't have a `styles.xml` file for your Android project you can set up the Android theme directly on your `android > app > src > main > AndroidManifest.xml` file:
+If you don't have a `styles.xml` file for your Android project you can set up the Android theme directly in `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 ...
@@ -275,7 +282,7 @@ In case you don't have a `styles.xml` file for your Android project you can set 
 		...
 		<activity
 			...
-			android:theme="@style/Theme.AppCompat.Light"
+			android:theme="@style/Theme.AppCompat.DayNight"
 			...	
 		>
 		</activity>
