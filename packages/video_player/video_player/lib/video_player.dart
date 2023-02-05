@@ -767,7 +767,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   @override
   Widget build(BuildContext context) {
     return _textureId == VideoPlayerController.kUninitializedTextureId
-        ? Container()
+        ? const Container()
         : _VideoPlayerWithRotation(
             rotation: widget.controller.value.rotationCorrection,
             child: _videoPlayerPlatform.buildView(_textureId),

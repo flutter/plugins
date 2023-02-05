@@ -1097,7 +1097,7 @@ Future<void> main() async {
 
       await pageLoaded.future;
 
-      await tester.pumpWidget(Container());
+      await tester.pumpWidget(const Container());
       await tester.pumpAndSettle();
 
       await tester.pumpWidget(Builder(

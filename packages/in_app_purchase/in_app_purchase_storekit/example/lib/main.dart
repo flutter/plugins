@@ -328,7 +328,7 @@ class _MyAppState extends State<_MyApp> {
 
   Widget _buildRestoreButton() {
     if (_loading) {
-      return Container();
+      return const Container();
     }
 
     return Padding(

@@ -102,7 +102,7 @@ Future<void> main() async {
       );
       await tester.pumpAndSettle();
 
-      await tester.pumpWidget(Container());
+      await tester.pumpWidget(const Container());
 
       // Force garbage collection.
       await IntegrationTestWidgetsFlutterBinding.instance

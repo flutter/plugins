@@ -398,7 +398,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   @override
   Widget build(BuildContext context) {
     return _textureId == MiniController.kUninitializedTextureId
-        ? Container()
+        ? const Container()
         : _platform.buildView(_textureId);
   }
 }

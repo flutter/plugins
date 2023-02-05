@@ -101,7 +101,7 @@ void main() {
         webStorage: mockWebStorage,
         onBuildWidget: (WebViewAndroidPlatformController controller) {
           testController = controller;
-          return Container();
+          return const Container();
         },
       ));
 

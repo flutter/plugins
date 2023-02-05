@@ -21,7 +21,7 @@ void main() {
     testWidgets('build', (WidgetTester tester) async {
       final MockPlatformWebViewWidget mockPlatformWebViewWidget =
           MockPlatformWebViewWidget();
-      when(mockPlatformWebViewWidget.build(any)).thenReturn(Container());
+      when(mockPlatformWebViewWidget.build(any)).thenReturn(const Container());
 
       await tester.pumpWidget(WebViewWidget.fromPlatform(
         platform: mockPlatformWebViewWidget,

@@ -1259,7 +1259,7 @@ class TestPlatformWebViewState extends State<TestPlatformWebView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return const Container();
   }
 }
 
@@ -1279,7 +1279,7 @@ class MyWebViewPlatform implements WebViewPlatform {
     lastPlatformBuilt = MyWebViewPlatformController(
         creationParams, gestureRecognizers, webViewPlatformCallbacksHandler);
     onWebViewPlatformCreated!(lastPlatformBuilt);
-    return Container();
+    return const Container();
   }
 
   @override

@@ -68,7 +68,7 @@ void main() {
     ));
 
     // Now dispose of the map...
-    await tester.pumpWidget(Container());
+    await tester.pumpWidget(const Container());
 
     expect(platform.disposed, true);
   });
@@ -289,6 +289,6 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
   }) {
     onPlatformViewCreated(0);
     createdIds.add(creationId);
-    return Container();
+    return const Container();
   }
 }

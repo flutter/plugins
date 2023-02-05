@@ -230,7 +230,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             if (localVideoController == null && imageFile == null)
-              Container()
+              const Container()
             else
               SizedBox(
                 width: 64.0,

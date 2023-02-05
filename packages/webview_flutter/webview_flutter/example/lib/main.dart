@@ -438,7 +438,7 @@ class SampleMenu extends StatelessWidget {
 
   Widget _getCookieList(String cookies) {
     if (cookies == null || cookies == '""') {
-      return Container();
+      return const Container();
     }
     final List<String> cookieList = cookies.split(';');
     final Iterable<Text> cookieWidgets =

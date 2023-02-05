@@ -29,7 +29,7 @@ void main() {
         builder: (BuildContext context, FollowLink? followLink2) {
           isBuilt = true;
           followLink = followLink2;
-          return Container();
+          return const Container();
         },
       );
       await tester.pumpWidget(link);
@@ -48,7 +48,7 @@ void main() {
         target: LinkTarget.blank,
         builder: (BuildContext context, FollowLink? followLink2) {
           followLink = followLink2;
-          return Container();
+          return const Container();
         },
       ));
 
@@ -77,7 +77,7 @@ void main() {
         target: LinkTarget.self,
         builder: (BuildContext context, FollowLink? followLink2) {
           followLink = followLink2;
-          return Container();
+          return const Container();
         },
       ));
 
@@ -108,10 +108,10 @@ void main() {
                 uri: uri,
                 builder: (BuildContext context, FollowLink? followLink2) {
                   followLink = followLink2;
-                  return Container();
+                  return const Container();
                 },
               ),
-          '/foo/bar': (BuildContext context) => Container(),
+          '/foo/bar': (BuildContext context) => const Container(),
         },
       ));
 

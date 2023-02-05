@@ -59,7 +59,7 @@ class _CameraAppState extends State<CameraApp> {
   @override
   Widget build(BuildContext context) {
     if (!controller.value.isInitialized) {
-      return Container();
+      return const Container();
     }
     return MaterialApp(
       home: CameraPreview(controller),

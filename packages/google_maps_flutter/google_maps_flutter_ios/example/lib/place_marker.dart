@@ -405,11 +405,11 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               if (markerPosition == null)
-                Container()
+                const Container()
               else
                 Expanded(child: Text('lat: ${markerPosition!.latitude}')),
               if (markerPosition == null)
-                Container()
+                const Container()
               else
                 Expanded(child: Text('lng: ${markerPosition!.longitude}')),
             ],

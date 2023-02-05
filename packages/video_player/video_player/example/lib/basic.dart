@@ -46,7 +46,7 @@ class _VideoAppState extends State<VideoApp> {
                   aspectRatio: _controller.value.aspectRatio,
                   child: VideoPlayer(_controller),
                 )
-              : Container(),
+              : const Container(),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {

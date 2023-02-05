@@ -123,7 +123,7 @@ void main() {
         configuration: mockWebViewConfiguration,
         onBuildWidget: (WebKitWebViewPlatformController controller) {
           testController = controller;
-          return Container();
+          return const Container();
         },
       ));
       await tester.pumpAndSettle();

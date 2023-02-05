@@ -78,8 +78,8 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.only(top: 20.0),
+          const Container(
+            padding: EdgeInsets.only(top: 20.0),
           ),
           const Text('With assets mp4'),
           Container(
@@ -134,7 +134,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          Container(padding: const EdgeInsets.only(top: 20.0)),
+          const Container(padding: EdgeInsets.only(top: 20.0)),
           const Text('With remote mp4'),
           Container(
             padding: const EdgeInsets.all(20),
@@ -182,9 +182,9 @@ class _ControlsOverlay extends StatelessWidget {
           reverseDuration: const Duration(milliseconds: 200),
           child: controller.value.isPlaying
               ? const SizedBox.shrink()
-              : Container(
+              : const Container(
                   color: Colors.black26,
-                  child: const Center(
+                  child: Center(
                     child: Icon(
                       Icons.play_arrow,
                       color: Colors.white,
