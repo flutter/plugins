@@ -1,3 +1,7 @@
+## 6.1.1
+
+* Migrates iOS plugin to Swift.
+
 ## 6.1.0
 
 * Updates minimum Flutter version to 3.3 and iOS 11.
