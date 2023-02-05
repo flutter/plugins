@@ -1,7 +1,6 @@
 package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.model.LatLng;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
