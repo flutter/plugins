@@ -10,7 +10,7 @@ import org.junit.Test;
 public class ConvertTest {
 
   @Test
-  public void toPointsConvertsThePointsWithFullPrecision() {
+  public void ConvertToPointsConvertsThePointsWithFullPrecision() {
     double latitude = 43.03725568057;
     double longitude = -87.90466904649;
     ArrayList<Double> point = new ArrayList<Double>();
