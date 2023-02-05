@@ -13,7 +13,7 @@ flutter:
     implements: url_launcher
     platforms:
       ios:
-        pluginClass: FLTURLLauncherPlugin
+        pluginClass: URLLauncherPlugin
         dartPluginClass: UrlLauncherIOS
 
 dependencies:
