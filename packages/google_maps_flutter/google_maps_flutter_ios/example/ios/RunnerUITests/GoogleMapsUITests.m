@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+@import CoreLocation;
 @import XCTest;
 @import os.log;
-@import GoogleMaps;
 
 @interface GoogleMapsUITests : XCTestCase
 @property(nonatomic, strong) XCUIApplication *app;
@@ -18,8 +18,6 @@
   self.app = [[XCUIApplication alloc] init];
   [self.app launch];
 
-  // The location permission interception is currently not working.
-  // See: https://github.com/flutter/flutter/issues/93325.
   [self
       addUIInterruptionMonitorWithDescription:@"Permission popups"
                                       handler:^BOOL(XCUIElement *_Nonnull interruptingElement) {
@@ -45,8 +43,7 @@
                                       }];
 }
 
-// Temporarily disabled due to https://github.com/flutter/flutter/issues/93325
-- (void)skip_testUserInterface {
+- (void)testUserInterface {
   XCUIApplication *app = self.app;
   XCUIElement *userInteface = app.staticTexts[@"User interface"];
   if (![userInteface waitForExistenceWithTimeout:30.0]) {
@@ -54,17 +51,27 @@
     XCTFail(@"Failed due to not able to find User interface");
   }
   [userInteface tap];
+
   XCUIElement *platformView = app.otherElements[@"platform_view[0]"];
   if (![platformView waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find platform view");
   }
+
+  // There is a known bug where the permission popups interruption won't get fired until a tap
+  // happened in the app. We expect a permission popup so we do a tap here.
+  // iOS 16 has a bug where if the app itself is directly tapped: [app tap], the first button
+  // (disable compass) in the app is also tapped, so instead we tap a arbitrary location in the app
+  // instead.
+  XCUICoordinate *coordinate = [app coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
+  [coordinate tap];
   XCUIElement *compass = app.buttons[@"disable compass"];
   if (![compass waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
-    XCTFail(@"Failed due to not able to find compass button");
+    XCTFail(@"Failed due to not able to find disable compass button");
   }
-  [compass tap];
+
+  [self forceTap:compass];
 }
 
 - (void)testMapCoordinatesPage {
@@ -188,6 +195,18 @@
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find 'longPressed''");
   }
+}
+
+- (void)forceTap:(XCUIElement *)button {
+  // iOS 16 introduced a bug where hittable is NO for buttons. We force hit the location of the
+  // button if that is the case. It is likely similar to
+  // https://github.com/flutter/flutter/issues/113377.
+  if (button.isHittable) {
+    [button tap];
+    return;
+  }
+  XCUICoordinate *coordinate = [button coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
+  [coordinate tap];
 }
 
 @end

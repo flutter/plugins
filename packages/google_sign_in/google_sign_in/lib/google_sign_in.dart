@@ -267,7 +267,8 @@ class GoogleSignIn {
   // Future that completes when we've finished calling `init` on the native side
   Future<void>? _initialization;
 
-  Future<GoogleSignInAccount?> _callMethod(Function method) async {
+  Future<GoogleSignInAccount?> _callMethod(
+      Future<dynamic> Function() method) async {
     await _ensureInitialized();
 
     final dynamic response = await method();
@@ -324,7 +325,7 @@ class GoogleSignIn {
   /// method call may be skipped, if there's already [_currentUser] information.
   /// This is used from the [signIn] and [signInSilently] methods.
   Future<GoogleSignInAccount?> _addMethodCall(
-    Function method, {
+    Future<dynamic> Function() method, {
     bool canSkipCall = false,
   }) async {
     Future<GoogleSignInAccount?> response;

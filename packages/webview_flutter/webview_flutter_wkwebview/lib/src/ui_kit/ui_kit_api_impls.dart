@@ -11,7 +11,7 @@ import 'package:flutter/painting.dart' show Color;
 import 'package:flutter/services.dart';
 
 import '../common/instance_manager.dart';
-import '../common/web_kit.pigeon.dart';
+import '../common/web_kit.g.dart';
 import '../foundation/foundation.dart';
 import '../web_kit/web_kit.dart';
 import 'ui_kit.dart';

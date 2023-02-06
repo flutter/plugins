@@ -169,3 +169,17 @@ TEST(FileSelectorPlugin, TestGetDirectory) {
   EXPECT_EQ(gtk_file_chooser_get_select_multiple(GTK_FILE_CHOOSER(dialog)),
             false);
 }
+
+TEST(FileSelectorPlugin, TestGetMultipleDirectories) {
+  g_autoptr(FlValue) args = fl_value_new_map();
+  fl_value_set_string_take(args, "multiple", fl_value_new_bool(true));
+
+  g_autoptr(GtkFileChooserNative) dialog =
+      create_dialog_for_method(nullptr, "getDirectoryPath", args);
+
+  ASSERT_NE(dialog, nullptr);
+  EXPECT_EQ(gtk_file_chooser_get_action(GTK_FILE_CHOOSER(dialog)),
+            GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+  EXPECT_EQ(gtk_file_chooser_get_select_multiple(GTK_FILE_CHOOSER(dialog)),
+            true);
+}

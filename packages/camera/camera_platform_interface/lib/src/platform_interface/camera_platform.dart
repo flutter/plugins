@@ -131,8 +131,19 @@ abstract class CameraPlatform extends PlatformInterface {
   /// meaning the recording will continue until manually stopped.
   /// With [maxVideoDuration] set the video is returned in a [VideoRecordedEvent]
   /// through the [onVideoRecordedEvent] stream when the set duration is reached.
+  ///
+  /// This method is deprecated in favour of [startVideoCapturing].
   Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
+  }
+
+  /// Starts a video recording and/or streaming session.
+  ///
+  /// Please see [VideoCaptureOptions] for documentation on the
+  /// configuration options.
+  Future<void> startVideoCapturing(VideoCaptureOptions options) {
+    return startVideoRecording(options.cameraId,
+        maxVideoDuration: options.maxDuration);
   }
 
   /// Stops the video recording and returns the file where it was saved.
@@ -256,6 +267,12 @@ abstract class CameraPlatform extends PlatformInterface {
   /// Resume the paused preview for the selected camera.
   Future<void> resumePreview(int cameraId) {
     throw UnimplementedError('pausePreview() is not implemented.');
+  }
+
+  /// Sets the active camera while recording.
+  Future<void> setDescriptionWhileRecording(CameraDescription description) {
+    throw UnimplementedError(
+        'setDescriptionWhileRecording() is not implemented.');
   }
 
   /// Returns a widget showing a live camera preview.

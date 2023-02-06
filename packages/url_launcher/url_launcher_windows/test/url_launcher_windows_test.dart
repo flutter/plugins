@@ -5,140 +5,101 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+import 'package:url_launcher_windows/src/messages.g.dart';
 import 'package:url_launcher_windows/url_launcher_windows.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  late _FakeUrlLauncherApi api;
+  late UrlLauncherWindows plugin;
 
-  group('$UrlLauncherWindows', () {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/url_launcher_windows');
-    final List<MethodCall> log = <MethodCall>[];
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      log.add(methodCall);
+  setUp(() {
+    api = _FakeUrlLauncherApi();
+    plugin = UrlLauncherWindows(api: api);
+  });
 
-      // Return null explicitly instead of relying on the implicit null
-      // returned by the method channel if no return statement is specified.
-      return null;
+  test('registers instance', () {
+    UrlLauncherWindows.registerWith();
+    expect(UrlLauncherPlatform.instance, isA<UrlLauncherWindows>());
+  });
+
+  group('canLaunch', () {
+    test('handles true', () async {
+      api.canLaunch = true;
+
+      final bool result = await plugin.canLaunch('http://example.com/');
+
+      expect(result, isTrue);
+      expect(api.argument, 'http://example.com/');
     });
 
-    test('registers instance', () {
-      UrlLauncherWindows.registerWith();
-      expect(UrlLauncherPlatform.instance, isA<UrlLauncherWindows>());
-    });
+    test('handles false', () async {
+      api.canLaunch = false;
 
-    tearDown(() {
-      log.clear();
-    });
+      final bool result = await plugin.canLaunch('http://example.com/');
 
-    test('canLaunch', () async {
-      final UrlLauncherWindows launcher = UrlLauncherWindows();
-      await launcher.canLaunch('http://example.com/');
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('canLaunch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-          })
-        ],
-      );
-    });
-
-    test('canLaunch should return false if platform returns null', () async {
-      final UrlLauncherWindows launcher = UrlLauncherWindows();
-      final bool canLaunch = await launcher.canLaunch('http://example.com/');
-
-      expect(canLaunch, false);
-    });
-
-    test('launch', () async {
-      final UrlLauncherWindows launcher = UrlLauncherWindows();
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
-        ],
-      );
-    });
-
-    test('launch with headers', () async {
-      final UrlLauncherWindows launcher = UrlLauncherWindows();
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{'key': 'value'},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{'key': 'value'},
-          })
-        ],
-      );
-    });
-
-    test('launch universal links only', () async {
-      final UrlLauncherWindows launcher = UrlLauncherWindows();
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: false,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: true,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': true,
-            'headers': <String, String>{},
-          })
-        ],
-      );
-    });
-
-    test('launch should return false if platform returns null', () async {
-      final UrlLauncherWindows launcher = UrlLauncherWindows();
-      final bool launched = await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-
-      expect(launched, false);
+      expect(result, isFalse);
+      expect(api.argument, 'http://example.com/');
     });
   });
+
+  group('launch', () {
+    test('handles success', () async {
+      api.canLaunch = true;
+
+      expect(
+          plugin.launch(
+            'http://example.com/',
+            useSafariVC: true,
+            useWebView: false,
+            enableJavaScript: false,
+            enableDomStorage: false,
+            universalLinksOnly: false,
+            headers: const <String, String>{},
+          ),
+          completes);
+      expect(api.argument, 'http://example.com/');
+    });
+
+    test('handles failure', () async {
+      api.canLaunch = false;
+
+      await expectLater(
+          plugin.launch(
+            'http://example.com/',
+            useSafariVC: true,
+            useWebView: false,
+            enableJavaScript: false,
+            enableDomStorage: false,
+            universalLinksOnly: false,
+            headers: const <String, String>{},
+          ),
+          throwsA(isA<PlatformException>()));
+      expect(api.argument, 'http://example.com/');
+    });
+  });
+}
+
+class _FakeUrlLauncherApi implements UrlLauncherApi {
+  /// The argument that was passed to an API call.
+  String? argument;
+
+  /// Controls the behavior of the fake implementations.
+  ///
+  /// - [canLaunchUrl] returns this value.
+  /// - [launchUrl] throws if this is false.
+  bool canLaunch = false;
+
+  @override
+  Future<bool> canLaunchUrl(String url) async {
+    argument = url;
+    return canLaunch;
+  }
+
+  @override
+  Future<void> launchUrl(String url) async {
+    argument = url;
+    if (!canLaunch) {
+      throw PlatformException(code: 'Failed');
+    }
+  }
 }

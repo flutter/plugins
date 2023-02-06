@@ -5,6 +5,7 @@
 package io.flutter.plugins.camerax;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +36,20 @@ public class InstanceManagerTest {
 
     assertNotNull(instanceManager.getInstance(identifier));
     assertEquals(object, instanceManager.getInstance(identifier));
+    assertTrue(instanceManager.containsInstance(object));
+
+    instanceManager.close();
+  }
+
+  @Test
+  public void addHostCreatedInstance_createsSameInstanceTwice() {
+    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
+
+    final Object object = new Object();
+    long firstIdentifier = instanceManager.addHostCreatedInstance(object);
+    long secondIdentifier = instanceManager.addHostCreatedInstance(object);
+
+    assertNotEquals(firstIdentifier, secondIdentifier);
     assertTrue(instanceManager.containsInstance(object));
 
     instanceManager.close();

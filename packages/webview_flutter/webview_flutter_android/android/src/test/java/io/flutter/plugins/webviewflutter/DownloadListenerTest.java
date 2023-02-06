@@ -6,11 +6,8 @@ package io.flutter.plugins.webviewflutter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
-import android.webkit.DownloadListener;
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerCreator;
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerImpl;
 import org.junit.After;
@@ -67,11 +64,5 @@ public class DownloadListenerTest {
             eq("mimetype"),
             eq(54L),
             any());
-
-    reset(mockFlutterApi);
-    downloadListener.release();
-    downloadListener.onDownloadStart("", "", "", "", 23);
-    verify(mockFlutterApi, never())
-        .onDownloadStart((DownloadListener) any(), any(), any(), any(), any(), eq(23), any());
   }
 }

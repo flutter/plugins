@@ -1,3 +1,28 @@
+## 0.8.6+7
+
+* Fixes issue where GIF file would not animate without `Photo Library Usage` permissions. Fixes issue where PNG and GIF files were converted to JPG, but only when they are do not have `Photo Library Usage` permissions.
+* Updates minimum Flutter version to 3.0.
+
+## 0.8.6+6
+
+* Updates code for stricter lint checks.
+
+## 0.8.6+5
+
+* Fixes crash when `imageQuality` is set.
+
+## 0.8.6+4
+
+* Fixes authorization status check for iOS14+ so it includes `PHAuthorizationStatusLimited`.
+
+## 0.8.6+3
+
+* Returns error on image load failure.
+
+## 0.8.6+2
+
+* Fixes issue where selectable images of certain types (such as ProRAW images) could not be loaded.
+
 ## 0.8.6+1
 
 * Fixes issue with crashing the app when picking images with PHPicker without providing `Photo Library Usage` permission.

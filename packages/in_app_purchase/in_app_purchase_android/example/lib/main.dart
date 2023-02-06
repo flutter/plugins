@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -154,6 +156,8 @@ class _MyAppState extends State<_MyApp> {
     }
     if (_purchasePending) {
       stack.add(
+        // TODO(goderbauer): Make this const when that's available on stable.
+        // ignore: prefer_const_constructors
         Stack(
           children: const <Widget>[
             Opacity(

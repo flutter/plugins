@@ -12,6 +12,7 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraSelectorHostApi;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
   private final BinaryMessenger binaryMessenger;
@@ -41,13 +42,15 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
 
   @Override
   public List<Long> filter(@NonNull Long identifier, @NonNull List<Long> cameraInfoIds) {
-    CameraSelector cameraSelector = (CameraSelector) instanceManager.getInstance(identifier);
+    CameraSelector cameraSelector =
+        (CameraSelector) Objects.requireNonNull(instanceManager.getInstance(identifier));
     List<CameraInfo> cameraInfosForFilter = new ArrayList<CameraInfo>();
 
     for (Number cameraInfoAsNumber : cameraInfoIds) {
       Long cameraInfoId = cameraInfoAsNumber.longValue();
 
-      CameraInfo cameraInfo = (CameraInfo) instanceManager.getInstance(cameraInfoId);
+      CameraInfo cameraInfo =
+          (CameraInfo) Objects.requireNonNull(instanceManager.getInstance(cameraInfoId));
       cameraInfosForFilter.add(cameraInfo);
     }
 
@@ -57,7 +60,9 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
     List<Long> filteredCameraInfosIds = new ArrayList<Long>();
 
     for (CameraInfo cameraInfo : filteredCameraInfos) {
-      cameraInfoFlutterApiImpl.create(cameraInfo, result -> {});
+      if (!instanceManager.containsInstance(cameraInfo)) {
+        cameraInfoFlutterApiImpl.create(cameraInfo, result -> {});
+      }
       Long filteredCameraInfoId = instanceManager.getIdentifierForStrongReference(cameraInfo);
       filteredCameraInfosIds.add(filteredCameraInfoId);
     }

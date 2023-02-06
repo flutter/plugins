@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:quiver/core.dart';
 
 /// The state of a [CameraController].
 class CameraValue {
@@ -306,11 +306,14 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
-  Future<void> startVideoRecording() async {
-    await CameraPlatform.instance.startVideoRecording(_cameraId);
+  Future<void> startVideoRecording(
+      {Function(CameraImageData image)? streamCallback}) async {
+    await CameraPlatform.instance.startVideoCapturing(
+        VideoCaptureOptions(_cameraId, streamCallback: streamCallback));
     value = value.copyWith(
         isRecordingVideo: true,
         isRecordingPaused: false,
+        isStreamingImages: streamCallback != null,
         recordingOrientation: Optional<DeviceOrientation>.of(
             value.lockedCaptureOrientation ?? value.deviceOrientation));
   }
@@ -319,6 +322,10 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if the capture failed.
   Future<XFile> stopVideoRecording() async {
+    if (value.isStreamingImages) {
+      await stopImageStream();
+    }
+
     final XFile file =
         await CameraPlatform.instance.stopVideoRecording(_cameraId);
     value = value.copyWith(
@@ -433,5 +440,114 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (!_isDisposed) {
       super.removeListener(listener);
     }
+  }
+}
+
+/// A value that might be absent.
+///
+/// Used to represent [DeviceOrientation]s that are optional but also able
+/// to be cleared.
+@immutable
+class Optional<T> extends IterableBase<T> {
+  /// Constructs an empty Optional.
+  const Optional.absent() : _value = null;
+
+  /// Constructs an Optional of the given [value].
+  ///
+  /// Throws [ArgumentError] if [value] is null.
+  Optional.of(T value) : _value = value {
+    // TODO(cbracken): Delete and make this ctor const once mixed-mode
+    // execution is no longer around.
+    ArgumentError.checkNotNull(value);
+  }
+
+  /// Constructs an Optional of the given [value].
+  ///
+  /// If [value] is null, returns [absent()].
+  const Optional.fromNullable(T? value) : _value = value;
+
+  final T? _value;
+
+  /// True when this optional contains a value.
+  bool get isPresent => _value != null;
+
+  /// True when this optional contains no value.
+  bool get isNotPresent => _value == null;
+
+  /// Gets the Optional value.
+  ///
+  /// Throws [StateError] if [value] is null.
+  T get value {
+    if (_value == null) {
+      throw StateError('value called on absent Optional.');
+    }
+    return _value!;
+  }
+
+  /// Executes a function if the Optional value is present.
+  void ifPresent(void Function(T value) ifPresent) {
+    if (isPresent) {
+      ifPresent(_value as T);
+    }
+  }
+
+  /// Execution a function if the Optional value is absent.
+  void ifAbsent(void Function() ifAbsent) {
+    if (!isPresent) {
+      ifAbsent();
+    }
+  }
+
+  /// Gets the Optional value with a default.
+  ///
+  /// The default is returned if the Optional is [absent()].
+  ///
+  /// Throws [ArgumentError] if [defaultValue] is null.
+  T or(T defaultValue) {
+    return _value ?? defaultValue;
+  }
+
+  /// Gets the Optional value, or `null` if there is none.
+  T? get orNull => _value;
+
+  /// Transforms the Optional value.
+  ///
+  /// If the Optional is [absent()], returns [absent()] without applying the transformer.
+  ///
+  /// The transformer must not return `null`. If it does, an [ArgumentError] is thrown.
+  Optional<S> transform<S>(S Function(T value) transformer) {
+    return _value == null
+        ? Optional<S>.absent()
+        : Optional<S>.of(transformer(_value as T));
+  }
+
+  /// Transforms the Optional value.
+  ///
+  /// If the Optional is [absent()], returns [absent()] without applying the transformer.
+  ///
+  /// Returns [absent()] if the transformer returns `null`.
+  Optional<S> transformNullable<S>(S? Function(T value) transformer) {
+    return _value == null
+        ? Optional<S>.absent()
+        : Optional<S>.fromNullable(transformer(_value as T));
+  }
+
+  @override
+  Iterator<T> get iterator =>
+      isPresent ? <T>[_value as T].iterator : Iterable<T>.empty().iterator;
+
+  /// Delegates to the underlying [value] hashCode.
+  @override
+  int get hashCode => _value.hashCode;
+
+  /// Delegates to the underlying [value] operator==.
+  @override
+  bool operator ==(Object o) => o is Optional<T> && o._value == _value;
+
+  @override
+  String toString() {
+    return _value == null
+        ? 'Optional { absent }'
+        : 'Optional { value: $_value }';
   }
 }
