@@ -1,12 +1,9 @@
-## 2.4.1
+## 2.3.11
 
+* Updates minimum Flutter version to 3.0.
 * Updates ExoPlayer to 2.18.2.
 * Bumps Gradle version to 7.3.0.
 * Updates compile SDK version to 33.
-
-## 2.4.0
-
-* Updates minimum Flutter version to 3.0.
 
 ## 2.3.10
 
