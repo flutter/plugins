@@ -75,7 +75,7 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
   if (state == AppLifecycleState.inactive) {
     cameraController.dispose();
   } else if (state == AppLifecycleState.resumed) {
-    _initializeCameraController(cameraController.description);
+    onNewCameraSelected(cameraController.description);
   }
 }
 ```

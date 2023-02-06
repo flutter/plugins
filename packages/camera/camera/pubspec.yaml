@@ -38,11 +38,3 @@ dev_dependencies:
   mockito: ^5.0.0
   plugin_platform_interface: ^2.0.0
   video_player: ^2.0.0
-
-
-# FOR TESTING ONLY. DO NOT MERGE.
-dependency_overrides:
-  camera_android:
-    path: ../../camera/camera_android
-  camera_avfoundation:
-    path: ../../camera/camera_avfoundation

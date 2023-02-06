@@ -265,49 +265,6 @@ void main() {
     return completer.future;
   }
 
-  testWidgets('Set description while recording', (WidgetTester tester) async {
-    final List<CameraDescription> cameras = await availableCameras();
-    if (cameras.length < 2) {
-      return;
-    }
-
-    final CameraController controller = CameraController(
-      cameras[0],
-      ResolutionPreset.low,
-      enableAudio: false,
-    );
-
-    await controller.initialize();
-    await controller.prepareForVideoRecording();
-
-    await controller.startVideoRecording();
-    sleep(const Duration(milliseconds: 500));
-    await controller.setDescription(cameras[1]);
-    sleep(const Duration(milliseconds: 500));
-
-    expect(controller.description, cameras[1]);
-  });
-
-  testWidgets('Set description', (WidgetTester tester) async {
-    final List<CameraDescription> cameras = await availableCameras();
-    if (cameras.length < 2) {
-      return;
-    }
-
-    final CameraController controller = CameraController(
-      cameras[0],
-      ResolutionPreset.low,
-      enableAudio: false,
-    );
-
-    await controller.initialize();
-    sleep(const Duration(milliseconds: 500));
-    await controller.setDescription(cameras[1]);
-    sleep(const Duration(milliseconds: 500));
-
-    expect(controller.description, cameras[1]);
-  });
-
   testWidgets(
     'iOS image streaming with imageFormatGroup',
     (WidgetTester tester) async {
