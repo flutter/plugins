@@ -130,7 +130,7 @@ class CreateAllPackagesAppCommand extends PackageCommand {
         // minSdkVersion 19 is required by WebView.
         newGradle.writeln('minSdkVersion 20');
       } else if (line.contains('compileSdkVersion')) {
-        // compileSdkVersion 33 is required by video_player.
+        // compileSdkVersion 33 is required by video_player and local_auth.
         newGradle.writeln('compileSdkVersion 33');
       } else {
         newGradle.writeln(line);

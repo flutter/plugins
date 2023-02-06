@@ -28,8 +28,7 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
       BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     this.binaryMessenger = binaryMessenger;
     this.instanceManager = instanceManager;
-    this.systemServicesFlutterApi =
-        new SystemServicesFlutterApiImpl(binaryMessenger, instanceManager);
+    this.systemServicesFlutterApi = new SystemServicesFlutterApiImpl(binaryMessenger);
   }
 
   public void setActivity(Activity activity) {
@@ -86,7 +85,7 @@ public class SystemServicesHostApiImpl implements SystemServicesHostApi {
             isFrontFacing,
             sensorOrientation.intValue(),
             (DeviceOrientation newOrientation) -> {
-              systemServicesFlutterApi.onDeviceOrientationChanged(
+              systemServicesFlutterApi.sendDeviceOrientationChangedEvent(
                   serializeDeviceOrientation(newOrientation), reply -> {});
             });
     deviceOrientationManager.start();

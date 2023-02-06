@@ -26,6 +26,16 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
+class ResolutionInfo {
+  ResolutionInfo({
+    required this.width,
+    required this.height,
+  });
+
+  int width;
+  int height;
+}
+
 class CameraPermissionsErrorData {
   CameraPermissionsErrorData({
     required this.errorCode,
@@ -107,4 +117,17 @@ abstract class SystemServicesHostApi {
 @FlutterApi()
 abstract class SystemServicesFlutterApi {
   void onDeviceOrientationChanged(String orientation);
+
+  void onCameraError(String errorDescription);
+}
+
+@HostApi(dartHostTestHandler: 'TestPreviewHostApi')
+abstract class PreviewHostApi {
+  void create(int identifier, int? rotation, ResolutionInfo? targetResolution);
+
+  int setSurfaceProvider(int identifier);
+
+  void releaseFlutterSurfaceTexture();
+
+  ResolutionInfo getResolutionInfo(int identifier);
 }
