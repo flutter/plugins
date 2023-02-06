@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:quiver/core.dart';
 
 import '../camera.dart';
 
@@ -459,12 +459,6 @@ class CameraController extends ValueNotifier<CameraValue> {
     assert(defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
     _throwIfNotInitialized('stopImageStream');
-    if (value.isRecordingVideo) {
-      throw CameraException(
-        'A video recording is already started.',
-        'stopImageStream was called while a video is being recorded.',
-      );
-    }
     if (!value.isStreamingImages) {
       throw CameraException(
         'No camera is streaming images',
@@ -483,9 +477,13 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Start a video recording.
   ///
+  /// You may optionally pass an [onAvailable] callback to also have the
+  /// video frames streamed to this callback.
+  ///
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
-  Future<void> startVideoRecording() async {
+  Future<void> startVideoRecording(
+      {onLatestImageAvailable? onAvailable}) async {
     _throwIfNotInitialized('startVideoRecording');
     if (value.isRecordingVideo) {
       throw CameraException(
@@ -493,20 +491,23 @@ class CameraController extends ValueNotifier<CameraValue> {
         'startVideoRecording was called when a recording is already started.',
       );
     }
-    if (value.isStreamingImages) {
-      throw CameraException(
-        'A camera has started streaming images.',
-        'startVideoRecording was called while a camera was streaming images.',
-      );
+
+    Function(CameraImageData image)? streamCallback;
+    if (onAvailable != null) {
+      streamCallback = (CameraImageData imageData) {
+        onAvailable(CameraImage.fromPlatformInterface(imageData));
+      };
     }
 
     try {
-      await CameraPlatform.instance.startVideoRecording(_cameraId);
+      await CameraPlatform.instance.startVideoCapturing(
+          VideoCaptureOptions(_cameraId, streamCallback: streamCallback));
       value = value.copyWith(
           isRecordingVideo: true,
           isRecordingPaused: false,
           recordingOrientation: Optional<DeviceOrientation>.of(
-              value.lockedCaptureOrientation ?? value.deviceOrientation));
+              value.lockedCaptureOrientation ?? value.deviceOrientation),
+          isStreamingImages: onAvailable != null);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -523,6 +524,11 @@ class CameraController extends ValueNotifier<CameraValue> {
         'stopVideoRecording was called when no video is recording.',
       );
     }
+
+    if (value.isStreamingImages) {
+      stopImageStream();
+    }
+
     try {
       final XFile file =
           await CameraPlatform.instance.stopVideoRecording(_cameraId);
@@ -838,5 +844,114 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (!_isDisposed) {
       super.removeListener(listener);
     }
+  }
+}
+
+/// A value that might be absent.
+///
+/// Used to represent [DeviceOrientation]s that are optional but also able
+/// to be cleared.
+@immutable
+class Optional<T> extends IterableBase<T> {
+  /// Constructs an empty Optional.
+  const Optional.absent() : _value = null;
+
+  /// Constructs an Optional of the given [value].
+  ///
+  /// Throws [ArgumentError] if [value] is null.
+  Optional.of(T value) : _value = value {
+    // TODO(cbracken): Delete and make this ctor const once mixed-mode
+    // execution is no longer around.
+    ArgumentError.checkNotNull(value);
+  }
+
+  /// Constructs an Optional of the given [value].
+  ///
+  /// If [value] is null, returns [absent()].
+  const Optional.fromNullable(T? value) : _value = value;
+
+  final T? _value;
+
+  /// True when this optional contains a value.
+  bool get isPresent => _value != null;
+
+  /// True when this optional contains no value.
+  bool get isNotPresent => _value == null;
+
+  /// Gets the Optional value.
+  ///
+  /// Throws [StateError] if [value] is null.
+  T get value {
+    if (_value == null) {
+      throw StateError('value called on absent Optional.');
+    }
+    return _value!;
+  }
+
+  /// Executes a function if the Optional value is present.
+  void ifPresent(void Function(T value) ifPresent) {
+    if (isPresent) {
+      ifPresent(_value as T);
+    }
+  }
+
+  /// Execution a function if the Optional value is absent.
+  void ifAbsent(void Function() ifAbsent) {
+    if (!isPresent) {
+      ifAbsent();
+    }
+  }
+
+  /// Gets the Optional value with a default.
+  ///
+  /// The default is returned if the Optional is [absent()].
+  ///
+  /// Throws [ArgumentError] if [defaultValue] is null.
+  T or(T defaultValue) {
+    return _value ?? defaultValue;
+  }
+
+  /// Gets the Optional value, or `null` if there is none.
+  T? get orNull => _value;
+
+  /// Transforms the Optional value.
+  ///
+  /// If the Optional is [absent()], returns [absent()] without applying the transformer.
+  ///
+  /// The transformer must not return `null`. If it does, an [ArgumentError] is thrown.
+  Optional<S> transform<S>(S Function(T value) transformer) {
+    return _value == null
+        ? Optional<S>.absent()
+        : Optional<S>.of(transformer(_value as T));
+  }
+
+  /// Transforms the Optional value.
+  ///
+  /// If the Optional is [absent()], returns [absent()] without applying the transformer.
+  ///
+  /// Returns [absent()] if the transformer returns `null`.
+  Optional<S> transformNullable<S>(S? Function(T value) transformer) {
+    return _value == null
+        ? Optional<S>.absent()
+        : Optional<S>.fromNullable(transformer(_value as T));
+  }
+
+  @override
+  Iterator<T> get iterator =>
+      isPresent ? <T>[_value as T].iterator : Iterable<T>.empty().iterator;
+
+  /// Delegates to the underlying [value] hashCode.
+  @override
+  int get hashCode => _value.hashCode;
+
+  /// Delegates to the underlying [value] operator==.
+  @override
+  bool operator ==(Object o) => o is Optional<T> && o._value == _value;
+
+  @override
+  String toString() {
+    return _value == null
+        ? 'Optional { absent }'
+        : 'Optional { value: $_value }';
   }
 }

@@ -10,11 +10,12 @@
 #include <sstream>
 #include <string>
 
+#include "messages.g.h"
 #include "system_apis.h"
 
-namespace url_launcher_plugin {
+namespace url_launcher_windows {
 
-class UrlLauncherPlugin : public flutter::Plugin {
+class UrlLauncherPlugin : public flutter::Plugin, public UrlLauncherApi {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrar* registrar);
 
@@ -31,18 +32,12 @@ class UrlLauncherPlugin : public flutter::Plugin {
   UrlLauncherPlugin(const UrlLauncherPlugin&) = delete;
   UrlLauncherPlugin& operator=(const UrlLauncherPlugin&) = delete;
 
-  // Called when a method is called on the plugin channel.
-  void HandleMethodCall(const flutter::MethodCall<>& method_call,
-                        std::unique_ptr<flutter::MethodResult<>> result);
+  // UrlLauncherApi:
+  ErrorOr<bool> CanLaunchUrl(const std::string& url) override;
+  std::optional<FlutterError> LaunchUrl(const std::string& url) override;
 
  private:
-  // Returns whether or not the given URL has a registered handler.
-  bool CanLaunchUrl(const std::string& url);
-
-  // Attempts to launch the given URL. On failure, returns an error string.
-  std::optional<std::string> LaunchUrl(const std::string& url);
-
   std::unique_ptr<SystemApis> system_apis_;
 };
 
-}  // namespace url_launcher_plugin
+}  // namespace url_launcher_windows

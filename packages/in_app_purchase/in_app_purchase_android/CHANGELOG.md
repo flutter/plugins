@@ -1,3 +1,21 @@
+## 0.2.4+1
+
+* Updates Google Play Billing Library to 5.1.0.
+* Updates androidx.annotation to 1.5.0.
+
+## 0.2.4
+
+* Updates minimum Flutter version to 3.0.
+* Ignores a lint in the example app for backwards compatibility.
+
+## 0.2.3+9
+
+* Updates `androidx.test.espresso:espresso-core` to 3.5.1.
+
+## 0.2.3+8
+
+* Updates code for stricter lint checks.
+
 ## 0.2.3+7
 
 * Updates code for new analysis options.

@@ -9,6 +9,11 @@
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+/// Returns either the saved path, or an error. Both cannot be set.
+typedef void (^FLTGetSavedPath)(NSString *_Nullable savedPath, FlutterError *_Nullable error);
+
 /*!
  @class FLTPHPickerSaveImageToPathOperation
 
@@ -27,6 +32,8 @@
                       maxWidth:(NSNumber *)maxWidth
            desiredImageQuality:(NSNumber *)desiredImageQuality
                   fullMetadata:(BOOL)fullMetadata
-                savedPathBlock:(void (^)(NSString *))savedPathBlock API_AVAILABLE(ios(14));
+                savedPathBlock:(FLTGetSavedPath)savedPathBlock API_AVAILABLE(ios(14));
 
 @end
+
+NS_ASSUME_NONNULL_END

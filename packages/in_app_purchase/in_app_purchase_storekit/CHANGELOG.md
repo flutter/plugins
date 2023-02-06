@@ -1,6 +1,27 @@
+## 0.3.5+2
+
+* Fix a crash when `appStoreReceiptURL` is nil.
+
+## 0.3.5+1
+
+* Uses the new `sharedDarwinSource` flag when available.
+
+## 0.3.5
+
+* Updates minimum Flutter version to 3.0.
+* Ignores a lint in the example app for backwards compatibility.
+
+## 0.3.4+1
+
+* Updates code for stricter lint checks.
+
+## 0.3.4
+
+* Adds macOS as a supported platform.
+
 ## 0.3.3
 
-* Supports adding discount information to AppStorePurchaseParam. 
+* Supports adding discount information to AppStorePurchaseParam.
 * Fixes iOS Promotional Offers bug which prevents them from working.
 
 ## 0.3.2+2

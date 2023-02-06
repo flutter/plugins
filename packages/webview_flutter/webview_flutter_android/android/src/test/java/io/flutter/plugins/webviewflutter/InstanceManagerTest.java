@@ -5,6 +5,7 @@
 package io.flutter.plugins.webviewflutter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -58,5 +59,53 @@ public class InstanceManagerTest {
     assertNull(instanceManager.getInstance(0));
 
     instanceManager.close();
+  }
+
+  @Test
+  public void removeReturnsNullWhenClosed() {
+    final Object object = new Object();
+    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager.addDartCreatedInstance(object, 0);
+    instanceManager.close();
+
+    assertNull(instanceManager.remove(0));
+  }
+
+  @Test
+  public void getIdentifierForStrongReferenceReturnsNullWhenClosed() {
+    final Object object = new Object();
+    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager.addDartCreatedInstance(object, 0);
+    instanceManager.close();
+
+    assertNull(instanceManager.getIdentifierForStrongReference(object));
+  }
+
+  @Test
+  public void addHostCreatedInstanceReturnsNegativeOneWhenClosed() {
+    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager.close();
+
+    assertEquals(instanceManager.addHostCreatedInstance(new Object()), -1L);
+  }
+
+  @Test
+  public void getInstanceReturnsNullWhenClosed() {
+    final Object object = new Object();
+    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager.addDartCreatedInstance(object, 0);
+    instanceManager.close();
+
+    assertNull(instanceManager.getInstance(0));
+  }
+
+  @Test
+  public void containsInstanceReturnsFalseWhenClosed() {
+    final Object object = new Object();
+    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
+    instanceManager.addDartCreatedInstance(object, 0);
+    instanceManager.close();
+
+    assertFalse(instanceManager.containsInstance(object));
   }
 }

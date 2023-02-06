@@ -484,11 +484,13 @@ void main() {
         ]);
         expect(cameras.length, returnData.length);
         for (int i = 0; i < returnData.length; i++) {
+          final Map<String, Object?> typedData =
+              (returnData[i] as Map<dynamic, dynamic>).cast<String, Object?>();
           final CameraDescription cameraDescription = CameraDescription(
-            name: returnData[i]['name']! as String,
-            lensDirection: parseCameraLensDirection(
-                returnData[i]['lensFacing']! as String),
-            sensorOrientation: returnData[i]['sensorOrientation']! as int,
+            name: typedData['name']! as String,
+            lensDirection:
+                parseCameraLensDirection(typedData['lensFacing']! as String),
+            sensorOrientation: typedData['sensorOrientation']! as int,
           );
           expect(cameras[i], cameraDescription);
         }
@@ -569,7 +571,31 @@ void main() {
           isMethodCall('startVideoRecording', arguments: <String, Object?>{
             'cameraId': cameraId,
             'maxVideoDuration': null,
+            'enableStream': false,
           }),
+        ]);
+      });
+
+      test('Should set description while recording', () async {
+        // Arrange
+        final MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: <String, dynamic>{'setDescriptionWhileRecording': null},
+        );
+
+        // Act
+        const CameraDescription cameraDescription = CameraDescription(
+            name: 'Test',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 0);
+        await camera.setDescriptionWhileRecording(cameraDescription);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('setDescriptionWhileRecording',
+              arguments: <String, Object?>{
+                'cameraName': cameraDescription.name
+              }),
         ]);
       });
 
@@ -591,7 +617,8 @@ void main() {
         expect(channel.log, <Matcher>[
           isMethodCall('startVideoRecording', arguments: <String, Object?>{
             'cameraId': cameraId,
-            'maxVideoDuration': 10000
+            'maxVideoDuration': 10000,
+            'enableStream': false,
           }),
         ]);
       });

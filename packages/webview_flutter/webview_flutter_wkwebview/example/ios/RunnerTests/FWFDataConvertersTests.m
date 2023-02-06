@@ -59,6 +59,8 @@
 - (void)testFWFWKNavigationActionDataFromNavigationAction {
   WKNavigationAction *mockNavigationAction = OCMClassMock([WKNavigationAction class]);
 
+  OCMStub([mockNavigationAction navigationType]).andReturn(WKNavigationTypeReload);
+
   NSURLRequest *request =
       [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.flutter.dev/"]];
   OCMStub([mockNavigationAction request]).andReturn(request);
@@ -70,6 +72,7 @@
   FWFWKNavigationActionData *data =
       FWFWKNavigationActionDataFromNavigationAction(mockNavigationAction);
   XCTAssertNotNil(data);
+  XCTAssertEqual(data.navigationType, FWFWKNavigationTypeReload);
 }
 
 - (void)testFWFNSUrlRequestDataFromNSURLRequest {

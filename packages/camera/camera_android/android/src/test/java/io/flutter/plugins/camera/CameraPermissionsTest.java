@@ -72,4 +72,18 @@ public class CameraPermissionsTest {
     verify(fakeResultCallback, never())
         .onResult("AudioAccessDenied", "Audio access permission was denied.");
   }
+
+  @Test
+  public void callback_respondsWithCameraAccessDeniedWhenEmptyResult() {
+    // Handles the case where the grantResults array is empty
+
+    ResultCallback fakeResultCallback = mock(ResultCallback.class);
+    CameraRequestPermissionsListener permissionsListener =
+        new CameraRequestPermissionsListener(fakeResultCallback);
+
+    permissionsListener.onRequestPermissionsResult(9796, null, new int[] {});
+
+    verify(fakeResultCallback)
+        .onResult("CameraAccessDenied", "Camera access permission was denied.");
+  }
 }

@@ -6,8 +6,8 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(
   PigeonOptions(
-    dartOut: 'lib/src/common/web_kit.pigeon.dart',
-    dartTestOut: 'test/src/common/test_web_kit.pigeon.dart',
+    dartOut: 'lib/src/common/web_kit.g.dart',
+    dartTestOut: 'test/src/common/test_web_kit.g.dart',
     dartOptions: DartOptions(copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
       'Use of this source code is governed by a BSD-style license that can be',
@@ -166,6 +166,42 @@ class NSHttpCookiePropertyKeyEnumData {
   late NSHttpCookiePropertyKeyEnum value;
 }
 
+/// An object that contains information about an action that causes navigation
+/// to occur.
+///
+/// Wraps [WKNavigationType](https://developer.apple.com/documentation/webkit/wknavigationaction?language=objc).
+enum WKNavigationType {
+  /// A link activation.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wknavigationtype/wknavigationtypelinkactivated?language=objc.
+  linkActivated,
+
+  /// A request to submit a form.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wknavigationtype/wknavigationtypeformsubmitted?language=objc.
+  submitted,
+
+  /// A request for the frame’s next or previous item.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wknavigationtype/wknavigationtypebackforward?language=objc.
+  backForward,
+
+  /// A request to reload the webpage.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wknavigationtype/wknavigationtypereload?language=objc.
+  reload,
+
+  /// A request to resubmit a form.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wknavigationtype/wknavigationtypeformresubmitted?language=objc.
+  formResubmitted,
+
+  /// A navigation request that originates for some other reason.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wknavigationtype/wknavigationtypeother?language=objc.
+  other,
+}
+
 /// Mirror of NSURLRequest.
 ///
 /// See https://developer.apple.com/documentation/foundation/nsurlrequest?language=objc.
@@ -191,6 +227,7 @@ class WKUserScriptData {
 class WKNavigationActionData {
   late NSUrlRequestData request;
   late WKFrameInfoData targetFrame;
+  late WKNavigationType navigationType;
 }
 
 /// Mirror of WKFrameInfo.

@@ -68,6 +68,8 @@ void main() {
         'packages/a_plugin/example/android/src/androidTest/foo/bar/FooTest.java',
         'packages/a_plugin/example/ios/RunnerTests/Foo.m',
         'packages/a_plugin/example/ios/RunnerUITests/info.plist',
+        // Pigeon input.
+        'packages/a_plugin/pigeons/messages.dart',
         // Test scripts.
         'packages/a_plugin/run_tests.sh',
         // Tools.
@@ -80,6 +82,9 @@ void main() {
         'packages/a_plugin/example/macos/Runner.xcodeproj/project.pbxproj',
         'packages/a_plugin/example/windows/CMakeLists.txt',
         'packages/a_plugin/example/pubspec.yaml',
+        // Pigeon platform tests, which have an unusual structure.
+        'packages/a_plugin/platform_tests/shared_test_plugin_code/lib/integration_tests.dart',
+        'packages/a_plugin/platform_tests/test_plugin/windows/test_plugin.cpp',
       ];
 
       final PackageChangeState state = await checkPackageChangeState(package,

@@ -10,6 +10,8 @@ import '../foundation/foundation.dart';
 import '../ui_kit/ui_kit.dart';
 import 'web_kit_api_impls.dart';
 
+export 'web_kit_api_impls.dart' show WKNavigationType;
+
 /// Times at which to inject script content into a webpage.
 ///
 /// Wraps [WKUserScriptInjectionTime](https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime?language=objc).
@@ -144,13 +146,20 @@ class WKWebsiteDataRecord {
 @immutable
 class WKNavigationAction {
   /// Constructs a [WKNavigationAction].
-  const WKNavigationAction({required this.request, required this.targetFrame});
+  const WKNavigationAction({
+    required this.request,
+    required this.targetFrame,
+    required this.navigationType,
+  });
 
   /// The URL request object associated with the navigation action.
   final NSUrlRequest request;
 
   /// The frame in which to display the new content.
   final WKFrameInfo targetFrame;
+
+  /// The type of action that triggered the navigation.
+  final WKNavigationType navigationType;
 }
 
 /// An object that contains information about a frame on a webpage.

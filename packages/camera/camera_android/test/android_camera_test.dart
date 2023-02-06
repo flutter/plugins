@@ -32,14 +32,15 @@ void main() {
     // registerWith is called very early in initialization the bindings won't
     // have been initialized. While registerWith could intialize them, that
     // could slow down startup, so instead the handler should be set up lazily.
-    final ByteData? response = await TestDefaultBinaryMessengerBinding
-        .instance!.defaultBinaryMessenger
-        .handlePlatformMessage(
-            AndroidCamera.deviceEventChannelName,
-            const StandardMethodCodec().encodeMethodCall(const MethodCall(
-                'orientation_changed',
-                <String, Object>{'orientation': 'portraitDown'})),
-            (ByteData? data) {});
+    final ByteData? response =
+        await _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+            .defaultBinaryMessenger
+            .handlePlatformMessage(
+                AndroidCamera.deviceEventChannelName,
+                const StandardMethodCodec().encodeMethodCall(const MethodCall(
+                    'orientation_changed',
+                    <String, Object>{'orientation': 'portraitDown'})),
+                (ByteData? data) {});
     expect(response, null);
   });
 
@@ -421,7 +422,8 @@ void main() {
       const DeviceOrientationChangedEvent event =
           DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
       for (int i = 0; i < 3; i++) {
-        await TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+        await _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+            .defaultBinaryMessenger
             .handlePlatformMessage(
                 AndroidCamera.deviceEventChannelName,
                 const StandardMethodCodec().encodeMethodCall(
@@ -504,11 +506,13 @@ void main() {
       ]);
       expect(cameras.length, returnData.length);
       for (int i = 0; i < returnData.length; i++) {
+        final Map<String, Object?> typedData =
+            (returnData[i] as Map<dynamic, dynamic>).cast<String, Object?>();
         final CameraDescription cameraDescription = CameraDescription(
-          name: returnData[i]['name']! as String,
+          name: typedData['name']! as String,
           lensDirection:
-              parseCameraLensDirection(returnData[i]['lensFacing']! as String),
-          sensorOrientation: returnData[i]['sensorOrientation']! as int,
+              parseCameraLensDirection(typedData['lensFacing']! as String),
+          sensorOrientation: typedData['sensorOrientation']! as int,
         );
         expect(cameras[i], cameraDescription);
       }
@@ -587,6 +591,7 @@ void main() {
         isMethodCall('startVideoRecording', arguments: <String, Object?>{
           'cameraId': cameraId,
           'maxVideoDuration': null,
+          'enableStream': false,
         }),
       ]);
     });
@@ -609,7 +614,33 @@ void main() {
       expect(channel.log, <Matcher>[
         isMethodCall('startVideoRecording', arguments: <String, Object?>{
           'cameraId': cameraId,
-          'maxVideoDuration': 10000
+          'maxVideoDuration': 10000,
+          'enableStream': false,
+        }),
+      ]);
+    });
+
+    test(
+        'Should pass enableStream if callback is passed when starting recording a video',
+        () async {
+      // Arrange
+      final MethodChannelMock channel = MethodChannelMock(
+        channelName: _channelName,
+        methods: <String, dynamic>{'startVideoRecording': null},
+      );
+
+      // Act
+      await camera.startVideoCapturing(
+        VideoCaptureOptions(cameraId,
+            streamCallback: (CameraImageData imageData) {}),
+      );
+
+      // Assert
+      expect(channel.log, <Matcher>[
+        isMethodCall('startVideoRecording', arguments: <String, Object?>{
+          'cameraId': cameraId,
+          'maxVideoDuration': null,
+          'enableStream': true,
         }),
       ]);
     });
@@ -1092,3 +1123,9 @@ void main() {
     });
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

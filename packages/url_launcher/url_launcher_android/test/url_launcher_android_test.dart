@@ -61,7 +61,8 @@ void main() {
       const String genericUrl = 'http://flutter.dev';
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
-        return methodCall.arguments['url'] != specificUrl;
+        return (methodCall.arguments as Map<Object?, Object?>)['url'] !=
+            specificUrl;
       });
 
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
@@ -69,7 +70,7 @@ void main() {
 
       expect(canLaunch, true);
       expect(log.length, 2);
-      expect(log[1].arguments['url'], genericUrl);
+      expect((log[1].arguments as Map<Object?, Object?>)['url'], genericUrl);
     });
 
     test('checks a generic URL if an https URL returns false', () async {
@@ -77,7 +78,8 @@ void main() {
       const String genericUrl = 'https://flutter.dev';
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
-        return methodCall.arguments['url'] != specificUrl;
+        return (methodCall.arguments as Map<Object?, Object?>)['url'] !=
+            specificUrl;
       });
 
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
@@ -85,7 +87,7 @@ void main() {
 
       expect(canLaunch, true);
       expect(log.length, 2);
-      expect(log[1].arguments['url'], genericUrl);
+      expect((log[1].arguments as Map<Object?, Object?>)['url'], genericUrl);
     });
 
     test('does not a generic URL if a non-web URL returns false', () async {

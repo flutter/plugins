@@ -169,14 +169,15 @@ class FakeStoreKitPlatform {
         receiptData = 'refreshed receipt data';
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin addPayment:result:]':
-        final String id = call.arguments['productIdentifier'] as String;
-        final int quantity = call.arguments['quantity'] as int;
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
+        final String id = arguments['productIdentifier']! as String;
+        final int quantity = arguments['quantity']! as int;
 
         // Keep the received paymentDiscount parameter when testing payment with discount.
-        if (call.arguments['applicationUsername'] == 'userWithDiscount') {
-          if (call.arguments['paymentDiscount'] != null) {
-            final Map<dynamic, dynamic> discountArgument =
-                call.arguments['paymentDiscount'] as Map<dynamic, dynamic>;
+        if (arguments['applicationUsername']! == 'userWithDiscount') {
+          final Map<dynamic, dynamic>? discountArgument =
+              arguments['paymentDiscount'] as Map<dynamic, dynamic>?;
+          if (discountArgument != null) {
             discountReceived = discountArgument.cast<String, dynamic>();
           } else {
             discountReceived = <String, dynamic>{};
@@ -210,9 +211,10 @@ class FakeStoreKitPlatform {
         }
         break;
       case '-[InAppPurchasePlugin finishTransaction:result:]':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
         finishedTransactions.add(createPurchasedTransaction(
-            call.arguments['productIdentifier'] as String,
-            call.arguments['transactionIdentifier'] as String,
+            arguments['productIdentifier']! as String,
+            arguments['transactionIdentifier']! as String,
             quantity: transactions.first.payment.quantity));
         break;
       case '-[SKPaymentQueue startObservingTransactionQueue]':
@@ -223,5 +225,13 @@ class FakeStoreKitPlatform {
         break;
     }
     return Future<void>.sync(() {});
+  }
+
+  /// Returns the arguments of [call] as typed string-keyed Map.
+  ///
+  /// This does not do any type validation, so is only safe to call if the
+  /// arguments are known to be a map.
+  Map<String, Object?> _getArgumentDictionary(MethodCall call) {
+    return (call.arguments as Map<Object?, Object?>).cast<String, Object?>();
   }
 }
