@@ -23,7 +23,7 @@ flutter:
 dependencies:
   camera_android: ^0.10.1
   camera_avfoundation: ^0.9.9
-  camera_platform_interface: ^2.3.2
+  camera_platform_interface: ^2.4.0
   camera_web: ^0.3.1
   flutter:
     sdk: flutter
@@ -38,13 +38,3 @@ dev_dependencies:
   mockito: ^5.0.0
   plugin_platform_interface: ^2.0.0
   video_player: ^2.0.0
-
-
-# FOR TESTING ONLY. DO NOT MERGE.
-dependency_overrides:
-  camera_android:
-    path: ../../camera/camera_android
-  camera_avfoundation:
-    path: ../../camera/camera_avfoundation
-  camera_platform_interface:
-    path: ../../camera/camera_platform_interface
