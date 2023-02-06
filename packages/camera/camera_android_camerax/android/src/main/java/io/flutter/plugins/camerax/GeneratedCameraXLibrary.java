@@ -26,6 +26,82 @@ import java.util.Map;
 public class GeneratedCameraXLibrary {
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static class ResolutionInfo {
+    private @NonNull Long width;
+
+    public @NonNull Long getWidth() {
+      return width;
+    }
+
+    public void setWidth(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"width\" is null.");
+      }
+      this.width = setterArg;
+    }
+
+    private @NonNull Long height;
+
+    public @NonNull Long getHeight() {
+      return height;
+    }
+
+    public void setHeight(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"height\" is null.");
+      }
+      this.height = setterArg;
+    }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private ResolutionInfo() {}
+
+    public static final class Builder {
+      private @Nullable Long width;
+
+      public @NonNull Builder setWidth(@NonNull Long setterArg) {
+        this.width = setterArg;
+        return this;
+      }
+
+      private @Nullable Long height;
+
+      public @NonNull Builder setHeight(@NonNull Long setterArg) {
+        this.height = setterArg;
+        return this;
+      }
+
+      public @NonNull ResolutionInfo build() {
+        ResolutionInfo pigeonReturn = new ResolutionInfo();
+        pigeonReturn.setWidth(width);
+        pigeonReturn.setHeight(height);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("width", width);
+      toMapResult.put("height", height);
+      return toMapResult;
+    }
+
+    static @NonNull ResolutionInfo fromMap(@NonNull Map<String, Object> map) {
+      ResolutionInfo pigeonResult = new ResolutionInfo();
+      Object width = map.get("width");
+      pigeonResult.setWidth(
+          (width == null) ? null : ((width instanceof Integer) ? (Integer) width : (Long) width));
+      Object height = map.get("height");
+      pigeonResult.setHeight(
+          (height == null)
+              ? null
+              : ((height instanceof Integer) ? (Integer) height : (Long) height));
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static class CameraPermissionsErrorData {
     private @NonNull String errorCode;
 
@@ -842,6 +918,185 @@ public class GeneratedCameraXLibrary {
           channelReply -> {
             callback.reply(null);
           });
+    }
+
+    public void onCameraError(@NonNull String errorDescriptionArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger,
+              "dev.flutter.pigeon.SystemServicesFlutterApi.onCameraError",
+              getCodec());
+      channel.send(
+          new ArrayList<Object>(Arrays.asList(errorDescriptionArg)),
+          channelReply -> {
+            callback.reply(null);
+          });
+    }
+  }
+
+  private static class PreviewHostApiCodec extends StandardMessageCodec {
+    public static final PreviewHostApiCodec INSTANCE = new PreviewHostApiCodec();
+
+    private PreviewHostApiCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return ResolutionInfo.fromMap((Map<String, Object>) readValue(buffer));
+
+        case (byte) 129:
+          return ResolutionInfo.fromMap((Map<String, Object>) readValue(buffer));
+
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(ByteArrayOutputStream stream, Object value) {
+      if (value instanceof ResolutionInfo) {
+        stream.write(128);
+        writeValue(stream, ((ResolutionInfo) value).toMap());
+      } else if (value instanceof ResolutionInfo) {
+        stream.write(129);
+        writeValue(stream, ((ResolutionInfo) value).toMap());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface PreviewHostApi {
+    void create(
+        @NonNull Long identifier,
+        @Nullable Long rotation,
+        @Nullable ResolutionInfo targetResolution);
+
+    @NonNull
+    Long setSurfaceProvider(@NonNull Long identifier);
+
+    void releaseFlutterSurfaceTexture();
+
+    @NonNull
+    ResolutionInfo getResolutionInfo(@NonNull Long identifier);
+
+    /** The codec used by PreviewHostApi. */
+    static MessageCodec<Object> getCodec() {
+      return PreviewHostApiCodec.INSTANCE;
+    }
+
+    /** Sets up an instance of `PreviewHostApi` to handle messages through the `binaryMessenger`. */
+    static void setup(BinaryMessenger binaryMessenger, PreviewHostApi api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PreviewHostApi.create", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
+                  }
+                  Number rotationArg = (Number) args.get(1);
+                  ResolutionInfo targetResolutionArg = (ResolutionInfo) args.get(2);
+                  api.create(
+                      (identifierArg == null) ? null : identifierArg.longValue(),
+                      (rotationArg == null) ? null : rotationArg.longValue(),
+                      targetResolutionArg);
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.PreviewHostApi.setSurfaceProvider",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
+                  }
+                  Long output =
+                      api.setSurfaceProvider(
+                          (identifierArg == null) ? null : identifierArg.longValue());
+                  wrapped.put("result", output);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.PreviewHostApi.releaseFlutterSurfaceTexture",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  api.releaseFlutterSurfaceTexture();
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PreviewHostApi.getResolutionInfo", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number identifierArg = (Number) args.get(0);
+                  if (identifierArg == null) {
+                    throw new NullPointerException("identifierArg unexpectedly null.");
+                  }
+                  ResolutionInfo output =
+                      api.getResolutionInfo(
+                          (identifierArg == null) ? null : identifierArg.longValue());
+                  wrapped.put("result", output);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
     }
   }
 

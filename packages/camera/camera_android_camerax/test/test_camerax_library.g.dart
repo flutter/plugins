@@ -356,3 +356,120 @@ abstract class TestSystemServicesHostApi {
     }
   }
 }
+
+class _TestPreviewHostApiCodec extends StandardMessageCodec {
+  const _TestPreviewHostApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is ResolutionInfo) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else if (value is ResolutionInfo) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return ResolutionInfo.decode(readValue(buffer)!);
+
+      case 129:
+        return ResolutionInfo.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+abstract class TestPreviewHostApi {
+  static const MessageCodec<Object?> codec = _TestPreviewHostApiCodec();
+
+  void create(int identifier, int? rotation, ResolutionInfo? targetResolution);
+  int setSurfaceProvider(int identifier);
+  void releaseFlutterSurfaceTexture();
+  ResolutionInfo getResolutionInfo(int identifier);
+  static void setup(TestPreviewHostApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewHostApi.create', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.create was null, expected non-null int.');
+          final int? arg_rotation = (args[1] as int?);
+          final ResolutionInfo? arg_targetResolution =
+              (args[2] as ResolutionInfo?);
+          api.create(arg_identifier!, arg_rotation, arg_targetResolution);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewHostApi.setSurfaceProvider', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.setSurfaceProvider was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.setSurfaceProvider was null, expected non-null int.');
+          final int output = api.setSurfaceProvider(arg_identifier!);
+          return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewHostApi.releaseFlutterSurfaceTexture',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          // ignore message
+          api.releaseFlutterSurfaceTexture();
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewHostApi.getResolutionInfo', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.getResolutionInfo was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.getResolutionInfo was null, expected non-null int.');
+          final ResolutionInfo output = api.getResolutionInfo(arg_identifier!);
+          return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+  }
+}

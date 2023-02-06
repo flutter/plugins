@@ -129,7 +129,8 @@ public class SystemServicesTest {
 
     deviceOrientationChangeCallback.onChange(DeviceOrientation.PORTRAIT_DOWN);
     verify(systemServicesFlutterApi)
-        .onDeviceOrientationChanged(eq("PORTRAIT_DOWN"), any(Reply.class));
+        .sendDeviceOrientationChangedEvent(
+            eq(DeviceOrientation.PORTRAIT_DOWN.toString()), any(Reply.class));
 
     // Test that the DeviceOrientationManager starts listening for device orientation changes.
     verify(mockDeviceOrientationManager).start();
