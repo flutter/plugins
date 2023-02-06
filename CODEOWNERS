@@ -45,11 +45,11 @@ packages/video_player/video_player_android/**            @camsim99
 packages/camera/camera_avfoundation/**                   @hellohuanlin
 packages/file_selector/file_selector_ios/**              @jmagman
 packages/google_maps_flutter/google_maps_flutter_ios/**  @cyanglaz
-packages/google_sign_in/google_sign_in_ios/**            @jmagman
+packages/google_sign_in/google_sign_in_ios/**            @vashworth
 packages/image_picker/image_picker_ios/**                @vashworth
 packages/in_app_purchase/in_app_purchase_storekit/**     @cyanglaz
 packages/ios_platform_images/ios/**                      @jmagman
-packages/local_auth/local_auth_ios/**                    @hellohuanlin
+packages/local_auth/local_auth_ios/**                    @louisehsu
 packages/path_provider/path_provider_foundation/**       @jmagman
 packages/quick_actions/quick_actions_ios/**              @hellohuanlin
 packages/shared_preferences/shared_preferences_foundation/**  @cyanglaz

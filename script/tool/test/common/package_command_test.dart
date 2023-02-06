@@ -876,6 +876,46 @@ packages/b_package/lib/src/foo.dart
     });
 
     test(
+        'only tests changed packages relative to the previous commit if '
+        'running on a specific hash from origin/main', () async {
+      processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
+        MockProcess(stdout: 'packages/plugin1/plugin1.dart'),
+      ];
+      processRunner.mockProcessesForExecutable['git-rev-parse'] = <Process>[
+        MockProcess(stdout: 'HEAD'),
+      ];
+      processRunner.mockProcessesForExecutable['git-merge-base'] = <Process>[
+        MockProcess(exitCode: 128), // Fail with a non-1 exit code for 'main'
+        MockProcess(), // Succeed for the variant.
+      ];
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['sample', '--packages-for-branch']);
+
+      expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains(
+                '--packages-for-branch: running on a commit from default branch.'),
+            contains(
+                '--packages-for-branch: using parent commit as the diff base'),
+            contains(
+                'Running for all packages that have diffs relative to "HEAD~"'),
+          ]));
+      // Ensure that it's diffing against the prior commit.
+      expect(
+          processRunner.recordedCalls,
+          contains(
+            const ProcessCall(
+                'git-diff', <String>['--name-only', 'HEAD~', 'HEAD'], null),
+          ));
+    });
+
+    test(
         'only tests changed packages relative to the previous commit on master',
         () async {
       processRunner.mockProcessesForExecutable['git-diff'] = <Process>[

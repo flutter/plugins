@@ -1,6 +1,10 @@
-## 0.10.4
+## 0.10.5
 
 * Allows camera to be switched while video recording.
+
+## 0.10.4
+
+* Temporarily fixes issue with requested video profiles being null by falling back to deprecated behavior in that case.
 
 ## 0.10.3
 

@@ -5,20 +5,27 @@
 package io.flutter.plugins.camera.features.resolution;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import android.media.CamcorderProfile;
 import android.media.EncoderProfiles;
+import android.util.Size;
 import io.flutter.plugins.camera.CameraProperties;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
+import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -328,5 +335,96 @@ public class ResolutionFeatureTest {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.low);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_QVGA));
+  }
+
+  @Config(minSdk = 31)
+  @Test
+  public void computeBestPreviewSize_shouldUseLegacyBehaviorWhenEncoderProfilesNull() {
+    try (MockedStatic<ResolutionFeature> mockedResolutionFeature =
+        mockStatic(ResolutionFeature.class)) {
+      mockedResolutionFeature
+          .when(
+              () ->
+                  ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset(
+                      anyInt(), any(ResolutionPreset.class)))
+          .thenAnswer(
+              (Answer<EncoderProfiles>)
+                  invocation -> {
+                    EncoderProfiles mockEncoderProfiles = mock(EncoderProfiles.class);
+                    List<EncoderProfiles.VideoProfile> videoProfiles =
+                        new ArrayList<EncoderProfiles.VideoProfile>() {
+                          {
+                            add(null);
+                          }
+                        };
+                    when(mockEncoderProfiles.getVideoProfiles()).thenReturn(videoProfiles);
+                    return mockEncoderProfiles;
+                  });
+      mockedResolutionFeature
+          .when(
+              () ->
+                  ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPresetLegacy(
+                      anyInt(), any(ResolutionPreset.class)))
+          .thenAnswer(
+              (Answer<CamcorderProfile>)
+                  invocation -> {
+                    CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
+                    mockCamcorderProfile.videoFrameWidth = 10;
+                    mockCamcorderProfile.videoFrameHeight = 50;
+                    return mockCamcorderProfile;
+                  });
+      mockedResolutionFeature
+          .when(() -> ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max))
+          .thenCallRealMethod();
+
+      Size testPreviewSize = ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
+      assertEquals(testPreviewSize.getWidth(), 10);
+      assertEquals(testPreviewSize.getHeight(), 50);
+    }
+  }
+
+  @Config(minSdk = 31)
+  @Test
+  public void resolutionFeatureShouldUseLegacyBehaviorWhenEncoderProfilesNull() {
+    beforeLegacy();
+    try (MockedStatic<ResolutionFeature> mockedResolutionFeature =
+        mockStatic(ResolutionFeature.class)) {
+      mockedResolutionFeature
+          .when(
+              () ->
+                  ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset(
+                      anyInt(), any(ResolutionPreset.class)))
+          .thenAnswer(
+              (Answer<EncoderProfiles>)
+                  invocation -> {
+                    EncoderProfiles mockEncoderProfiles = mock(EncoderProfiles.class);
+                    List<EncoderProfiles.VideoProfile> videoProfiles =
+                        new ArrayList<EncoderProfiles.VideoProfile>() {
+                          {
+                            add(null);
+                          }
+                        };
+                    when(mockEncoderProfiles.getVideoProfiles()).thenReturn(videoProfiles);
+                    return mockEncoderProfiles;
+                  });
+      mockedResolutionFeature
+          .when(
+              () ->
+                  ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPresetLegacy(
+                      anyInt(), any(ResolutionPreset.class)))
+          .thenAnswer(
+              (Answer<CamcorderProfile>)
+                  invocation -> {
+                    CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
+                    return mockCamcorderProfile;
+                  });
+
+      CameraProperties mockCameraProperties = mock(CameraProperties.class);
+      ResolutionFeature resolutionFeature =
+          new ResolutionFeature(mockCameraProperties, ResolutionPreset.max, cameraName);
+
+      assertNotNull(resolutionFeature.getRecordingProfileLegacy());
+      assertNull(resolutionFeature.getRecordingProfile());
+    }
   }
 }
