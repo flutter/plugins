@@ -8,8 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -157,26 +157,33 @@ public class PreviewTest {
     when(mockSurfaceRequestResult.getResultCode())
         .thenReturn(SurfaceRequest.Result.RESULT_REQUEST_CANCELLED);
     capturedConsumer.accept(mockSurfaceRequestResult);
-    verify(mockSurface, times(1)).release();
+    verify(mockSurface).release();
+    reset(mockSurface);
+
     when(mockSurfaceRequestResult.getResultCode())
         .thenReturn(SurfaceRequest.Result.RESULT_REQUEST_CANCELLED);
     capturedConsumer.accept(mockSurfaceRequestResult);
-    verify(mockSurface, times(2)).release();
+    verify(mockSurface).release();
+    reset(mockSurface);
+
     when(mockSurfaceRequestResult.getResultCode())
         .thenReturn(SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE);
     capturedConsumer.accept(mockSurfaceRequestResult);
-    verify(mockSurface, times(3)).release();
+    verify(mockSurface).release();
+    reset(mockSurface);
+
     when(mockSurfaceRequestResult.getResultCode())
         .thenReturn(SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY);
     capturedConsumer.accept(mockSurfaceRequestResult);
-    verify(mockSurface, times(4)).release();
+    verify(mockSurface).release();
+    reset(mockSurface);
 
     // Case where error must be sent.
     when(mockSurfaceRequestResult.getResultCode())
         .thenReturn(SurfaceRequest.Result.RESULT_INVALID_SURFACE);
     capturedConsumer.accept(mockSurfaceRequestResult);
-    verify(mockSurface, times(5)).release();
-    verify(mockSystemServicesFlutterApi, times(1)).sendCameraError(anyString(), any(Reply.class));
+    verify(mockSurface).release();
+    verify(mockSystemServicesFlutterApi).sendCameraError(anyString(), any(Reply.class));
   }
 
   @Test
