@@ -139,7 +139,43 @@
                                  return value[0].value == FWFNSKeyValueChangeKeyEnumOldValue;
                                }]
                              changeValues:[OCMArg checkWithBlock:^BOOL(id value) {
-                               return [@"key" isEqual:value[0]];
+                               FWFObjectOrIdentifier *object = (FWFObjectOrIdentifier *)value[0];
+                               return !object.isIdentifier.boolValue &&
+                                      [@"key" isEqual:object.value];
+                             }]
+                               completion:OCMOCK_ANY]);
+}
+
+- (void)testObserveValueForKeyPathWithIdentifier {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+
+  FWFObject *mockObject = [self mockObjectWithManager:instanceManager identifier:0];
+  FWFObjectFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
+
+  OCMStub([mockObject objectApi]).andReturn(mockFlutterAPI);
+
+  NSObject *object = [[NSObject alloc] init];
+  [instanceManager addDartCreatedInstance:object withIdentifier:1];
+
+  NSObject *returnedObject = [[NSObject alloc] init];
+  [instanceManager addDartCreatedInstance:returnedObject withIdentifier:2];
+
+  [mockObject observeValueForKeyPath:@"keyPath"
+                            ofObject:object
+                              change:@{NSKeyValueChangeOldKey : returnedObject}
+                             context:nil];
+  OCMVerify([mockFlutterAPI
+      observeValueForObjectWithIdentifier:@0
+                                  keyPath:@"keyPath"
+                         objectIdentifier:@1
+                               changeKeys:[OCMArg checkWithBlock:^BOOL(
+                                                      NSArray<FWFNSKeyValueChangeKeyEnumData *>
+                                                          *value) {
+                                 return value[0].value == FWFNSKeyValueChangeKeyEnumOldValue;
+                               }]
+                             changeValues:[OCMArg checkWithBlock:^BOOL(id value) {
+                               FWFObjectOrIdentifier *object = (FWFObjectOrIdentifier *)value[0];
+                               return object.isIdentifier.boolValue && [@(2) isEqual:object.value];
                              }]
                                completion:OCMOCK_ANY]);
 }

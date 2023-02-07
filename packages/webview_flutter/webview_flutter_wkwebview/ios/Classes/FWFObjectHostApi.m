@@ -3,9 +3,14 @@
 // found in the LICENSE file.
 
 #import "FWFObjectHostApi.h"
+#import <objc/runtime.h>
 #import "FWFDataConverters.h"
+#import "FWFURLHostApi.h"
 
 @interface FWFObjectFlutterApiImpl ()
+// BinaryMessenger must be weak to prevent a circular reference with the host API it
+// references.
+@property(nonatomic, weak) id<FlutterBinaryMessenger> binaryMessenger;
 // InstanceManager must be weak to prevent a circular reference with the object it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
@@ -15,6 +20,7 @@
                         instanceManager:(FWFInstanceManager *)instanceManager {
   self = [self initWithBinaryMessenger:binaryMessenger];
   if (self) {
+    _binaryMessenger = binaryMessenger;
     _instanceManager = instanceManager;
   }
   return self;
@@ -34,7 +40,26 @@
 
   [change enumerateKeysAndObjectsUsingBlock:^(NSKeyValueChangeKey key, id value, BOOL *stop) {
     [changeKeys addObject:FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(key)];
-    [changeValues addObject:value];
+
+    NSNumber *isIdentifier = @(NO);
+    if ([self.instanceManager containsInstance:value]) {
+      isIdentifier = @(YES);
+    } else if (object_getClass(value) == [NSURL class]) {
+      FWFURLFlutterApiImpl *flutterApi =
+          [[FWFURLFlutterApiImpl alloc] initWithBinaryMessenger:self.binaryMessenger
+                                                instanceManager:self.instanceManager];
+      [flutterApi create:value
+              completion:^(NSError *error) {
+                NSAssert(!error, @"%@", error);
+              }];
+      isIdentifier = @(YES);
+    }
+
+    id returnValue = isIdentifier.boolValue
+                         ? @([self.instanceManager identifierWithStrongReferenceForInstance:value])
+                         : value;
+    [changeValues addObject:[FWFObjectOrIdentifier makeWithValue:returnValue
+                                                    isIdentifier:isIdentifier]];
   }];
 
   NSNumber *objectIdentifier =

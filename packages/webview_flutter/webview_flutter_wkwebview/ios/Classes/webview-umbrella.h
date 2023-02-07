@@ -15,6 +15,7 @@
 #import <webview_flutter_wkwebview/FWFScrollViewHostApi.h>
 #import <webview_flutter_wkwebview/FWFUIDelegateHostApi.h>
 #import <webview_flutter_wkwebview/FWFUIViewHostApi.h>
+#import <webview_flutter_wkwebview/FWFURLHostApi.h>
 #import <webview_flutter_wkwebview/FWFUserContentControllerHostApi.h>
 #import <webview_flutter_wkwebview/FWFWebViewConfigurationHostApi.h>
 #import <webview_flutter_wkwebview/FWFWebViewHostApi.h>

@@ -235,6 +235,42 @@ class NSHttpCookie {
   final Map<NSHttpCookiePropertyKey, Object> properties;
 }
 
+/// An object that represents the location of a resource, such as an item on a
+/// remote server or the path to a local file.
+///
+/// See https://developer.apple.com/documentation/foundation/nsurl?language=objc.
+class NSUrl extends NSObject {
+  /// Instantiates a [NSUrl] without creating and attaching to an instance
+  /// of the associated native class.
+  ///
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an [InstanceManager].
+  @protected
+  NSUrl.detached({super.binaryMessenger, super.instanceManager})
+      : _nsUrlHostApi = NSUrlHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+        super.detached();
+
+  final NSUrlHostApiImpl _nsUrlHostApi;
+
+  /// The URL string for the receiver as an absolute URL. (read-only)
+  ///
+  /// Represents [NSURL.absoluteString](https://developer.apple.com/documentation/foundation/nsurl/1409868-absolutestring?language=objc).
+  Future<String?> getAbsoluteString() {
+    return _nsUrlHostApi.getAbsoluteStringFromInstances(this);
+  }
+
+  @override
+  NSObject copy() {
+    return NSUrl.detached(
+      binaryMessenger: _nsUrlHostApi.binaryMessenger,
+      instanceManager: _nsUrlHostApi.instanceManager,
+    );
+  }
+}
+
 /// The root class of most Objective-C class hierarchies.
 @immutable
 class NSObject with Copyable {

@@ -22,6 +22,10 @@ typedef ProgressCallback = void Function(int progress);
 /// Signature for callbacks that report a resource loading error.
 typedef WebResourceErrorCallback = void Function(WebResourceError error);
 
+/// Signature for callbacks that notify the host application of a change to the
+/// url of the web view.
+typedef UrlChangeCallback = void Function(UrlChange change);
+
 /// An interface defining navigation events that occur on the native platform.
 ///
 /// The [PlatformWebViewController] is notifying this delegate on events that
@@ -104,5 +108,14 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
   ) {
     throw UnimplementedError(
         'setOnWebResourceError is not implemented on the current platform.');
+  }
+
+  /// Invoked when the underlying web view changes to a new url.
+  ///
+  /// See [PlatformWebViewController.setPlatformNavigationDelegate].
+  Future<void> setOnUrlChange(UrlChangeCallback onUrlChange) {
+    throw UnimplementedError(
+      'setOnUrlChange is not implemented on the current platform.',
+    );
   }
 }

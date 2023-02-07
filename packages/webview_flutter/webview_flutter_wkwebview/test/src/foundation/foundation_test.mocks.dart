@@ -73,3 +73,19 @@ class MockTestNSObjectHostApi extends _i1.Mock
         returnValueForMissingStub: null,
       );
 }
+
+/// A class which mocks [TestNSUrlHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestNSUrlHostApi extends _i1.Mock implements _i2.TestNSUrlHostApi {
+  MockTestNSUrlHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String? getAbsoluteString(int? identifier) =>
+      (super.noSuchMethod(Invocation.method(
+        #getAbsoluteString,
+        [identifier],
+      )) as String?);
+}

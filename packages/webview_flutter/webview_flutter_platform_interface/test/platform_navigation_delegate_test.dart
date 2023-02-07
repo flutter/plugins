@@ -120,6 +120,20 @@ void main() {
       throwsUnimplementedError,
     );
   });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of setOnUrlChange should throw unimplemented error',
+      () {
+    final PlatformNavigationDelegate callbackDelegate =
+        ExtendsPlatformNavigationDelegate(
+            const PlatformNavigationDelegateCreationParams());
+
+    expect(
+      () => callbackDelegate.setOnUrlChange((UrlChange change) {}),
+      throwsUnimplementedError,
+    );
+  });
 }
 
 class MockWebViewPlatformWithMixin extends MockWebViewPlatform
