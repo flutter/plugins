@@ -44,10 +44,19 @@ class CameraSelector extends JavaObject {
   late final CameraSelectorHostApiImpl _api;
 
   /// ID for front facing lens.
+  ///
+  /// See https://developer.android.com/reference/androidx/camera/core/CameraSelector#LENS_FACING_FRONT().
   static const int LENS_FACING_FRONT = 0;
 
   /// ID for back facing lens.
+  ///
+  /// See https://developer.android.com/reference/androidx/camera/core/CameraSelector#LENS_FACING_BACK().
   static const int LENS_FACING_BACK = 1;
+
+  /// ID for external lens.
+  ///
+  /// See https://developer.android.com/reference/androidx/camera/core/CameraSelector#LENS_FACING_EXTERNAL().
+  static const int EXTERNAL = 2;
 
   /// Selector for default front facing camera.
   static CameraSelector getDefaultFrontCamera({
