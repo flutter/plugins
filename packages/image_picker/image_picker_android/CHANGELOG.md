@@ -1,6 +1,9 @@
 ## NEXT
 
 * Updates minimum Flutter version to 3.0.
+
+## 0.8.5+6
+
 * Improved Bitmap resizing.
 
 ## 0.8.5+5
