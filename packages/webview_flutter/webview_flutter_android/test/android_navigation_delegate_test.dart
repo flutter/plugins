@@ -439,7 +439,7 @@ void main() {
 
     test('onUrlChange', () {
       final AndroidNavigationDelegate androidNavigationDelegate =
-      AndroidNavigationDelegate(_buildCreationParams());
+          AndroidNavigationDelegate(_buildCreationParams());
 
       late final UrlChange urlChange;
       androidNavigationDelegate

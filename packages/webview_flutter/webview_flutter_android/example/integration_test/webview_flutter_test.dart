@@ -941,7 +941,7 @@ Future<void> main() async {
       final Completer<void> pageLoaded = Completer<void>();
 
       final PlatformNavigationDelegate navigationDelegate =
-      PlatformNavigationDelegate(
+          PlatformNavigationDelegate(
         const PlatformNavigationDelegateCreationParams(),
       )..setOnPageFinished((_) => pageLoaded.complete());
 

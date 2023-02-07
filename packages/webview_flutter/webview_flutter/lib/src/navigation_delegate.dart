@@ -14,6 +14,11 @@ import 'webview_controller.dart';
 /// See [WebViewController.setNavigationDelegate].
 class NavigationDelegate {
   /// Constructs a [NavigationDelegate].
+  ///
+  ///
+  /// {@template webview_fluttter.navigation_delegate}
+  /// `onUrlChange`: invoked when the underlying web view changes to a new url.
+  /// {@endtemplate}
   NavigationDelegate({
     FutureOr<NavigationDecision> Function(NavigationRequest request)?
         onNavigationRequest,
@@ -21,6 +26,7 @@ class NavigationDelegate {
     void Function(String url)? onPageFinished,
     void Function(int progress)? onProgress,
     void Function(WebResourceError error)? onWebResourceError,
+    void Function(UrlChange change)? onUrlChange,
   }) : this.fromPlatformCreationParams(
           const PlatformNavigationDelegateCreationParams(),
           onNavigationRequest: onNavigationRequest,
@@ -28,10 +34,13 @@ class NavigationDelegate {
           onPageFinished: onPageFinished,
           onProgress: onProgress,
           onWebResourceError: onWebResourceError,
+          onUrlChange: onUrlChange,
         );
 
   /// Constructs a [NavigationDelegate] from creation params for a specific
   /// platform.
+  ///
+  /// {@macro webview_fluttter.navigation_delegate}
   NavigationDelegate.fromPlatformCreationParams(
     PlatformNavigationDelegateCreationParams params, {
     FutureOr<NavigationDecision> Function(NavigationRequest request)?
@@ -40,6 +49,7 @@ class NavigationDelegate {
     void Function(String url)? onPageFinished,
     void Function(int progress)? onProgress,
     void Function(WebResourceError error)? onWebResourceError,
+    void Function(UrlChange change)? onUrlChange,
   }) : this.fromPlatform(
           PlatformNavigationDelegate(params),
           onNavigationRequest: onNavigationRequest,
@@ -47,9 +57,12 @@ class NavigationDelegate {
           onPageFinished: onPageFinished,
           onProgress: onProgress,
           onWebResourceError: onWebResourceError,
+          onUrlChange: onUrlChange,
         );
 
   /// Constructs a [NavigationDelegate] from a specific platform implementation.
+  ///
+  /// {@macro webview_fluttter.navigation_delegate}
   NavigationDelegate.fromPlatform(
     this.platform, {
     this.onNavigationRequest,
@@ -57,6 +70,7 @@ class NavigationDelegate {
     this.onPageFinished,
     this.onProgress,
     this.onWebResourceError,
+    void Function(UrlChange change)? onUrlChange,
   }) {
     if (onNavigationRequest != null) {
       platform.setOnNavigationRequest(onNavigationRequest!);
@@ -72,6 +86,9 @@ class NavigationDelegate {
     }
     if (onWebResourceError != null) {
       platform.setOnWebResourceError(onWebResourceError!);
+    }
+    if (onUrlChange != null) {
+      platform.setOnUrlChange(onUrlChange);
     }
   }
 

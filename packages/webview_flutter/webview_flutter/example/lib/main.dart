@@ -136,6 +136,9 @@ Page resource error:
             debugPrint('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           },
+          onUrlChange: (UrlChange change) {
+            debugPrint('url change to ${change.url}');
+          },
         ),
       )
       ..addJavaScriptChannel(

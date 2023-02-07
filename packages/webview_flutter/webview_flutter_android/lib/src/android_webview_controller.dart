@@ -767,10 +767,10 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
         }
       },
       doUpdateVisitedHistory: (
-          android_webview.WebView webView,
-          String url,
-          bool isReload,
-          ) {
+        android_webview.WebView webView,
+        String url,
+        bool isReload,
+      ) {
         if (weakThis.target?._onUrlChange != null) {
           weakThis.target!._onUrlChange!(UrlChange(url: url));
         }

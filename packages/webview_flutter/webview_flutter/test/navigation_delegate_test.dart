@@ -75,6 +75,18 @@ void main() {
 
       verify(delegate.platform.setOnWebResourceError(onWebResourceError));
     });
+
+    test('onUrlChange', () async {
+      WebViewPlatform.instance = TestWebViewPlatform();
+
+      void onUrlChange(UrlChange change) {}
+
+      final NavigationDelegate delegate = NavigationDelegate(
+        onUrlChange: onUrlChange,
+      );
+
+      verify(delegate.platform.setOnUrlChange(onUrlChange));
+    });
   });
 }
 

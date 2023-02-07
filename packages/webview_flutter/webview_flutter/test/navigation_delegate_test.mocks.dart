@@ -228,4 +228,14 @@ class MockPlatformNavigationDelegate extends _i1.Mock
         returnValue: _i8.Future<void>.value(),
         returnValueForMissingStub: _i8.Future<void>.value(),
       ) as _i8.Future<void>);
+  @override
+  _i8.Future<void> setOnUrlChange(_i3.UrlChangeCallback? onUrlChange) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setOnUrlChange,
+          [onUrlChange],
+        ),
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 }

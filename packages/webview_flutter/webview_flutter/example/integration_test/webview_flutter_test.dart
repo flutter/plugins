@@ -706,6 +706,32 @@ Future<void> main() async {
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, secondaryUrl);
     });
+
+    testWidgets('can receive url changes', (WidgetTester tester) async {
+      final Completer<void> pageLoaded = Completer<void>();
+
+      final WebViewController controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(NavigationDelegate(
+          onPageFinished: (_) => pageLoaded.complete(),
+        ))
+        ..loadRequest(Uri.parse(blankPageEncoded));
+
+      await pageLoaded.future;
+
+      await tester.pumpWidget(WebViewWidget(controller: controller));
+
+      final Completer<String> urlChangeCompleter = Completer<String>();
+      await controller.setNavigationDelegate(NavigationDelegate(
+        onUrlChange: (UrlChange change) {
+          urlChangeCompleter.complete(change.url);
+        },
+      ));
+
+      await controller.runJavaScript('location.href = "$primaryUrl"');
+
+      await expectLater(urlChangeCompleter.future, completion(primaryUrl));
+    });
   });
 
   testWidgets('target _blank opens in same window',
