@@ -1,3 +1,7 @@
+## 4.1.0
+
+* Adds support to track url changes. See `NavigationDelegate(onUrlChange)`.
+
 ## 4.0.3
 
 * Updates example code for `use_build_context_synchronously` lint.

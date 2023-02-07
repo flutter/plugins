@@ -1,3 +1,7 @@
+## 3.1.0
+
+* Adds support for `PlatformNavigationDelegate.onUrlChange`.
+
 ## 3.0.5
 
 * Renames Pigeon output files.
