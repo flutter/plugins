@@ -68,6 +68,8 @@ class AndroidWebViewProxy {
     )?
         requestLoading,
     void Function(android_webview.WebView webView, String url)? urlLoading,
+    void Function(android_webview.WebView webView, String url, bool isReload)?
+        doUpdateVisitedHistory,
   }) createAndroidWebViewClient;
 
   /// Constructs a [android_webview.FlutterAssetManager].

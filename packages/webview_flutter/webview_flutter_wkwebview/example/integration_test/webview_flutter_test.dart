@@ -1018,6 +1018,14 @@ Future<void> main() async {
         ..setPlatformNavigationDelegate(navigationDelegate)
         ..loadRequest(LoadRequestParams(uri: Uri.parse(blankPageEncoded)));
 
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
       await pageLoaded.future;
       await navigationDelegate.setOnPageFinished((_) {});
 

@@ -766,6 +766,15 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
           weakThis.target!._handleNavigation(url, isForMainFrame: true);
         }
       },
+      doUpdateVisitedHistory: (
+          android_webview.WebView webView,
+          String url,
+          bool isReload,
+          ) {
+        if (weakThis.target?._onUrlChange != null) {
+          weakThis.target!._onUrlChange!(UrlChange(url: url));
+        }
+      },
     );
 
     _downloadListener = (this.params as AndroidNavigationDelegateCreationParams)
@@ -821,6 +830,7 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
   WebResourceErrorCallback? _onWebResourceError;
   NavigationRequestCallback? _onNavigationRequest;
   LoadRequestCallback? _onLoadRequest;
+  UrlChangeCallback? _onUrlChange;
 
   void _handleNavigation(
     String url, {
@@ -900,5 +910,10 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
     WebResourceErrorCallback onWebResourceError,
   ) async {
     _onWebResourceError = onWebResourceError;
+  }
+
+  @override
+  Future<void> setOnUrlChange(UrlChangeCallback onUrlChange) async {
+    _onUrlChange = onUrlChange;
   }
 }

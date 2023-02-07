@@ -197,6 +197,21 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     urlLoading(getIdentifierForClient(webViewClient), webViewIdentifier, urlArg, callback);
   }
 
+  /** Passes arguments from {@link WebViewClient#doUpdateVisitedHistory} to Dart. */
+  public void doUpdateVisitedHistory(
+      WebViewClient webViewClient,
+      WebView webView,
+      String url,
+      boolean isReload,
+      Reply<Void> callback) {
+    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
+    if (webViewIdentifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebView.");
+    }
+    doUpdateVisitedHistory(
+        getIdentifierForClient(webViewClient), webViewIdentifier, url, isReload, callback);
+  }
+
   private long getIdentifierForClient(WebViewClient webViewClient) {
     final Long identifier = instanceManager.getIdentifierForStrongReference(webViewClient);
     if (identifier == null) {

@@ -35,3 +35,11 @@ flutter:
     - assets/sample_video.mp4
     - assets/www/index.html
     - assets/www/styles/style.css
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  webview_flutter_android:
+    path: ../../../webview_flutter/webview_flutter_android
+  webview_flutter_platform_interface:
+    path: ../../../webview_flutter/webview_flutter_platform_interface

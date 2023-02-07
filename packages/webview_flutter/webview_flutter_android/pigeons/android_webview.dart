@@ -268,6 +268,13 @@ abstract class WebViewClientFlutterApi {
   );
 
   void urlLoading(int instanceId, int webViewInstanceId, String url);
+
+  void doUpdateVisitedHistory(
+    int instanceId,
+    int webViewInstanceId,
+    String url,
+    bool isReload,
+  );
 }
 
 @HostApi(dartHostTestHandler: 'TestDownloadListenerHostApi')

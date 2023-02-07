@@ -125,4 +125,12 @@ public class WebViewClientTest {
 
     verify(mockWebViewClient).setReturnValueForShouldOverrideUrlLoading(false);
   }
+
+  @Test
+  public void doUpdateVisitedHistory() {
+    webViewClient.doUpdateVisitedHistory(mockWebView, "https://www.google.com", true);
+    verify(mockFlutterApi)
+        .doUpdateVisitedHistory(
+            eq(webViewClient), eq(mockWebView), eq("https://www.google.com"), eq(true), any());
+  }
 }

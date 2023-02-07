@@ -709,6 +709,33 @@ void main() {
         );
       });
 
+      test('doUpdateVisitedHistory', () {
+        late final List<Object> result;
+        when(mockWebViewClient.doUpdateVisitedHistory).thenReturn(
+          (
+            WebView webView,
+            String url,
+            bool isReload,
+          ) {
+            result = <Object>[webView, url, isReload];
+          },
+        );
+
+        flutterApi.doUpdateVisitedHistory(
+          mockWebViewClientInstanceId,
+          mockWebViewInstanceId,
+          'https://www.google.com',
+          false,
+        );
+
+        expect(
+          result,
+          containsAllInOrder(
+            <Object?>[mockWebView, 'https://www.google.com', false],
+          ),
+        );
+      });
+
       test('copy', () {
         expect(WebViewClient.detached().copy(), isA<WebViewClient>());
       });
