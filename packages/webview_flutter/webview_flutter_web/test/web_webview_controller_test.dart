@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
 import 'dart:html';
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
 // ignore: unnecessary_import
@@ -17,9 +18,9 @@ import 'package:webview_flutter_web/webview_flutter_web.dart';
 
 import 'web_webview_controller_test.mocks.dart';
 
-@GenerateMocks(<Type>[
-  HttpRequest,
-  HttpRequestFactory,
+@GenerateMocks(<Type>[], customMocks: <MockSpec<Object>>[
+  MockSpec<HttpRequest>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<HttpRequestFactory>(onMissingStub: OnMissingStub.returnDefault),
 ])
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,8 +32,8 @@ void main() {
             WebWebViewControllerCreationParams();
 
         expect(params.iFrame.id, contains('webView'));
-        expect(params.iFrame.width, '100%');
-        expect(params.iFrame.height, '100%');
+        expect(params.iFrame.style.width, '100%');
+        expect(params.iFrame.style.height, '100%');
         expect(params.iFrame.style.border, 'none');
       });
     });
@@ -62,7 +63,7 @@ void main() {
     });
 
     group('loadRequest', () {
-      test('loadRequest throws ArgumentError on missing scheme', () async {
+      test('throws ArgumentError on missing scheme', () async {
         final WebWebViewController controller =
             WebWebViewController(WebWebViewControllerCreationParams());
 
@@ -73,8 +74,33 @@ void main() {
             throwsA(const TypeMatcher<ArgumentError>()));
       });
 
-      test('loadRequest makes request and loads response into iframe',
-          () async {
+      test('skips XHR for simple GETs (no headers, no data)', () async {
+        final MockHttpRequestFactory mockHttpRequestFactory =
+            MockHttpRequestFactory();
+        final WebWebViewController controller =
+            WebWebViewController(WebWebViewControllerCreationParams(
+          httpRequestFactory: mockHttpRequestFactory,
+        ));
+
+        when(mockHttpRequestFactory.request(
+          any,
+          method: anyNamed('method'),
+          requestHeaders: anyNamed('requestHeaders'),
+          sendData: anyNamed('sendData'),
+        )).thenThrow(
+            StateError('The `request` method should not have been called.'));
+
+        await controller.loadRequest(LoadRequestParams(
+          uri: Uri.parse('https://flutter.dev'),
+        ));
+
+        expect(
+          (controller.params as WebWebViewControllerCreationParams).iFrame.src,
+          'https://flutter.dev/',
+        );
+      });
+
+      test('makes request and loads response into iframe', () async {
         final MockHttpRequestFactory mockHttpRequestFactory =
             MockHttpRequestFactory();
         final WebWebViewController controller =
@@ -114,7 +140,41 @@ void main() {
         );
       });
 
-      test('loadRequest escapes "#" correctly', () async {
+      test('parses content-type response header correctly', () async {
+        final MockHttpRequestFactory mockHttpRequestFactory =
+            MockHttpRequestFactory();
+        final WebWebViewController controller =
+            WebWebViewController(WebWebViewControllerCreationParams(
+          httpRequestFactory: mockHttpRequestFactory,
+        ));
+
+        final Encoding iso = Encoding.getByName('latin1')!;
+
+        final MockHttpRequest mockHttpRequest = MockHttpRequest();
+        when(mockHttpRequest.responseText)
+            .thenReturn(String.fromCharCodes(iso.encode('España')));
+        when(mockHttpRequest.getResponseHeader('content-type'))
+            .thenReturn('Text/HTmL; charset=latin1');
+
+        when(mockHttpRequestFactory.request(
+          any,
+          method: anyNamed('method'),
+          requestHeaders: anyNamed('requestHeaders'),
+          sendData: anyNamed('sendData'),
+        )).thenAnswer((_) => Future<HttpRequest>.value(mockHttpRequest));
+
+        await controller.loadRequest(LoadRequestParams(
+          uri: Uri.parse('https://flutter.dev'),
+          method: LoadRequestMethod.post,
+        ));
+
+        expect(
+          (controller.params as WebWebViewControllerCreationParams).iFrame.src,
+          'data:text/html;charset=iso-8859-1,Espa%F1a',
+        );
+      });
+
+      test('escapes "#" correctly', () async {
         final MockHttpRequestFactory mockHttpRequestFactory =
             MockHttpRequestFactory();
         final WebWebViewController controller =

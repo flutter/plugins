@@ -39,8 +39,19 @@ class RunnerTests: XCTestCase {
   func testGetApplicationSupportDirectory() throws {
     let plugin = PathProviderPlugin()
     let path = plugin.getDirectoryPath(type: .applicationSupport)
-    // The application support directory path should be the system application support
-    // path with an added subdirectory based on the app name.
+#if os(iOS)
+    // On iOS, the application support directory path should be just the system application
+    // support path.
+    XCTAssertEqual(
+      path,
+      NSSearchPathForDirectoriesInDomains(
+        FileManager.SearchPathDirectory.applicationSupportDirectory,
+        FileManager.SearchPathDomainMask.userDomainMask,
+        true
+      ).first)
+#else
+    // On macOS, the application support directory path should be the system application
+    // support path with an added subdirectory based on the app name.
     XCTAssert(
       path!.hasPrefix(
         NSSearchPathForDirectoriesInDomains(
@@ -49,6 +60,7 @@ class RunnerTests: XCTestCase {
           true
         ).first!))
     XCTAssert(path!.hasSuffix("Example"))
+#endif
   }
 
   func testGetLibraryDirectory() throws {

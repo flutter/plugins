@@ -10,8 +10,6 @@
 #include <pplawait.h>
 #include <ppltasks.h>
 
-#include "include/local_auth_windows/local_auth_plugin.h"
-
 // Include prior to C++/WinRT Headers
 #include <wil/cppwinrt.h>
 #include <wil/win32_helpers.h>
@@ -22,6 +20,8 @@
 #include <map>
 #include <memory>
 #include <sstream>
+
+#include "messages.g.h"
 
 namespace local_auth_windows {
 
@@ -50,7 +50,7 @@ class UserConsentVerifier {
   UserConsentVerifier& operator=(const UserConsentVerifier&) = delete;
 };
 
-class LocalAuthPlugin : public flutter::Plugin {
+class LocalAuthPlugin : public flutter::Plugin, public LocalAuthApi {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
@@ -62,28 +62,25 @@ class LocalAuthPlugin : public flutter::Plugin {
   // Exists for unit testing with mock implementations.
   LocalAuthPlugin(std::unique_ptr<UserConsentVerifier> user_consent_verifier);
 
-  // Handles method calls from Dart on this plugin's channel.
-  void HandleMethodCall(
-      const flutter::MethodCall<flutter::EncodableValue>& method_call,
-      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-
   virtual ~LocalAuthPlugin();
+
+  // LocalAuthApi:
+  void IsDeviceSupported(
+      std::function<void(ErrorOr<bool> reply)> result) override;
+  void Authenticate(const std::string& localized_reason,
+                    std::function<void(ErrorOr<bool> reply)> result) override;
 
  private:
   std::unique_ptr<UserConsentVerifier> user_consent_verifier_;
 
   // Starts authentication process.
-  winrt::fire_and_forget Authenticate(
-      const flutter::MethodCall<flutter::EncodableValue>& method_call,
-      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-
-  // Returns enrolled biometric types available on device.
-  winrt::fire_and_forget GetEnrolledBiometrics(
-      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+  winrt::fire_and_forget AuthenticateCoroutine(
+      const std::string& localized_reason,
+      std::function<void(ErrorOr<bool> reply)> result);
 
   // Returns whether the system supports Windows Hello.
-  winrt::fire_and_forget IsDeviceSupported(
-      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+  winrt::fire_and_forget IsDeviceSupportedCoroutine(
+      std::function<void(ErrorOr<bool> reply)> result);
 };
 
 }  // namespace local_auth_windows

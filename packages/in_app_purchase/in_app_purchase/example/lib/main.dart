@@ -164,6 +164,8 @@ class _MyAppState extends State<_MyApp> {
     }
     if (_purchasePending) {
       stack.add(
+        // TODO(goderbauer): Make this const when that's available on stable.
+        // ignore: prefer_const_constructors
         Stack(
           children: const <Widget>[
             Opacity(
@@ -468,17 +470,19 @@ class _MyAppState extends State<_MyApp> {
           await androidAddition.launchPriceChangeConfirmationFlow(
         sku: 'purchaseId',
       );
-      if (priceChangeConfirmationResult.responseCode == BillingResponse.ok) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Price change accepted'),
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            priceChangeConfirmationResult.debugMessage ??
-                'Price change failed with code ${priceChangeConfirmationResult.responseCode}',
-          ),
-        ));
+      if (context.mounted) {
+        if (priceChangeConfirmationResult.responseCode == BillingResponse.ok) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Price change accepted'),
+          ));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              priceChangeConfirmationResult.debugMessage ??
+                  'Price change failed with code ${priceChangeConfirmationResult.responseCode}',
+            ),
+          ));
+        }
       }
     }
     if (Platform.isIOS) {

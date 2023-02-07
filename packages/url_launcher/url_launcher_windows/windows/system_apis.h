@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include <windows.h>
 
-namespace url_launcher_plugin {
+namespace url_launcher_windows {
 
 // An interface wrapping system APIs used by the plugin, for mocking.
 class SystemApis {
@@ -53,4 +53,4 @@ class SystemApisImpl : public SystemApis {
                                   int show_flags);
 };
 
-}  // namespace url_launcher_plugin
+}  // namespace url_launcher_windows

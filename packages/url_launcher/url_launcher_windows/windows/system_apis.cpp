@@ -5,7 +5,7 @@
 
 #include <windows.h>
 
-namespace url_launcher_plugin {
+namespace url_launcher_windows {
 
 SystemApis::SystemApis() {}
 
@@ -35,4 +35,4 @@ HINSTANCE SystemApisImpl::ShellExecuteW(HWND hwnd, LPCWSTR operation,
                          show_flags);
 }
 
-}  // namespace url_launcher_plugin
+}  // namespace url_launcher_windows

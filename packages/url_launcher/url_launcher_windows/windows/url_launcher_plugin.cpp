@@ -13,7 +13,9 @@
 #include <sstream>
 #include <string>
 
-namespace url_launcher_plugin {
+#include "messages.g.h"
+
+namespace url_launcher_windows {
 
 namespace {
 
@@ -62,18 +64,9 @@ std::string GetUrlArgument(const flutter::MethodCall<>& method_call) {
 // static
 void UrlLauncherPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrar* registrar) {
-  auto channel = std::make_unique<flutter::MethodChannel<>>(
-      registrar->messenger(), "plugins.flutter.io/url_launcher_windows",
-      &flutter::StandardMethodCodec::GetInstance());
-
   std::unique_ptr<UrlLauncherPlugin> plugin =
       std::make_unique<UrlLauncherPlugin>();
-
-  channel->SetMethodCallHandler(
-      [plugin_pointer = plugin.get()](const auto& call, auto result) {
-        plugin_pointer->HandleMethodCall(call, std::move(result));
-      });
-
+  UrlLauncherApi::SetUp(registrar->messenger(), plugin.get());
   registrar->AddPlugin(std::move(plugin));
 }
 
@@ -85,37 +78,7 @@ UrlLauncherPlugin::UrlLauncherPlugin(std::unique_ptr<SystemApis> system_apis)
 
 UrlLauncherPlugin::~UrlLauncherPlugin() = default;
 
-void UrlLauncherPlugin::HandleMethodCall(
-    const flutter::MethodCall<>& method_call,
-    std::unique_ptr<flutter::MethodResult<>> result) {
-  if (method_call.method_name().compare("launch") == 0) {
-    std::string url = GetUrlArgument(method_call);
-    if (url.empty()) {
-      result->Error("argument_error", "No URL provided");
-      return;
-    }
-
-    std::optional<std::string> error = LaunchUrl(url);
-    if (error) {
-      result->Error("open_error", error.value());
-      return;
-    }
-    result->Success(EncodableValue(true));
-  } else if (method_call.method_name().compare("canLaunch") == 0) {
-    std::string url = GetUrlArgument(method_call);
-    if (url.empty()) {
-      result->Error("argument_error", "No URL provided");
-      return;
-    }
-
-    bool can_launch = CanLaunchUrl(url);
-    result->Success(EncodableValue(can_launch));
-  } else {
-    result->NotImplemented();
-  }
-}
-
-bool UrlLauncherPlugin::CanLaunchUrl(const std::string& url) {
+ErrorOr<bool> UrlLauncherPlugin::CanLaunchUrl(const std::string& url) {
   size_t separator_location = url.find(":");
   if (separator_location == std::string::npos) {
     return false;
@@ -134,7 +97,7 @@ bool UrlLauncherPlugin::CanLaunchUrl(const std::string& url) {
   return has_handler;
 }
 
-std::optional<std::string> UrlLauncherPlugin::LaunchUrl(
+std::optional<FlutterError> UrlLauncherPlugin::LaunchUrl(
     const std::string& url) {
   std::wstring url_wide = Utf16FromUtf8(url);
 
@@ -147,9 +110,9 @@ std::optional<std::string> UrlLauncherPlugin::LaunchUrl(
     std::ostringstream error_message;
     error_message << "Failed to open " << url << ": ShellExecute error code "
                   << status;
-    return std::optional<std::string>(error_message.str());
+    return FlutterError("open_error", error_message.str());
   }
   return std::nullopt;
 }
 
-}  // namespace url_launcher_plugin
+}  // namespace url_launcher_windows

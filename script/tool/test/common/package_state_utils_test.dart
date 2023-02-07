@@ -68,6 +68,8 @@ void main() {
         'packages/a_plugin/example/android/src/androidTest/foo/bar/FooTest.java',
         'packages/a_plugin/example/ios/RunnerTests/Foo.m',
         'packages/a_plugin/example/ios/RunnerUITests/info.plist',
+        // Pigeon input.
+        'packages/a_plugin/pigeons/messages.dart',
         // Test scripts.
         'packages/a_plugin/run_tests.sh',
         // Tools.

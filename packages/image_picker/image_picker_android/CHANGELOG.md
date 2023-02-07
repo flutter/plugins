@@ -1,6 +1,7 @@
-## 0.8.5+6
+## NEXT
 
-* Improves Bitmap resizing.
+* Updates minimum Flutter version to 3.0.
+* Improved Bitmap resizing.
 
 ## 0.8.5+5
 
