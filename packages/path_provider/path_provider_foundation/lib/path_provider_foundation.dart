@@ -68,4 +68,13 @@ class PathProviderFoundation extends PathProviderPlatform {
   Future<String?> getDownloadsPath() {
     return _pathProvider.getDirectoryPath(DirectoryType.downloads);
   }
+
+  /// Returns the path to the container of the specified App Group.
+  Future<String?> getContainerPath({required String appGroupIdentifier}) async {
+    if (!Platform.isIOS) {
+      throw UnsupportedError(
+          'getContainerPath is not supported on this platform');
+    }
+    return _pathProvider.getContainerPath(appGroupIdentifier);
+  }
 }

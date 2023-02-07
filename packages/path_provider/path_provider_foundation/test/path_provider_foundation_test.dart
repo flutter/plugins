@@ -119,5 +119,27 @@ void main() {
       expect(
           pathProvider.getExternalStoragePaths(), throwsA(isUnsupportedError));
     });
+
+    test('getContainerPath', () async {
+      const String appGroupIdentifier = 'group.example.test';
+      if (Platform.isIOS) {
+        final String containerPath = p.join(testRoot.path, 'container', 'path');
+        when(mockApi.getContainerPath(appGroupIdentifier))
+            .thenReturn(containerPath);
+
+        final String? result = await pathProvider.getContainerPath(
+            appGroupIdentifier: appGroupIdentifier);
+
+        verify(mockApi.getContainerPath(appGroupIdentifier));
+        expect(result, containerPath);
+      }
+    });
+
+    test('getContainerPath throws on macOS', () async {
+      expect(
+          pathProvider.getContainerPath(
+              appGroupIdentifier: 'group.example.test'),
+          throwsA(isUnsupportedError));
+    });
   });
 }

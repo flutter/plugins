@@ -21,4 +21,5 @@ enum DirectoryType {
 @HostApi(dartHostTestHandler: 'TestPathProviderApi')
 abstract class PathProviderApi {
   String? getDirectoryPath(DirectoryType type);
+  String? getContainerPath(String appGroupIdentifier);
 }

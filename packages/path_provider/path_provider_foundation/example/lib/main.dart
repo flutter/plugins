@@ -5,6 +5,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
+import 'package:path_provider_foundation/path_provider_foundation.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 void main() {
@@ -25,6 +26,7 @@ class _MyAppState extends State<MyApp> {
   String? _libraryDirectory = 'Unknown';
   String? _appSupportDirectory = 'Unknown';
   String? _documentsDirectory = 'Unknown';
+  String? _containerDirectory = 'Unknown';
 
   @override
   void initState() {
@@ -39,7 +41,9 @@ class _MyAppState extends State<MyApp> {
     String? appSupportDirectory;
     String? libraryDirectory;
     String? documentsDirectory;
+    String? containerDirectory;
     final PathProviderPlatform provider = PathProviderPlatform.instance;
+    final PathProviderFoundation providerFoundation = PathProviderFoundation();
 
     try {
       tempDirectory = await provider.getTemporaryPath();
@@ -70,12 +74,21 @@ class _MyAppState extends State<MyApp> {
       appSupportDirectory = 'Failed to get app support directory: $exception';
     }
 
+    try {
+      containerDirectory = await providerFoundation.getContainerPath(
+          appGroupIdentifier: 'group.flutter.appGroupTest');
+    } catch (exception) {
+      containerDirectory =
+          'Failed to get app group container directory: $exception';
+    }
+
     setState(() {
       _tempDirectory = tempDirectory;
       _downloadsDirectory = downloadsDirectory;
       _libraryDirectory = libraryDirectory;
       _appSupportDirectory = appSupportDirectory;
       _documentsDirectory = documentsDirectory;
+      _containerDirectory = containerDirectory;
     });
   }
 
@@ -94,6 +107,7 @@ class _MyAppState extends State<MyApp> {
               Text('Downloads Directory: $_downloadsDirectory\n'),
               Text('Library Directory: $_libraryDirectory\n'),
               Text('Application Support Directory: $_appSupportDirectory\n'),
+              Text('App Group Container Directory: $_containerDirectory\n'),
             ],
           ),
         ),
