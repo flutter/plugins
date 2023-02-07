@@ -162,6 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     const String toLaunch = 'https://www.cylog.org/headers/';
+    const String youtubeLink = 'https://www.youtube.com/watch?v=qYxRYB1oszw';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -175,8 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.all(16.0),
                 child: TextField(
                     onChanged: (String text) => _phone = text,
-                    decoration: const InputDecoration(
-                        hintText: 'Input the phone number to launch')),
+                    decoration: const InputDecoration(hintText: 'Input the phone number to launch')),
               ),
               ElevatedButton(
                 onPressed: () => setState(() {
@@ -216,20 +217,19 @@ class _MyHomePageState extends State<MyHomePage> {
               const Padding(padding: EdgeInsets.all(16.0)),
               ElevatedButton(
                 onPressed: () => setState(() {
-                  _launched = _launchUniversalLinkIos(toLaunch);
-                }),
-                child: const Text(
-                    'Launch a universal link in a native app, fallback to Safari.(Youtube)'),
-              ),
-              const Padding(padding: EdgeInsets.all(16.0)),
-              ElevatedButton(
-                onPressed: () => setState(() {
                   _launched = _launchInWebViewOrVC(toLaunch);
                   Timer(const Duration(seconds: 5), () {
                     UrlLauncherPlatform.instance.closeWebView();
                   });
                 }),
                 child: const Text('Launch in app + close after 5 seconds'),
+              ),
+              const Padding(padding: EdgeInsets.all(16.0)),
+              ElevatedButton(
+                onPressed: () => setState(() {
+                  _launched = _launchUniversalLinkIos(youtubeLink);
+                }),
+                child: const Text('Launch a universal link in a native app, fallback to Safari. (Youtube)'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
               FutureBuilder<void>(future: _launched, builder: _launchStatus),
