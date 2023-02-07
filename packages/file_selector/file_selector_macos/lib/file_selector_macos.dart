@@ -85,6 +85,23 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     return paths.isEmpty ? null : paths.first;
   }
 
+  @override
+  Future<List<String>> getDirectoryPaths({
+    String? initialDirectory,
+    String? confirmButtonText,
+  }) async {
+    final List<String?> paths =
+        await _hostApi.displayOpenPanel(OpenPanelOptions(
+            allowsMultipleSelection: true,
+            canChooseDirectories: true,
+            canChooseFiles: false,
+            baseOptions: SavePanelOptions(
+              directoryPath: initialDirectory,
+              prompt: confirmButtonText,
+            )));
+    return paths.isEmpty ? <String>[] : List<String>.from(paths);
+  }
+
   // Converts the type group list into a flat list of all allowed types, since
   // macOS doesn't support filter groups.
   AllowedTypes? _allowedTypesFromTypeGroups(List<XTypeGroup>? typeGroups) {

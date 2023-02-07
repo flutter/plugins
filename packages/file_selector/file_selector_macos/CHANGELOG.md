@@ -1,5 +1,6 @@
-## NEXT
+## 0.9.1
 
+* Adds `getDirectoryPaths` implementation.
 * Updates example code for `use_build_context_synchronously` lint.
 * Updates minimum Flutter version to 3.0.
 

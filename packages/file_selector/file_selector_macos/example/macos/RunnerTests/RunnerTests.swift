@@ -292,4 +292,54 @@ class exampleTests: XCTestCase {
     XCTAssertNotNil(panelController.openPanel)
   }
 
+  func testGetDirectoriesMultiple() throws {
+    let panelController = TestPanelController()
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
+
+    let returnPaths = ["/foo/bar", "/foo/test"];
+    panelController.openURLs = returnPaths.map({ path in URL(fileURLWithPath: path) })
+
+    let called = XCTestExpectation()
+    let options = OpenPanelOptions(
+      allowsMultipleSelection: true,
+      canChooseDirectories: true,
+      canChooseFiles: false,
+      baseOptions: SavePanelOptions())
+    plugin.displayOpenPanel(options: options) { paths in
+      XCTAssertEqual(paths, returnPaths)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.openPanel)
+    if let panel = panelController.openPanel {
+      XCTAssertTrue(panel.canChooseDirectories)
+      // For consistency across platforms, file selection is disabled.
+      XCTAssertFalse(panel.canChooseFiles)
+      XCTAssertTrue(panel.allowsMultipleSelection)
+    }
+  }
+
+  func testGetDirectoryMultipleCancel() throws {
+    let panelController = TestPanelController()
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
+
+    let called = XCTestExpectation()
+    let options = OpenPanelOptions(
+      allowsMultipleSelection: true,
+      canChooseDirectories: true,
+      canChooseFiles: false,
+      baseOptions: SavePanelOptions())
+    plugin.displayOpenPanel(options: options) { paths in
+      XCTAssertEqual(paths.count, 0)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.openPanel)
+  }
 }
