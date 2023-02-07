@@ -717,9 +717,9 @@ Future<void> main() async {
         ))
         ..loadRequest(Uri.parse(blankPageEncoded));
 
-      await pageLoaded.future;
-
       await tester.pumpWidget(WebViewWidget(controller: controller));
+
+      await pageLoaded.future;
 
       final Completer<String> urlChangeCompleter = Completer<String>();
       await controller.setNavigationDelegate(NavigationDelegate(
