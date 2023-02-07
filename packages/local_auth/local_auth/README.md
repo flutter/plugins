@@ -254,14 +254,11 @@ This will return an error if there was no hardware available.
 
 #### Android theme
 
-You need to update the `LaunchTheme` parent style with a valid `Theme.AppCompat`
-theme to be compatible with **Android version 8 and below**, otherwise the app
-crashes for those versions. For example, use `Theme.AppCompat.DayNight` to
+Your `LaunchTheme`'s parent must be a valid `Theme.AppCompat` theme to prevent
+crashes on Android 8 and below. For example, use `Theme.AppCompat.DayNight` to
 enable light/dark modes for the biometric dialog. To do that go to
 `android/app/src/main/res/values/styles.xml` and look for the style with name
-`LaunchTheme` (Notice that `LaunchTheme` must be referenced in the
-`AndroidManifest.xml` file to apply the changes made in `styles.xml`).
-Then change the parent for that style as follows:
+`LaunchTheme`. Then change the parent for that style as follows:
 
 ```xml
 ...
@@ -274,7 +271,8 @@ Then change the parent for that style as follows:
 ...
 ```
 
-If you don't have a `styles.xml` file for your Android project you can set up the Android theme directly in `android/app/src/main/AndroidManifest.xml`:
+If you don't have a `styles.xml` file for your Android project you can set up
+the Android theme directly in `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 ...
