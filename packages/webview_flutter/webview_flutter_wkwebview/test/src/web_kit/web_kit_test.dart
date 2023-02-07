@@ -9,12 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
-import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart';
+import 'package:webview_flutter_wkwebview/src/common/web_kit.g.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit_api_impls.dart';
 
-import '../common/test_web_kit.pigeon.dart';
+import '../common/test_web_kit.g.dart';
 import 'web_kit_test.mocks.dart';
 
 @GenerateMocks(<Type>[

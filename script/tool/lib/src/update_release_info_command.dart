@@ -107,6 +107,10 @@ class UpdateReleaseInfoCommand extends PackageLoopingCommand {
         break;
       case _versionMinimal:
         final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+        // If the line below fails with "Not a valid object name FETCH_HEAD"
+        // run "git fetch", FETCH_HEAD is a temporary reference that only exists
+        // after a fetch. This can happen when a branch is made locally and
+        // pushed but never fetched.
         _changedFiles = await gitVersionFinder.getChangedFiles();
         // Anothing other than a fixed change is null.
         _versionChange = null;

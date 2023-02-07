@@ -102,9 +102,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     }
 
     @Override
-    public void dispose() {
-      destroy();
-    }
+    public void dispose() {}
 
     @Override
     public void setWebViewClient(WebViewClient webViewClient) {

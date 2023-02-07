@@ -1,3 +1,8 @@
+## 0.1.0+4
+
+* Updates example code for `use_build_context_synchronously` lint.
+* Updates minimum Flutter version to 3.0.
+
 ## 0.1.0+3
 
 * Changes XTypeGroup initialization from final to const.

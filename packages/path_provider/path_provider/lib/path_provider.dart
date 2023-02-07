@@ -45,11 +45,11 @@ PathProviderPlatform get _platform => PathProviderPlatform.instance;
 /// (and cleaning up) files or directories within this directory. This
 /// directory is scoped to the calling application.
 ///
-/// On iOS, this uses the `NSCachesDirectory` API.
+/// Example implementations:
+/// - `NSCachesDirectory` on iOS and macOS.
+/// - `Context.getCacheDir` on Android.
 ///
-/// On Android, this uses the `getCacheDir` API on the context.
-///
-/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// Throws a [MissingPlatformDirectoryException] if the system is unable to
 /// provide the directory.
 Future<Directory> getTemporaryDirectory() async {
   final String? path = await _platform.getTemporaryPath();
@@ -63,15 +63,16 @@ Future<Directory> getTemporaryDirectory() async {
 /// Path to a directory where the application may place application support
 /// files.
 ///
+/// If this directory does not exist, it is created automatically.
+///
 /// Use this for files you don’t want exposed to the user. Your app should not
 /// use this directory for user data files.
 ///
-/// On iOS, this uses the `NSApplicationSupportDirectory` API.
-/// If this directory does not exist, it is created automatically.
+/// Example implementations:
+/// - `NSApplicationSupportDirectory` on iOS and macOS.
+/// - The Flutter engine's `PathUtils.getFilesDir` API on Android.
 ///
-/// On Android, this function uses the `getFilesDir` API on the context.
-///
-/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// Throws a [MissingPlatformDirectoryException] if the system is unable to
 /// provide the directory.
 Future<Directory> getApplicationSupportDirectory() async {
   final String? path = await _platform.getApplicationSupportPath();
@@ -86,10 +87,14 @@ Future<Directory> getApplicationSupportDirectory() async {
 /// Path to the directory where application can store files that are persistent,
 /// backed up, and not visible to the user, such as sqlite.db.
 ///
-/// On Android, this function throws an [UnsupportedError] as no equivalent
-/// path exists.
+/// Example implementations:
+/// - `NSApplicationSupportDirectory` on iOS and macOS.
 ///
-/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// Throws an [UnsupportedError] if this is not supported on the current
+/// platform. For example, this is unlikely to ever be supported on Android,
+/// as no equivalent path exists.
+///
+/// Throws a [MissingPlatformDirectoryException] if the system is unable to
 /// provide the directory on a supported platform.
 Future<Directory> getLibraryDirectory() async {
   final String? path = await _platform.getLibraryPath();
@@ -102,14 +107,14 @@ Future<Directory> getLibraryDirectory() async {
 /// Path to a directory where the application may place data that is
 /// user-generated, or that cannot otherwise be recreated by your application.
 ///
-/// On iOS, this uses the `NSDocumentDirectory` API. Consider using
-/// [getApplicationSupportDirectory] instead if the data is not user-generated.
+/// Consider using another path, such as [getApplicationSupportDirectory] or
+/// [getExternalStorageDirectory], if the data is not user-generated.
 ///
-/// On Android, this uses the `getDataDirectory` API on the context. Consider
-/// using [getExternalStorageDirectory] instead if data is intended to be visible
-/// to the user.
+/// Example implementations:
+/// - `NSDocumentDirectory` on iOS and macOS.
+/// - The Flutter engine's `PathUtils.getDataDirectory` API on Android.
 ///
-/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// Throws a [MissingPlatformDirectoryException] if the system is unable to
 /// provide the directory.
 Future<Directory> getApplicationDocumentsDirectory() async {
   final String? path = await _platform.getApplicationDocumentsPath();
@@ -121,13 +126,13 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 }
 
 /// Path to a directory where the application may access top level storage.
-/// The current operating system should be determined before issuing this
-/// function call, as this functionality is only available on Android.
 ///
-/// On iOS, this function throws an [UnsupportedError] as it is not possible
-/// to access outside the app's sandbox.
+/// Example implementation:
+/// - `getExternalFilesDir(null)` on Android.
 ///
-/// On Android this uses the `getExternalFilesDir(null)`.
+/// Throws an [UnsupportedError] if this is not supported on the current
+/// platform (for example, on iOS where it is not possible to access outside
+/// the app's sandbox).
 Future<Directory?> getExternalStorageDirectory() async {
   final String? path = await _platform.getExternalStoragePath();
   if (path == null) {
@@ -136,19 +141,19 @@ Future<Directory?> getExternalStorageDirectory() async {
   return Directory(path);
 }
 
-/// Paths to directories where application specific external cache data can be
-/// stored. These paths typically reside on external storage like separate
-/// partitions or SD cards. Phones may have multiple storage directories
-/// available.
+/// Paths to directories where application specific cache data can be stored
+/// externally.
 ///
-/// The current operating system should be determined before issuing this
-/// function call, as this functionality is only available on Android.
+/// These paths typically reside on external storage like separate partitions
+/// or SD cards. Phones may have multiple storage directories available.
 ///
-/// On iOS, this function throws an UnsupportedError as it is not possible
-/// to access outside the app's sandbox.
+/// Example implementation:
+/// - Context.getExternalCacheDirs() on Android (or
+///   Context.getExternalCacheDir() on API levels below 19).
 ///
-/// On Android this returns Context.getExternalCacheDirs() or
-/// Context.getExternalCacheDir() on API levels below 19.
+/// Throws an [UnsupportedError] if this is not supported on the current
+/// platform. This is unlikely to ever be supported on any platform other than
+/// Android.
 Future<List<Directory>?> getExternalCacheDirectories() async {
   final List<String>? paths = await _platform.getExternalCachePaths();
   if (paths == null) {
@@ -158,18 +163,19 @@ Future<List<Directory>?> getExternalCacheDirectories() async {
   return paths.map((String path) => Directory(path)).toList();
 }
 
-/// Paths to directories where application specific data can be stored.
+/// Paths to directories where application specific data can be stored
+/// externally.
+///
 /// These paths typically reside on external storage like separate partitions
 /// or SD cards. Phones may have multiple storage directories available.
 ///
-/// The current operating system should be determined before issuing this
-/// function call, as this functionality is only available on Android.
+/// Example implementation:
+/// - Context.getExternalFilesDirs(type) on Android (or
+///   Context.getExternalFilesDir(type) on API levels below 19).
 ///
-/// On iOS, this function throws an UnsupportedError as it is not possible
-/// to access outside the app's sandbox.
-///
-/// On Android this returns Context.getExternalFilesDirs(String type) or
-/// Context.getExternalFilesDir(String type) on API levels below 19.
+/// Throws an [UnsupportedError] if this is not supported on the current
+/// platform. This is unlikely to ever be supported on any platform other than
+/// Android.
 Future<List<Directory>?> getExternalStorageDirectories({
   /// Optional parameter. See [StorageDirectory] for more informations on
   /// how this type translates to Android storage directories.
@@ -185,10 +191,12 @@ Future<List<Directory>?> getExternalStorageDirectories({
 }
 
 /// Path to the directory where downloaded files can be stored.
-/// This is typically only relevant on desktop operating systems.
 ///
-/// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
-/// path exists.
+/// The returned directory is not guaranteed to exist, so clients should verify
+/// that it does before using it, and potentially create it if necessary.
+///
+/// Throws an [UnsupportedError] if this is not supported on the current
+/// platform.
 Future<Directory?> getDownloadsDirectory() async {
   final String? path = await _platform.getDownloadsPath();
   if (path == null) {

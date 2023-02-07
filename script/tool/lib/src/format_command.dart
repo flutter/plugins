@@ -191,10 +191,8 @@ class FormatCommand extends PackageCommand {
         _getPathsWithExtensions(files, <String>{'.dart'});
     if (dartFiles.isNotEmpty) {
       print('Formatting .dart files...');
-      // `flutter format` doesn't require the project to actually be a Flutter
-      // project.
-      final int exitCode = await _runBatched(flutterCommand, <String>['format'],
-          files: dartFiles);
+      final int exitCode =
+          await _runBatched('dart', <String>['format'], files: dartFiles);
       if (exitCode != 0) {
         printError('Failed to format Dart files: exit code $exitCode.');
         throw ToolExit(_exitFlutterFormatFailed);
