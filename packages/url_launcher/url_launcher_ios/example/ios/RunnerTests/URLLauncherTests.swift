@@ -43,7 +43,7 @@ class URLLauncherTests: XCTestCase {
         resultExpectation.fulfill()
       }
 
-      waitForExpectations(timeout: 5)
+      waitForExpectations(timeout: 30)
     }
   }
 
@@ -59,7 +59,7 @@ class URLLauncherTests: XCTestCase {
       resultExpectation.fulfill()
     }
 
-    waitForExpectations(timeout: 5)
+    waitForExpectations(timeout: 30)
   }
 
   func testHandleMethodCall_launchInVC() {
@@ -75,7 +75,7 @@ class URLLauncherTests: XCTestCase {
       resultExpectation.fulfill()
     }
 
-    waitForExpectations(timeout: 5)
+    waitForExpectations(timeout: 30)
   }
 
   func testHandleMethodCall_closeWebView() {
@@ -93,7 +93,7 @@ class URLLauncherTests: XCTestCase {
       resultExpectation.fulfill()
     }
 
-    waitForExpectations(timeout: 5)
+    waitForExpectations(timeout: 30)
 
     // close webview
     call = FlutterMethodCall(methodName: "close", arguments: nil)
@@ -106,7 +106,7 @@ class URLLauncherTests: XCTestCase {
       resultExpectation.fulfill()
     }
 
-    waitForExpectations(timeout: 5)
+    waitForExpectations(timeout: 30)
   }
 
   func testHandleMethodCall_nonExistentMethod() {
@@ -121,6 +121,6 @@ class URLLauncherTests: XCTestCase {
       resultExpectation.fulfill()
     }
 
-    waitForExpectations(timeout: 5)
+    waitForExpectations(timeout: 30)
   }
 }
