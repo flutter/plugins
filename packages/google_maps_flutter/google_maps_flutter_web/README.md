@@ -1,5 +1,7 @@
 # google_maps_flutter_web
 
+<?code-excerpt path-base="excerpts/packages/google_maps_flutter_web_integration_tests"?>
+
 This is an implementation of the [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) plugin for web. Behind the scenes, it uses a14n's [google_maps](https://pub.dev/packages/google_maps) dart JS interop layer.
 
 ## Usage
@@ -53,17 +55,20 @@ Google Maps for web uses `HtmlElementView` to render maps. When a `GoogleMap` is
 
 In order to achieve the best possible performance when using custom marker images on the web platform, the `size` parameter should be used to scale the marker when using `BitmapDescriptor.createFromAsset` or `BitmapDescriptor.createFromBytes` methods.
 
+<?code-excerpt "readme_excerpts.dart (CreateFromAsset)"?>
 ```dart
 final ImageConfiguration imageConfiguration = createLocalImageConfiguration(
   context,
   size: const Size(48, 48),
 );
-BitmapDescriptor bitmapDescriptor = BitmapDescriptor.createFromAsset(
-    imageConfiguration, 'assets/red_square.png');
+final BitmapDescriptor bitmapDescriptor =
+    await BitmapDescriptor.createFromAsset(
+        imageConfiguration, 'assets/red_square.png');
 ```
 
+<?code-excerpt "readme_excerpts.dart (CreateFromBytes)"?>
 ```dart
 final Uint8List bytes = _getMarkerImageBytes();
-BitmapDescriptor bitmapDescriptor = BitmapDescriptor.createFromBytes(
-    bytes, size: const Size(48, 48));
+final BitmapDescriptor bitmapDescriptor =
+    BitmapDescriptor.createFromBytes(bytes, size: const Size(48, 48));
 ```
