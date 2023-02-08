@@ -12,7 +12,7 @@ import io.flutter.embedding.engine.FlutterEngine;
  * App and package facing native API provided by the `webview_flutter_android` plugin.
  *
  * <p>This class follows the convention of breaking changes of the Dart API, which means that any
- * changes to the class that are not backwards compatible will only be done with a major version
+ * changes to the class that are not backwards compatible will only be made with a major version
  * change of the plugin.
  */
 @SuppressWarnings("unused")
