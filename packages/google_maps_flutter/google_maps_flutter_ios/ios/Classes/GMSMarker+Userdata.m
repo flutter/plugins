@@ -6,31 +6,30 @@
 
 @implementation GMSMarker (Userdata)
 
--(void) setMarkerId:(NSString *) markerId {
-    self.userData = @[ markerId ];
+- (void)setMarkerId:(NSString *)markerId {
+  self.userData = @[ markerId ];
 }
 
--(void) setMarkerID:(NSString *) markerId andClusterManagerId:(NSString *) clusterManagerId {
-    self.userData = @[ markerId, clusterManagerId ];
+- (void)setMarkerID:(NSString *)markerId andClusterManagerId:(NSString *)clusterManagerId {
+  self.userData = @[ markerId, clusterManagerId ];
 }
 
--(NSString *) getMarkerId {
-    if ([self.userData count] == 0) {
-        return nil;
-    }
-    return self.userData[0];
+- (NSString *)getMarkerId {
+  if ([self.userData count] == 0) {
+    return nil;
+  }
+  return self.userData[0];
 }
 
--(NSString *) getClusterManagerId {
-    if ([self.userData count] != 2) {
-      return nil;
-    }
+- (NSString *)getClusterManagerId {
+  if ([self.userData count] != 2) {
+    return nil;
+  }
 
-    NSString *clusterManagerId = self.userData[1];
-    if (clusterManagerId == (id)[NSNull null]) {
-      return nil;
-    }
-    return clusterManagerId;
+  NSString *clusterManagerId = self.userData[1];
+  if (clusterManagerId == (id)[NSNull null]) {
+    return nil;
+  }
+  return clusterManagerId;
 }
 @end
-

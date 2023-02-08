@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param markerId Id of marker.
  */
--(void) setMarkerId:(NSString *) markerId;
+- (void)setMarkerId:(NSString *)markerId;
 
 /**
  * Sets MarkerId and ClusterManagerId to GMSMarker UserData.
@@ -21,21 +21,21 @@ NS_ASSUME_NONNULL_BEGIN
  * @param markerId Id of marker.
  * @param clusterManagerId Id of cluster manager.
  */
--(void) setMarkerID:(NSString *) markerId andClusterManagerId:(NSString *) clusterManagerId;
+- (void)setMarkerID:(NSString *)markerId andClusterManagerId:(NSString *)clusterManagerId;
 
 /**
  * Get MarkerId from GMSMarker UserData.
  *
  * @return NSString if found otherwise nil.
  */
--(NSString *) getMarkerId;
+- (NSString *)getMarkerId;
 
 /**
  * Get ClusterManagerId from GMSMarker UserData.
  *
  * @return NSString if found otherwise nil.
  */
--(NSString *) getClusterManagerId;
+- (NSString *)getClusterManagerId;
 
 @end
 

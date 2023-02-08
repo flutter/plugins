@@ -15,7 +15,8 @@
 @end
 
 @implementation FLTClusterManagersController
-- (instancetype)initWithMethodChannel:(FlutterMethodChannel *)methodChannel mapView:(GMSMapView *)mapView {
+- (instancetype)initWithMethodChannel:(FlutterMethodChannel *)methodChannel
+                              mapView:(GMSMapView *)mapView {
   self = [super init];
   if (self) {
     _methodChannel = methodChannel;
@@ -52,7 +53,7 @@
 }
 
 - (GMUClusterManager *)getClusterManagerWithIdentifier:(NSString *)identifier {
-    return [self.clusterManagerIdToManagers objectForKey:identifier];
+  return [self.clusterManagerIdToManagers objectForKey:identifier];
 }
 
 - (void)clusterAll {
@@ -63,68 +64,66 @@
 
 - (void)getClustersWithIdentifier:(NSString *)identifier result:(FlutterResult)result {
   GMUClusterManager *clusterManager = [self.clusterManagerIdToManagers objectForKey:identifier];
-    
-    if (!clusterManager) {
-        result([FlutterError errorWithCode:@"Invalid clusterManagerId"
-                                   message:@"getClusters called with invalid clusterManagerId"
-                                   details:nil]);
-        return;
-    }
-    
-    NSMutableArray *response = [[NSMutableArray alloc] init];
 
-    // Ref: https://github.com/googlemaps/google-maps-ios-utils/blob/main/src/Clustering/GMUClusterManager.m#L94.
-    NSUInteger integralZoom = (NSUInteger)floorf(_mapView.camera.zoom + 0.5f);
-    NSArray<id<GMUCluster>> *clusters = [clusterManager.algorithm clustersAtZoom:integralZoom];
-    for (id<GMUCluster> cluster in clusters) {
+  if (!clusterManager) {
+    result([FlutterError errorWithCode:@"Invalid clusterManagerId"
+                               message:@"getClusters called with invalid clusterManagerId"
+                               details:nil]);
+    return;
+  }
 
-      NSDictionary *clusterDict = [self getClusterDict:cluster];
-      if (clusterDict == nil) {
-            continue;
-      }
-      [response addObject:clusterDict];
+  NSMutableArray *response = [[NSMutableArray alloc] init];
+
+  // Ref:
+  // https://github.com/googlemaps/google-maps-ios-utils/blob/main/src/Clustering/GMUClusterManager.m#L94.
+  NSUInteger integralZoom = (NSUInteger)floorf(_mapView.camera.zoom + 0.5f);
+  NSArray<id<GMUCluster>> *clusters = [clusterManager.algorithm clustersAtZoom:integralZoom];
+  for (id<GMUCluster> cluster in clusters) {
+    NSDictionary *clusterDict = [self getClusterDict:cluster];
+    if (clusterDict == nil) {
+      continue;
     }
-    result(response);
+    [response addObject:clusterDict];
+  }
+  result(response);
 }
 
 - (void)handleTapCluster:(GMUStaticCluster *)cluster {
   NSDictionary *clusterDict = [self getClusterDict:cluster];
   if (clusterDict != nil) {
-      [self.methodChannel
-          invokeMethod:@"cluster#onTap"
-             arguments:clusterDict];
+    [self.methodChannel invokeMethod:@"cluster#onTap" arguments:clusterDict];
   }
 }
 
 - (NSString *)getClusterManagerIdFrom:(GMUStaticCluster *)cluster {
-    if ([cluster.items count] == 0) {
-      return nil;
-    }
+  if ([cluster.items count] == 0) {
+    return nil;
+  }
 
-    GMSMarker *firstMarker = (GMSMarker *)cluster.items[0];
-    return [firstMarker getClusterManagerId];
+  GMSMarker *firstMarker = (GMSMarker *)cluster.items[0];
+  return [firstMarker getClusterManagerId];
 }
 
 - (NSDictionary *)getClusterDict:(GMUStaticCluster *)cluster {
-    NSString *clusterManagerId = [self getClusterManagerIdFrom:cluster];
-    if (clusterManagerId == nil) {
-      return nil;
-    }
+  NSString *clusterManagerId = [self getClusterManagerIdFrom:cluster];
+  if (clusterManagerId == nil) {
+    return nil;
+  }
 
-    NSMutableArray *markerIds = [[NSMutableArray alloc] init];
-    GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] init];
+  NSMutableArray *markerIds = [[NSMutableArray alloc] init];
+  GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] init];
 
-    for (GMSMarker *marker in cluster.items) {
-      [markerIds addObject:[marker getMarkerId]];
-      bounds = [bounds includingCoordinate:marker.position];
-    }
-    
-    return @{
-        @"clusterManagerId" : clusterManagerId,
-        @"position" : [FLTGoogleMapJSONConversions arrayFromLocation:cluster.position],
-        @"bounds" : [FLTGoogleMapJSONConversions dictionaryFromCoordinateBounds:bounds],
-        @"markerIds" : markerIds
-      };
+  for (GMSMarker *marker in cluster.items) {
+    [markerIds addObject:[marker getMarkerId]];
+    bounds = [bounds includingCoordinate:marker.position];
+  }
+
+  return @{
+    @"clusterManagerId" : clusterManagerId,
+    @"position" : [FLTGoogleMapJSONConversions arrayFromLocation:cluster.position],
+    @"bounds" : [FLTGoogleMapJSONConversions dictionaryFromCoordinateBounds:bounds],
+    @"markerIds" : markerIds
+  };
 }
 
 @end

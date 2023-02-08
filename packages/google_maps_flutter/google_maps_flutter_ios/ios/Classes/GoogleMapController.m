@@ -109,8 +109,8 @@
     _mapView.delegate = weakSelf;
     _mapView.paddingAdjustmentBehavior = kGMSMapViewPaddingAdjustmentBehaviorNever;
     _registrar = registrar;
-    _clusterManagersController = [[FLTClusterManagersController alloc] initWithMethodChannel:_channel
-                                                                    mapView:_mapView];
+    _clusterManagersController =
+        [[FLTClusterManagersController alloc] initWithMethodChannel:_channel mapView:_mapView];
     _markersController =
         [[FLTMarkersController alloc] initWithClusterManagersController:_clusterManagersController
                                                                 channel:_channel
@@ -559,15 +559,18 @@
 }
 
 - (void)mapView:(GMSMapView *)mapView didEndDraggingMarker:(GMSMarker *)marker {
-  [self.markersController didEndDraggingMarkerWithIdentifier:[marker getMarkerId] location:marker.position];
+  [self.markersController didEndDraggingMarkerWithIdentifier:[marker getMarkerId]
+                                                    location:marker.position];
 }
 
 - (void)mapView:(GMSMapView *)mapView didStartDraggingMarker:(GMSMarker *)marker {
-  [self.markersController didStartDraggingMarkerWithIdentifier:[marker getMarkerId] location:marker.position];
+  [self.markersController didStartDraggingMarkerWithIdentifier:[marker getMarkerId]
+                                                      location:marker.position];
 }
 
 - (void)mapView:(GMSMapView *)mapView didDragMarker:(GMSMarker *)marker {
-  [self.markersController didDragMarkerWithIdentifier:[marker getMarkerId] location:marker.position];
+  [self.markersController didDragMarkerWithIdentifier:[marker getMarkerId]
+                                             location:marker.position];
 }
 
 - (void)mapView:(GMSMapView *)mapView didTapInfoWindowOfMarker:(GMSMarker *)marker {
