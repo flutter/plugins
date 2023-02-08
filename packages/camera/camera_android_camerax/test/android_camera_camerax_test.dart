@@ -50,19 +50,19 @@ void main() {
     final AndroidCameraCameraX androidCameraCamerax = AndroidCameraCameraX();
     androidCameraCamerax.backCameraSelector = mockBackCameraSelector;
     androidCameraCamerax.frontCameraSelector = mockFrontCameraSelector;
-    androidCameraCamerax.setProcessCameraProvider(mockProcessCameraProvider);
+    androidCameraCamerax.processCameraProvider = mockProcessCameraProvider;
 
     //Mock calls to native platform
     when(mockProcessCameraProvider.getAvailableCameraInfos())
-        .thenAnswer((_) async => [mockBackCameraInfo, mockFrontCameraInfo]);
-    when(mockBackCameraSelector.filter([mockFrontCameraInfo]))
-        .thenAnswer((_) async => []);
-    when(mockBackCameraSelector.filter([mockBackCameraInfo]))
-        .thenAnswer((_) async => [mockBackCameraInfo]);
-    when(mockFrontCameraSelector.filter([mockBackCameraInfo]))
-        .thenAnswer((_) async => []);
-    when(mockFrontCameraSelector.filter([mockFrontCameraInfo]))
-        .thenAnswer((_) async => [mockFrontCameraInfo]);
+        .thenAnswer((_) async => <MockCameraInfo>[mockBackCameraInfo, mockFrontCameraInfo]);
+    when(mockBackCameraSelector.filter(<MockCameraInfo>[mockFrontCameraInfo]))
+        .thenAnswer((_) async => <MockCameraInfo>[]);
+    when(mockBackCameraSelector.filter(<MockCameraInfo>[mockBackCameraInfo]))
+        .thenAnswer((_) async => <MockCameraInfo>[mockBackCameraInfo]);
+    when(mockFrontCameraSelector.filter(<MockCameraInfo>[mockBackCameraInfo]))
+        .thenAnswer((_) async => <MockCameraInfo>[]);
+    when(mockFrontCameraSelector.filter(<MockCameraInfo>[mockFrontCameraInfo]))
+        .thenAnswer((_) async => <MockCameraInfo>[mockFrontCameraInfo]);
     when(mockBackCameraInfo.getSensorRotationDegrees())
         .thenAnswer((_) async => 0);
     when(mockFrontCameraInfo.getSensorRotationDegrees())

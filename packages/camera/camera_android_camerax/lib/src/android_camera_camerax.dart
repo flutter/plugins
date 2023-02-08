@@ -18,9 +18,13 @@ class AndroidCameraCameraX extends CameraPlatform {
     CameraPlatform.instance = AndroidCameraCameraX();
   }
 
-  ProcessCameraProvider? _processCameraProvider;
+  /// ProcessCameraProvider used to get list of cameras. Visible only for testing.
+  @visibleForTesting
+  ProcessCameraProvider? processCameraProvider;
+  /// Camera selector used to determine which CameraInfos are back cameras.
   @visibleForTesting
   CameraSelector? backCameraSelector = CameraSelector.getDefaultBackCamera();
+  /// Camera selector used to determine which CameraInfos are back cameras.
   @visibleForTesting
   CameraSelector? frontCameraSelector = CameraSelector.getDefaultFrontCamera();
 
@@ -29,10 +33,9 @@ class AndroidCameraCameraX extends CameraPlatform {
   Future<List<CameraDescription>> availableCameras() async {
     final List<CameraDescription> cameraDescriptions = <CameraDescription>[];
 
-    _processCameraProvider ??
-        setProcessCameraProvider(await ProcessCameraProvider.getInstance());
+    processCameraProvider ??= await ProcessCameraProvider.getInstance();
     final List<CameraInfo> cameraInfos =
-        await _processCameraProvider!.getAvailableCameraInfos();
+        await processCameraProvider!.getAvailableCameraInfos();
 
     CameraLensDirection? cameraLensDirection;
     int cameraCount = 0;
@@ -64,10 +67,5 @@ class AndroidCameraCameraX extends CameraPlatform {
     }
 
     return cameraDescriptions;
-  }
-
-  @visibleForTesting
-  void setProcessCameraProvider(ProcessCameraProvider processCameraProvider) {
-    this._processCameraProvider = processCameraProvider;
   }
 }

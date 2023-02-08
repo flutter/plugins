@@ -58,9 +58,6 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
     List<Long> filteredCameraInfosIds = new ArrayList<Long>();
 
     for (CameraInfo cameraInfo : filteredCameraInfos) {
-      if (!instanceManager.containsInstance(cameraInfo)) {
-        cameraInfoFlutterApiImpl.create(cameraInfo, result -> {});
-      }
       Long filteredCameraInfoId = instanceManager.getIdentifierForStrongReference(cameraInfo);
       filteredCameraInfosIds.add(filteredCameraInfoId);
     }
