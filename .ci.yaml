@@ -124,9 +124,12 @@ targets:
       version_file: flutter_stable.version
       target_file: ios_build_all_plugins.yaml
 
+  # TODO(stuartmorgan): Change all of the ios_platform_tests_* task timeouts
+  # to 60 minutes once https://github.com/flutter/flutter/issues/119750 is
+  # fixed.
   - name: Mac_arm64 ios_platform_tests_shard_1 master - plugins
     recipe: plugins/plugins
-    timeout: 60
+    timeout: 120
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
@@ -135,7 +138,7 @@ targets:
 
   - name: Mac_arm64 ios_platform_tests_shard_2 master - plugins
     recipe: plugins/plugins
-    timeout: 60
+    timeout: 120
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
@@ -144,7 +147,7 @@ targets:
 
   - name: Mac_arm64 ios_platform_tests_shard_3 master - plugins
     recipe: plugins/plugins
-    timeout: 60
+    timeout: 120
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
@@ -153,7 +156,7 @@ targets:
 
   - name: Mac_arm64 ios_platform_tests_shard_4 master - plugins
     recipe: plugins/plugins
-    timeout: 60
+    timeout: 120
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
@@ -162,7 +165,7 @@ targets:
 
   - name: Mac_arm64 ios_platform_tests_shard_5 master - plugins
     recipe: plugins/plugins
-    timeout: 60
+    timeout: 120
     properties:
       add_recipes_cq: "true"
       version_file: flutter_master.version
@@ -173,7 +176,7 @@ targets:
   - name: Mac_arm64 ios_platform_tests_shard_1 stable - plugins
     recipe: plugins/plugins
     presubmit: false
-    timeout: 60
+    timeout: 120
     properties:
       channel: stable
       add_recipes_cq: "true"
@@ -184,7 +187,7 @@ targets:
   - name: Mac_arm64 ios_platform_tests_shard_2 stable - plugins
     recipe: plugins/plugins
     presubmit: false
-    timeout: 60
+    timeout: 120
     properties:
       channel: stable
       add_recipes_cq: "true"
@@ -195,7 +198,7 @@ targets:
   - name: Mac_arm64 ios_platform_tests_shard_3 stable - plugins
     recipe: plugins/plugins
     presubmit: false
-    timeout: 60
+    timeout: 120
     properties:
       channel: stable
       add_recipes_cq: "true"
@@ -206,7 +209,7 @@ targets:
   - name: Mac_arm64 ios_platform_tests_shard_4 stable - plugins
     recipe: plugins/plugins
     presubmit: false
-    timeout: 60
+    timeout: 120
     properties:
       channel: stable
       add_recipes_cq: "true"
@@ -217,7 +220,7 @@ targets:
   - name: Mac_arm64 ios_platform_tests_shard_5 stable - plugins
     recipe: plugins/plugins
     presubmit: false
-    timeout: 60
+    timeout: 120
     properties:
       channel: stable
       add_recipes_cq: "true"
