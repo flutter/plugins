@@ -49,7 +49,6 @@ class ClusterManagersController implements GoogleMap.OnCameraIdleListener, Clust
     initListenersForClusterManagers(this, listener);
   }
 
-  /** Initializes listeners for all ClusterManagers. */
   private void initListenersForClusterManagers(
       @Nullable ClusterListener clusterListener,
       @Nullable ClusterItemListener clusterItemListener) {
@@ -59,7 +58,6 @@ class ClusterManagersController implements GoogleMap.OnCameraIdleListener, Clust
     }
   }
 
-  /** Initializes listeners for ClusterManager. */
   private void initListenersForClusterManager(
       ClusterManager<MarkerBuilder> clusterManager,
       @Nullable ClusterListener clusterListener,
@@ -105,7 +103,6 @@ class ClusterManagersController implements GoogleMap.OnCameraIdleListener, Clust
     }
   }
 
-  /** Removes ClusterManager by ID. */
   private void removeClusterManager(Object clusterManagerId) {
     final ClusterManager<MarkerBuilder> clusterManager =
         clusterManagerIdToManager.remove(clusterManagerId);
