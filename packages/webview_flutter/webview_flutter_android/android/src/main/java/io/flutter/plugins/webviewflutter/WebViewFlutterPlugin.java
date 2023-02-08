@@ -43,37 +43,6 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private JavaScriptChannelHostApiImpl javaScriptChannelHostApi;
 
   /**
-   * Retrieves the {@link WebView} that is associated with `identifer`.
-   *
-   * <p>See the Dart method `AndroidWebViewController.webViewIdentifier` to get the identifier of an
-   * underlying `WebView`.
-   *
-   * @param engine the execution environment the {@link WebViewFlutterPlugin} should belong to. If
-   *     the engine doesn't contain an attached instance of {@link WebViewFlutterPlugin}, this
-   *     method returns null.
-   * @param identifier the associated identifier of the `WebView`.
-   * @return the `WebView` associated with `identifier` or null if a `WebView` instance associated
-   *     with `identifier` could not be found.
-   */
-  @SuppressWarnings("unused")
-  @Nullable
-  public static WebView getWebView(FlutterEngine engine, long identifier) {
-    final WebViewFlutterPlugin webViewPlugin =
-        (WebViewFlutterPlugin) engine.getPlugins().get(WebViewFlutterPlugin.class);
-
-    if (webViewPlugin == null || webViewPlugin.instanceManager == null) {
-      return null;
-    }
-
-    final Object instance = webViewPlugin.instanceManager.getInstance(identifier);
-    if (instance instanceof WebView) {
-      return (WebView) instance;
-    }
-
-    return null;
-  }
-
-  /**
    * Add an instance of this to {@link io.flutter.embedding.engine.plugins.PluginRegistry} to
    * register it.
    *
@@ -216,7 +185,6 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   /** Maintains instances used to communicate with the corresponding objects in Dart. */
   @Nullable
-  @VisibleForTesting
   public InstanceManager getInstanceManager() {
     return instanceManager;
   }

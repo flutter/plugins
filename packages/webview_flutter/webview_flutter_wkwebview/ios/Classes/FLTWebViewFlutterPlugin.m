@@ -108,19 +108,6 @@
   [registrar publish:instanceManager];
 }
 
-+ (nullable WKWebView *)webViewForIdentifier:(long)identifier
-                          withPluginRegistry:(id<FlutterPluginRegistry>)registry {
-  FWFInstanceManager *instanceManager =
-      (FWFInstanceManager *)[registry valuePublishedByPlugin:@"FLTWebViewFlutterPlugin"];
-
-  NSObject *instance = [instanceManager instanceForIdentifier:identifier];
-  if ([instance isKindOfClass:[WKWebView class]]) {
-    return (WKWebView *)instance;
-  }
-
-  return nil;
-}
-
 - (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   [registrar publish:[NSNull null]];
 }

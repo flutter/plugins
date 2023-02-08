@@ -11,27 +11,34 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.webkit.WebView;
-import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.embedding.engine.plugins.PluginRegistry;
-import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.platform.PlatformViewRegistry;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-public class WebViewFlutterPluginTest {
-  @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.PluginRegistry;
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.platform.PlatformViewRegistry;
 
-  @Mock Context mockContext;
+public class WebViewFlutterAndroidExternalApiTest {
+  @Rule
+  public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock BinaryMessenger mockBinaryMessenger;
+  @Mock
+  Context mockContext;
 
-  @Mock PlatformViewRegistry mockViewRegistry;
+  @Mock
+  BinaryMessenger mockBinaryMessenger;
 
-  @Mock FlutterPlugin.FlutterPluginBinding mockPluginBinding;
+  @Mock
+  PlatformViewRegistry mockViewRegistry;
+
+  @Mock
+  FlutterPlugin.FlutterPluginBinding mockPluginBinding;
 
   @Test
   public void getWebView() {
@@ -55,7 +62,7 @@ public class WebViewFlutterPluginTest {
     final FlutterEngine mockFlutterEngine = mock(FlutterEngine.class);
     when(mockFlutterEngine.getPlugins()).thenReturn(mockPluginRegistry);
 
-    assertEquals(WebViewFlutterPlugin.getWebView(mockFlutterEngine, 0), mockWebView);
+    assertEquals(WebViewFlutterAndroidExternalApi.getWebView(mockFlutterEngine, 0), mockWebView);
 
     webViewFlutterPlugin.onDetachedFromEngine(mockPluginBinding);
   }

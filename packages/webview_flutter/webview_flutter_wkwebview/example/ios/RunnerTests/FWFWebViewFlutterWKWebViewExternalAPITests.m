@@ -7,10 +7,10 @@
 
 @import webview_flutter_wkwebview;
 
-@interface FLTWebViewFlutterPluginTests : XCTestCase
+@interface FWFWebViewFlutterWKWebViewExternalAPITests : XCTestCase
 @end
 
-@implementation FLTWebViewFlutterPluginTests
+@implementation FWFWebViewFlutterWKWebViewExternalAPITests
 - (void)testWebViewForIdentifier {
   WKWebView *webView = [[WKWebView alloc] init];
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
@@ -20,7 +20,7 @@
   OCMStub([mockPluginRegistry valuePublishedByPlugin:@"FLTWebViewFlutterPlugin"])
       .andReturn(instanceManager);
 
-  XCTAssertEqualObjects([FLTWebViewFlutterPlugin webViewForIdentifier:0
+  XCTAssertEqualObjects([FWFWebViewFlutterWKWebViewExternalAPI webViewForIdentifier:0
                                                    withPluginRegistry:mockPluginRegistry],
                         webView);
 }
