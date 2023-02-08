@@ -54,7 +54,7 @@ void main() {
 
     //Mock calls to native platform
     when(mockProcessCameraProvider.getAvailableCameraInfos()).thenAnswer(
-            (_) async => <MockCameraInfo>[mockBackCameraInfo, mockFrontCameraInfo]);
+        (_) async => <MockCameraInfo>[mockBackCameraInfo, mockFrontCameraInfo]);
     when(mockBackCameraSelector.filter(<MockCameraInfo>[mockFrontCameraInfo]))
         .thenAnswer((_) async => <MockCameraInfo>[]);
     when(mockBackCameraSelector.filter(<MockCameraInfo>[mockBackCameraInfo]))
