@@ -598,7 +598,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
-					"$(SDKROOT)/usr/lib/swift",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.urlLauncher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -623,7 +622,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
-					"$(SDKROOT)/usr/lib/swift",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.urlLauncher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
