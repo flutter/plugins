@@ -10,7 +10,6 @@
 		2D92223F1EC1DA93007564B0 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D92223E1EC1DA93007564B0 /* GeneratedPluginRegistrant.m */; };
 		2E37D9A274B2EACB147AC51B /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 856D0913184F79C678A42603 /* libPods-Runner.a */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		4100EAD2298F9DC900CBDEBB /* libswiftWebKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4100EAD1298F9DC900CBDEBB /* libswiftWebKit.tbd */; };
 		412154C429928BD30070F8F7 /* URLLauncherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412154C329928BD30070F8F7 /* URLLauncherTests.swift */; };
 		412154C629928CE50070F8F7 /* URLLauncherUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412154C529928CE50070F8F7 /* URLLauncherUITests.swift */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
@@ -55,7 +54,6 @@
 		2D92223D1EC1DA93007564B0 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeneratedPluginRegistrant.h; path = Runner/GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		2D92223E1EC1DA93007564B0 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GeneratedPluginRegistrant.m; path = Runner/GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
-		4100EAD1298F9DC900CBDEBB /* libswiftWebKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftWebKit.tbd; path = usr/lib/swift/libswiftWebKit.tbd; sourceTree = SDKROOT; };
 		412154C329928BD30070F8F7 /* URLLauncherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLLauncherTests.swift; sourceTree = "<group>"; };
 		412154C529928CE50070F8F7 /* URLLauncherUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLLauncherUITests.swift; sourceTree = "<group>"; };
 		487A1B5A2ECB3E406FD62FE3 /* libPods-RunnerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RunnerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,7 +84,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4100EAD2298F9DC900CBDEBB /* libswiftWebKit.tbd in Frameworks */,
 				2E37D9A274B2EACB147AC51B /* libPods-Runner.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -181,7 +178,6 @@
 		CF3B75C9A7D2FA2A4C99F110 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4100EAD1298F9DC900CBDEBB /* libswiftWebKit.tbd */,
 				856D0913184F79C678A42603 /* libPods-Runner.a */,
 				487A1B5A2ECB3E406FD62FE3 /* libPods-RunnerTests.a */,
 			);
@@ -650,7 +646,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
@@ -673,7 +668,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
