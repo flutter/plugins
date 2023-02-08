@@ -180,8 +180,8 @@ void main() {
             (WidgetTester tester) async {
           controller.dispose();
 
-          expect(() {
-            controller.updateMarkers(
+          expect(() async {
+            await controller.updateMarkers(
               MarkerUpdates.from(
                 const <Marker>{},
                 const <Marker>{},
@@ -616,7 +616,7 @@ void main() {
           const Marker(markerId: MarkerId('to-be-added')),
         };
 
-        controller.updateMarkers(MarkerUpdates.from(previous, current));
+        await controller.updateMarkers(MarkerUpdates.from(previous, current));
 
         verify(mock.removeMarkers(<MarkerId>{
           const MarkerId('to-be-removed'),

@@ -48,7 +48,8 @@ public class MarkersControllerTest {
   public void controller_OnMarkerDragStart() {
     final MethodChannel methodChannel =
         spy(new MethodChannel(mock(BinaryMessenger.class), "no-name", mock(MethodCodec.class)));
-    final MarkersController controller = new MarkersController(methodChannel, assetManager, density);
+    final MarkersController controller =
+        new MarkersController(methodChannel, assetManager, density);
     final GoogleMap googleMap = mock(GoogleMap.class);
     controller.setGoogleMap(googleMap);
 
@@ -81,7 +82,8 @@ public class MarkersControllerTest {
   public void controller_OnMarkerDragEnd() {
     final MethodChannel methodChannel =
         spy(new MethodChannel(mock(BinaryMessenger.class), "no-name", mock(MethodCodec.class)));
-    final MarkersController controller = new MarkersController(methodChannel, assetManager, density);
+    final MarkersController controller =
+        new MarkersController(methodChannel, assetManager, density);
     final GoogleMap googleMap = mock(GoogleMap.class);
     controller.setGoogleMap(googleMap);
 
@@ -114,7 +116,8 @@ public class MarkersControllerTest {
   public void controller_OnMarkerDrag() {
     final MethodChannel methodChannel =
         spy(new MethodChannel(mock(BinaryMessenger.class), "no-name", mock(MethodCodec.class)));
-    final MarkersController controller = new MarkersController(methodChannel, assetManager, density);
+    final MarkersController controller =
+        new MarkersController(methodChannel, assetManager, density);
     final GoogleMap googleMap = mock(GoogleMap.class);
     controller.setGoogleMap(googleMap);
 
