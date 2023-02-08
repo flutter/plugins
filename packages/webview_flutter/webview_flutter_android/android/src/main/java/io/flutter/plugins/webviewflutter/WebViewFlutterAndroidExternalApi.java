@@ -5,15 +5,13 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.webkit.WebView;
-
 import androidx.annotation.Nullable;
-
 import io.flutter.embedding.engine.FlutterEngine;
 
 /**
  * App and package facing native API provided by the `webview_flutter_android` plugin.
  *
- * This class follows the convention of breaking changes of the Dart API, which means that any
+ * <p>This class follows the convention of breaking changes of the Dart API, which means that any
  * changes to the class that are not backwards compatible will only be done with a major version
  * change of the plugin.
  */

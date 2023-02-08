@@ -20,8 +20,9 @@
   OCMStub([mockPluginRegistry valuePublishedByPlugin:@"FLTWebViewFlutterPlugin"])
       .andReturn(instanceManager);
 
-  XCTAssertEqualObjects([FWFWebViewFlutterWKWebViewExternalAPI webViewForIdentifier:0
-                                                   withPluginRegistry:mockPluginRegistry],
-                        webView);
+  XCTAssertEqualObjects(
+      [FWFWebViewFlutterWKWebViewExternalAPI webViewForIdentifier:0
+                                               withPluginRegistry:mockPluginRegistry],
+      webView);
 }
 @end
