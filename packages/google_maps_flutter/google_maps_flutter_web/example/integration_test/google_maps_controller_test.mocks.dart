@@ -3,6 +3,8 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _i5;
+
 import 'package:google_maps/google_maps.dart' as _i2;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
     as _i4;
@@ -336,21 +338,25 @@ class MockMarkersController extends _i1.Mock implements _i3.MarkersController {
         returnValueForMissingStub: null,
       );
   @override
-  void addMarkers(Set<_i4.Marker>? markersToAdd) => super.noSuchMethod(
+  _i5.Future<void> addMarkers(Set<_i4.Marker>? markersToAdd) =>
+      (super.noSuchMethod(
         Invocation.method(
           #addMarkers,
           [markersToAdd],
         ),
-        returnValueForMissingStub: null,
-      );
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
   @override
-  void changeMarkers(Set<_i4.Marker>? markersToChange) => super.noSuchMethod(
+  _i5.Future<void> changeMarkers(Set<_i4.Marker>? markersToChange) =>
+      (super.noSuchMethod(
         Invocation.method(
           #changeMarkers,
           [markersToChange],
         ),
-        returnValueForMissingStub: null,
-      );
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
   @override
   void removeMarkers(Set<_i4.MarkerId>? markerIdsToRemove) =>
       super.noSuchMethod(

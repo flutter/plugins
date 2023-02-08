@@ -253,13 +253,15 @@ class MockGoogleMapController extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void updateMarkers(_i3.MarkerUpdates? updates) => super.noSuchMethod(
+  _i2.Future<void> updateMarkers(_i3.MarkerUpdates? updates) =>
+      (super.noSuchMethod(
         Invocation.method(
           #updateMarkers,
           [updates],
         ),
-        returnValueForMissingStub: null,
-      );
+        returnValue: _i2.Future<void>.value(),
+        returnValueForMissingStub: _i2.Future<void>.value(),
+      ) as _i2.Future<void>);
   @override
   void showInfoWindow(_i3.MarkerId? markerId) => super.noSuchMethod(
         Invocation.method(
