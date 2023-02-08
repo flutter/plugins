@@ -21,9 +21,11 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// ProcessCameraProvider used to get list of cameras. Visible only for testing.
   @visibleForTesting
   ProcessCameraProvider? processCameraProvider;
+
   /// Camera selector used to determine which CameraInfos are back cameras.
   @visibleForTesting
   CameraSelector? backCameraSelector = CameraSelector.getDefaultBackCamera();
+
   /// Camera selector used to determine which CameraInfos are back cameras.
   @visibleForTesting
   CameraSelector? frontCameraSelector = CameraSelector.getDefaultFrontCamera();
