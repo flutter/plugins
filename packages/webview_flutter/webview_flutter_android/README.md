@@ -34,9 +34,10 @@ for more details on setting platform-specific features in the main plugin.
 
 ### External Native API
 
-The plugin also provides a native API for interacting with Android applications. This API follows the
-convention of breaking changes of the Dart API, which means that any changes to the class that are
-not backwards compatible will only be made with a major version change of the plugin.
+The plugin also provides a native API accessible by the native code of Android applications or
+packages. This API follows the convention of breaking changes of the Dart API, which means that any
+changes to the class that are not backwards compatible will only be made with a major version change
+of the plugin.
 
 The API can be accessed by importing the native class `WebViewFlutterAndroidExternalApi`.:
 
