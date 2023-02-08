@@ -9,7 +9,7 @@ normally. This package will be automatically included in your app when you do.
 
 ### External Native API
 
-The plugin also provides a native API for interacting for Android applications. This API follows the
+The plugin also provides a native API for interacting for iOS applications. This API follows the
 convention of breaking changes of the Dart API, which means that any changes to the class that are
 not backwards compatible will only be made with a major version change of the plugin.
 
