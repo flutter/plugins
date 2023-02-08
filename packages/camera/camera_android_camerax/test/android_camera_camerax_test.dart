@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:camera_android_camerax/camera_android_camerax.dart';
 import 'package:camera_android_camerax/src/camera_info.dart';
 import 'package:camera_android_camerax/src/camera_selector.dart';
@@ -44,8 +48,8 @@ void main() {
 
     //Set class level ProcessCameraProvider and camera selectors to created mocks
     final AndroidCameraCameraX androidCameraCamerax = AndroidCameraCameraX();
-    androidCameraCamerax.setDefaultBackCameraSelector(mockBackCameraSelector);
-    androidCameraCamerax.setDefaultFrontCameraSelector(mockFrontCameraSelector);
+    androidCameraCamerax.backCameraSelector = mockBackCameraSelector;
+    androidCameraCamerax.frontCameraSelector = mockFrontCameraSelector;
     androidCameraCamerax.setProcessCameraProvider(mockProcessCameraProvider);
 
     //Mock calls to native platform

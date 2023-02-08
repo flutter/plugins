@@ -24,13 +24,13 @@ class AndroidCameraCameraX extends CameraPlatform {
   @visibleForTesting
   CameraSelector? frontCameraSelector = CameraSelector.getDefaultFrontCamera();
 
-
   /// Returns list of all available cameras and their descriptions.
   @override
   Future<List<CameraDescription>> availableCameras() async {
     final List<CameraDescription> cameraDescriptions = <CameraDescription>[];
 
-    setProcessCameraProvider(await ProcessCameraProvider.getInstance());
+    _processCameraProvider ??
+        setProcessCameraProvider(await ProcessCameraProvider.getInstance());
     final List<CameraInfo> cameraInfos =
         await _processCameraProvider!.getAvailableCameraInfos();
 
@@ -68,6 +68,6 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   @visibleForTesting
   void setProcessCameraProvider(ProcessCameraProvider processCameraProvider) {
-    this._processCameraProvider ??= processCameraProvider;
+    this._processCameraProvider = processCameraProvider;
   }
 }
