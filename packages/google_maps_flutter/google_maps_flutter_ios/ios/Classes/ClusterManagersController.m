@@ -31,9 +31,9 @@
     id<GMUClusterAlgorithm> algorithm = [[GMUNonHierarchicalDistanceBasedAlgorithm alloc] init];
     id<GMUClusterIconGenerator> iconGenerator = [[GMUDefaultClusterIconGenerator alloc] init];
     id<GMUClusterRenderer> renderer =
-        [[GMUDefaultClusterRenderer alloc] initWithMapView:_mapView
+        [[GMUDefaultClusterRenderer alloc] initWithMapView:self.mapView
                                       clusterIconGenerator:iconGenerator];
-    GMUClusterManager *clusterManager = [[GMUClusterManager alloc] initWithMap:_mapView
+    GMUClusterManager *clusterManager = [[GMUClusterManager alloc] initWithMap:self.mapView
                                                                      algorithm:algorithm
                                                                       renderer:renderer];
     self.clusterManagerIdToManagers[identifier] = clusterManager;
