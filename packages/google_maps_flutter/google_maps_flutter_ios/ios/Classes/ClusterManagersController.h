@@ -2,17 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+@import GoogleMapsUtils;
 #import <Flutter/Flutter.h>
-#import <Google-Maps-iOS-Utils/GMUClusterAlgorithm.h>
-#import <Google-Maps-iOS-Utils/GMUClusterIconGenerator.h>
-#import <Google-Maps-iOS-Utils/GMUClusterManager.h>
-#import <Google-Maps-iOS-Utils/GMUClusterRenderer.h>
-#import <Google-Maps-iOS-Utils/GMUDefaultClusterIconGenerator.h>
-#import <Google-Maps-iOS-Utils/GMUDefaultClusterRenderer.h>
-#import <Google-Maps-iOS-Utils/GMUGridBasedClusterAlgorithm.h>
-#import <Google-Maps-iOS-Utils/GMUNonHierarchicalDistanceBasedAlgorithm.h>
-#import <Google-Maps-iOS-Utils/GMUSimpleClusterAlgorithm.h>
-#import <Google-Maps-iOS-Utils/GMUStaticCluster.h>
 #import <GoogleMaps/GoogleMaps.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -26,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param methodChannel A Flutter method channel used to send events.
  * @param mapView A map view that will be used to display clustered markers.
  */
-- (instancetype)init:(FlutterMethodChannel *)methodChannel mapView:(GMSMapView *)mapView;
+- (instancetype)initWithMethodChannel:(FlutterMethodChannel *)methodChannel mapView:(GMSMapView *)mapView;
 
 /**
  * Creates ClusterManagers and initializes them.
@@ -42,21 +33,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)removeClusterManagers:(NSArray *)identifiers;
 
-/**
- * Adds marker to specific ClusterManager.
- *
- * @param marker GMSMArker object to be added to the ClusterManager.
- * @param clusterManagerId identifier of the ClusterManager.
- */
-- (void)addItem:(GMSMarker *)marker clusterManagerId:(NSString *)clusterManagerId;
 
 /**
- * Removes marker from specific ClusterManager.
+ * Get ClusterManager for the given id.
  *
- * @param marker GMSMArker object to be removed from the ClusterManager.
- * @param clusterManagerId identifier of the ClusterManager.
+ * @param identifier identifier of the ClusterManager.
+ * @return GMUClusterManager if found otherwise NSNull.
  */
-- (void)removeItem:(GMSMarker *)marker clusterManagerId:(NSString *)clusterManagerId;
+- (GMUClusterManager *)getClusterManagerWithIdentifier:(NSString *)identifier;
 
 /**
  * Converts all clusters from the specific ClusterManager to result object response.
@@ -71,9 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param cluster GMUStaticCluster object.
  */
-- (bool)didTapCluster:(GMUStaticCluster *)cluster;
+- (void)handleTapCluster:(GMUStaticCluster *)cluster;
 
-// Calls cluster method of all ClusterManagers.
+/// Calls cluster method of all ClusterManagers.
 - (void)clusterAll;
 @end
 
