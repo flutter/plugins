@@ -1,1 +1,1 @@
-../shared/in_app_purchase_storekit.podspec
+../darwin/in_app_purchase_storekit.podspec

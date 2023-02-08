@@ -1,1 +1,1 @@
-../../shared/Classes/InAppPurchasePlugin.m
+../../darwin/Classes/InAppPurchasePlugin.m

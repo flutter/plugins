@@ -6,8 +6,8 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(
   PigeonOptions(
-    dartOut: 'lib/src/camerax_library.pigeon.dart',
-    dartTestOut: 'test/test_camerax_library.pigeon.dart',
+    dartOut: 'lib/src/camerax_library.g.dart',
+    dartTestOut: 'test/test_camerax_library.g.dart',
     dartOptions: DartOptions(copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
       'Use of this source code is governed by a BSD-style license that can be',
@@ -26,6 +26,16 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
+class ResolutionInfo {
+  ResolutionInfo({
+    required this.width,
+    required this.height,
+  });
+
+  int width;
+  int height;
+}
+
 class CameraPermissionsErrorData {
   CameraPermissionsErrorData({
     required this.errorCode,
@@ -107,4 +117,17 @@ abstract class SystemServicesHostApi {
 @FlutterApi()
 abstract class SystemServicesFlutterApi {
   void onDeviceOrientationChanged(String orientation);
+
+  void onCameraError(String errorDescription);
+}
+
+@HostApi(dartHostTestHandler: 'TestPreviewHostApi')
+abstract class PreviewHostApi {
+  void create(int identifier, int? rotation, ResolutionInfo? targetResolution);
+
+  int setSurfaceProvider(int identifier);
+
+  void releaseFlutterSurfaceTexture();
+
+  ResolutionInfo getResolutionInfo(int identifier);
 }

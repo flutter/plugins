@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.3.1'
     }
 }
 
@@ -22,7 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 16
@@ -51,7 +51,7 @@ android {
 }
 
 dependencies {
-    api "androidx.core:core:1.8.0"
+    api "androidx.core:core:1.9.0"
     api "androidx.biometric:biometric:1.1.0"
     api "androidx.fragment:fragment:1.5.5"
     testImplementation 'junit:junit:4.13.2'

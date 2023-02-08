@@ -130,8 +130,8 @@ class CreateAllPackagesAppCommand extends PackageCommand {
         // minSdkVersion 19 is required by WebView.
         newGradle.writeln('minSdkVersion 20');
       } else if (line.contains('compileSdkVersion')) {
-        // compileSdkVersion 32 is required by webview_flutter.
-        newGradle.writeln('compileSdkVersion 32');
+        // compileSdkVersion 33 is required by local_auth.
+        newGradle.writeln('compileSdkVersion 33');
       } else {
         newGradle.writeln(line);
       }

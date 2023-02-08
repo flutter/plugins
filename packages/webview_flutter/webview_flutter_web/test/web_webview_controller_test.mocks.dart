@@ -55,24 +55,23 @@ class _FakeHttpRequest_2 extends _i1.SmartFake implements _i2.HttpRequest {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockHttpRequest extends _i1.Mock implements _i2.HttpRequest {
-  MockHttpRequest() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   Map<String, String> get responseHeaders => (super.noSuchMethod(
         Invocation.getter(#responseHeaders),
         returnValue: <String, String>{},
+        returnValueForMissingStub: <String, String>{},
       ) as Map<String, String>);
   @override
   int get readyState => (super.noSuchMethod(
         Invocation.getter(#readyState),
         returnValue: 0,
+        returnValueForMissingStub: 0,
       ) as int);
   @override
   String get responseType => (super.noSuchMethod(
         Invocation.getter(#responseType),
         returnValue: '',
+        returnValueForMissingStub: '',
       ) as String);
   @override
   set responseType(String? value) => super.noSuchMethod(
@@ -97,6 +96,10 @@ class MockHttpRequest extends _i1.Mock implements _i2.HttpRequest {
           this,
           Invocation.getter(#upload),
         ),
+        returnValueForMissingStub: _FakeHttpRequestUpload_0(
+          this,
+          Invocation.getter(#upload),
+        ),
       ) as _i2.HttpRequestUpload);
   @override
   set withCredentials(bool? value) => super.noSuchMethod(
@@ -110,46 +113,58 @@ class MockHttpRequest extends _i1.Mock implements _i2.HttpRequest {
   _i3.Stream<_i2.Event> get onReadyStateChange => (super.noSuchMethod(
         Invocation.getter(#onReadyStateChange),
         returnValue: _i3.Stream<_i2.Event>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.Event>.empty(),
       ) as _i3.Stream<_i2.Event>);
   @override
   _i3.Stream<_i2.ProgressEvent> get onAbort => (super.noSuchMethod(
         Invocation.getter(#onAbort),
         returnValue: _i3.Stream<_i2.ProgressEvent>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.ProgressEvent>.empty(),
       ) as _i3.Stream<_i2.ProgressEvent>);
   @override
   _i3.Stream<_i2.ProgressEvent> get onError => (super.noSuchMethod(
         Invocation.getter(#onError),
         returnValue: _i3.Stream<_i2.ProgressEvent>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.ProgressEvent>.empty(),
       ) as _i3.Stream<_i2.ProgressEvent>);
   @override
   _i3.Stream<_i2.ProgressEvent> get onLoad => (super.noSuchMethod(
         Invocation.getter(#onLoad),
         returnValue: _i3.Stream<_i2.ProgressEvent>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.ProgressEvent>.empty(),
       ) as _i3.Stream<_i2.ProgressEvent>);
   @override
   _i3.Stream<_i2.ProgressEvent> get onLoadEnd => (super.noSuchMethod(
         Invocation.getter(#onLoadEnd),
         returnValue: _i3.Stream<_i2.ProgressEvent>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.ProgressEvent>.empty(),
       ) as _i3.Stream<_i2.ProgressEvent>);
   @override
   _i3.Stream<_i2.ProgressEvent> get onLoadStart => (super.noSuchMethod(
         Invocation.getter(#onLoadStart),
         returnValue: _i3.Stream<_i2.ProgressEvent>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.ProgressEvent>.empty(),
       ) as _i3.Stream<_i2.ProgressEvent>);
   @override
   _i3.Stream<_i2.ProgressEvent> get onProgress => (super.noSuchMethod(
         Invocation.getter(#onProgress),
         returnValue: _i3.Stream<_i2.ProgressEvent>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.ProgressEvent>.empty(),
       ) as _i3.Stream<_i2.ProgressEvent>);
   @override
   _i3.Stream<_i2.ProgressEvent> get onTimeout => (super.noSuchMethod(
         Invocation.getter(#onTimeout),
         returnValue: _i3.Stream<_i2.ProgressEvent>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.ProgressEvent>.empty(),
       ) as _i3.Stream<_i2.ProgressEvent>);
   @override
   _i2.Events get on => (super.noSuchMethod(
         Invocation.getter(#on),
         returnValue: _FakeEvents_1(
+          this,
+          Invocation.getter(#on),
+        ),
+        returnValueForMissingStub: _FakeEvents_1(
           this,
           Invocation.getter(#on),
         ),
@@ -192,13 +207,16 @@ class MockHttpRequest extends _i1.Mock implements _i2.HttpRequest {
           [],
         ),
         returnValue: '',
+        returnValueForMissingStub: '',
       ) as String);
   @override
-  String? getResponseHeader(String? name) =>
-      (super.noSuchMethod(Invocation.method(
-        #getResponseHeader,
-        [name],
-      )) as String?);
+  String? getResponseHeader(String? name) => (super.noSuchMethod(
+        Invocation.method(
+          #getResponseHeader,
+          [name],
+        ),
+        returnValueForMissingStub: null,
+      ) as String?);
   @override
   void overrideMimeType(String? mime) => super.noSuchMethod(
         Invocation.method(
@@ -271,6 +289,7 @@ class MockHttpRequest extends _i1.Mock implements _i2.HttpRequest {
           [event],
         ),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
 }
 
@@ -279,10 +298,6 @@ class MockHttpRequest extends _i1.Mock implements _i2.HttpRequest {
 /// See the documentation for Mockito's code generation for more information.
 class MockHttpRequestFactory extends _i1.Mock
     implements _i4.HttpRequestFactory {
-  MockHttpRequestFactory() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i3.Future<_i2.HttpRequest> request(
     String? url, {
@@ -309,6 +324,23 @@ class MockHttpRequestFactory extends _i1.Mock
           },
         ),
         returnValue: _i3.Future<_i2.HttpRequest>.value(_FakeHttpRequest_2(
+          this,
+          Invocation.method(
+            #request,
+            [url],
+            {
+              #method: method,
+              #withCredentials: withCredentials,
+              #responseType: responseType,
+              #mimeType: mimeType,
+              #requestHeaders: requestHeaders,
+              #sendData: sendData,
+              #onProgress: onProgress,
+            },
+          ),
+        )),
+        returnValueForMissingStub:
+            _i3.Future<_i2.HttpRequest>.value(_FakeHttpRequest_2(
           this,
           Invocation.method(
             #request,
