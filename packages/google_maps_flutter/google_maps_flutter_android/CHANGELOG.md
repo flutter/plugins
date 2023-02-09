@@ -1,6 +1,6 @@
 ## 2.4.5
 
-* Fixes Initial Padding not working when map has not been created yet.
+* Fixes Initial padding not working when map has not been created yet.
 
 ## 2.4.4
 
