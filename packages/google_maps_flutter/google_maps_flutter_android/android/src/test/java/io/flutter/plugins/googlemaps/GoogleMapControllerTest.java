@@ -152,7 +152,7 @@ public class GoogleMapControllerTest {
   @Test
   public void OnMapReadySetsPaddingIfInitialPaddingIsThere() {
     float padding = 10f;
-    int paddingWithDensity = (int) (10f * googleMapController.density);
+    int paddingWithDensity = (int) (padding * googleMapController.density);
     googleMapController.setInitialPadding(padding, padding, padding, padding);
     googleMapController.onMapReady(mockGoogleMap);
     verify(mockGoogleMap, times(1))
