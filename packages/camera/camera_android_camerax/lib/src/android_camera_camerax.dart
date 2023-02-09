@@ -134,10 +134,10 @@ class AndroidCameraCameraX extends CameraPlatform {
       preview != null,
       'Preview instance not found. Please call the "createCamera" method before calling "initializeCamera"',
     );
-    await bindPreviewToLifecycle();
+    await _bindPreviewToLifecycle();
     final ResolutionInfo previewResolutionInfo =
         await preview!.getResolutionInfo();
-    unbindPreviewFromLifecycle();
+    _unbindPreviewFromLifecycle();
 
     // Retrieve exposure and focus mode configurations:
     // TODO(camsim99): Implement support for retrieving exposure mode configuration.
@@ -191,14 +191,14 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// Pause the active preview on the current frame for the selected camera.
   @override
   Future<void> pausePreview(int cameraId) async {
-    unbindPreviewFromLifecycle();
+    _unbindPreviewFromLifecycle();
     _previewIsPaused = true;
   }
 
   /// Resume the paused preview for the selected camera.
   @override
   Future<void> resumePreview(int cameraId) async {
-    await bindPreviewToLifecycle();
+    await _bindPreviewToLifecycle();
     _previewIsPaused = false;
   }
 
@@ -206,7 +206,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   @override
   Widget buildPreview(int cameraId) {
     return FutureBuilder<void>(
-        future: bindPreviewToLifecycle(),
+        future: _bindPreviewToLifecycle(),
         builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -225,7 +225,7 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   /// Binds [Preview] instance to the camera lifecycle controlled by the
   /// [processCameraProvider].
-  Future<void> bindPreviewToLifecycle() async {
+  Future<void> _bindPreviewToLifecycle() async {
     assert(processCameraProvider != null);
     assert(cameraSelector != null);
 
@@ -241,7 +241,7 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   /// Unbinds [Preview] instance to camera lifecycle controlled by the
   /// [processCameraProvider].
-  void unbindPreviewFromLifecycle() {
+  void _unbindPreviewFromLifecycle() {
     if (preview == null || !previewIsBound) {
       return;
     }
