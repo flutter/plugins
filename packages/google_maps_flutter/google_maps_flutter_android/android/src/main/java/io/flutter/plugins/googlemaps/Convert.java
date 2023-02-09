@@ -7,6 +7,7 @@ package io.flutter.plugins.googlemaps;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -592,13 +593,14 @@ class Convert {
     }
   }
 
-  private static List<LatLng> toPoints(Object o) {
+  @VisibleForTesting
+  static List<LatLng> toPoints(Object o) {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());
 
     for (Object rawPoint : data) {
       final List<?> point = toList(rawPoint);
-      points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
+      points.add(new LatLng(toDouble(point.get(0)), toDouble(point.get(1))));
     }
     return points;
   }
