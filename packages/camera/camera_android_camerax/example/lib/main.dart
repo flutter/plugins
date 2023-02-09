@@ -249,19 +249,21 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                     IconButton(
                       icon: const Icon(Icons.exposure),
                       color: Colors.blue,
-                      onPressed: () {}, // TODO(camsim99): Add functionality back here.
+                      onPressed:
+                          () {}, // TODO(camsim99): Add functionality back here.
                     ),
                     IconButton(
                       icon: const Icon(Icons.filter_center_focus),
                       color: Colors.blue,
-                      onPressed: () {}, // TODO(camsim99): Add functionality back here.
+                      onPressed:
+                          () {}, // TODO(camsim99): Add functionality back here.
                     )
                   ]
                 : <Widget>[],
             IconButton(
               icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
               color: Colors.blue,
-              onPressed: controller != null ? onAudioModeButtonPressed : null,
+              onPressed: () {}, // TODO(camsim99): Add functionality back here.
             ),
             IconButton(
               icon: Icon(controller?.value.isCaptureOrientationLocked ?? false
@@ -351,7 +353,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 children: <Widget>[
                   TextButton(
                     style: styleAuto,
-                    onPressed: () {}, // TODO(camsim99): Add functionality back here.
+                    onPressed:
+                        () {}, // TODO(camsim99): Add functionality back here.
                     onLongPress: () {
                       if (controller != null) {
                         CameraPlatform.instance
@@ -363,12 +366,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   ),
                   TextButton(
                     style: styleLocked,
-                    onPressed: () {}, // TODO(camsim99): Add functionality back here.
+                    onPressed:
+                        () {}, // TODO(camsim99): Add functionality back here.
                     child: const Text('LOCKED'),
                   ),
                   TextButton(
                     style: styleLocked,
-                    onPressed: () {}, // TODO(camsim99): Add functionality back here.
+                    onPressed:
+                        () {}, // TODO(camsim99): Add functionality back here.
                     child: const Text('RESET OFFSET'),
                   ),
                 ],
@@ -431,7 +436,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 children: <Widget>[
                   TextButton(
                     style: styleAuto,
-                    onPressed: () {}, // TODO(camsim99): Add functionality back here.
+                    onPressed:
+                        () {}, // TODO(camsim99): Add functionality back here.
                     onLongPress: () {
                       if (controller != null) {
                         CameraPlatform.instance
@@ -443,7 +449,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   ),
                   TextButton(
                     style: styleLocked,
-                    onPressed: () {}, // TODO(camsim99): Add functionality back here.
+                    onPressed:
+                        () {}, // TODO(camsim99): Add functionality back here.
                     child: const Text('LOCKED'),
                   ),
                 ],

@@ -25,10 +25,9 @@ class CameraPreview extends StatelessWidget {
         ? ValueListenableBuilder<CameraValue>(
             valueListenable: controller,
             builder: (BuildContext context, Object? value, Widget? child) {
-              // TODO(camsim99): Fix the issue with these being swapped.
               final double cameraAspectRatio =
-                  controller.value.previewSize!.height /
-                      controller.value.previewSize!.width;
+                  controller.value.previewSize!.width /
+                      controller.value.previewSize!.height;
               return AspectRatio(
                 aspectRatio: _isLandscape()
                     ? cameraAspectRatio
