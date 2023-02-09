@@ -57,13 +57,17 @@ void main() {
     // Mock calls to native platform
     when(camera.testProcessCameraProvider.getAvailableCameraInfos()).thenAnswer(
         (_) async => <MockCameraInfo>[mockBackCameraInfo, mockFrontCameraInfo]);
-    when(camera.mockBackCameraSelector.filter(<MockCameraInfo>[mockFrontCameraInfo]))
+    when(camera.mockBackCameraSelector
+            .filter(<MockCameraInfo>[mockFrontCameraInfo]))
         .thenAnswer((_) async => <MockCameraInfo>[]);
-    when(camera.mockBackCameraSelector.filter(<MockCameraInfo>[mockBackCameraInfo]))
+    when(camera.mockBackCameraSelector
+            .filter(<MockCameraInfo>[mockBackCameraInfo]))
         .thenAnswer((_) async => <MockCameraInfo>[mockBackCameraInfo]);
-    when(camera.mockFrontCameraSelector.filter(<MockCameraInfo>[mockBackCameraInfo]))
+    when(camera.mockFrontCameraSelector
+            .filter(<MockCameraInfo>[mockBackCameraInfo]))
         .thenAnswer((_) async => <MockCameraInfo>[]);
-    when(camera.mockFrontCameraSelector.filter(<MockCameraInfo>[mockFrontCameraInfo]))
+    when(camera.mockFrontCameraSelector
+            .filter(<MockCameraInfo>[mockFrontCameraInfo]))
         .thenAnswer((_) async => <MockCameraInfo>[mockFrontCameraInfo]);
     when(mockBackCameraInfo.getSensorRotationDegrees())
         .thenAnswer((_) async => 0);
@@ -365,7 +369,6 @@ class MockAndroidCameraCamerax extends AndroidCameraCameraX {
   final MockPreview testPreview = MockPreview();
   final MockCameraSelector mockBackCameraSelector = MockCameraSelector();
   final MockCameraSelector mockFrontCameraSelector = MockCameraSelector();
-  final MockCameraSelector testCameraSelector = MockCameraSelector();
 
   @override
   Future<void> requestCameraPermissions(bool enableAudio) async {
@@ -386,13 +389,12 @@ class MockAndroidCameraCamerax extends AndroidCameraCameraX {
 
   @override
   CameraSelector createCameraSelector(int cameraSelectorLensDirection) {
-    switch(cameraSelectorLensDirection) {
+    switch (cameraSelectorLensDirection) {
       case CameraSelector.LENS_FACING_FRONT:
         return mockFrontCameraSelector;
       case CameraSelector.LENS_FACING_BACK:
-        return mockBackCameraSelector;
       default:
-        return testCameraSelector;
+        return mockBackCameraSelector;
     }
   }
 

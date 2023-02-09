@@ -82,10 +82,12 @@ class AndroidCameraCameraX extends CameraPlatform {
     for (final CameraInfo cameraInfo in cameraInfos) {
       // Determine the lens direction by filtering the CameraInfo
       // TODO(gmackall): replace this with call to CameraInfo.getLensFacing when changes containing that method are available
-      if ((await createCameraSelector(CameraSelector.LENS_FACING_BACK).filter(<CameraInfo>[cameraInfo]))
+      if ((await createCameraSelector(CameraSelector.LENS_FACING_BACK)
+              .filter(<CameraInfo>[cameraInfo]))
           .isNotEmpty) {
         cameraLensDirection = CameraLensDirection.back;
-      } else if ((await createCameraSelector(CameraSelector.LENS_FACING_FRONT).filter(<CameraInfo>[cameraInfo]))
+      } else if ((await createCameraSelector(CameraSelector.LENS_FACING_FRONT)
+              .filter(<CameraInfo>[cameraInfo]))
           .isNotEmpty) {
         cameraLensDirection = CameraLensDirection.front;
       } else {
@@ -352,7 +354,7 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   @visibleForTesting
   CameraSelector createCameraSelector(int cameraSelectorLensDirection) {
-    switch(cameraSelectorLensDirection) {
+    switch (cameraSelectorLensDirection) {
       case CameraSelector.LENS_FACING_FRONT:
         return CameraSelector.getDefaultFrontCamera();
       case CameraSelector.LENS_FACING_BACK:
