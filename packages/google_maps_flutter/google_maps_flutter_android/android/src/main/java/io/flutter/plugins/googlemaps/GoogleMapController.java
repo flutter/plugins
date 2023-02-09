@@ -61,7 +61,7 @@ final class GoogleMapController
   private final MethodChannel methodChannel;
   private final GoogleMapOptions options;
   @Nullable private MapView mapView;
-  @Nullable @VisibleForTesting GoogleMap googleMap;
+  @Nullable GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;

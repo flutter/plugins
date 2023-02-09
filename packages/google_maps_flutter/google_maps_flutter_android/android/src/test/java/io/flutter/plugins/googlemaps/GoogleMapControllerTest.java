@@ -161,7 +161,6 @@ public class GoogleMapControllerTest {
 
   @Test
   public void SetPaddingStoresThePaddingValuesInInInitialPaddingWhenGoogleMapIsNull() {
-    googleMapController.googleMap = null;
     assertNull(googleMapController.initialPadding);
     googleMapController.setPadding(0f, 0f, 0f, 0f);
     assertNotNull(googleMapController.initialPadding);
