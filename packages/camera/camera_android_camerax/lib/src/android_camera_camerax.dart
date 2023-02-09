@@ -294,25 +294,30 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   // Methods for calls that need to be tested:
 
+  @visibleForTesting
   Future<void> requestCameraPermissions(bool enableAudio) async {
     await SystemServices.requestCameraPermissions(enableAudio);
   }
 
+  @visibleForTesting
   void startListeningForDeviceOrientationChange(
       bool cameraIsFrontFacing, int sensorOrientation) {
     SystemServices.startListeningForDeviceOrientationChange(
         cameraIsFrontFacing, sensorOrientation);
   }
 
+  @visibleForTesting
   Future<ProcessCameraProvider> getProcessCameraProviderInstance() async {
     ProcessCameraProvider instance = await ProcessCameraProvider.getInstance();
     return instance;
   }
 
+  @visibleForTesting
   CameraSelector createCameraSelector(int cameraSelectorLensDirection) {
     return CameraSelector(lensFacing: cameraSelectorLensDirection);
   }
 
+  @visibleForTesting
   Preview createPreview(int targetRotation, ResolutionInfo? targetResolution) {
     return Preview(
         targetRotation: targetRotation, targetResolution: targetResolution);
