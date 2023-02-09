@@ -21,3 +21,19 @@ yet, so it currently requires extra setup to use:
 
 Once the step above is complete, the APIs from `webview_flutter` listed
 above can be used as normal on web.
+
+## Tests
+
+Tests are contained in the `test` directory. You can run all tests from the root
+of the package with the following command:
+
+```bash
+$ flutter test --platform chrome
+```
+
+This package uses `package:mockito` in some tests. Mock files can be updated
+from the root of the package like so:
+
+```bash
+$ flutter pub run build_runner build --delete-conflicting-outputs
+```

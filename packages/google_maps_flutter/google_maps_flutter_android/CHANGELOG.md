@@ -1,3 +1,8 @@
+## 2.4.4
+
+* Fixes Points losing precision when converting to LatLng
+* Updates minimum Flutter version to 3.0.
+
 ## 2.4.3
 
 * Updates code for stricter lint checks.

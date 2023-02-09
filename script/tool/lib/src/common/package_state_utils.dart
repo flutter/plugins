@@ -171,6 +171,9 @@ Future<bool> _isDevChange(List<String> pathComponents,
       // The top-level "tool" directory is for non-client-facing utility
       // code, such as test scripts.
       pathComponents.first == 'tool' ||
+      // The top-level "pigeons" directory is the repo convention for storing
+      // pigeon input files.
+      pathComponents.first == 'pigeons' ||
       // Entry point for the 'custom-test' command, which is only for CI and
       // local testing.
       pathComponents.first == 'run_tests.sh' ||

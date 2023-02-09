@@ -21,6 +21,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
+import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 Future<void> main() async {
@@ -47,7 +48,7 @@ Future<void> main() async {
   final String headersUrl = '$prefixUrl/headers';
 
   testWidgets(
-      'withWeakRefenceTo allows encapsulating class to be garbage collected',
+      'withWeakReferenceTo allows encapsulating class to be garbage collected',
       (WidgetTester tester) async {
     final Completer<int> gcCompleter = Completer<int>();
     final InstanceManager instanceManager = InstanceManager(
@@ -68,21 +69,102 @@ Future<void> main() async {
     expect(gcIdentifier, 0);
   }, timeout: const Timeout(Duration(seconds: 10)));
 
+  testWidgets(
+    'WKWebView is released by garbage collection',
+    (WidgetTester tester) async {
+      final Completer<void> webViewGCCompleter = Completer<void>();
+
+      late final InstanceManager instanceManager;
+      instanceManager =
+          InstanceManager(onWeakReferenceRemoved: (int identifier) {
+        final Copyable instance =
+            instanceManager.getInstanceWithWeakReference(identifier)!;
+        if (instance is WKWebView && !webViewGCCompleter.isCompleted) {
+          webViewGCCompleter.complete();
+        }
+      });
+
+      await tester.pumpWidget(
+        Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              WebKitWebViewWidgetCreationParams(
+                instanceManager: instanceManager,
+                controller: PlatformWebViewController(
+                  WebKitWebViewControllerCreationParams(
+                    instanceManager: instanceManager,
+                  ),
+                ),
+              ),
+            ).build(context);
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.pumpWidget(Container());
+
+      // Force garbage collection.
+      await IntegrationTestWidgetsFlutterBinding.instance
+          .watchPerformance(() async {
+        await tester.pumpAndSettle();
+      });
+
+      await expectLater(webViewGCCompleter.future, completes);
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
+
   testWidgets('loadRequest', (WidgetTester tester) async {
+    final Completer<void> pageFinished = Completer<void>();
+
     final PlatformWebViewController controller = PlatformWebViewController(
       const PlatformWebViewControllerCreationParams(),
-    );
-    controller.loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+    )
+      ..setPlatformNavigationDelegate(
+        PlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        )..setOnPageFinished((_) => pageFinished.complete()),
+      )
+      ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
+
+    await pageFinished.future;
 
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
   });
 
   testWidgets('runJavaScriptReturningResult', (WidgetTester tester) async {
+    final Completer<void> pageFinished = Completer<void>();
+
     final PlatformWebViewController controller = PlatformWebViewController(
       const PlatformWebViewControllerCreationParams(),
-    );
-    controller.loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+    )
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setPlatformNavigationDelegate(
+        PlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        )..setOnPageFinished((_) => pageFinished.complete()),
+      )
+      ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
+
+    await pageFinished.future;
 
     await expectLater(
       controller.runJavaScriptReturningResult('1 + 1'),
@@ -112,6 +194,14 @@ Future<void> main() async {
           headers: headers,
         ),
       );
+
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     await pageLoads.stream.firstWhere((String url) => url == headersUrl);
 
@@ -146,6 +236,14 @@ Future<void> main() async {
     controller.loadHtmlString(
       'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
     );
+
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     await pageFinished.future;
 
@@ -183,6 +281,14 @@ Future<void> main() async {
     )
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setUserAgent('Custom_User_Agent1');
+
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     final String customUserAgent2 = await _getUserAgent(controller);
     expect(customUserAgent2, 'Custom_User_Agent1');
@@ -250,6 +356,14 @@ Future<void> main() async {
           ),
         );
 
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
       await pageLoaded.future;
 
       bool isPaused =
@@ -273,6 +387,14 @@ Future<void> main() async {
             ),
           ),
         );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       await pageLoaded.future;
 
@@ -447,6 +569,14 @@ Future<void> main() async {
           ),
         );
 
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
       await pageLoaded.future;
 
       bool isPaused =
@@ -470,6 +600,14 @@ Future<void> main() async {
             ),
           ),
         );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       await pageLoaded.future;
 
@@ -508,6 +646,14 @@ Future<void> main() async {
           ),
         ),
       );
+
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     await pageLoaded.future;
 
@@ -565,6 +711,14 @@ Future<void> main() async {
           ),
         );
 
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
       await pageLoaded.future;
 
       await tester.pumpAndSettle(const Duration(seconds: 3));
@@ -599,8 +753,7 @@ Future<void> main() async {
         '${base64Encode(const Utf8Encoder().convert(blankPage))}';
 
     testWidgets('can allow requests', (WidgetTester tester) async {
-      final StreamController<String> pageLoads =
-          StreamController<String>.broadcast();
+      Completer<void> pageLoaded = Completer<void>();
 
       final PlatformWebViewController controller = PlatformWebViewController(
         WebKitWebViewControllerCreationParams(),
@@ -610,7 +763,7 @@ Future<void> main() async {
           WebKitNavigationDelegate(
             const WebKitNavigationDelegateCreationParams(),
           )
-            ..setOnPageFinished((String url) => pageLoads.add(url))
+            ..setOnPageFinished((_) => pageLoaded.complete())
             ..setOnNavigationRequest((NavigationRequest navigationRequest) {
               return (navigationRequest.url.contains('youtube.com'))
                   ? NavigationDecision.prevent
@@ -621,10 +774,20 @@ Future<void> main() async {
           LoadRequestParams(uri: Uri.parse(blankPageEncoded)),
         );
 
-      await pageLoads.stream.first; // Wait for initial page load.
-      await controller.runJavaScript('location.href = "$secondaryUrl"');
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
-      await pageLoads.stream.first; // Wait for the next page load.
+      await pageLoaded.future; // Wait for initial page load.
+
+      pageLoaded = Completer<void>();
+      await controller.runJavaScript('location.href = "$secondaryUrl"');
+      await pageLoaded.future;
+
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, secondaryUrl);
     });
@@ -633,7 +796,7 @@ Future<void> main() async {
       final Completer<WebResourceError> errorCompleter =
           Completer<WebResourceError>();
 
-      PlatformWebViewController(
+      final PlatformWebViewController controller = PlatformWebViewController(
         WebKitWebViewControllerCreationParams(),
       )
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -648,6 +811,14 @@ Future<void> main() async {
           LoadRequestParams(uri: Uri.parse('https://www.notawebsite..com')),
         );
 
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
       final WebResourceError error = await errorCompleter.future;
       expect(error, isNotNull);
 
@@ -660,7 +831,7 @@ Future<void> main() async {
           Completer<WebResourceError>();
       final Completer<void> pageFinishCompleter = Completer<void>();
 
-      PlatformWebViewController(
+      final PlatformWebViewController controller = PlatformWebViewController(
         WebKitWebViewControllerCreationParams(),
       )
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -680,6 +851,14 @@ Future<void> main() async {
             ),
           ),
         );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       expect(errorCompleter.future, doesNotComplete);
       await pageFinishCompleter.future;
@@ -706,7 +885,7 @@ Future<void> main() async {
             Completer<WebResourceError>();
         final Completer<void> pageFinishCompleter = Completer<void>();
 
-        PlatformWebViewController(
+        final PlatformWebViewController controller = PlatformWebViewController(
           WebKitWebViewControllerCreationParams(),
         )
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -727,14 +906,21 @@ Future<void> main() async {
             ),
           );
 
+        await tester.pumpWidget(Builder(
+          builder: (BuildContext context) {
+            return PlatformWebViewWidget(
+              PlatformWebViewWidgetCreationParams(controller: controller),
+            ).build(context);
+          },
+        ));
+
         expect(errorCompleter.future, doesNotComplete);
         await pageFinishCompleter.future;
       },
     );
 
     testWidgets('can block requests', (WidgetTester tester) async {
-      final StreamController<String> pageLoads =
-          StreamController<String>.broadcast();
+      Completer<void> pageLoaded = Completer<void>();
 
       final PlatformWebViewController controller = PlatformWebViewController(
         WebKitWebViewControllerCreationParams(),
@@ -744,7 +930,7 @@ Future<void> main() async {
           WebKitNavigationDelegate(
             const WebKitNavigationDelegateCreationParams(),
           )
-            ..setOnPageFinished((String url) => pageLoads.add(url))
+            ..setOnPageFinished((_) => pageLoaded.complete())
             ..setOnNavigationRequest((NavigationRequest navigationRequest) {
               return (navigationRequest.url.contains('youtube.com'))
                   ? NavigationDecision.prevent
@@ -753,22 +939,31 @@ Future<void> main() async {
         )
         ..loadRequest(LoadRequestParams(uri: Uri.parse(blankPageEncoded)));
 
-      await pageLoads.stream.first; // Wait for initial page load.
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
+      await pageLoaded.future; // Wait for initial page load.
+
+      pageLoaded = Completer<void>();
       await controller
           .runJavaScript('location.href = "https://www.youtube.com/"');
 
       // There should never be any second page load, since our new URL is
       // blocked. Still wait for a potential page change for some time in order
       // to give the test a chance to fail.
-      await pageLoads.stream.first
+      await pageLoaded.future
           .timeout(const Duration(milliseconds: 500), onTimeout: () => '');
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, isNot(contains('youtube.com')));
     });
 
     testWidgets('supports asynchronous decisions', (WidgetTester tester) async {
-      final StreamController<String> pageLoads =
-          StreamController<String>.broadcast();
+      Completer<void> pageLoaded = Completer<void>();
 
       final PlatformWebViewController controller = PlatformWebViewController(
         WebKitWebViewControllerCreationParams(),
@@ -778,7 +973,7 @@ Future<void> main() async {
           WebKitNavigationDelegate(
             const WebKitNavigationDelegateCreationParams(),
           )
-            ..setOnPageFinished((String url) => pageLoads.add(url))
+            ..setOnPageFinished((_) => pageLoaded.complete())
             ..setOnNavigationRequest(
                 (NavigationRequest navigationRequest) async {
               NavigationDecision decision = NavigationDecision.prevent;
@@ -790,10 +985,20 @@ Future<void> main() async {
         )
         ..loadRequest(LoadRequestParams(uri: Uri.parse(blankPageEncoded)));
 
-      await pageLoads.stream.first; // Wait for initial page load.
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
+
+      await pageLoaded.future; // Wait for initial page load.
+
+      pageLoaded = Completer<void>();
       await controller.runJavaScript('location.href = "$secondaryUrl"');
 
-      await pageLoads.stream.first; // Wait for second page to load.
+      await pageLoaded.future; // Wait for second page to load.
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, secondaryUrl);
     });
@@ -806,6 +1011,14 @@ Future<void> main() async {
     )
       ..setAllowsBackForwardNavigationGestures(true)
       ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
 
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
@@ -824,6 +1037,15 @@ Future<void> main() async {
       )..setOnPageFinished((_) => pageLoaded.complete()));
 
     await controller.runJavaScript('window.open("$primaryUrl", "_blank")');
+
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        return PlatformWebViewWidget(
+          PlatformWebViewWidgetCreationParams(controller: controller),
+        ).build(context);
+      },
+    ));
+
     await pageLoaded.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
@@ -842,6 +1064,14 @@ Future<void> main() async {
           const WebKitNavigationDelegateCreationParams(),
         )..setOnPageFinished((_) => pageLoaded.complete()))
         ..loadRequest(LoadRequestParams(uri: Uri.parse(primaryUrl)));
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) {
+          return PlatformWebViewWidget(
+            PlatformWebViewWidgetCreationParams(controller: controller),
+          ).build(context);
+        },
+      ));
 
       expect(controller.currentUrl(), completion(primaryUrl));
       await pageLoaded.future;

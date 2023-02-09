@@ -96,18 +96,20 @@ class AndroidWebViewController extends PlatformWebViewController {
   );
 
   late final android_webview.WebChromeClient _webChromeClient =
-      withWeakReferenceTo(this,
-          (WeakReference<AndroidWebViewController> weakReference) {
-    return _androidWebViewParams.androidWebViewProxy
-        .createAndroidWebChromeClient(
-      onProgressChanged: (android_webview.WebView webView, int progress) {
-        if (weakReference.target?._currentNavigationDelegate._onProgress !=
+      _androidWebViewParams.androidWebViewProxy.createAndroidWebChromeClient(
+    onProgressChanged: withWeakReferenceTo(this,
+        (WeakReference<AndroidWebViewController> weakReference) {
+      return (android_webview.WebView webView, int progress) {
+        if (weakReference.target?._currentNavigationDelegate?._onProgress !=
             null) {
           weakReference
-              .target!._currentNavigationDelegate._onProgress!(progress);
+              .target!._currentNavigationDelegate!._onProgress!(progress);
         }
-      },
-      onShowFileChooser: (android_webview.WebView webView,
+      };
+    }),
+    onShowFileChooser: withWeakReferenceTo(this,
+        (WeakReference<AndroidWebViewController> weakReference) {
+      return (android_webview.WebView webView,
           android_webview.FileChooserParams params) async {
         if (weakReference.target?._onShowFileSelectorCallback != null) {
           return weakReference.target!._onShowFileSelectorCallback!(
@@ -115,9 +117,9 @@ class AndroidWebViewController extends PlatformWebViewController {
           );
         }
         return <String>[];
-      },
-    );
-  });
+      };
+    }),
+  );
 
   /// The native [android_webview.FlutterAssetManager] allows managing assets.
   late final android_webview.FlutterAssetManager _flutterAssetManager =
@@ -126,10 +128,7 @@ class AndroidWebViewController extends PlatformWebViewController {
   final Map<String, AndroidJavaScriptChannelParams> _javaScriptChannelParams =
       <String, AndroidJavaScriptChannelParams>{};
 
-  // The keeps a reference to the current NavigationDelegate so that the
-  // callback methods remain reachable.
-  // ignore: unused_field
-  late AndroidNavigationDelegate _currentNavigationDelegate;
+  AndroidNavigationDelegate? _currentNavigationDelegate;
 
   Future<List<String>> Function(FileSelectorParams)?
       _onShowFileSelectorCallback;

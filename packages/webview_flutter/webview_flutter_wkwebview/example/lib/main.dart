@@ -165,9 +165,11 @@ Page resource error:
     return FloatingActionButton(
       onPressed: () async {
         final String? url = await _controller.currentUrl();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Favorited $url')),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Favorited $url')),
+          );
+        }
       },
       child: const Icon(Icons.favorite),
     );
@@ -320,25 +322,29 @@ class SampleMenu extends StatelessWidget {
   Future<void> _onListCookies(BuildContext context) async {
     final String cookies = await webViewController
         .runJavaScriptReturningResult('document.cookie') as String;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          const Text('Cookies:'),
-          _getCookieList(cookies),
-        ],
-      ),
-    ));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Text('Cookies:'),
+            _getCookieList(cookies),
+          ],
+        ),
+      ));
+    }
   }
 
   Future<void> _onAddToCache(BuildContext context) async {
     await webViewController.runJavaScript(
       'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";',
     );
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Added a test entry to cache.'),
-    ));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Added a test entry to cache.'),
+      ));
+    }
   }
 
   Future<void> _onListCache() {
@@ -351,9 +357,11 @@ class SampleMenu extends StatelessWidget {
   Future<void> _onClearCache(BuildContext context) async {
     await webViewController.clearCache();
     await webViewController.clearLocalStorage();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Cache cleared.'),
-    ));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Cache cleared.'),
+      ));
+    }
   }
 
   Future<void> _onClearCookies(BuildContext context) async {
@@ -362,9 +370,11 @@ class SampleMenu extends StatelessWidget {
     if (!hadCookies) {
       message = 'There are no cookies.';
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(message),
-    ));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(message),
+      ));
+    }
   }
 
   Future<void> _onNavigationDelegateExample() {
@@ -463,10 +473,11 @@ class NavigationControls extends StatelessWidget {
             if (await webViewController.canGoBack()) {
               await webViewController.goBack();
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('No back history item')),
-              );
-              return;
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('No back history item')),
+                );
+              }
             }
           },
         ),
@@ -476,10 +487,11 @@ class NavigationControls extends StatelessWidget {
             if (await webViewController.canGoForward()) {
               await webViewController.goForward();
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('No forward history item')),
-              );
-              return;
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('No forward history item')),
+                );
+              }
             }
           },
         ),
