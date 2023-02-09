@@ -155,8 +155,8 @@ public class GoogleMapControllerTest {
     int paddingWithDensity = (int) (10f * googleMapController.density);
     googleMapController.setInitialPadding(padding, padding, padding, padding);
     googleMapController.onMapReady(mockGoogleMap);
-    verify(mockGoogleMap, times(1)).setPadding(paddingWithDensity, paddingWithDensity,
-        paddingWithDensity, paddingWithDensity);
+    verify(mockGoogleMap, times(1))
+        .setPadding(paddingWithDensity, paddingWithDensity, paddingWithDensity, paddingWithDensity);
   }
 
   @Test

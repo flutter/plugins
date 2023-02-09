@@ -70,8 +70,7 @@ final class GoogleMapController
   private boolean trafficEnabled = false;
   private boolean buildingsEnabled = true;
   private boolean disposed = false;
-  @VisibleForTesting
-  final float density;
+  @VisibleForTesting final float density;
   private MethodChannel.Result mapReadyResult;
   private final Context context;
   private final LifecycleProvider lifecycleProvider;
@@ -85,8 +84,7 @@ final class GoogleMapController
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
   private List<Map<String, ?>> initialTileOverlays;
-  @VisibleForTesting
-  List<Float> initialPadding;
+  @VisibleForTesting List<Float> initialPadding;
 
   GoogleMapController(
       int id,
@@ -213,7 +211,10 @@ final class GoogleMapController
     updateInitialCircles();
     updateInitialTileOverlays();
     if (initialPadding != null && initialPadding.size() == 4) {
-      setPadding(initialPadding.get(0), initialPadding.get(1), initialPadding.get(2),
+      setPadding(
+          initialPadding.get(0),
+          initialPadding.get(1),
+          initialPadding.get(2),
           initialPadding.get(3));
     }
   }
