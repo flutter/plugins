@@ -6,8 +6,8 @@
 import 'dart:async' as _i8;
 
 import 'package:camera_android_camerax/src/camera.dart' as _i5;
-import 'package:camera_android_camerax/src/camera_info.dart' as _i9;
-import 'package:camera_android_camerax/src/camera_selector.dart' as _i7;
+import 'package:camera_android_camerax/src/camera_info.dart' as _i7;
+import 'package:camera_android_camerax/src/camera_selector.dart' as _i9;
 import 'package:camera_android_camerax/src/camerax_library.g.dart' as _i4;
 import 'package:camera_android_camerax/src/preview.dart' as _i10;
 import 'package:camera_android_camerax/src/process_camera_provider.dart'
@@ -276,21 +276,36 @@ class MockBuildContext extends _i1.Mock implements _i2.BuildContext {
 /// See the documentation for Mockito's code generation for more information.
 class MockCamera extends _i1.Mock implements _i5.Camera {}
 
+/// A class which mocks [CameraInfo].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCameraInfo extends _i1.Mock implements _i7.CameraInfo {
+  @override
+  _i8.Future<int> getSensorRotationDegrees() => (super.noSuchMethod(
+        Invocation.method(
+          #getSensorRotationDegrees,
+          [],
+        ),
+        returnValue: _i8.Future<int>.value(0),
+        returnValueForMissingStub: _i8.Future<int>.value(0),
+      ) as _i8.Future<int>);
+}
+
 /// A class which mocks [CameraSelector].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCameraSelector extends _i1.Mock implements _i7.CameraSelector {
+class MockCameraSelector extends _i1.Mock implements _i9.CameraSelector {
   @override
-  _i8.Future<List<_i9.CameraInfo>> filter(List<_i9.CameraInfo>? cameraInfos) =>
+  _i8.Future<List<_i7.CameraInfo>> filter(List<_i7.CameraInfo>? cameraInfos) =>
       (super.noSuchMethod(
         Invocation.method(
           #filter,
           [cameraInfos],
         ),
-        returnValue: _i8.Future<List<_i9.CameraInfo>>.value(<_i9.CameraInfo>[]),
+        returnValue: _i8.Future<List<_i7.CameraInfo>>.value(<_i7.CameraInfo>[]),
         returnValueForMissingStub:
-            _i8.Future<List<_i9.CameraInfo>>.value(<_i9.CameraInfo>[]),
-      ) as _i8.Future<List<_i9.CameraInfo>>);
+            _i8.Future<List<_i7.CameraInfo>>.value(<_i7.CameraInfo>[]),
+      ) as _i8.Future<List<_i7.CameraInfo>>);
 }
 
 /// A class which mocks [Preview].
@@ -344,19 +359,19 @@ class MockPreview extends _i1.Mock implements _i10.Preview {
 class MockProcessCameraProvider extends _i1.Mock
     implements _i11.ProcessCameraProvider {
   @override
-  _i8.Future<List<_i9.CameraInfo>> getAvailableCameraInfos() =>
+  _i8.Future<List<_i7.CameraInfo>> getAvailableCameraInfos() =>
       (super.noSuchMethod(
         Invocation.method(
           #getAvailableCameraInfos,
           [],
         ),
-        returnValue: _i8.Future<List<_i9.CameraInfo>>.value(<_i9.CameraInfo>[]),
+        returnValue: _i8.Future<List<_i7.CameraInfo>>.value(<_i7.CameraInfo>[]),
         returnValueForMissingStub:
-            _i8.Future<List<_i9.CameraInfo>>.value(<_i9.CameraInfo>[]),
-      ) as _i8.Future<List<_i9.CameraInfo>>);
+            _i8.Future<List<_i7.CameraInfo>>.value(<_i7.CameraInfo>[]),
+      ) as _i8.Future<List<_i7.CameraInfo>>);
   @override
   _i8.Future<_i5.Camera> bindToLifecycle(
-    _i7.CameraSelector? cameraSelector,
+    _i9.CameraSelector? cameraSelector,
     List<_i12.UseCase>? useCases,
   ) =>
       (super.noSuchMethod(

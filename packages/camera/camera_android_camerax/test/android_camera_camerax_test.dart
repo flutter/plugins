@@ -6,6 +6,7 @@ import 'package:async/async.dart';
 import 'package:camera_android_camerax/camera_android_camerax.dart';
 import 'package:camera_android_camerax/src/camerax_library.g.dart';
 import 'package:camera_android_camerax/src/camera.dart';
+import 'package:camera_android_camerax/src/camera_info.dart';
 import 'package:camera_android_camerax/src/camera_selector.dart';
 import 'package:camera_android_camerax/src/preview.dart';
 import 'package:camera_android_camerax/src/process_camera_provider.dart';
@@ -24,6 +25,7 @@ import 'android_camera_camerax_test.mocks.dart';
 @GenerateNiceMocks(<MockSpec<Object>>[
   MockSpec<BuildContext>(),
   MockSpec<Camera>(),
+  MockSpec<CameraInfo>(),
   MockSpec<CameraSelector>(),
   MockSpec<Preview>(),
   MockSpec<ProcessCameraProvider>(),
@@ -31,8 +33,63 @@ import 'android_camera_camerax_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('Should fetch CameraDescription instances for available cameras',
+      () async {
+    // Arrange
+    final MockAndroidCameraCamerax camera = MockAndroidCameraCamerax();
+    final List<dynamic> returnData = <dynamic>[
+      <String, dynamic>{
+        'name': 'Camera 0',
+        'lensFacing': 'back',
+        'sensorOrientation': 0
+      },
+      <String, dynamic>{
+        'name': 'Camera 1',
+        'lensFacing': 'front',
+        'sensorOrientation': 90
+      }
+    ];
+
+    // Create mocks to use
+    final MockCameraInfo mockFrontCameraInfo = MockCameraInfo();
+    final MockCameraInfo mockBackCameraInfo = MockCameraInfo();
+
+    // Mock calls to native platform
+    when(camera.testProcessCameraProvider.getAvailableCameraInfos()).thenAnswer(
+        (_) async => <MockCameraInfo>[mockBackCameraInfo, mockFrontCameraInfo]);
+    when(camera.mockBackCameraSelector.filter(<MockCameraInfo>[mockFrontCameraInfo]))
+        .thenAnswer((_) async => <MockCameraInfo>[]);
+    when(camera.mockBackCameraSelector.filter(<MockCameraInfo>[mockBackCameraInfo]))
+        .thenAnswer((_) async => <MockCameraInfo>[mockBackCameraInfo]);
+    when(camera.mockFrontCameraSelector.filter(<MockCameraInfo>[mockBackCameraInfo]))
+        .thenAnswer((_) async => <MockCameraInfo>[]);
+    when(camera.mockFrontCameraSelector.filter(<MockCameraInfo>[mockFrontCameraInfo]))
+        .thenAnswer((_) async => <MockCameraInfo>[mockFrontCameraInfo]);
+    when(mockBackCameraInfo.getSensorRotationDegrees())
+        .thenAnswer((_) async => 0);
+    when(mockFrontCameraInfo.getSensorRotationDegrees())
+        .thenAnswer((_) async => 90);
+
+    final List<CameraDescription> cameraDescriptions =
+        await camera.availableCameras();
+
+    expect(cameraDescriptions.length, returnData.length);
+    for (int i = 0; i < returnData.length; i++) {
+      final Map<String, Object?> typedData =
+          (returnData[i] as Map<dynamic, dynamic>).cast<String, Object?>();
+      final CameraDescription cameraDescription = CameraDescription(
+        name: typedData['name']! as String,
+        lensDirection: (typedData['lensFacing']! as String) == 'front'
+            ? CameraLensDirection.front
+            : CameraLensDirection.back,
+        sensorOrientation: typedData['sensorOrientation']! as int,
+      );
+      expect(cameraDescriptions[i], cameraDescription);
+    }
+  });
+
   test(
-      'createCamera requests permissions, starts listening for device orientation changes, and returns flutter surface texture ID ',
+      'createCamera requests permissions, starts listening for device orientation changes, and returns flutter surface texture ID',
       () async {
     final MockAndroidCameraCamerax camera = MockAndroidCameraCamerax();
     const CameraLensDirection testLensDirection = CameraLensDirection.back;
@@ -58,7 +115,7 @@ void main() {
     expect(camera.startedListeningForDeviceOrientationChanges, isTrue);
 
     // Verify CameraSelector is set with appropriate lens direction.
-    expect(camera.cameraSelector, equals(camera.testCameraSelector));
+    expect(camera.cameraSelector, equals(camera.mockBackCameraSelector));
 
     // Verify ProcessCameraProvider instance is received.
     expect(
@@ -306,6 +363,8 @@ class MockAndroidCameraCamerax extends AndroidCameraCameraX {
   final MockProcessCameraProvider testProcessCameraProvider =
       MockProcessCameraProvider();
   final MockPreview testPreview = MockPreview();
+  final MockCameraSelector mockBackCameraSelector = MockCameraSelector();
+  final MockCameraSelector mockFrontCameraSelector = MockCameraSelector();
   final MockCameraSelector testCameraSelector = MockCameraSelector();
 
   @override
@@ -327,7 +386,14 @@ class MockAndroidCameraCamerax extends AndroidCameraCameraX {
 
   @override
   CameraSelector createCameraSelector(int cameraSelectorLensDirection) {
-    return testCameraSelector;
+    switch(cameraSelectorLensDirection) {
+      case CameraSelector.LENS_FACING_FRONT:
+        return mockFrontCameraSelector;
+      case CameraSelector.LENS_FACING_BACK:
+        return mockBackCameraSelector;
+      default:
+        return testCameraSelector;
+    }
   }
 
   @override

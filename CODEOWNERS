@@ -9,15 +9,15 @@ packages/camera/**                                       @bparrishMines
 packages/file_selector/**                                @stuartmorgan
 packages/google_maps_flutter/**                          @stuartmorgan
 packages/google_sign_in/**                               @stuartmorgan
-packages/image_picker/**                                 @stuartmorgan
+packages/image_picker/**                                 @tarrinneal
 packages/in_app_purchase/**                              @bparrishMines
 packages/local_auth/**                                   @stuartmorgan
-packages/path_provider/**                                @gaaclarke
+packages/path_provider/**                                @stuartmorgan
 packages/plugin_platform_interface/**                    @stuartmorgan
-packages/quick_actions/**                                @stuartmorgan
+packages/quick_actions/**                                @bparrishMines
 packages/shared_preferences/**                           @tarrinneal
 packages/url_launcher/**                                 @stuartmorgan
-packages/video_player/**                                 @gaaclarke
+packages/video_player/**                                 @tarrinneal
 packages/webview_flutter/**                              @bparrishMines
 
 # Sub-package-level rules. These should stay last, since the last matching

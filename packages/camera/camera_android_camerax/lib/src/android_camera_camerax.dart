@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import 'camera.dart';
+import 'camera_info.dart';
 import 'camera_selector.dart';
 import 'camerax_library.g.dart';
 import 'preview.dart';
@@ -27,10 +28,12 @@ class AndroidCameraCameraX extends CameraPlatform {
   // Objects used to access camera functionality:
 
   /// The [ProcessCameraProvider] instance used to access camera functionality.
+  @visibleForTesting
   ProcessCameraProvider? processCameraProvider;
 
   /// The [Camera] instance returned by the [processCameraProvider] when a [UseCase] is
   /// bound to the lifecycle of the camera it manages.
+  @visibleForTesting
   Camera? camera;
 
   // Use cases to configure and bind to ProcessCameraProvider instance:
@@ -65,7 +68,42 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// Returns list of all available cameras and their descriptions.
   @override
   Future<List<CameraDescription>> availableCameras() async {
-    throw UnimplementedError('availableCameras() is not implemented.');
+    final List<CameraDescription> cameraDescriptions = <CameraDescription>[];
+
+    processCameraProvider ??= await getProcessCameraProviderInstance();
+    final List<CameraInfo> cameraInfos =
+        await processCameraProvider!.getAvailableCameraInfos();
+
+    CameraLensDirection? cameraLensDirection;
+    int cameraCount = 0;
+    int? cameraSensorOrientation;
+    String? cameraName;
+
+    for (final CameraInfo cameraInfo in cameraInfos) {
+      // Determine the lens direction by filtering the CameraInfo
+      // TODO(gmackall): replace this with call to CameraInfo.getLensFacing when changes containing that method are available
+      if ((await createCameraSelector(CameraSelector.LENS_FACING_BACK).filter(<CameraInfo>[cameraInfo]))
+          .isNotEmpty) {
+        cameraLensDirection = CameraLensDirection.back;
+      } else if ((await createCameraSelector(CameraSelector.LENS_FACING_FRONT).filter(<CameraInfo>[cameraInfo]))
+          .isNotEmpty) {
+        cameraLensDirection = CameraLensDirection.front;
+      } else {
+        //Skip this CameraInfo as its lens direction is unknown
+        continue;
+      }
+
+      cameraSensorOrientation = await cameraInfo.getSensorRotationDegrees();
+      cameraName = 'Camera $cameraCount';
+      cameraCount++;
+
+      cameraDescriptions.add(CameraDescription(
+          name: cameraName,
+          lensDirection: cameraLensDirection,
+          sensorOrientation: cameraSensorOrientation));
+    }
+
+    return cameraDescriptions;
   }
 
   /// Creates an uninitialized camera instance and returns the cameraId.
@@ -314,7 +352,14 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   @visibleForTesting
   CameraSelector createCameraSelector(int cameraSelectorLensDirection) {
-    return CameraSelector(lensFacing: cameraSelectorLensDirection);
+    switch(cameraSelectorLensDirection) {
+      case CameraSelector.LENS_FACING_FRONT:
+        return CameraSelector.getDefaultFrontCamera();
+      case CameraSelector.LENS_FACING_BACK:
+        return CameraSelector.getDefaultBackCamera();
+      default:
+        return CameraSelector(lensFacing: cameraSelectorLensDirection);
+    }
   }
 
   @visibleForTesting
