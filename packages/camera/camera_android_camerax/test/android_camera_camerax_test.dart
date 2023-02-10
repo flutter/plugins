@@ -157,7 +157,10 @@ void main() {
     final ResolutionInfo testResolutionInfo =
         ResolutionInfo(width: resolutionWidth, height: resolutionHeight);
 
-    // TODO(camsim99): Modify this when camera configuration is supported and defualt values no longer being used.
+    // TODO(camsim99): Modify this when camera configuration is supported and
+    // defualt values no longer being used.
+    // https://github.com/flutter/flutter/issues/120468
+    // https://github.com/flutter/flutter/issues/120467
     final CameraInitializedEvent testCameraInitializedEvent =
         CameraInitializedEvent(
             cameraId,

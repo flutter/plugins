@@ -51,9 +51,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController? videoController;
   VoidCallback? videoPlayerListener;
   bool enableAudio = true;
-  // TODO(camsim99): Actually use this.
+  // TODO(camsim99): Use exposure offset values when exposure configuration supported.
+  // https://github.com/flutter/flutter/issues/120468
   final double _minAvailableExposureOffset = 0.0;
-  // TODO(camsim99): Actually use this.
   final double _maxAvailableExposureOffset = 0.0;
   double _currentExposureOffset = 0.0;
   late AnimationController _flashModeControlRowAnimationController;

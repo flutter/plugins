@@ -176,6 +176,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   }) async {
     // TODO(camsim99): Use imageFormatGroup to configure ImageAnalysis use case
     // for image streaming.
+    // https://github.com/flutter/flutter/issues/120463
 
     // Configure CameraInitializedEvent to send as representation of a
     // configured camera:
@@ -191,10 +192,12 @@ class AndroidCameraCameraX extends CameraPlatform {
 
     // Retrieve exposure and focus mode configurations:
     // TODO(camsim99): Implement support for retrieving exposure mode configuration.
+    // https://github.com/flutter/flutter/issues/120468
     const ExposureMode exposureMode = ExposureMode.auto;
     const bool exposurePointSupported = false;
 
     // TODO(camsim99): Implement support for retrieving focus mode configuration.
+    // https://github.com/flutter/flutter/issues/120467
     const FocusMode focusMode = FocusMode.auto;
     const bool focusPointSupported = false;
 
@@ -339,6 +342,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// a camera preview.
   ResolutionInfo? _getTargetResolutionForPreview(ResolutionPreset? resolution) {
     // TODO(camsim99): Implement resolution configuration.
+    // https://github.com/flutter/flutter/issues/120462
     return null;
   }
 
