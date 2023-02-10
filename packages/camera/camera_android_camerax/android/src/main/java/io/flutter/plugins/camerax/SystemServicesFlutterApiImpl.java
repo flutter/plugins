@@ -4,19 +4,21 @@
 
 package io.flutter.plugins.camerax;
 
+import androidx.annotation.NonNull;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.SystemServicesFlutterApi;
 
 public class SystemServicesFlutterApiImpl extends SystemServicesFlutterApi {
-  public SystemServicesFlutterApiImpl(
-      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+  public SystemServicesFlutterApiImpl(@NonNull BinaryMessenger binaryMessenger) {
     super(binaryMessenger);
-    this.instanceManager = instanceManager;
   }
 
-  private final InstanceManager instanceManager;
-
-  public void onDeviceOrientationChanged(String orientation, Reply<Void> reply) {
+  public void sendDeviceOrientationChangedEvent(
+      @NonNull String orientation, @NonNull Reply<Void> reply) {
     super.onDeviceOrientationChanged(orientation, reply);
+  }
+
+  public void sendCameraError(@NonNull String errorDescription, @NonNull Reply<Void> reply) {
+    super.onCameraError(errorDescription, reply);
   }
 }

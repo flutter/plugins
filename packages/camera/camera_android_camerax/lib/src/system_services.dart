@@ -16,7 +16,7 @@ import 'camerax_library.g.dart';
 // ignore_for_file: avoid_classes_with_only_static_members
 
 /// Utility class that offers access to Android system services needed for
-/// camera usage.
+/// camera usage and other informational streams.
 class SystemServices {
   /// Stream that emits the device orientation whenever it is changed.
   ///
@@ -25,6 +25,10 @@ class SystemServices {
   static final StreamController<DeviceOrientationChangedEvent>
       deviceOrientationChangedStreamController =
       StreamController<DeviceOrientationChangedEvent>.broadcast();
+
+  /// Stream that emits the errors caused by camera usage on the native side.
+  static final StreamController<String> cameraErrorStreamController =
+      StreamController<String>.broadcast();
 
   /// Requests permission to access the camera and audio if specified.
   static Future<void> requestCameraPermissions(bool enableAudio,
@@ -133,5 +137,13 @@ class SystemServicesFlutterApiImpl implements SystemServicesFlutterApi {
         throw ArgumentError(
             '"$orientation" is not a valid DeviceOrientation value');
     }
+  }
+
+  /// Callback method for any errors caused by camera usage on the Java side.
+  @override
+  void onCameraError(String errorDescription) {
+    // TODO(camsim99): Use this to implement onCameraError method in plugin.
+    // See https://github.com/flutter/flutter/issues/119571 for context.
+    SystemServices.cameraErrorStreamController.add(errorDescription);
   }
 }
