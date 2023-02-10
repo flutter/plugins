@@ -43,7 +43,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   @visibleForTesting
   Preview? preview;
 
-  /// Whether or not the [Preview] is currently bound to the lifecycle that the
+  /// Whether or not the [preview] is currently bound to the lifecycle that the
   /// [processCameraProvider] tracks.
   @visibleForTesting
   bool previewIsBound = false;
@@ -57,8 +57,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   @visibleForTesting
   CameraSelector? cameraSelector;
 
-  /// The controller we need to broadcast the different events coming
-  /// from handleMethodCall, specific to camera events.
+  /// The controller we need to broadcast the different camera events.
   ///
   /// It is a `broadcast` because multiple controllers will connect to
   /// different stream views of this Controller.
@@ -118,14 +117,14 @@ class AndroidCameraCameraX extends CameraPlatform {
     return cameraDescriptions;
   }
 
-  /// Creates an uninitialized camera instance and returns the cameraId.
+  /// Creates an uninitialized camera instance and returns the camera ID.
   ///
   /// In the CameraX library, cameras are accessed by combining [UseCase]s
   /// to an instance of a [ProcessCameraProvider]. Thus, to create an
   /// unitialized camera instance, this method retrieves a
   /// [ProcessCameraProvider] instance.
   ///
-  /// To return the cameraID, which represents the ID of the surface texture
+  /// To return the camera ID, which is equivalent to the ID of the surface texture
   /// that a camera preview can be drawn to, a [Preview] instance is configured
   /// and bound to the [ProcessCameraProvider] instance.
   @override
@@ -134,9 +133,10 @@ class AndroidCameraCameraX extends CameraPlatform {
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
   }) async {
-    // Must obtatin proper permissions before attempts to access a camera.
+    // Must obtatin proper permissions before attempting to access a camera.
     await requestCameraPermissions(enableAudio);
 
+    // Save CameraSelector that matches cameraDescription.
     final int cameraSelectorLensDirection =
         _getCameraSelectorLensDirection(cameraDescription.lensDirection);
     final bool cameraIsFrontFacing =
@@ -163,7 +163,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// Initializes the camera on the device.
   ///
   /// Since initialization of a camera does not directly map as an operation to
-  /// the CameraX library, this method only retrieves information about the
+  /// the CameraX library, this method just retrieves information about the
   /// camera and sends a [CameraInitializedEvent].
   ///
   /// [imageFormatGroup] is used to specify the image formatting used.
@@ -220,13 +220,13 @@ class AndroidCameraCameraX extends CameraPlatform {
     processCameraProvider?.unbindAll();
   }
 
-  /// Callback method for the initialization of a camera.
+  /// The camera has been initialized.
   @override
   Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
     return _cameraEvents(cameraId).whereType<CameraInitializedEvent>();
   }
 
-  /// Callback method for native camera errors.
+  /// The camera experienced an error.
   @override
   Stream<CameraErrorEvent> onCameraError(int cameraId) {
     return SystemServices.cameraErrorStreamController.stream
@@ -235,13 +235,15 @@ class AndroidCameraCameraX extends CameraPlatform {
     });
   }
 
-  /// Callback method for changes in device orientation.
+  /// The ui orientation changed.
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     return SystemServices.deviceOrientationChangedStreamController.stream;
   }
 
   /// Pause the active preview on the current frame for the selected camera.
+  ///
+  /// [cameraId] not used.
   @override
   Future<void> pausePreview(int cameraId) async {
     _unbindPreviewFromLifecycle();
@@ -249,6 +251,8 @@ class AndroidCameraCameraX extends CameraPlatform {
   }
 
   /// Resume the paused preview for the selected camera.
+  ///
+  /// [cameraId] not used.
   @override
   Future<void> resumePreview(int cameraId) async {
     await _bindPreviewToLifecycle();
@@ -276,7 +280,7 @@ class AndroidCameraCameraX extends CameraPlatform {
   // Methods for binding UseCases to the lifecycle of the camera controlled
   // by a ProcessCameraProvider instance:
 
-  /// Binds [Preview] instance to the camera lifecycle controlled by the
+  /// Binds [preview] instance to the camera lifecycle controlled by the
   /// [processCameraProvider].
   Future<void> _bindPreviewToLifecycle() async {
     assert(processCameraProvider != null);
@@ -292,7 +296,7 @@ class AndroidCameraCameraX extends CameraPlatform {
     previewIsBound = true;
   }
 
-  /// Unbinds [Preview] instance to camera lifecycle controlled by the
+  /// Unbinds [preview] instance to camera lifecycle controlled by the
   /// [processCameraProvider].
   void _unbindPreviewFromLifecycle() {
     if (preview == null || !previewIsBound) {

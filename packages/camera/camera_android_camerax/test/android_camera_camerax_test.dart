@@ -115,7 +115,7 @@ void main() {
             enableAudio: enableAudio),
         equals(testSurfaceTextureId));
 
-    // Verify permnissions are requested and the camera starts listening for device orientation changes.
+    // Verify permissions are requested and the camera starts listening for device orientation changes.
     expect(camera.cameraPermissionsRequested, isTrue);
     expect(camera.startedListeningForDeviceOrientationChanges, isTrue);
 
