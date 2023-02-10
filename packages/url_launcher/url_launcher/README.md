@@ -6,9 +6,9 @@
 
 A Flutter plugin for launching a URL.
 
-|             | Android | iOS  | Linux | macOS  | Web | Windows     |
-|-------------|---------|------|-------|--------|-----|-------------|
-| **Support** | SDK 16+ | 9.0+ | Any   | 10.11+ | Any | Windows 10+ |
+|             | Android | iOS   | Linux | macOS  | Web | Windows     |
+|-------------|---------|-------|-------|--------|-----|-------------|
+| **Support** | SDK 16+ | 11.0+ | Any   | 10.11+ | Any | Windows 10+ |
 
 ## Usage
 
