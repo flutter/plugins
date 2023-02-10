@@ -13,7 +13,8 @@ App and package facing native API provided by the `webview_flutter_wkwebview` pl
 
 This class follows the convention of breaking changes of the Dart API, which means that any
 changes to the class that are not backwards compatible will only be made with a major version
-change of the plugin.
+change of the plugin. Native code other than this external API does not follow breaking change
+conventions, so app or plugin clients should not use any other native APIs.
 */
 @interface FWFWebViewFlutterWKWebViewExternalAPI : NSObject
 /**

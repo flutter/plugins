@@ -12,7 +12,8 @@ normally. This package will be automatically included in your app when you do.
 The plugin also provides a native API accessible by the native code of iOS applications or packages.
 This API follows the convention of breaking changes of the Dart API, which means that any changes to
 the class that are not backwards compatible will only be made with a major version change of the
-plugin.
+plugin. Native code other than this external API does not follow breaking change conventions, so
+app or plugin clients should not use any other native APIs.
 
 The API can be accessed by importing the native plugin `webview_flutter_wkwebview`:
 

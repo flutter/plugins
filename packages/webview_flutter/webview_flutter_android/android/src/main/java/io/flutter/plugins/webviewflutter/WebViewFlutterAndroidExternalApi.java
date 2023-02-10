@@ -14,6 +14,9 @@ import io.flutter.embedding.engine.FlutterEngine;
  * <p>This class follows the convention of breaking changes of the Dart API, which means that any
  * changes to the class that are not backwards compatible will only be made with a major version
  * change of the plugin.
+ *
+ * <p>Native code other than this external API does not follow breaking change conventions, so app
+ * or plugin clients should not use any other native APIs.
  */
 @SuppressWarnings("unused")
 public interface WebViewFlutterAndroidExternalApi {
