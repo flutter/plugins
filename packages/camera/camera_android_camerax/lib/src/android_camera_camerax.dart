@@ -362,7 +362,8 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// functionality.
   @visibleForTesting
   Future<ProcessCameraProvider> getProcessCameraProviderInstance() async {
-    final ProcessCameraProvider instance = await ProcessCameraProvider.getInstance();
+    final ProcessCameraProvider instance =
+        await ProcessCameraProvider.getInstance();
     return instance;
   }
 

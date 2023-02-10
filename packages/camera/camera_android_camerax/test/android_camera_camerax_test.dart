@@ -331,9 +331,13 @@ void main() {
     final FutureBuilder<void> previewWidget =
         camera.buildPreview(textureId) as FutureBuilder<void>;
 
-    expect(previewWidget.builder(MockBuildContext(), const AsyncSnapshot<void>.nothing()),
+    expect(
+        previewWidget.builder(
+            MockBuildContext(), const AsyncSnapshot<void>.nothing()),
         isA<SizedBox>());
-    expect(previewWidget.builder(MockBuildContext(), const AsyncSnapshot<void>.waiting()),
+    expect(
+        previewWidget.builder(
+            MockBuildContext(), const AsyncSnapshot<void>.waiting()),
         isA<SizedBox>());
     expect(
         previewWidget.builder(MockBuildContext(),
@@ -355,7 +359,8 @@ void main() {
         camera.buildPreview(textureId) as FutureBuilder<void>;
 
     final Texture previewTexture = previewWidget.builder(MockBuildContext(),
-        const AsyncSnapshot<void>.withData(ConnectionState.done, null)) as Texture;
+            const AsyncSnapshot<void>.withData(ConnectionState.done, null))
+        as Texture;
     expect(previewTexture.textureId, equals(textureId));
   });
 }
