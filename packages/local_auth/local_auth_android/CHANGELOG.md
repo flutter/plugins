@@ -1,3 +1,25 @@
+## 1.0.18
+
+* Updates minimum Flutter version to 3.0.
+* Updates androidx.core version to 1.9.0.
+* Upgrades compile SDK version to 33.
+
+## 1.0.17
+
+* Adds compatibility with `intl` 0.18.0.
+
+## 1.0.16
+
+* Updates androidx.fragment version to 1.5.5.
+
+## 1.0.15
+
+* Updates androidx.fragment version to 1.5.4.
+
+## 1.0.14
+
+* Fixes device credential authentication for API versions before R.
+
 ## 1.0.13
 
 * Updates imports for `prefer_relative_imports`.

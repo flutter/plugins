@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'android_camera_camerax_flutter_api_impls.dart';
 import 'camera_info.dart';
-import 'camerax_library.pigeon.dart';
+import 'camerax_library.g.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
@@ -128,15 +128,17 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
           lensFacing: original.lensFacing);
     });
 
-    final List<int> cameraInfoIds = (cameraInfos.map<int>(
-        (CameraInfo info) => instanceManager.getIdentifier(info)!)).toList();
+    final List<int> cameraInfoIds = cameraInfos
+        .map<int>((CameraInfo info) => instanceManager.getIdentifier(info)!)
+        .toList();
     final List<int?> filteredCameraInfoIds =
         await filter(identifier, cameraInfoIds);
     if (filteredCameraInfoIds.isEmpty) {
       return <CameraInfo>[];
     }
-    return (filteredCameraInfoIds.map<CameraInfo>((int? id) =>
-            instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo))
+    return filteredCameraInfoIds
+        .map<CameraInfo>((int? id) =>
+            instanceManager.getInstanceWithWeakReference(id!)! as CameraInfo)
         .toList();
   }
 }

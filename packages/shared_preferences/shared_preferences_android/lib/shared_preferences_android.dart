@@ -10,7 +10,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 const MethodChannel _kChannel =
     MethodChannel('plugins.flutter.io/shared_preferences_android');
 
-/// The macOS implementation of [SharedPreferencesStorePlatform].
+/// The Android implementation of [SharedPreferencesStorePlatform].
 ///
 /// This class implements the `package:shared_preferences` functionality for Android.
 class SharedPreferencesAndroid extends SharedPreferencesStorePlatform {

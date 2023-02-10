@@ -245,12 +245,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Constructs a [VideoPlayerController] playing a video from a file.
   ///
-  /// This will load the file from the file-URI given by:
-  /// `'file://${file.path}'`.
+  /// This will load the file from a file:// URI constructed from [file]'s path.
   VideoPlayerController.file(File file,
       {Future<ClosedCaptionFile>? closedCaptionFile, this.videoPlayerOptions})
       : _closedCaptionFileFuture = closedCaptionFile,
-        dataSource = 'file://${file.path}',
+        dataSource = Uri.file(file.absolute.path).toString(),
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
@@ -542,7 +541,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (_isDisposed) {
       return null;
     }
-    return await _videoPlayerPlatform.getPosition(_textureId);
+    return _videoPlayerPlatform.getPosition(_textureId);
   }
 
   /// Sets the video's current timestamp to be at [moment]. The next
@@ -698,17 +697,13 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.paused:
-        _wasPlayingBeforePause = _controller.value.isPlaying;
-        _controller.pause();
-        break;
-      case AppLifecycleState.resumed:
-        if (_wasPlayingBeforePause) {
-          _controller.play();
-        }
-        break;
-      default:
+    if (state == AppLifecycleState.paused) {
+      _wasPlayingBeforePause = _controller.value.isPlaying;
+      _controller.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_wasPlayingBeforePause) {
+        _controller.play();
+      }
     }
   }
 
@@ -836,20 +831,29 @@ class VideoProgressColors {
   final Color backgroundColor;
 }
 
-class _VideoScrubber extends StatefulWidget {
-  const _VideoScrubber({
+/// A scrubber to control [VideoPlayerController]s
+class VideoScrubber extends StatefulWidget {
+  /// Create a [VideoScrubber] handler with the given [child].
+  ///
+  /// [controller] is the [VideoPlayerController] that will be controlled by
+  /// this scrubber.
+  const VideoScrubber({
+    Key? key,
     required this.child,
     required this.controller,
-  });
+  }) : super(key: key);
 
+  /// The widget that will be displayed inside the gesture detector.
   final Widget child;
+
+  /// The [VideoPlayerController] that will be controlled by this scrubber.
   final VideoPlayerController controller;
 
   @override
-  _VideoScrubberState createState() => _VideoScrubberState();
+  State<VideoScrubber> createState() => _VideoScrubberState();
 }
 
-class _VideoScrubberState extends State<_VideoScrubber> {
+class _VideoScrubberState extends State<VideoScrubber> {
   bool _controllerWasPlaying = false;
 
   VideoPlayerController get controller => widget.controller;
@@ -1014,7 +1018,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       child: progressIndicator,
     );
     if (widget.allowScrubbing) {
-      return _VideoScrubber(
+      return VideoScrubber(
         controller: controller,
         child: paddedProgressIndicator,
       );
@@ -1096,5 +1100,4 @@ class ClosedCaption extends StatelessWidget {
 ///
 /// We use this so that APIs that have become non-nullable can still be used
 /// with `!` and `?` on the stable branch.
-// TODO(ianh): Remove this once we roll stable in late 2021.
 T? _ambiguate<T>(T? value) => value;

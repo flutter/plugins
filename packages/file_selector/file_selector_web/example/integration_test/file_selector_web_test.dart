@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-// ignore_for_file: prefer_const_literals_to_create_immutables
-
 import 'dart:html';
 import 'dart:typed_data';
 
@@ -29,9 +26,7 @@ void main() {
         final FileSelectorWeb plugin =
             FileSelectorWeb(domHelper: mockDomHelper);
 
-        // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-        // ignore: prefer_const_constructors
-        final XTypeGroup typeGroup = XTypeGroup(
+        const XTypeGroup typeGroup = XTypeGroup(
           label: 'images',
           extensions: <String>['jpg', 'jpeg'],
           mimeTypes: <String>['image/png'],
@@ -61,9 +56,7 @@ void main() {
         final FileSelectorWeb plugin =
             FileSelectorWeb(domHelper: mockDomHelper);
 
-        // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-        // ignore: prefer_const_constructors
-        final XTypeGroup typeGroup = XTypeGroup(
+        const XTypeGroup typeGroup = XTypeGroup(
           label: 'files',
           extensions: <String>['.txt'],
         );

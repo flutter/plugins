@@ -1,4 +1,47 @@
-## 12.0
+## 0.13.4+1
+
+* Makes `--packages-for-branch` detect any commit on `main` as being `main`,
+  so that it works with pinned checkouts (e.g., on LUCI).
+
+## 0.13.4
+
+* Adds the ability to validate minimum supported Dart/Flutter versions in
+  `pubspec-check`.
+
+## 0.13.3
+
+* Renames `podspecs` to `podspec-check`. The old name will continue to work.
+* Adds validation of the Swift-in-Obj-C-projects workaround in the podspecs of
+  iOS plugin implementations that use Swift.
+
+## 0.13.2+1
+
+* Replaces deprecated `flutter format` with `dart format` in `format`
+  implementation.
+
+## 0.13.2
+
+* Falls back to other executables in PATH when `clang-format` does not run.
+
+## 0.13.1
+
+* Updates `version-check` to recognize Pigeon's platform test structure.
+* Pins `package:git` dependency to `2.0.x` until `dart >=2.18.0` becomes our
+  oldest legacy.
+* Updates test mocks.
+
+## 0.13.0
+
+* Renames `all-plugins-app` to `create-all-packages-app` to clarify what it
+  actually does. Also renames the project directory it creates from
+  `all_plugins` to `all_packages`.
+
+## 0.12.1
+
+* Modifies `publish_check_command.dart` to do a `dart pub get` in all examples
+  of the package being checked. Workaround for [dart-lang/pub#3618](https://github.com/dart-lang/pub/issues/3618).
+
+## 0.12.0
 
 * Changes the behavior of `--packages-for-branch` on main/master to run for
   packages changed in the last commit, rather than running for all packages.
@@ -6,7 +49,7 @@
   tested in presubmit.
 * Adds a `fix` command to run `dart fix --apply` in target packages.
 
-## 0.11
+## 0.11.0
 
 * Renames `publish-plugin` to `publish`.
 * Renames arguments to `list`:

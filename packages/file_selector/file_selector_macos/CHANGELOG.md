@@ -1,3 +1,16 @@
+## NEXT
+
+* Updates example code for `use_build_context_synchronously` lint.
+* Updates minimum Flutter version to 3.0.
+
+## 0.9.0+4
+
+* Converts platform channel to Pigeon.
+
+## 0.9.0+3
+
+* Changes XTypeGroup initialization from final to const.
+
 ## 0.9.0+2
 
 * Updates imports for `prefer_relative_imports`.

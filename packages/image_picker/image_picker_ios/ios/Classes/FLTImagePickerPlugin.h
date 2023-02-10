@@ -5,9 +5,9 @@
 #import <Flutter/Flutter.h>
 #import <PhotosUI/PhotosUI.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface FLTImagePickerPlugin : NSObject <FlutterPlugin>
-
-// For testing only.
-- (UIViewController *)viewControllerWithWindow:(UIWindow *)window;
-
 @end
+
+NS_ASSUME_NONNULL_END

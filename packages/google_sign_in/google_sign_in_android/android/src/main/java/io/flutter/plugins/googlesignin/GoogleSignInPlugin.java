@@ -404,9 +404,9 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     public void signInSilently(Result result) {
       checkAndSetPendingOperation(METHOD_SIGN_IN_SILENTLY, result);
       Task<GoogleSignInAccount> task = signInClient.silentSignIn();
-      if (task.isSuccessful()) {
+      if (task.isComplete()) {
         // There's immediate result available.
-        onSignInAccount(task.getResult());
+        onSignInResult(task);
       } else {
         task.addOnCompleteListener(
             new OnCompleteListener<GoogleSignInAccount>() {
@@ -516,7 +516,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         GoogleSignInAccount account = completedTask.getResult(ApiException.class);
         onSignInAccount(account);
       } catch (ApiException e) {
-        // Forward all errors and let Dart side decide how to handle.
+        // Forward all errors and let Dart decide how to handle.
         String errorCode = errorCodeForStatus(e.getStatusCode());
         finishWithError(errorCode, e.toString());
       } catch (RuntimeExecutionException e) {
@@ -538,14 +538,20 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     }
 
     private String errorCodeForStatus(int statusCode) {
-      if (statusCode == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
-        return ERROR_REASON_SIGN_IN_CANCELED;
-      } else if (statusCode == CommonStatusCodes.SIGN_IN_REQUIRED) {
-        return ERROR_REASON_SIGN_IN_REQUIRED;
-      } else if (statusCode == CommonStatusCodes.NETWORK_ERROR) {
-        return ERROR_REASON_NETWORK_ERROR;
-      } else {
-        return ERROR_REASON_SIGN_IN_FAILED;
+      switch (statusCode) {
+        case GoogleSignInStatusCodes.SIGN_IN_CANCELLED:
+          return ERROR_REASON_SIGN_IN_CANCELED;
+        case CommonStatusCodes.SIGN_IN_REQUIRED:
+          return ERROR_REASON_SIGN_IN_REQUIRED;
+        case CommonStatusCodes.NETWORK_ERROR:
+          return ERROR_REASON_NETWORK_ERROR;
+        case GoogleSignInStatusCodes.SIGN_IN_CURRENTLY_IN_PROGRESS:
+        case GoogleSignInStatusCodes.SIGN_IN_FAILED:
+        case CommonStatusCodes.INVALID_ACCOUNT:
+        case CommonStatusCodes.INTERNAL_ERROR:
+          return ERROR_REASON_SIGN_IN_FAILED;
+        default:
+          return ERROR_REASON_SIGN_IN_FAILED;
       }
     }
 

@@ -1,3 +1,24 @@
+## 0.9.11
+
+* Adds back use of Optional type.
+* Updates minimum Flutter version to 3.0.
+
+## 0.9.10+2
+
+* Updates code for stricter lint checks.
+
+## 0.9.10+1
+
+* Updates code for stricter lint checks.
+
+## 0.9.10
+
+* Remove usage of deprecated quiver Optional type.
+
+## 0.9.9
+
+* Implements option to also stream when recording a video.
+
 ## 0.9.8+6
 
 * Updates code for `no_leading_underscores_for_local_identifiers` lint.

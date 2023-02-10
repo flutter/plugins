@@ -5,7 +5,7 @@
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter/services.dart';
 
-import 'camerax_library.pigeon.dart';
+import 'camerax_library.g.dart';
 import 'instance_manager.dart';
 
 /// Root of the Java class hierarchy.

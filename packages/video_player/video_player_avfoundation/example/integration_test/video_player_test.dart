@@ -177,5 +177,19 @@ void main() {
       expect(livestreamController.value.duration,
           (Duration duration) => duration != Duration.zero);
     });
+
+    testWidgets('rotated m3u8 has correct aspect ratio',
+        (WidgetTester tester) async {
+      // Some m3u8 files contain rotation data that may incorrectly invert the aspect ratio.
+      // More info [here](https://github.com/flutter/flutter/issues/109116).
+      final MiniController livestreamController = MiniController.network(
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/hls/rotated_nail_manifest.m3u8',
+      );
+      await livestreamController.initialize();
+
+      expect(livestreamController.value.isInitialized, true);
+      expect(livestreamController.value.size.width,
+          lessThan(livestreamController.value.size.height));
+    });
   });
 }

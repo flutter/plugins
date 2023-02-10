@@ -118,9 +118,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
       throw UnimplementedError(
           'ImageSource.gallery is currently the only supported source on Windows');
     }
-    final XTypeGroup typeGroup =
-        // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-        // ignore: prefer_const_constructors
+    const XTypeGroup typeGroup =
         XTypeGroup(label: 'images', extensions: imageFormats);
     final XFile? file = await fileSelector
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
@@ -144,9 +142,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
       throw UnimplementedError(
           'ImageSource.gallery is currently the only supported source on Windows');
     }
-    final XTypeGroup typeGroup =
-        // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-        // ignore: prefer_const_constructors
+    const XTypeGroup typeGroup =
         XTypeGroup(label: 'videos', extensions: videoFormats);
     final XFile? file = await fileSelector
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
@@ -162,9 +158,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    final XTypeGroup typeGroup =
-        // TODO(stuartmorgan): https://github.com/flutter/flutter/issues/111906
-        // ignore: prefer_const_constructors
+    const XTypeGroup typeGroup =
         XTypeGroup(label: 'images', extensions: imageFormats);
     final List<XFile> files = await fileSelector
         .openFiles(acceptedTypeGroups: <XTypeGroup>[typeGroup]);

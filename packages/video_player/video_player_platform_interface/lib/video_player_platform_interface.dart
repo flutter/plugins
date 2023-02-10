@@ -114,7 +114,7 @@ class DataSource {
   /// The [sourceType] is always required.
   ///
   /// The [uri] argument takes the form of `'https://example.com/video.mp4'` or
-  /// `'file://${file.path}'`.
+  /// `'file:///absolute/path/to/local/video.mp4`.
   ///
   /// The [formatHint] argument can be null.
   ///

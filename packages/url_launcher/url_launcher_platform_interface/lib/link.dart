@@ -109,5 +109,4 @@ Future<ByteData> pushRouteNameToFramework(Object? _, String routeName) {
 ///
 /// We use this so that APIs that have become non-nullable can still be used
 /// with `!` and `?` on the stable branch.
-// TODO(ianh): Remove this once we roll stable in late 2021.
 T? _ambiguate<T>(T? value) => value;

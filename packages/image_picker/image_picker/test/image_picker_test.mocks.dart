@@ -51,6 +51,7 @@ class MockImagePickerPlatform extends _i1.Mock
               }),
               returnValue: Future<_i2.PickedFile?>.value())
           as _i4.Future<_i2.PickedFile?>);
+
   @override
   _i4.Future<List<_i2.PickedFile>?> pickMultiImage(
           {double? maxWidth, double? maxHeight, int? imageQuality}) =>
@@ -62,6 +63,7 @@ class MockImagePickerPlatform extends _i1.Mock
               }),
               returnValue: Future<List<_i2.PickedFile>?>.value())
           as _i4.Future<List<_i2.PickedFile>?>);
+
   @override
   _i4.Future<_i2.PickedFile?> pickVideo(
           {_i2.ImageSource? source,
@@ -75,11 +77,13 @@ class MockImagePickerPlatform extends _i1.Mock
               }),
               returnValue: Future<_i2.PickedFile?>.value())
           as _i4.Future<_i2.PickedFile?>);
+
   @override
   _i4.Future<_i2.LostData> retrieveLostData() =>
       (super.noSuchMethod(Invocation.method(#retrieveLostData, []),
               returnValue: Future<_i2.LostData>.value(_FakeLostData_0()))
           as _i4.Future<_i2.LostData>);
+
   @override
   _i4.Future<_i5.XFile?> getImage(
           {_i2.ImageSource? source,
@@ -96,6 +100,7 @@ class MockImagePickerPlatform extends _i1.Mock
             #preferredCameraDevice: preferredCameraDevice
           }),
           returnValue: Future<_i5.XFile?>.value()) as _i4.Future<_i5.XFile?>);
+
   @override
   _i4.Future<List<_i5.XFile>?> getMultiImage(
           {double? maxWidth, double? maxHeight, int? imageQuality}) =>
@@ -107,6 +112,7 @@ class MockImagePickerPlatform extends _i1.Mock
               }),
               returnValue: Future<List<_i5.XFile>?>.value())
           as _i4.Future<List<_i5.XFile>?>);
+
   @override
   _i4.Future<_i5.XFile?> getVideo(
           {_i2.ImageSource? source,
@@ -119,12 +125,14 @@ class MockImagePickerPlatform extends _i1.Mock
             #maxDuration: maxDuration
           }),
           returnValue: Future<_i5.XFile?>.value()) as _i4.Future<_i5.XFile?>);
+
   @override
   _i4.Future<_i2.LostDataResponse> getLostData() =>
       (super.noSuchMethod(Invocation.method(#getLostData, []),
               returnValue:
                   Future<_i2.LostDataResponse>.value(_FakeLostDataResponse_1()))
           as _i4.Future<_i2.LostDataResponse>);
+
   @override
   _i4.Future<_i5.XFile?> getImageFromSource(
           {_i2.ImageSource? source,
@@ -133,4 +141,14 @@ class MockImagePickerPlatform extends _i1.Mock
           Invocation.method(
               #getImageFromSource, [], {#source: source, #options: options}),
           returnValue: Future<_i5.XFile?>.value()) as _i4.Future<_i5.XFile?>);
+
+  @override
+  _i4.Future<List<_i5.XFile>> getMultiImageWithOptions(
+          {_i2.MultiImagePickerOptions? options =
+              const _i2.MultiImagePickerOptions()}) =>
+      (super.noSuchMethod(
+          Invocation.method(#getMultiImageWithOptions, [], {#options: options}),
+          returnValue:
+              Future<List<_i5.XFile>>.value(<_i5.XFile>[])) as _i4
+          .Future<List<_i5.XFile>>);
 }
