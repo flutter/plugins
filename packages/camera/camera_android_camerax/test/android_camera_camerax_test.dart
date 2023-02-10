@@ -24,13 +24,13 @@ import 'package:mockito/mockito.dart';
 import 'android_camera_camerax_test.mocks.dart';
 
 @GenerateNiceMocks(<MockSpec<Object>>[
-  MockSpec<BuildContext>(),
   MockSpec<Camera>(),
   MockSpec<CameraInfo>(),
   MockSpec<CameraSelector>(),
   MockSpec<Preview>(),
   MockSpec<ProcessCameraProvider>(),
 ])
+@GenerateMocks(<Type>[BuildContext])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

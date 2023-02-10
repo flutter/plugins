@@ -5,17 +5,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i8;
 
-import 'package:camera_android_camerax/src/camera.dart' as _i5;
+import 'package:camera_android_camerax/src/camera.dart' as _i3;
 import 'package:camera_android_camerax/src/camera_info.dart' as _i7;
 import 'package:camera_android_camerax/src/camera_selector.dart' as _i9;
-import 'package:camera_android_camerax/src/camerax_library.g.dart' as _i4;
+import 'package:camera_android_camerax/src/camerax_library.g.dart' as _i2;
 import 'package:camera_android_camerax/src/preview.dart' as _i10;
 import 'package:camera_android_camerax/src/process_camera_provider.dart'
     as _i11;
 import 'package:camera_android_camerax/src/use_case.dart' as _i12;
-import 'package:flutter/foundation.dart' as _i3;
-import 'package:flutter/src/widgets/framework.dart' as _i2;
-import 'package:flutter/src/widgets/notification_listener.dart' as _i6;
+import 'package:flutter/foundation.dart' as _i6;
+import 'package:flutter/services.dart' as _i5;
+import 'package:flutter/src/widgets/framework.dart' as _i4;
+import 'package:flutter/src/widgets/notification_listener.dart' as _i13;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -29,8 +30,29 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeWidget_0 extends _i1.SmartFake implements _i2.Widget {
-  _FakeWidget_0(
+class _FakeResolutionInfo_0 extends _i1.SmartFake
+    implements _i2.ResolutionInfo {
+  _FakeResolutionInfo_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeCamera_1 extends _i1.SmartFake implements _i3.Camera {
+  _FakeCamera_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeWidget_2 extends _i1.SmartFake implements _i4.Widget {
+  _FakeWidget_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -39,13 +61,13 @@ class _FakeWidget_0 extends _i1.SmartFake implements _i2.Widget {
         );
 
   @override
-  String toString({_i3.DiagnosticLevel? minLevel = _i3.DiagnosticLevel.info}) =>
+  String toString({_i5.DiagnosticLevel? minLevel = _i5.DiagnosticLevel.info}) =>
       super.toString();
 }
 
-class _FakeInheritedWidget_1 extends _i1.SmartFake
-    implements _i2.InheritedWidget {
-  _FakeInheritedWidget_1(
+class _FakeInheritedWidget_3 extends _i1.SmartFake
+    implements _i4.InheritedWidget {
+  _FakeInheritedWidget_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -54,13 +76,13 @@ class _FakeInheritedWidget_1 extends _i1.SmartFake
         );
 
   @override
-  String toString({_i3.DiagnosticLevel? minLevel = _i3.DiagnosticLevel.info}) =>
+  String toString({_i5.DiagnosticLevel? minLevel = _i5.DiagnosticLevel.info}) =>
       super.toString();
 }
 
-class _FakeDiagnosticsNode_2 extends _i1.SmartFake
-    implements _i3.DiagnosticsNode {
-  _FakeDiagnosticsNode_2(
+class _FakeDiagnosticsNode_4 extends _i1.SmartFake
+    implements _i6.DiagnosticsNode {
+  _FakeDiagnosticsNode_4(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -70,211 +92,16 @@ class _FakeDiagnosticsNode_2 extends _i1.SmartFake
 
   @override
   String toString({
-    _i3.TextTreeConfiguration? parentConfiguration,
-    _i3.DiagnosticLevel? minLevel = _i3.DiagnosticLevel.info,
+    _i6.TextTreeConfiguration? parentConfiguration,
+    _i5.DiagnosticLevel? minLevel = _i5.DiagnosticLevel.info,
   }) =>
       super.toString();
-}
-
-class _FakeResolutionInfo_3 extends _i1.SmartFake
-    implements _i4.ResolutionInfo {
-  _FakeResolutionInfo_3(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeCamera_4 extends _i1.SmartFake implements _i5.Camera {
-  _FakeCamera_4(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-/// A class which mocks [BuildContext].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockBuildContext extends _i1.Mock implements _i2.BuildContext {
-  @override
-  _i2.Widget get widget => (super.noSuchMethod(
-        Invocation.getter(#widget),
-        returnValue: _FakeWidget_0(
-          this,
-          Invocation.getter(#widget),
-        ),
-        returnValueForMissingStub: _FakeWidget_0(
-          this,
-          Invocation.getter(#widget),
-        ),
-      ) as _i2.Widget);
-  @override
-  bool get mounted => (super.noSuchMethod(
-        Invocation.getter(#mounted),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-  @override
-  bool get debugDoingBuild => (super.noSuchMethod(
-        Invocation.getter(#debugDoingBuild),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-  @override
-  _i2.InheritedWidget dependOnInheritedElement(
-    _i2.InheritedElement? ancestor, {
-    Object? aspect,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #dependOnInheritedElement,
-          [ancestor],
-          {#aspect: aspect},
-        ),
-        returnValue: _FakeInheritedWidget_1(
-          this,
-          Invocation.method(
-            #dependOnInheritedElement,
-            [ancestor],
-            {#aspect: aspect},
-          ),
-        ),
-        returnValueForMissingStub: _FakeInheritedWidget_1(
-          this,
-          Invocation.method(
-            #dependOnInheritedElement,
-            [ancestor],
-            {#aspect: aspect},
-          ),
-        ),
-      ) as _i2.InheritedWidget);
-  @override
-  void visitAncestorElements(_i2.ConditionalElementVisitor? visitor) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #visitAncestorElements,
-          [visitor],
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
-  void visitChildElements(_i2.ElementVisitor? visitor) => super.noSuchMethod(
-        Invocation.method(
-          #visitChildElements,
-          [visitor],
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
-  void dispatchNotification(_i6.Notification? notification) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #dispatchNotification,
-          [notification],
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
-  _i3.DiagnosticsNode describeElement(
-    String? name, {
-    _i3.DiagnosticsTreeStyle? style = _i3.DiagnosticsTreeStyle.errorProperty,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #describeElement,
-          [name],
-          {#style: style},
-        ),
-        returnValue: _FakeDiagnosticsNode_2(
-          this,
-          Invocation.method(
-            #describeElement,
-            [name],
-            {#style: style},
-          ),
-        ),
-        returnValueForMissingStub: _FakeDiagnosticsNode_2(
-          this,
-          Invocation.method(
-            #describeElement,
-            [name],
-            {#style: style},
-          ),
-        ),
-      ) as _i3.DiagnosticsNode);
-  @override
-  _i3.DiagnosticsNode describeWidget(
-    String? name, {
-    _i3.DiagnosticsTreeStyle? style = _i3.DiagnosticsTreeStyle.errorProperty,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #describeWidget,
-          [name],
-          {#style: style},
-        ),
-        returnValue: _FakeDiagnosticsNode_2(
-          this,
-          Invocation.method(
-            #describeWidget,
-            [name],
-            {#style: style},
-          ),
-        ),
-        returnValueForMissingStub: _FakeDiagnosticsNode_2(
-          this,
-          Invocation.method(
-            #describeWidget,
-            [name],
-            {#style: style},
-          ),
-        ),
-      ) as _i3.DiagnosticsNode);
-  @override
-  List<_i3.DiagnosticsNode> describeMissingAncestor(
-          {required Type? expectedAncestorType}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #describeMissingAncestor,
-          [],
-          {#expectedAncestorType: expectedAncestorType},
-        ),
-        returnValue: <_i3.DiagnosticsNode>[],
-        returnValueForMissingStub: <_i3.DiagnosticsNode>[],
-      ) as List<_i3.DiagnosticsNode>);
-  @override
-  _i3.DiagnosticsNode describeOwnershipChain(String? name) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #describeOwnershipChain,
-          [name],
-        ),
-        returnValue: _FakeDiagnosticsNode_2(
-          this,
-          Invocation.method(
-            #describeOwnershipChain,
-            [name],
-          ),
-        ),
-        returnValueForMissingStub: _FakeDiagnosticsNode_2(
-          this,
-          Invocation.method(
-            #describeOwnershipChain,
-            [name],
-          ),
-        ),
-      ) as _i3.DiagnosticsNode);
 }
 
 /// A class which mocks [Camera].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCamera extends _i1.Mock implements _i5.Camera {}
+class MockCamera extends _i1.Mock implements _i3.Camera {}
 
 /// A class which mocks [CameraInfo].
 ///
@@ -330,12 +157,12 @@ class MockPreview extends _i1.Mock implements _i10.Preview {
         returnValueForMissingStub: null,
       );
   @override
-  _i8.Future<_i4.ResolutionInfo> getResolutionInfo() => (super.noSuchMethod(
+  _i8.Future<_i2.ResolutionInfo> getResolutionInfo() => (super.noSuchMethod(
         Invocation.method(
           #getResolutionInfo,
           [],
         ),
-        returnValue: _i8.Future<_i4.ResolutionInfo>.value(_FakeResolutionInfo_3(
+        returnValue: _i8.Future<_i2.ResolutionInfo>.value(_FakeResolutionInfo_0(
           this,
           Invocation.method(
             #getResolutionInfo,
@@ -343,14 +170,14 @@ class MockPreview extends _i1.Mock implements _i10.Preview {
           ),
         )),
         returnValueForMissingStub:
-            _i8.Future<_i4.ResolutionInfo>.value(_FakeResolutionInfo_3(
+            _i8.Future<_i2.ResolutionInfo>.value(_FakeResolutionInfo_0(
           this,
           Invocation.method(
             #getResolutionInfo,
             [],
           ),
         )),
-      ) as _i8.Future<_i4.ResolutionInfo>);
+      ) as _i8.Future<_i2.ResolutionInfo>);
 }
 
 /// A class which mocks [ProcessCameraProvider].
@@ -370,7 +197,7 @@ class MockProcessCameraProvider extends _i1.Mock
             _i8.Future<List<_i7.CameraInfo>>.value(<_i7.CameraInfo>[]),
       ) as _i8.Future<List<_i7.CameraInfo>>);
   @override
-  _i8.Future<_i5.Camera> bindToLifecycle(
+  _i8.Future<_i3.Camera> bindToLifecycle(
     _i9.CameraSelector? cameraSelector,
     List<_i12.UseCase>? useCases,
   ) =>
@@ -382,7 +209,7 @@ class MockProcessCameraProvider extends _i1.Mock
             useCases,
           ],
         ),
-        returnValue: _i8.Future<_i5.Camera>.value(_FakeCamera_4(
+        returnValue: _i8.Future<_i3.Camera>.value(_FakeCamera_1(
           this,
           Invocation.method(
             #bindToLifecycle,
@@ -392,7 +219,7 @@ class MockProcessCameraProvider extends _i1.Mock
             ],
           ),
         )),
-        returnValueForMissingStub: _i8.Future<_i5.Camera>.value(_FakeCamera_4(
+        returnValueForMissingStub: _i8.Future<_i3.Camera>.value(_FakeCamera_1(
           this,
           Invocation.method(
             #bindToLifecycle,
@@ -402,7 +229,7 @@ class MockProcessCameraProvider extends _i1.Mock
             ],
           ),
         )),
-      ) as _i8.Future<_i5.Camera>);
+      ) as _i8.Future<_i3.Camera>);
   @override
   void unbind(List<_i12.UseCase>? useCases) => super.noSuchMethod(
         Invocation.method(
@@ -419,4 +246,144 @@ class MockProcessCameraProvider extends _i1.Mock
         ),
         returnValueForMissingStub: null,
       );
+}
+
+/// A class which mocks [BuildContext].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockBuildContext extends _i1.Mock implements _i4.BuildContext {
+  MockBuildContext() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Widget get widget => (super.noSuchMethod(
+        Invocation.getter(#widget),
+        returnValue: _FakeWidget_2(
+          this,
+          Invocation.getter(#widget),
+        ),
+      ) as _i4.Widget);
+  @override
+  bool get mounted => (super.noSuchMethod(
+        Invocation.getter(#mounted),
+        returnValue: false,
+      ) as bool);
+  @override
+  bool get debugDoingBuild => (super.noSuchMethod(
+        Invocation.getter(#debugDoingBuild),
+        returnValue: false,
+      ) as bool);
+  @override
+  _i4.InheritedWidget dependOnInheritedElement(
+    _i4.InheritedElement? ancestor, {
+    Object? aspect,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #dependOnInheritedElement,
+          [ancestor],
+          {#aspect: aspect},
+        ),
+        returnValue: _FakeInheritedWidget_3(
+          this,
+          Invocation.method(
+            #dependOnInheritedElement,
+            [ancestor],
+            {#aspect: aspect},
+          ),
+        ),
+      ) as _i4.InheritedWidget);
+  @override
+  void visitAncestorElements(_i4.ConditionalElementVisitor? visitor) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #visitAncestorElements,
+          [visitor],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void visitChildElements(_i4.ElementVisitor? visitor) => super.noSuchMethod(
+        Invocation.method(
+          #visitChildElements,
+          [visitor],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void dispatchNotification(_i13.Notification? notification) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #dispatchNotification,
+          [notification],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  _i6.DiagnosticsNode describeElement(
+    String? name, {
+    _i6.DiagnosticsTreeStyle? style = _i6.DiagnosticsTreeStyle.errorProperty,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #describeElement,
+          [name],
+          {#style: style},
+        ),
+        returnValue: _FakeDiagnosticsNode_4(
+          this,
+          Invocation.method(
+            #describeElement,
+            [name],
+            {#style: style},
+          ),
+        ),
+      ) as _i6.DiagnosticsNode);
+  @override
+  _i6.DiagnosticsNode describeWidget(
+    String? name, {
+    _i6.DiagnosticsTreeStyle? style = _i6.DiagnosticsTreeStyle.errorProperty,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #describeWidget,
+          [name],
+          {#style: style},
+        ),
+        returnValue: _FakeDiagnosticsNode_4(
+          this,
+          Invocation.method(
+            #describeWidget,
+            [name],
+            {#style: style},
+          ),
+        ),
+      ) as _i6.DiagnosticsNode);
+  @override
+  List<_i6.DiagnosticsNode> describeMissingAncestor(
+          {required Type? expectedAncestorType}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #describeMissingAncestor,
+          [],
+          {#expectedAncestorType: expectedAncestorType},
+        ),
+        returnValue: <_i6.DiagnosticsNode>[],
+      ) as List<_i6.DiagnosticsNode>);
+  @override
+  _i6.DiagnosticsNode describeOwnershipChain(String? name) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #describeOwnershipChain,
+          [name],
+        ),
+        returnValue: _FakeDiagnosticsNode_4(
+          this,
+          Invocation.method(
+            #describeOwnershipChain,
+            [name],
+          ),
+        ),
+      ) as _i6.DiagnosticsNode);
 }
