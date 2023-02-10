@@ -989,13 +989,7 @@ Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    // TODO(camsim99): Use actual availableCameras method here
-    _cameras = <CameraDescription>[
-      const CameraDescription(
-          name: 'cam',
-          lensDirection: CameraLensDirection.back,
-          sensorOrientation: 90),
-    ];
+    _cameras = await CameraPlatform.instance.availableCameras();
   } on CameraException catch (e) {
     _logError(e.code, e.description);
   }
