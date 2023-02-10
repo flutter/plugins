@@ -576,6 +576,29 @@ void main() {
         ]);
       });
 
+      test('Should set description while recording', () async {
+        // Arrange
+        final MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: <String, dynamic>{'setDescriptionWhileRecording': null},
+        );
+
+        // Act
+        const CameraDescription cameraDescription = CameraDescription(
+            name: 'Test',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 0);
+        await camera.setDescriptionWhileRecording(cameraDescription);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('setDescriptionWhileRecording',
+              arguments: <String, Object?>{
+                'cameraName': cameraDescription.name
+              }),
+        ]);
+      });
+
       test('Should pass maxVideoDuration when starting recording a video',
           () async {
         // Arrange

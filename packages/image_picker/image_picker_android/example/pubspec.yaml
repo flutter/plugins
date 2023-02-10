@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_driver:
+    sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
   image_picker_android:
     # When depending on this package from a real application you should use:
@@ -22,8 +24,6 @@ dependencies:
 
 dev_dependencies:
   espresso: ^0.2.0
-  flutter_driver:
-    sdk: flutter
   flutter_test:
     sdk: flutter
   integration_test:

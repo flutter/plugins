@@ -8,7 +8,7 @@ import 'android_camera_camerax_flutter_api_impls.dart';
 import 'camera.dart';
 import 'camera_info.dart';
 import 'camera_selector.dart';
-import 'camerax_library.pigeon.dart';
+import 'camerax_library.g.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 import 'use_case.dart';

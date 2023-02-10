@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:camera_android_camerax/src/camerax_library.pigeon.dart';
+import 'package:camera_android_camerax/src/camerax_library.g.dart';
 
 class _TestJavaObjectHostApiCodec extends StandardMessageCodec {
   const _TestJavaObjectHostApiCodec();
@@ -254,6 +254,220 @@ abstract class TestProcessCameraProviderHostApi {
               'Argument for dev.flutter.pigeon.ProcessCameraProviderHostApi.unbindAll was null, expected non-null int.');
           api.unbindAll(arg_identifier!);
           return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}
+
+class _TestSystemServicesHostApiCodec extends StandardMessageCodec {
+  const _TestSystemServicesHostApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is CameraPermissionsErrorData) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return CameraPermissionsErrorData.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+abstract class TestSystemServicesHostApi {
+  static const MessageCodec<Object?> codec = _TestSystemServicesHostApiCodec();
+
+  Future<CameraPermissionsErrorData?> requestCameraPermissions(
+      bool enableAudio);
+  void startListeningForDeviceOrientationChange(
+      bool isFrontFacing, int sensorOrientation);
+  void stopListeningForDeviceOrientationChange();
+  static void setup(TestSystemServicesHostApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final bool? arg_enableAudio = (args[0] as bool?);
+          assert(arg_enableAudio != null,
+              'Argument for dev.flutter.pigeon.SystemServicesHostApi.requestCameraPermissions was null, expected non-null bool.');
+          final CameraPermissionsErrorData? output =
+              await api.requestCameraPermissions(arg_enableAudio!);
+          return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final bool? arg_isFrontFacing = (args[0] as bool?);
+          assert(arg_isFrontFacing != null,
+              'Argument for dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange was null, expected non-null bool.');
+          final int? arg_sensorOrientation = (args[1] as int?);
+          assert(arg_sensorOrientation != null,
+              'Argument for dev.flutter.pigeon.SystemServicesHostApi.startListeningForDeviceOrientationChange was null, expected non-null int.');
+          api.startListeningForDeviceOrientationChange(
+              arg_isFrontFacing!, arg_sensorOrientation!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.SystemServicesHostApi.stopListeningForDeviceOrientationChange',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          // ignore message
+          api.stopListeningForDeviceOrientationChange();
+          return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}
+
+class _TestPreviewHostApiCodec extends StandardMessageCodec {
+  const _TestPreviewHostApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is ResolutionInfo) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else if (value is ResolutionInfo) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return ResolutionInfo.decode(readValue(buffer)!);
+
+      case 129:
+        return ResolutionInfo.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+abstract class TestPreviewHostApi {
+  static const MessageCodec<Object?> codec = _TestPreviewHostApiCodec();
+
+  void create(int identifier, int? rotation, ResolutionInfo? targetResolution);
+  int setSurfaceProvider(int identifier);
+  void releaseFlutterSurfaceTexture();
+  ResolutionInfo getResolutionInfo(int identifier);
+  static void setup(TestPreviewHostApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewHostApi.create', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.create was null, expected non-null int.');
+          final int? arg_rotation = (args[1] as int?);
+          final ResolutionInfo? arg_targetResolution =
+              (args[2] as ResolutionInfo?);
+          api.create(arg_identifier!, arg_rotation, arg_targetResolution);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewHostApi.setSurfaceProvider', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.setSurfaceProvider was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.setSurfaceProvider was null, expected non-null int.');
+          final int output = api.setSurfaceProvider(arg_identifier!);
+          return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewHostApi.releaseFlutterSurfaceTexture',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          // ignore message
+          api.releaseFlutterSurfaceTexture();
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.PreviewHostApi.getResolutionInfo', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.getResolutionInfo was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.PreviewHostApi.getResolutionInfo was null, expected non-null int.');
+          final ResolutionInfo output = api.getResolutionInfo(arg_identifier!);
+          return <Object?, Object?>{'result': output};
         });
       }
     }

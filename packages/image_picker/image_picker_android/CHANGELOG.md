@@ -1,6 +1,7 @@
-## NEXT
+## 0.8.5+6
 
 * Updates minimum Flutter version to 3.0.
+* Fixes names of picked files to match original filenames where possible.
 
 ## 0.8.5+5
 
