@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:async/async.dart';
 import 'package:camera_android_camerax/camera_android_camerax.dart';
-import 'package:camera_android_camerax/src/camerax_library.g.dart';
 import 'package:camera_android_camerax/src/camera.dart';
 import 'package:camera_android_camerax/src/camera_info.dart';
 import 'package:camera_android_camerax/src/camera_selector.dart';
+import 'package:camera_android_camerax/src/camerax_library.g.dart';
 import 'package:camera_android_camerax/src/preview.dart';
 import 'package:camera_android_camerax/src/process_camera_provider.dart';
-import 'package:camera_android_camerax/src/surface.dart';
 import 'package:camera_android_camerax/src/system_services.dart';
 import 'package:camera_android_camerax/src/use_case.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart' show DeviceOrientation;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -141,7 +142,7 @@ void main() {
 
   test('initializeCamera sends expected CameraInitializedEvent', () async {
     final MockAndroidCameraCamerax camera = MockAndroidCameraCamerax();
-    final int cameraId = 10;
+    const int cameraId = 10;
     const CameraLensDirection testLensDirection = CameraLensDirection.back;
     const int testSensorOrientation = 90;
     const CameraDescription testCameraDescription = CameraDescription(
@@ -150,8 +151,8 @@ void main() {
         sensorOrientation: testSensorOrientation);
     const ResolutionPreset testResolutionPreset = ResolutionPreset.veryHigh;
     const bool enableAudio = true;
-    final int resolutionWidth = 350;
-    final int resolutionHeight = 750;
+    const int resolutionWidth = 350;
+    const int resolutionHeight = 750;
     final Camera mockCamera = MockCamera();
     final ResolutionInfo testResolutionInfo =
         ResolutionInfo(width: resolutionWidth, height: resolutionHeight);
@@ -181,7 +182,7 @@ void main() {
 
     // Start listening to camera events stream to verify the proper CameraInitializedEvent is sent.
     camera.cameraEventStreamController.stream.listen((CameraEvent event) {
-      expect(event, TypeMatcher<CameraInitializedEvent>());
+      expect(event, const TypeMatcher<CameraInitializedEvent>());
       expect(event, equals(testCameraInitializedEvent));
     });
 
@@ -213,12 +214,12 @@ void main() {
 
   test('onCameraInitialized stream emits CameraInitializedEvents', () async {
     final AndroidCameraCameraX camera = AndroidCameraCameraX();
-    final int cameraId = 16;
+    const int cameraId = 16;
     final Stream<CameraInitializedEvent> eventStream =
         camera.onCameraInitialized(cameraId);
     final StreamQueue<CameraInitializedEvent> streamQueue =
         StreamQueue<CameraInitializedEvent>(eventStream);
-    final CameraInitializedEvent testEvent = CameraInitializedEvent(
+    const CameraInitializedEvent testEvent = CameraInitializedEvent(
         cameraId, 320, 80, ExposureMode.auto, false, FocusMode.auto, false);
 
     camera.cameraEventStreamController.add(testEvent);
@@ -229,8 +230,8 @@ void main() {
 
   test('onCameraError stream emits errors caught by system services', () async {
     final AndroidCameraCameraX camera = AndroidCameraCameraX();
-    final int cameraId = 27;
-    final String testErrorDescription = 'Test error description!';
+    const int cameraId = 27;
+    const String testErrorDescription = 'Test error description!';
     final Stream<CameraErrorEvent> eventStream = camera.onCameraError(cameraId);
     final StreamQueue<CameraErrorEvent> streamQueue =
         StreamQueue<CameraErrorEvent>(eventStream);
@@ -238,7 +239,7 @@ void main() {
     SystemServices.cameraErrorStreamController.add(testErrorDescription);
 
     expect(await streamQueue.next,
-        equals(CameraErrorEvent(cameraId, testErrorDescription)));
+        equals(const CameraErrorEvent(cameraId, testErrorDescription)));
     await streamQueue.cancel();
   });
 
@@ -250,7 +251,7 @@ void main() {
         camera.onDeviceOrientationChanged();
     final StreamQueue<DeviceOrientationChangedEvent> streamQueue =
         StreamQueue<DeviceOrientationChangedEvent>(eventStream);
-    final DeviceOrientationChangedEvent testEvent =
+    const DeviceOrientationChangedEvent testEvent =
         DeviceOrientationChangedEvent(DeviceOrientation.portraitDown);
 
     SystemServices.deviceOrientationChangedStreamController.add(testEvent);
@@ -321,22 +322,22 @@ void main() {
       'buildPreview returns a FutureBuilder that does not return a Texture until the preview is bound to the lifecycle',
       () async {
     final AndroidCameraCameraX camera = AndroidCameraCameraX();
-    final int textureId = 75;
+    const int textureId = 75;
 
     camera.processCameraProvider = MockProcessCameraProvider();
     camera.cameraSelector = MockCameraSelector();
     camera.preview = MockPreview();
 
-    FutureBuilder<void> previewWidget =
+    final FutureBuilder<void> previewWidget =
         camera.buildPreview(textureId) as FutureBuilder<void>;
 
-    expect(previewWidget.builder(MockBuildContext(), AsyncSnapshot.nothing()),
+    expect(previewWidget.builder(MockBuildContext(), const AsyncSnapshot<void>.nothing()),
         isA<SizedBox>());
-    expect(previewWidget.builder(MockBuildContext(), AsyncSnapshot.waiting()),
+    expect(previewWidget.builder(MockBuildContext(), const AsyncSnapshot<void>.waiting()),
         isA<SizedBox>());
     expect(
         previewWidget.builder(MockBuildContext(),
-            AsyncSnapshot<void>.withData(ConnectionState.active, null)),
+            const AsyncSnapshot<void>.withData(ConnectionState.active, null)),
         isA<SizedBox>());
   });
 
@@ -344,17 +345,17 @@ void main() {
       'buildPreview returns a FutureBuilder that returns a Texture once the preview is bound to the lifecycle',
       () async {
     final AndroidCameraCameraX camera = AndroidCameraCameraX();
-    final int textureId = 75;
+    const int textureId = 75;
 
     camera.processCameraProvider = MockProcessCameraProvider();
     camera.cameraSelector = MockCameraSelector();
     camera.preview = MockPreview();
 
-    FutureBuilder<void> previewWidget =
+    final FutureBuilder<void> previewWidget =
         camera.buildPreview(textureId) as FutureBuilder<void>;
 
-    Texture previewTexture = previewWidget.builder(MockBuildContext(),
-        AsyncSnapshot<void>.withData(ConnectionState.done, null)) as Texture;
+    final Texture previewTexture = previewWidget.builder(MockBuildContext(),
+        const AsyncSnapshot<void>.withData(ConnectionState.done, null)) as Texture;
     expect(previewTexture.textureId, equals(textureId));
   });
 }

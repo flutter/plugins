@@ -25,7 +25,7 @@ class AndroidCameraCameraX extends CameraPlatform {
     CameraPlatform.instance = AndroidCameraCameraX();
   }
 
-  // Objects used to access camera functionality:
+  // Instances used to access camera functionality:
 
   /// The [ProcessCameraProvider] instance used to access camera functionality.
   @visibleForTesting
@@ -36,15 +36,25 @@ class AndroidCameraCameraX extends CameraPlatform {
   @visibleForTesting
   Camera? camera;
 
-  // Use cases to configure and bind to ProcessCameraProvider instance:
+  // Instances used to configure and bind use cases to ProcessCameraProvider instance:
 
   /// The [Preview] instance that can be instantiated adn configured to present
   /// a live camera preview.
+  @visibleForTesting
   Preview? preview;
+
+  /// Whether or not the [Preview] is currently bound to the lifecycle that the
+  /// [processCameraProvider] tracks.
+  @visibleForTesting
   bool previewIsBound = false;
+
   bool _previewIsPaused = false;
 
-  // Objects used for camera configuration:
+  // Instances used for camera configuration:
+
+  /// The [CameraSelector] used to configure the [processCameraProvider] to use
+  /// the desired camera.
+  @visibleForTesting
   CameraSelector? cameraSelector;
 
   /// The controller we need to broadcast the different events coming
@@ -334,11 +344,13 @@ class AndroidCameraCameraX extends CameraPlatform {
 
   // Methods for calls that need to be tested:
 
+  /// Requests camera permissions.
   @visibleForTesting
   Future<void> requestCameraPermissions(bool enableAudio) async {
     await SystemServices.requestCameraPermissions(enableAudio);
   }
 
+  /// Subscribes the plugin as a listener to changes in device orientation.
   @visibleForTesting
   void startListeningForDeviceOrientationChange(
       bool cameraIsFrontFacing, int sensorOrientation) {
@@ -346,12 +358,15 @@ class AndroidCameraCameraX extends CameraPlatform {
         cameraIsFrontFacing, sensorOrientation);
   }
 
+  /// Retrives an instance of the [ProcessCameraProvider] to access camera
+  /// functionality.
   @visibleForTesting
   Future<ProcessCameraProvider> getProcessCameraProviderInstance() async {
-    ProcessCameraProvider instance = await ProcessCameraProvider.getInstance();
+    final ProcessCameraProvider instance = await ProcessCameraProvider.getInstance();
     return instance;
   }
 
+  /// Returns a [CameraSelector] based on the specified camera lens direction.
   @visibleForTesting
   CameraSelector createCameraSelector(int cameraSelectorLensDirection) {
     switch (cameraSelectorLensDirection) {
@@ -364,6 +379,8 @@ class AndroidCameraCameraX extends CameraPlatform {
     }
   }
 
+  /// Returns a [Preview] configured with the specified target rotation and
+  /// resolution.
   @visibleForTesting
   Preview createPreview(int targetRotation, ResolutionInfo? targetResolution) {
     return Preview(
