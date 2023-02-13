@@ -403,13 +403,11 @@ NS_INLINE UIViewController *rootViewController() {
   return FLTCMTimeToMillis([[[_player currentItem] asset] duration]);
 }
 
-- (void)seekTo:(int)location {
-  // TODO(stuartmorgan): Update this to use completionHandler: to only return
-  // once the seek operation is complete once the Pigeon API is updated to a
-  // version that handles async calls.
+- (void)seekTo:(int)location completionHandler:(void (^)(BOOL))completionHandler {
   [_player seekToTime:CMTimeMake(location, 1000)
-      toleranceBefore:kCMTimeZero
-       toleranceAfter:kCMTimeZero];
+        toleranceBefore:kCMTimeZero
+         toleranceAfter:kCMTimeZero
+      completionHandler:completionHandler];
 }
 
 - (void)setIsLooping:(BOOL)isLooping {
@@ -636,10 +634,16 @@ NS_INLINE UIViewController *rootViewController() {
   return result;
 }
 
-- (void)seekTo:(FLTPositionMessage *)input error:(FlutterError **)error {
+- (void)seekTo:(FLTPositionMessage *)input
+    completion:(void (^)(FlutterError *_Nullable))completion {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player seekTo:input.position.intValue];
-  [self.registry textureFrameAvailable:input.textureId.intValue];
+  [player seekTo:input.position.intValue
+      completionHandler:^(BOOL finished) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [self.registry textureFrameAvailable:input.textureId.intValue];
+          completion(nil);
+        });
+      }];
 }
 
 - (void)pause:(FLTTextureMessage *)input error:(FlutterError **)error {

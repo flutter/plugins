@@ -85,7 +85,7 @@ abstract class TestHostVideoPlayerApi {
 
   PositionMessage position(TextureMessage msg);
 
-  void seekTo(PositionMessage msg);
+  Future<void> seekTo(PositionMessage msg);
 
   void pause(TextureMessage msg);
 
@@ -256,7 +256,7 @@ abstract class TestHostVideoPlayerApi {
           final PositionMessage? arg_msg = (args[0] as PositionMessage?);
           assert(arg_msg != null,
               'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.seekTo was null, expected non-null PositionMessage.');
-          api.seekTo(arg_msg!);
+          await api.seekTo(arg_msg!);
           return <Object?>[];
         });
       }

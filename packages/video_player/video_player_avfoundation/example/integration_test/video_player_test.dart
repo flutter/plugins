@@ -76,10 +76,7 @@ void main() {
 
       await controller.seekTo(const Duration(seconds: 3));
 
-      // TODO(stuartmorgan): Switch to _controller.position once seekTo is
-      // fixed on the native side to wait for completion, so this is testing
-      // the native code rather than the MiniController position cache.
-      expect(controller.value.position, const Duration(seconds: 3));
+      expect(await controller.position, const Duration(seconds: 3));
     });
 
     testWidgets('can be paused', (WidgetTester tester) async {

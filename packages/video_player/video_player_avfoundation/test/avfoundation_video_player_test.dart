@@ -68,7 +68,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   }
 
   @override
-  void seekTo(PositionMessage arg) {
+  Future<void> seekTo(PositionMessage arg) async {
     log.add('seekTo');
     positionMessage = arg;
   }

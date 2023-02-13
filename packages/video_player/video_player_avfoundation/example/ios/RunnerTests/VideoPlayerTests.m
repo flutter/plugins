@@ -12,6 +12,7 @@
 @interface FLTVideoPlayer : NSObject <FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer *player;
 @property(readonly, nonatomic) AVPlayerLayer *playerLayer;
+@property(readonly, nonatomic) int64_t position;
 @end
 
 @interface FLTVideoPlayerPlugin (Test) <FLTAVFoundationVideoPlayerApi>
@@ -106,10 +107,30 @@
   OCMStub([partialRegistrar textures]).andReturn(mockTextureRegistry);
   FLTVideoPlayerPlugin *videoPlayerPlugin =
       (FLTVideoPlayerPlugin *)[[FLTVideoPlayerPlugin alloc] initWithRegistrar:partialRegistrar];
-  FLTPositionMessage *message = [FLTPositionMessage makeWithTextureId:@101 position:@0];
+
   FlutterError *error;
-  [videoPlayerPlugin seekTo:message error:&error];
+  [videoPlayerPlugin initialize:&error];
+  XCTAssertNil(error);
+  FLTCreateMessage *create = [FLTCreateMessage
+      makeWithAsset:nil
+                uri:@"https://flutter.github.io/assets-for-api-docs/assets/videos/hls/bee.m3u8"
+        packageName:nil
+         formatHint:nil
+        httpHeaders:@{}];
+  FLTTextureMessage *textureMessage = [videoPlayerPlugin create:create error:&error];
+  NSNumber *textureId = textureMessage.textureId;
+
+  XCTestExpectation *initializedExpectation = [self expectationWithDescription:@"seekTo completes"];
+  FLTPositionMessage *message = [FLTPositionMessage makeWithTextureId:textureId position:@1234];
+  [videoPlayerPlugin seekTo:message
+                 completion:^(FlutterError *_Nullable error) {
+                   [initializedExpectation fulfill];
+                 }];
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
   OCMVerify([mockTextureRegistry textureFrameAvailable:message.textureId.intValue]);
+
+  FLTVideoPlayer *player = videoPlayerPlugin.playersByTextureId[textureId];
+  XCTAssertEqual([player position], 1234);
 }
 
 - (void)testDeregistersFromPlayer {

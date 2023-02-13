@@ -1,5 +1,6 @@
-## NEXT
+## 2.3.9
 
+* Makes seekTo async and only complete when AVPlayer.seekTo completes.
 * Updates minimum Flutter version to 3.0.
 
 ## 2.3.8

@@ -502,16 +502,17 @@ void FLTAVFoundationVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMesseng
         binaryMessenger:binaryMessenger
                   codec:FLTAVFoundationVideoPlayerApiGetCodec()];
     if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector(seekTo:error:)],
-          @"FLTAVFoundationVideoPlayerApi api (%@) doesn't respond to @selector(seekTo:error:)",
-          api);
+      NSCAssert([api respondsToSelector:@selector(seekTo:completion:)],
+                @"FLTAVFoundationVideoPlayerApi api (%@) doesn't respond to "
+                @"@selector(seekTo:completion:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FLTPositionMessage *arg_msg = GetNullableObjectAtIndex(args, 0);
-        FlutterError *error;
-        [api seekTo:arg_msg error:&error];
-        callback(wrapResult(nil, error));
+        [api seekTo:arg_msg
+            completion:^(FlutterError *_Nullable error) {
+              callback(wrapResult(nil, error));
+            }];
       }];
     } else {
       [channel setMessageHandler:nil];

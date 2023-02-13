@@ -99,7 +99,7 @@ NSObject<FlutterMessageCodec> *FLTAVFoundationVideoPlayerApiGetCodec(void);
 /// @return `nil` only when `error != nil`.
 - (nullable FLTPositionMessage *)position:(FLTTextureMessage *)msg
                                     error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)seekTo:(FLTPositionMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)seekTo:(FLTPositionMessage *)msg completion:(void (^)(FlutterError *_Nullable))completion;
 - (void)pause:(FLTTextureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setMixWithOthers:(FLTMixWithOthersMessage *)msg
                    error:(FlutterError *_Nullable *_Nonnull)error;
