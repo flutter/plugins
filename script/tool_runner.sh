@@ -11,13 +11,15 @@ set -e
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
-readonly TOOL_PATH="$REPO_DIR/script/tool/bin/flutter_plugin_tools.dart"
 
-# Ensure that the tool dependencies have been fetched.
-(pushd "$REPO_DIR/script/tool" && dart pub get && popd) >/dev/null
 
 # The tool expects to be run from the repo root.
-cd "$REPO_DIR"
-# Run from the in-tree source.
 # PACKAGE_SHARDING is (optionally) set from Cirrus. See .cirrus.yml
-dart run "$TOOL_PATH" "$@" --packages-for-branch --log-timing $PACKAGE_SHARDING
+cd "$REPO_DIR"
+# Ensure that the tooling has been activated.
+.ci/scripts/prepare_tool.sh
+
+dart pub global run flutter_plugin_tools "$@" \
+  --packages-for-branch \
+  --log-timing \
+  $PACKAGE_SHARDING
