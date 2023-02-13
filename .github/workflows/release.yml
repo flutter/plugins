@@ -31,7 +31,7 @@ jobs:
       with:
         fetch-depth: 0 # Fetch all history so the tool can get all the tags to determine version.
     - name: Set up tools
-      run: dart pub global activate flutter_plugin_tools 0.13.4+2
+      run: dart pub global activate flutter_plugin_tools 0.13.4+3
 
     # This workflow should be the last to run. So wait for all the other tests to succeed.
     - name: Wait on all tests
