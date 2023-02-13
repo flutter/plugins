@@ -77,10 +77,6 @@ task:
     namespace: default
   matrix:
     ### Platform-agnostic tasks ###
-    - name: Linux plugin_tools_tests
-      script:
-        - cd script/tool
-        - dart pub run test
     # Repository rules and best-practice enforcement.
     # Only channel-agnostic tests should go here since it is only run once
     # (on Flutter master).
@@ -124,9 +120,6 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      analyze_tool_script:
-        - cd script/tool
-        - dart analyze --fatal-infos
       analyze_script:
         # DO NOT change the custom-analysis argument here without changing the Dart repo.
         # See the comment in script/configs/custom_analysis.yaml for details.
