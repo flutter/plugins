@@ -31,9 +31,8 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @end
 
 @implementation FLTPlatformImage
-+ (instancetype)makeWithScale:(NSNumber *)scale
-    bytes:(FlutterStandardTypedData *)bytes {
-  FLTPlatformImage* pigeonResult = [[FLTPlatformImage alloc] init];
++ (instancetype)makeWithScale:(NSNumber *)scale bytes:(FlutterStandardTypedData *)bytes {
+  FLTPlatformImage *pigeonResult = [[FLTPlatformImage alloc] init];
   pigeonResult.scale = scale;
   pigeonResult.bytes = bytes;
   return pigeonResult;
@@ -62,7 +61,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @implementation FLTPlatformImagesApiCodecReader
 - (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
-    case 128: 
+    case 128:
       return [FLTPlatformImage fromList:[self readValue]];
     default:
       return [super readValueOfType:type];
@@ -98,21 +97,26 @@ NSObject<FlutterMessageCodec> *FLTPlatformImagesApiGetCodec() {
   static FlutterStandardMessageCodec *sSharedObject = nil;
   static dispatch_once_t sPred = 0;
   dispatch_once(&sPred, ^{
-    FLTPlatformImagesApiCodecReaderWriter *readerWriter = [[FLTPlatformImagesApiCodecReaderWriter alloc] init];
+    FLTPlatformImagesApiCodecReaderWriter *readerWriter =
+        [[FLTPlatformImagesApiCodecReaderWriter alloc] init];
     sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
   });
   return sSharedObject;
 }
 
-void FLTPlatformImagesApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTPlatformImagesApi> *api) {
+void FLTPlatformImagesApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
+                               NSObject<FLTPlatformImagesApi> *api) {
   {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.PlatformImagesApi.getSystemImage"
+    FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
+           initWithName:@"dev.flutter.pigeon.PlatformImagesApi.getSystemImage"
         binaryMessenger:binaryMessenger
-        codec:FLTPlatformImagesApiGetCodec()];
+                  codec:FLTPlatformImagesApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(getSystemImageName:size:weight:colorsRGBA:preferMulticolor:error:)], @"FLTPlatformImagesApi api (%@) doesn't respond to @selector(getSystemImageName:size:weight:colorsRGBA:preferMulticolor:error:)", api);
+      NSCAssert([api respondsToSelector:@selector
+                     (getSystemImageName:size:weight:colorsRGBA:preferMulticolor:error:)],
+                @"FLTPlatformImagesApi api (%@) doesn't respond to "
+                @"@selector(getSystemImageName:size:weight:colorsRGBA:preferMulticolor:error:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_name = GetNullableObjectAtIndex(args, 0);
@@ -121,7 +125,12 @@ void FLTPlatformImagesApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
         NSArray<NSNumber *> *arg_colorsRGBA = GetNullableObjectAtIndex(args, 3);
         NSNumber *arg_preferMulticolor = GetNullableObjectAtIndex(args, 4);
         FlutterError *error;
-        FLTPlatformImage *output = [api getSystemImageName:arg_name size:arg_size weight:arg_weight colorsRGBA:arg_colorsRGBA preferMulticolor:arg_preferMulticolor error:&error];
+        FLTPlatformImage *output = [api getSystemImageName:arg_name
+                                                      size:arg_size
+                                                    weight:arg_weight
+                                                colorsRGBA:arg_colorsRGBA
+                                          preferMulticolor:arg_preferMulticolor
+                                                     error:&error];
         callback(wrapResult(output, error));
       }];
     } else {
@@ -129,13 +138,15 @@ void FLTPlatformImagesApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
     }
   }
   {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.PlatformImagesApi.getPlatformImage"
+    FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
+           initWithName:@"dev.flutter.pigeon.PlatformImagesApi.getPlatformImage"
         binaryMessenger:binaryMessenger
-        codec:FLTPlatformImagesApiGetCodec()];
+                  codec:FLTPlatformImagesApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(getPlatformImageName:error:)], @"FLTPlatformImagesApi api (%@) doesn't respond to @selector(getPlatformImageName:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(getPlatformImageName:error:)],
+                @"FLTPlatformImagesApi api (%@) doesn't respond to "
+                @"@selector(getPlatformImageName:error:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_name = GetNullableObjectAtIndex(args, 0);
@@ -148,13 +159,15 @@ void FLTPlatformImagesApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
     }
   }
   {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.PlatformImagesApi.resolveURL"
+    FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
+           initWithName:@"dev.flutter.pigeon.PlatformImagesApi.resolveURL"
         binaryMessenger:binaryMessenger
-        codec:FLTPlatformImagesApiGetCodec()];
+                  codec:FLTPlatformImagesApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(resolveURLName:extension:error:)], @"FLTPlatformImagesApi api (%@) doesn't respond to @selector(resolveURLName:extension:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(resolveURLName:extension:error:)],
+                @"FLTPlatformImagesApi api (%@) doesn't respond to "
+                @"@selector(resolveURLName:extension:error:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_name = GetNullableObjectAtIndex(args, 0);
