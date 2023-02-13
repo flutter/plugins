@@ -4,7 +4,7 @@ gcp_credentials: ENCRYPTED[!3a93d98d7c95a41f5033834ef30e50928fc5d81239dc632b153c
 only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
-  PLUGIN_TOOL_COMMAND: "dart ./script/tool/bin/flutter_plugin_tools.dart"
+  PLUGIN_TOOL_COMMAND: "dart pub global run flutter_plugin_tools"
 
 install_chrome_linux_template: &INSTALL_CHROME_LINUX
   env:
