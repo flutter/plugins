@@ -11,7 +11,7 @@
 @implementation IosPlatformImagesTests
 
 - (void)testPlugin {
-  IosPlatformImagesPlugin *plugin = [[IosPlatformImagesPlugin alloc] init];
+  FLTPlatformImagesPlugin *plugin = [[FLTPlatformImagesPlugin alloc] init];
   XCTAssertNotNil(plugin);
 }
 
