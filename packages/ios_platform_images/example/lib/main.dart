@@ -43,16 +43,19 @@ class _MyAppState extends State<MyApp> {
             children: <Widget>[
               const Text('This is an icon from the iOS asset bundle'),
               Image(
+                key: const Key('Flutter logo'),
                 image: IosPlatformImages.load('flutter'),
                 semanticLabel: 'Flutter logo',
               ),
               const Text('These are icons from the iOS system'),
               Image(
+                key: const Key('Smiling face'),
                 image: IosPlatformImages.loadSystemImage('face.smiling', 100,
                     colors: <Color>[iconColor]),
                 semanticLabel: 'Smiling face',
               ),
               Image(
+                key: const Key('Hammer circle'),
                 image: IosPlatformImages.loadSystemImage(
                   'hammer.circle.fill',
                   100,
@@ -61,9 +64,10 @@ class _MyAppState extends State<MyApp> {
                     theme.colorScheme.primary.withAlpha(100),
                   ],
                 ),
-                semanticLabel: 'Sprinting hare',
+                semanticLabel: 'Hammer circle',
               ),
               Image(
+                key: const Key('Ladybug'),
                 image: IosPlatformImages.loadSystemImage(
                   'ladybug.fill',
                   100,

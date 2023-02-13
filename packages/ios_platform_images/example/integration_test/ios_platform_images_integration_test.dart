@@ -20,7 +20,13 @@ void main() {
       app.main();
       await tester.pumpAndSettle();
 
-      expect(find.bySemanticsLabel('Flutter logo'), findsOneWidget);
+      final Finder flutterLogoFinder = find.byKey(const Key('Flutter logo'));
+      expect(flutterLogoFinder, findsOneWidget);
+      final Size flutterLogoSize = flutterLogoFinder.evaluate().single.size ??
+          fail('Widget size is null');
+
+      expect(flutterLogoSize.width, equals(101));
+      expect(flutterLogoSize.height, equals(125));
     },
   );
 
@@ -30,9 +36,26 @@ void main() {
       app.main();
       await tester.pumpAndSettle();
 
-      expect(find.bySemanticsLabel('Smiling face'), findsOneWidget);
-      expect(find.bySemanticsLabel('Sprinting hare'), findsOneWidget);
-      expect(find.bySemanticsLabel('Ladybug'), findsOneWidget);
+      final Finder smilingFaceFinder = find.byKey(const Key('Smiling face'));
+      expect(smilingFaceFinder, findsOneWidget);
+      final Size smilingFaceSize = smilingFaceFinder.evaluate().single.size ??
+          fail('Smiling face widget size is null');
+      expect(smilingFaceSize.width.round(), equals(100));
+      expect(smilingFaceSize.height.round(), equals(96));
+
+      final Finder hammerCircleFinder = find.byKey(const Key('Hammer circle'));
+      expect(hammerCircleFinder, findsOneWidget);
+      final Size hammerCircleSize = hammerCircleFinder.evaluate().single.size ??
+          fail('Hammer circle widget size is null');
+      expect(hammerCircleSize.width.round(), equals(100));
+      expect(hammerCircleSize.height.round(), equals(96));
+
+      final Finder ladybugFinder = find.byKey(const Key('Ladybug'));
+      expect(ladybugFinder, findsOneWidget);
+      final Size ladybugSize = ladybugFinder.evaluate().single.size ??
+          fail('Ladybug widget size is null');
+      expect(ladybugSize.width.round(), equals(116));
+      expect(ladybugSize.height.round(), equals(111));
     },
   );
 
