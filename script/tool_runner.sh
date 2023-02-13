@@ -6,8 +6,8 @@
 set -e
 
 # WARNING! Do not remove this script, or change its behavior, unless you have
-# verified that it will not break the flutter/flutter analysis run of this
-# repository: https://github.com/flutter/flutter/blob/master/dev/bots/test.dart
+# verified that it will not break the dart-lang analysis run of this
+# repository: https://github.com/dart-lang/sdk/blob/main/tools/bots/flutter/analyze_flutter_plugins.sh
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
