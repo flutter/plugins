@@ -146,8 +146,8 @@
 		68BDCAEA23C3F7CB00D9C032 /* RunnerTests */ = {
 			isa = PBXGroup;
 			children = (
-				8F4FF948299ADC2D000A6586 /* FWFWebViewFlutterWKWebViewExternalAPITests.m */,
 				68BDCAED23C3F7CB00D9C032 /* Info.plist */,
+				8F4FF948299ADC2D000A6586 /* FWFWebViewFlutterWKWebViewExternalAPITests.m */,
 				8FA6A87828062CD000A4B183 /* FWFInstanceManagerTests.m */,
 				8FB79B5228134C3100C101D3 /* FWFWebViewHostApiTests.m */,
 				8FB79B54281B24F600C101D3 /* FWFDataConvertersTests.m */,
