@@ -22,7 +22,6 @@ class _FutureImageStreamCompleter extends ImageStreamCompleter {
         context: ErrorDescription('resolving a single-frame image stream'),
         exception: error,
         stack: stack,
-        silent: true,
       );
     });
   }
@@ -39,7 +38,6 @@ class _FutureImageStreamCompleter extends ImageStreamCompleter {
         context: ErrorDescription('resolving an image frame'),
         exception: exception,
         stack: stack,
-        silent: true,
       );
     }
   }
@@ -190,9 +188,6 @@ class IosPlatformImages {
     final Completer<double> scaleCompleter = Completer<double>();
     image.then((PlatformImage? image) {
       if (image == null || image.bytes == null || image.scale == null) {
-        scaleCompleter.completeError(
-          ArgumentError("Image couldn't be found: $name"),
-        );
         bytesCompleter.completeError(
           ArgumentError("Image couldn't be found: $name"),
         );

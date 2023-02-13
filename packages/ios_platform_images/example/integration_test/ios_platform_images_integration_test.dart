@@ -47,7 +47,7 @@ void main() {
       imageProvider.resolve(ImageConfiguration.empty).completer?.addListener(
             ImageStreamListener(
               (ImageInfo info, bool _) => completer.complete(info),
-              onError: (Object exception, StackTrace? stack) => () {
+              onError: (Object exception, StackTrace? stack) {
                 completer.completeError(exception);
               },
             ),
