@@ -4,8 +4,6 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
@@ -48,12 +46,6 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
       initialCameraPosition: _kInitialPosition,
       onCameraIdle:
           _updateVisibleRegion, // https://github.com/flutter/flutter/issues/54758
-      gestureRecognizers: //
-          <Factory<OneSequenceGestureRecognizer>>{
-        Factory<OneSequenceGestureRecognizer>(
-          () => EagerGestureRecognizer(),
-        ),
-      },
     );
 
     return NotificationListener<ScrollNotification>(
