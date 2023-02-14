@@ -38,6 +38,7 @@ void main() {
       () async {
     // Arrange
     final MockAndroidCameraCamerax camera = MockAndroidCameraCamerax();
+    camera.processCameraProvider = MockProcessCameraProvider();
     final List<dynamic> returnData = <dynamic>[
       <String, dynamic>{
         'name': 'Camera 0',
@@ -56,7 +57,7 @@ void main() {
     final MockCameraInfo mockBackCameraInfo = MockCameraInfo();
 
     // Mock calls to native platform
-    when(camera.testProcessCameraProvider.getAvailableCameraInfos()).thenAnswer(
+    when(camera.processCameraProvider!.getAvailableCameraInfos()).thenAnswer(
         (_) async => <MockCameraInfo>[mockBackCameraInfo, mockFrontCameraInfo]);
     when(camera.mockBackCameraSelector
             .filter(<MockCameraInfo>[mockFrontCameraInfo]))
@@ -97,6 +98,7 @@ void main() {
       'createCamera requests permissions, starts listening for device orientation changes, and returns flutter surface texture ID',
       () async {
     final MockAndroidCameraCamerax camera = MockAndroidCameraCamerax();
+    camera.processCameraProvider = MockProcessCameraProvider();
     const CameraLensDirection testLensDirection = CameraLensDirection.back;
     const int testSensorOrientation = 90;
     const CameraDescription testCameraDescription = CameraDescription(
@@ -122,10 +124,6 @@ void main() {
     // Verify CameraSelector is set with appropriate lens direction.
     expect(camera.cameraSelector, equals(camera.mockBackCameraSelector));
 
-    // Verify ProcessCameraProvider instance is received.
-    expect(
-        camera.processCameraProvider, equals(camera.testProcessCameraProvider));
-
     // Verify the camera's Preview instance is instantiated properly.
     expect(camera.preview, equals(camera.testPreview));
 
@@ -142,6 +140,7 @@ void main() {
 
   test('initializeCamera sends expected CameraInitializedEvent', () async {
     final MockAndroidCameraCamerax camera = MockAndroidCameraCamerax();
+    camera.processCameraProvider = MockProcessCameraProvider();
     const int cameraId = 10;
     const CameraLensDirection testLensDirection = CameraLensDirection.back;
     const int testSensorOrientation = 90;
@@ -177,8 +176,8 @@ void main() {
     await camera.createCamera(testCameraDescription, testResolutionPreset,
         enableAudio: enableAudio);
 
-    when(camera.testProcessCameraProvider.bindToLifecycle(
-            camera.cameraSelector, <UseCase>[camera.testPreview]))
+    when(camera.processCameraProvider!.bindToLifecycle(
+            camera.cameraSelector!, <UseCase>[camera.testPreview]))
         .thenAnswer((_) async => mockCamera);
     when(camera.testPreview.getResolutionInfo())
         .thenAnswer((_) async => testResolutionInfo);
@@ -192,10 +191,10 @@ void main() {
     await camera.initializeCamera(cameraId);
 
     // Verify preview was bound and unbound to get preview resolution information.
-    verify(camera.testProcessCameraProvider
-        .bindToLifecycle(camera.cameraSelector, <UseCase>[camera.testPreview]));
+    verify(camera.processCameraProvider!
+        .bindToLifecycle(camera.cameraSelector!, <UseCase>[camera.testPreview]));
     verify(
-        camera.testProcessCameraProvider.unbind(<UseCase>[camera.testPreview]));
+        camera.processCameraProvider!.unbind(<UseCase>[camera.testPreview]));
 
     // Check camera instance was received, but preview is no longer bound.
     expect(camera.camera, equals(mockCamera));
@@ -373,8 +372,6 @@ void main() {
 class MockAndroidCameraCamerax extends AndroidCameraCameraX {
   bool cameraPermissionsRequested = false;
   bool startedListeningForDeviceOrientationChanges = false;
-  final MockProcessCameraProvider testProcessCameraProvider =
-      MockProcessCameraProvider();
   final MockPreview testPreview = MockPreview();
   final MockCameraSelector mockBackCameraSelector = MockCameraSelector();
   final MockCameraSelector mockFrontCameraSelector = MockCameraSelector();
