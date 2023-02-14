@@ -11,3 +11,4 @@
 * Adds Preview and Surface classes, along with other methods needed to implement camera preview.
 * Adds implementation of availableCameras().
 * Implements camera preview, createCamera, initializeCamera, onCameraError, onDeviceOrientationChanged, and onCameraInitialized.
+* Adds integration test to plugin.

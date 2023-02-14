@@ -21,6 +21,8 @@ dependencies:
   camera_platform_interface: ^2.2.0
   flutter:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   stream_transform: ^2.1.0
 
 dev_dependencies:
