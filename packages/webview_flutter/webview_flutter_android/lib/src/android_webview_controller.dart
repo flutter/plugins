@@ -144,6 +144,16 @@ class AndroidWebViewController extends PlatformWebViewController {
     return webViewProxy.setWebContentsDebuggingEnabled(enabled);
   }
 
+  /// Identifier used to retrieve the underlying native `WKWebView`.
+  ///
+  /// This is typically used by other plugins to retrieve the native `WebView`
+  /// from an `InstanceManager`.
+  ///
+  /// See Java method `WebViewFlutterPlugin.getWebView`.
+  int get webViewIdentifier =>
+      // ignore: invalid_use_of_visible_for_testing_member
+      android_webview.WebView.api.instanceManager.getIdentifier(_webView)!;
+
   @override
   Future<void> loadFile(
     String absoluteFilePath,

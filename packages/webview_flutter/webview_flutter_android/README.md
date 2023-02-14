@@ -32,6 +32,22 @@ This can be configured for versions >=23 with
 `AndroidWebViewWidgetCreationParams.displayWithHybridComposition`. See https://pub.dev/packages/webview_flutter#platform-specific-features
 for more details on setting platform-specific features in the main plugin.
 
+### External Native API
+
+The plugin also provides a native API accessible by the native code of Android applications or
+packages. This API follows the convention of breaking changes of the Dart API, which means that any
+changes to the class that are not backwards compatible will only be made with a major version change
+of the plugin. Native code other than this external API does not follow breaking change conventions,
+so app or plugin clients should not use any other native APIs.
+
+The API can be accessed by importing the native class `WebViewFlutterAndroidExternalApi`:
+
+Java:
+
+```java
+import io.flutter.plugins.webviewflutter.WebViewFlutterAndroidExternalApi;
+```
+
 ## Contributing
 
 This package uses [pigeon][3] to generate the communication layer between Flutter and the host
