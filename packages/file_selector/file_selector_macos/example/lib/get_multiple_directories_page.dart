@@ -17,7 +17,7 @@ class GetMultipleDirectoriesPage extends StatelessWidget {
         await FileSelectorPlatform.instance.getDirectoryPaths(
       confirmButtonText: confirmButtonText,
     );
-    if (directoriesPaths == null) {
+    if (directoriesPaths.isEmpty) {
       // Operation was canceled by the user.
       return;
     }
