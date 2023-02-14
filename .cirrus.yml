@@ -4,7 +4,7 @@ gcp_credentials: ENCRYPTED[!3a93d98d7c95a41f5033834ef30e50928fc5d81239dc632b153c
 only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
-  PLUGIN_TOOL_COMMAND: "dart ./script/tool/bin/flutter_plugin_tools.dart"
+  PLUGIN_TOOL_COMMAND: "dart pub global run flutter_plugin_tools"
 
 install_chrome_linux_template: &INSTALL_CHROME_LINUX
   env:
@@ -77,10 +77,6 @@ task:
     namespace: default
   matrix:
     ### Platform-agnostic tasks ###
-    - name: Linux plugin_tools_tests
-      script:
-        - cd script/tool
-        - dart pub run test
     # Repository rules and best-practice enforcement.
     # Only channel-agnostic tests should go here since it is only run once
     # (on Flutter master).
@@ -124,9 +120,6 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      analyze_tool_script:
-        - cd script/tool
-        - dart analyze --fatal-infos
       analyze_script:
         # DO NOT change the custom-analysis argument here without changing the Dart repo.
         # See the comment in script/configs/custom_analysis.yaml for details.
