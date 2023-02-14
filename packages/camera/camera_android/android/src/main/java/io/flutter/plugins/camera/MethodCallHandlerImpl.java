@@ -354,6 +354,18 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           result.success(null);
           break;
         }
+      case "setDescriptionWhileRecording":
+        {
+          try {
+            String cameraName = call.argument("cameraName");
+            CameraProperties cameraProperties =
+                new CameraPropertiesImpl(cameraName, CameraUtils.getCameraManager(activity));
+            camera.setDescriptionWhileRecording(result, cameraProperties);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
       case "dispose":
         {
           if (camera != null) {

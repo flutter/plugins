@@ -50,7 +50,8 @@
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
                        orientation:(UIDeviceOrientation)orientation
-                    captureSession:(AVCaptureSession *)captureSession
+               videoCaptureSession:(AVCaptureSession *)videoCaptureSession
+               audioCaptureSession:(AVCaptureSession *)audioCaptureSession
                captureSessionQueue:(dispatch_queue_t)captureSessionQueue
                              error:(NSError **)error;
 
