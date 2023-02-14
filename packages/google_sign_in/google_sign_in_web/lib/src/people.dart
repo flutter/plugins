@@ -60,7 +60,7 @@ GoogleSignInUserData? extractUserData(Map<String, Object?> json) {
       json['photos'] as List<Object?>?,
       'url',
     ),
-    // idToken: null, // Synthetic user data doesn't contain an idToken!
+    // Synthetic user data doesn't contain an idToken!
   );
 }
 
