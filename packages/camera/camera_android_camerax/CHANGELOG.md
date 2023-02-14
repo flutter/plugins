@@ -10,3 +10,4 @@
 * Changes instance manager to allow the separate creation of identical objects.
 * Adds Preview and Surface classes, along with other methods needed to implement camera preview.
 * Adds implementation of availableCameras()
+* Adds integration test to plugin.
