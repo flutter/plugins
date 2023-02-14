@@ -11,20 +11,15 @@ FLTCam *FLTCreateCamWithCaptureSessionQueue(dispatch_queue_t captureSessionQueue
   OCMStub([inputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg setTo:nil]])
       .andReturn(inputMock);
 
-  id videoSessionMock = OCMClassMock([AVCaptureSession class]);
-  OCMStub([videoSessionMock addInputWithNoConnections:[OCMArg any]]);  // no-op
-  OCMStub([videoSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
-
-  id audioSessionMock = OCMClassMock([AVCaptureSession class]);
-  OCMStub([audioSessionMock addInputWithNoConnections:[OCMArg any]]);  // no-op
-  OCMStub([audioSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
+  id sessionMock = OCMClassMock([AVCaptureSession class]);
+  OCMStub([sessionMock addInputWithNoConnections:[OCMArg any]]);  // no-op
+  OCMStub([sessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
 
   return [[FLTCam alloc] initWithCameraName:@"camera"
                            resolutionPreset:@"medium"
                                 enableAudio:true
                                 orientation:UIDeviceOrientationPortrait
-                        videoCaptureSession:videoSessionMock
-                        audioCaptureSession:audioSessionMock
+                             captureSession:sessionMock
                         captureSessionQueue:captureSessionQueue
                                       error:nil];
 }
