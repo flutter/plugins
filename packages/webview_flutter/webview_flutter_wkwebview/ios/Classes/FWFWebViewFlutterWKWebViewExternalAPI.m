@@ -11,9 +11,9 @@
   FWFInstanceManager *instanceManager =
       (FWFInstanceManager *)[registry valuePublishedByPlugin:@"FLTWebViewFlutterPlugin"];
 
-  NSObject *instance = [instanceManager instanceForIdentifier:identifier];
+  id instance = [instanceManager instanceForIdentifier:identifier];
   if ([instance isKindOfClass:[WKWebView class]]) {
-    return (WKWebView *)instance;
+    return instance;
   }
 
   return nil;
