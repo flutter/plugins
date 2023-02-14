@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 import 'dart:async';
 
-// TODO(dit): A better layer to split this would be to make a mockable client that
-// exposes only the APIs we need from gis_web/id.dart and gis_web/oauth2.dart.
-// That way, the GisSdkClient class would be testable (and the mock surface would
-// only deal with the few methods we actually use from the SDK). Next version.
+// TODO(dit): Split `id` and `oauth2` "services" for mocking. https://github.com/flutter/flutter/issues/120657
 import 'package:google_identity_services_web/id.dart';
 import 'package:google_identity_services_web/oauth2.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
+// ignore: unnecessary_import
 import 'package:js/js.dart';
 import 'package:js/js_util.dart';
 
