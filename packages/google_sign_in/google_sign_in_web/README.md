@@ -5,36 +5,40 @@ The web implementation of [google_sign_in](https://pub.dev/packages/google_sign_
 ## Migrating to v0.11 (Google Identity Services)
 
 The `google_sign_in_web` plugin is backed by the new Google Identity Services
-JS SDK since version 0.11.0.
+(GIS) JS SDK since version 0.11.0.
 
-The new SDK is used both for [Authentication](https://developers.google.com/identity/gsi/web/guides/overview)
+The GIS SDK is used both for [Authentication](https://developers.google.com/identity/gsi/web/guides/overview)
 and [Authorization](https://developers.google.com/identity/oauth2/web/guides/overview) flows.
 
-The new SDK, however, doesn't behave exactly like the one being deprecated.
+The GIS SDK, however, doesn't behave exactly like the one being deprecated.
 Some concepts have experienced pretty drastic changes, and that's why this
-required a major version update.
+plugin required a major version update.
 
-### Key differences between the SDK
+### Differences between Google Identity Services SDK and Google Sign-In for Web SDK.
 
-* For the SDK, Authentication and Authorization are now two separate concerns.
+The **Google Sign-In JavaScript for Web JS SDK** is set to be deprecated after
+March 31, 2023. **Google Identity Services (GIS) SDK** is the new solution to
+quickly and easily sign users into your app suing their Google accounts.
+
+* In the GIS SDK, Authentication and Authorization are now two separate concerns.
   * Authentication (information about the current user) flows will not
     authorize `scopes` anymore.
   * Authorization (permissions for the app to access certain user information)
     flows will not return authentication information.
-* The SDK no longer has direct access to previously-seen users upon initialization.
+* The GIS SDK no longer has direct access to previously-seen users upon initialization.
   * `signInSilently` now displays the One Tap UX for web.
-* The new SDK only provides an `idToken` (JWT-encoded info) when the user
-  successfully completes `signInSilently`.
-* `signIn` uses the Oauth "Implicit Flow" to Authorize the requested `scopes`.
+* The GIS SDK only provides an `idToken` (JWT-encoded info) when the user
+  successfully completes an authentication flow. In the plugin: `signInSilently`.
+* The plugin `signIn` method uses the Oauth "Implicit Flow" to Authorize the requested `scopes`.
   * If the user hasn't `signInSilently`, they'll have to sign in as a first step
     of the Authorization popup flow.
   * If `signInSilently` was unsuccessful, the plugin will add extra `scopes` to
     `signIn` and retrieve basic Profile information from the People API via a
     REST call immediately after a successful authorization. In this case, the
     `idToken` field of the `GoogleSignInUserData` will always be null.
-* The SDK no longer handles sign-in state and user sessions, it only provides
+* The GIS SDK no longer handles sign-in state and user sessions, it only provides
   Authentication credentials for the moment the user did authenticate.
-* The SDK no longer is able to renew Authorization sessions on the web.
+* The GIS SDK no longer is able to renew Authorization sessions on the web.
   Once the token expires, API requests will begin to fail with unauthorized,
   and user Authorization is required again.
 
@@ -90,18 +94,17 @@ simple REST request.
 
 #### User Sessions
 
-Since the new SDK does _not_ manage user sessions anymore, apps that relied on
+Since the GIS SDK does _not_ manage user sessions anymore, apps that relied on
 this feature might break.
 
-If long-lived sessions are required, consider using some User authentication
+If long-lived sessions are required, consider using some user authentication
 system that supports Google Sign In as a federated Authentication provider,
 like [Firebase Auth](https://firebase.google.com/docs/auth/flutter/federated-auth#google),
-or similar (expand this list as other providers become generally available for
-Flutter web).
+or similar.
 
 #### Expired / Invalid Authorization Tokens
 
-Since the new SDK does _not_ auto-renew authorization tokens anymore, it's now
+Since the GIS SDK does _not_ auto-renew authorization tokens anymore, it's now
 the responsibility of your app to do so.
 
 Apps now need to monitor the status code of their REST API requests for response
