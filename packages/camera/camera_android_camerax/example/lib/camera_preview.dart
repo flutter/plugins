@@ -11,8 +11,7 @@ import 'camera_controller.dart';
 /// A widget showing a live camera preview.
 class CameraPreview extends StatelessWidget {
   /// Creates a preview widget for the given camera controller.
-  const CameraPreview(this.controller, {Key? key, this.child})
-      : super(key: key);
+  const CameraPreview(this.controller, {super.key, this.child});
 
   /// The controller for the camera that the preview is shown for.
   final CameraController controller;
