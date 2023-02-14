@@ -26,7 +26,6 @@ dependencies:
   google_sign_in_platform_interface: ^2.2.0
   http: ^0.13.5
   js: ^0.6.3
-  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:
