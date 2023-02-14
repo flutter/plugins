@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 const String expectedPersonId = '1234567890';
-const String expectedPersonName = 'Test McTestFace True';
-const String expectedPersonEmail = 'mctestface@example.com';
+const String expectedPersonName = 'Vincent Adultman';
+const String expectedPersonEmail = 'adultman@example.com';
 const String expectedPersonPhoto =
     'https://thispersondoesnotexist.com/image?x=.jpg';
 

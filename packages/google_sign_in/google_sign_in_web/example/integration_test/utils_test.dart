@@ -46,10 +46,10 @@ void main() {
     testWidgets('happy case', (_) async {
       final GoogleSignInUserData data = gisResponsesToUserData(okCredential)!;
 
-      expect(data.displayName, 'Test McTestface');
+      expect(data.displayName, 'Vincent Adultman');
       expect(data.id, '123456');
-      expect(data.email, 'test@example.com');
-      expect(data.photoUrl, 'https://thispersondoesnotexist.com/image');
+      expect(data.email, 'adultman@example.com');
+      expect(data.photoUrl, 'https://thispersondoesnotexist.com/image?x=.jpg');
       expect(data.idToken, okCredential.credential);
     });
 

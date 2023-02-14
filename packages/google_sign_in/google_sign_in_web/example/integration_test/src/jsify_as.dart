@@ -4,7 +4,7 @@
 
 import 'package:js/js_util.dart' as js_util;
 
-/// Convert a [data] object into a JS Object of type `T`.
+/// Converts a [data] object into a JS Object of type `T`.
 T jsifyAs<T>(Map<String, Object?> data) {
   return js_util.jsify(data) as T;
 }

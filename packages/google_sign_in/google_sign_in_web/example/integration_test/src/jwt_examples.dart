@@ -14,41 +14,21 @@ final CredentialResponse nullCredential =
 
 /// A JWT token for predefined values.
 ///
-/// 'email': 'test@example.com',
+/// 'email': 'adultman@example.com',
 /// 'sub': '123456',
-/// 'name': 'Test McTestface',
-/// 'picture': 'https://thispersondoesnotexist.com/image',
+/// 'name': 'Vincent Adultman',
+/// 'picture': 'https://thispersondoesnotexist.com/image?x=.jpg',
 ///
 /// Signed with HS256 and the private key: 'symmetric-encryption-is-weak'
 final CredentialResponse okCredential =
     jsifyAs<CredentialResponse>(<String, Object?>{
   'credential':
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJzdWIiOiIxMjM0NTYiLCJuYW1lIjoiVGVzdCBNY1Rlc3RmYWNlIiwicGljdHVyZSI6Imh0dHBzOi8vdGhpc3BlcnNvbmRvZXNub3RleGlzdC5jb20vaW1hZ2UifQ.pDNaEns4DYZZu6-GeWdgwo1QNcKCCHXEVs26vPD_Rnk',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkdWx0bWFuQGV4YW1wbGUuY29tIiwic3ViIjoiMTIzNDU2IiwibmFtZSI6IlZpbmNlbnQgQWR1bHRtYW4iLCJwaWN0dXJlIjoiaHR0cHM6Ly90aGlzcGVyc29uZG9lc25vdGV4aXN0LmNvbS9pbWFnZT94PS5qcGcifQ.lqzULA_U3YzEl_-fL7YLU-kFXmdD2ttJLTv-UslaNQ4',
 });
 
-// The following code can be useful to generate new `CredentialResponse`s as
-// examples. It is implemented using package:jose and dart:convert.
+// More encrypted credential responses may be created on https://jwt.io.
 //
-// Wraps a key-value map of [claims] in a JWT token similar GIS's.
+// First, decode the credential that's listed above, modify to your heart's
+// content, and add a new credential here.
 //
-// Note that the encryption of this token is weak, and this method should
-// only be used for tests!
-// CredentialResponse createJwt(Map<String, Object?>? claims) {
-//   String? credential;
-//   if (claims != null) {
-//     final JsonWebTokenClaims token = JsonWebTokenClaims.fromJson(claims);
-//     final JsonWebSignatureBuilder builder = JsonWebSignatureBuilder();
-//     builder.jsonContent = token.toJson();
-//     builder.addRecipient(
-//         JsonWebKey.fromJson(<String, Object?>{
-//           'kty': 'oct',
-//           'k': base64.encode('symmetric-encryption-is-weak'.codeUnits),
-//         }),
-//         algorithm: 'HS256'); // bogus crypto, don't use this for prod!
-//     builder.setProtectedHeader('typ', 'JWT');
-//     credential = builder.build().toCompactSerialization();
-//   }
-//   return jsifyAs<CredentialResponse>(<String, Object?>{
-//     'credential': credential,
-//   });
-// }
+// (It can also be done with `package:jose` and `dart:convert`.)
