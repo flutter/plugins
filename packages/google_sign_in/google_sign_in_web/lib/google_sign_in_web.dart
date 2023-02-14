@@ -34,13 +34,13 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         ?.getAttribute(clientIdAttributeName);
 
     if (debugOverrideLoader) {
-      _isJsSdkLoaded = Future<bool>.value(true);
+      _jsSdkLoadedFuture = Future<bool>.value(true);
     } else {
-      _isJsSdkLoaded = loader.loadWebSdk();
+      _jsSdkLoadedFuture = loader.loadWebSdk();
     }
   }
 
-  late Future<void> _isJsSdkLoaded;
+  late Future<void> _jsSdkLoadedFuture;
   bool _isInitCalled = false;
 
   // The instance of [GisSdkClient] backing the plugin.
@@ -62,7 +62,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   @visibleForTesting
   Future<void> get initialized {
     _assertIsInitCalled();
-    return _isJsSdkLoaded;
+    return _jsSdkLoadedFuture;
   }
 
   /// Stores the client ID if it was set in a meta-tag of the page.
@@ -110,7 +110,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         'Check https://developers.google.com/identity/protocols/googlescopes '
         'for a list of valid OAuth 2.0 scopes.');
 
-    await _isJsSdkLoaded;
+    await _jsSdkLoadedFuture;
 
     _gisClient = overrideClient ??
         GisSdkClient(
