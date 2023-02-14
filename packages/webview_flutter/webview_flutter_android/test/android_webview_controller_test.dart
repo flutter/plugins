@@ -14,6 +14,7 @@ import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_proxy.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
+import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/src/platform_views_service_proxy.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -882,6 +883,29 @@ void main() {
     await controller.setMediaPlaybackRequiresUserGesture(true);
 
     verify(mockSettings.setMediaPlaybackRequiresUserGesture(true)).called(1);
+  });
+
+  test('webViewIdentifier', () {
+    final MockWebView mockWebView = MockWebView();
+    final InstanceManager instanceManager = InstanceManager(
+      onWeakReferenceRemoved: (_) {},
+    );
+    instanceManager.addHostCreatedInstance(mockWebView, 0);
+
+    android_webview.WebView.api = WebViewHostApiImpl(
+      instanceManager: instanceManager,
+    );
+
+    final AndroidWebViewController controller = createControllerWithMocks(
+      mockWebView: mockWebView,
+    );
+
+    expect(
+      controller.webViewIdentifier,
+      0,
+    );
+
+    android_webview.WebView.api = WebViewHostApiImpl();
   });
 
   group('AndroidWebViewWidget', () {
