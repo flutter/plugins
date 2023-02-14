@@ -43,7 +43,8 @@
 @property(readonly, nonatomic) int64_t textureId;
 @property BOOL enableAudio;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
-@property(readonly, nonatomic) AVCaptureSession *captureSession;
+@property(readonly, nonatomic) AVCaptureSession *videoCaptureSession;
+@property(readonly, nonatomic) AVCaptureSession *audioCaptureSession;
 
 @property(readonly, nonatomic) AVCaptureInput *captureVideoInput;
 /// Tracks the latest pixel buffer sent from AVFoundation's sample buffer delegate callback.
@@ -101,7 +102,8 @@ NSString *const errorMethod = @"error";
                  resolutionPreset:resolutionPreset
                       enableAudio:enableAudio
                       orientation:orientation
-                   captureSession:[[AVCaptureSession alloc] init]
+              videoCaptureSession:[[AVCaptureSession alloc] init]
+              audioCaptureSession:[[AVCaptureSession alloc] init]
               captureSessionQueue:captureSessionQueue
                             error:error];
 }
@@ -110,7 +112,8 @@ NSString *const errorMethod = @"error";
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
                        orientation:(UIDeviceOrientation)orientation
-                    captureSession:(AVCaptureSession *)captureSession
+               videoCaptureSession:(AVCaptureSession *)videoCaptureSession
+               audioCaptureSession:(AVCaptureSession *)audioCaptureSession
                captureSessionQueue:(dispatch_queue_t)captureSessionQueue
                              error:(NSError **)error {
   self = [super init];
@@ -125,7 +128,8 @@ NSString *const errorMethod = @"error";
   _pixelBufferSynchronizationQueue =
       dispatch_queue_create("io.flutter.camera.pixelBufferSynchronizationQueue", NULL);
   _photoIOQueue = dispatch_queue_create("io.flutter.camera.photoIOQueue", NULL);
-  _captureSession = captureSession;
+  _videoCaptureSession = videoCaptureSession;
+  _audioCaptureSession = audioCaptureSession;
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FLTFlashModeAuto : FLTFlashModeOff;
   _exposureMode = FLTExposureModeAuto;
@@ -141,36 +145,20 @@ NSString *const errorMethod = @"error";
   _maxStreamingPendingFramesCount = 4;
 
   NSError *localError = nil;
-  _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
-                                                             error:&localError];
-
+  AVCaptureConnection *connection = [self createConnection:&localError];
   if (localError) {
     *error = localError;
     return nil;
   }
 
-  _captureVideoOutput = [AVCaptureVideoDataOutput new];
-  _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)};
-  [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
-  [_captureVideoOutput setSampleBufferDelegate:self queue:captureSessionQueue];
-
-  AVCaptureConnection *connection =
-      [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
-                                             output:_captureVideoOutput];
-
-  if ([_captureDevice position] == AVCaptureDevicePositionFront) {
-    connection.videoMirrored = YES;
-  }
-
-  [_captureSession addInputWithNoConnections:_captureVideoInput];
-  [_captureSession addOutputWithNoConnections:_captureVideoOutput];
-  [_captureSession addConnection:connection];
+  [_videoCaptureSession addInputWithNoConnections:_captureVideoInput];
+  [_videoCaptureSession addOutputWithNoConnections:_captureVideoOutput];
+  [_videoCaptureSession addConnection:connection];
 
   if (@available(iOS 10.0, *)) {
     _capturePhotoOutput = [AVCapturePhotoOutput new];
     [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
-    [_captureSession addOutput:_capturePhotoOutput];
+    [_videoCaptureSession addOutput:_capturePhotoOutput];
   }
   _motionManager = [[CMMotionManager alloc] init];
   [_motionManager startAccelerometerUpdates];
@@ -181,12 +169,40 @@ NSString *const errorMethod = @"error";
   return self;
 }
 
+- (AVCaptureConnection *)createConnection:(NSError **)error {
+  // Setup video capture input.
+  _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:error];
+
+  if (*error) {
+    return nil;
+  }
+
+  // Setup video capture output.
+  _captureVideoOutput = [AVCaptureVideoDataOutput new];
+  _captureVideoOutput.videoSettings =
+      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)};
+  [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
+  [_captureVideoOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
+
+  // Setup video capture connection.
+  AVCaptureConnection *connection =
+      [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
+                                             output:_captureVideoOutput];
+  if ([_captureDevice position] == AVCaptureDevicePositionFront) {
+    connection.videoMirrored = YES;
+  }
+
+  return connection;
+}
+
 - (void)start {
-  [_captureSession startRunning];
+  [_videoCaptureSession startRunning];
+  [_audioCaptureSession startRunning];
 }
 
 - (void)stop {
-  [_captureSession stopRunning];
+  [_videoCaptureSession stopRunning];
+  [_audioCaptureSession stopRunning];
 }
 
 - (void)setVideoFormat:(OSType)videoFormat {
@@ -326,45 +342,45 @@ NSString *const errorMethod = @"error";
   switch (resolutionPreset) {
     case FLTResolutionPresetMax:
     case FLTResolutionPresetUltraHigh:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+      if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+        _videoCaptureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
         _previewSize = CGSizeMake(3840, 2160);
         break;
       }
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
-        _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
+      if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
+        _videoCaptureSession.sessionPreset = AVCaptureSessionPresetHigh;
         _previewSize =
             CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width,
                        _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
         break;
       }
     case FLTResolutionPresetVeryHigh:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
+      if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
+        _videoCaptureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
         _previewSize = CGSizeMake(1920, 1080);
         break;
       }
     case FLTResolutionPresetHigh:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
+      if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
+        _videoCaptureSession.sessionPreset = AVCaptureSessionPreset1280x720;
         _previewSize = CGSizeMake(1280, 720);
         break;
       }
     case FLTResolutionPresetMedium:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
+      if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
+        _videoCaptureSession.sessionPreset = AVCaptureSessionPreset640x480;
         _previewSize = CGSizeMake(640, 480);
         break;
       }
     case FLTResolutionPresetLow:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
+      if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
+        _videoCaptureSession.sessionPreset = AVCaptureSessionPreset352x288;
         _previewSize = CGSizeMake(352, 288);
         break;
       }
     default:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetLow]) {
-        _captureSession.sessionPreset = AVCaptureSessionPresetLow;
+      if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPresetLow]) {
+        _videoCaptureSession.sessionPreset = AVCaptureSessionPresetLow;
         _previewSize = CGSizeMake(352, 288);
       } else {
         NSError *error =
@@ -377,6 +393,7 @@ NSString *const errorMethod = @"error";
         @throw error;
       }
   }
+  _audioCaptureSession.sessionPreset = _videoCaptureSession.sessionPreset;
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
@@ -595,12 +612,18 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)close {
-  [_captureSession stopRunning];
-  for (AVCaptureInput *input in [_captureSession inputs]) {
-    [_captureSession removeInput:input];
+  [self stop];
+  for (AVCaptureInput *input in [_videoCaptureSession inputs]) {
+    [_videoCaptureSession removeInput:input];
   }
-  for (AVCaptureOutput *output in [_captureSession outputs]) {
-    [_captureSession removeOutput:output];
+  for (AVCaptureOutput *output in [_videoCaptureSession outputs]) {
+    [_videoCaptureSession removeOutput:output];
+  }
+  for (AVCaptureInput *input in [_audioCaptureSession inputs]) {
+    [_audioCaptureSession removeInput:input];
+  }
+  for (AVCaptureOutput *output in [_audioCaptureSession outputs]) {
+    [_audioCaptureSession removeOutput:output];
   }
 }
 
@@ -847,6 +870,55 @@ NSString *const errorMethod = @"error";
   [result sendSuccess];
 }
 
+- (void)setDescriptionWhileRecording:(NSString *)cameraName
+                              result:(FLTThreadSafeFlutterResult *)result {
+  if (!_isRecording) {
+    [result sendErrorWithCode:@"setDescriptionWhileRecordingFailed"
+                      message:@"Device was not recording"
+                      details:nil];
+    return;
+  }
+
+  _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
+
+  AVCaptureConnection *oldConnection =
+      [_captureVideoOutput connectionWithMediaType:AVMediaTypeVideo];
+
+  // Stop video capture from the old output.
+  [_captureVideoOutput setSampleBufferDelegate:nil queue:nil];
+
+  // Remove the old video capture connections.
+  [_videoCaptureSession beginConfiguration];
+  [_videoCaptureSession removeInput:_captureVideoInput];
+  [_videoCaptureSession removeOutput:_captureVideoOutput];
+
+  NSError *error = nil;
+  AVCaptureConnection *newConnection = [self createConnection:&error];
+  if (error) {
+    [result sendError:error];
+    return;
+  }
+
+  // Keep the same orientation the old connections had.
+  if (oldConnection && newConnection.isVideoOrientationSupported) {
+    newConnection.videoOrientation = oldConnection.videoOrientation;
+  }
+
+  // Add the new connections to the session.
+  if (![_videoCaptureSession canAddInput:_captureVideoInput])
+    [result sendErrorWithCode:@"VideoError" message:@"Unable switch video input" details:nil];
+  [_videoCaptureSession addInputWithNoConnections:_captureVideoInput];
+  if (![_videoCaptureSession canAddOutput:_captureVideoOutput])
+    [result sendErrorWithCode:@"VideoError" message:@"Unable switch video output" details:nil];
+  [_videoCaptureSession addOutputWithNoConnections:_captureVideoOutput];
+  if (![_videoCaptureSession canAddConnection:newConnection])
+    [result sendErrorWithCode:@"VideoError" message:@"Unable switch video connection" details:nil];
+  [_videoCaptureSession addConnection:newConnection];
+  [_videoCaptureSession commitConfiguration];
+
+  [result sendSuccess];
+}
+
 - (CGPoint)getCGPointForCoordsWithOrientation:(UIDeviceOrientation)orientation
                                             x:(double)x
                                             y:(double)y {
@@ -1088,6 +1160,11 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)setUpCaptureSessionForAudio {
+  // Don't setup audio twice or we will lose the audio.
+  if (_isAudioSetup) {
+    return;
+  }
+
   NSError *error = nil;
   // Create a device input with the device and add it to the session.
   // Setup the audio input.
@@ -1100,11 +1177,11 @@ NSString *const errorMethod = @"error";
   // Setup the audio output.
   _audioOutput = [[AVCaptureAudioDataOutput alloc] init];
 
-  if ([_captureSession canAddInput:audioInput]) {
-    [_captureSession addInput:audioInput];
+  if ([_audioCaptureSession canAddInput:audioInput]) {
+    [_audioCaptureSession addInput:audioInput];
 
-    if ([_captureSession canAddOutput:_audioOutput]) {
-      [_captureSession addOutput:_audioOutput];
+    if ([_audioCaptureSession canAddOutput:_audioOutput]) {
+      [_audioCaptureSession addOutput:_audioOutput];
       _isAudioSetup = YES;
     } else {
       [_methodChannel invokeMethod:errorMethod

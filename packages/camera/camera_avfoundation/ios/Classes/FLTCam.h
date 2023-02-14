@@ -95,6 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applyFocusMode:(FLTFocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice;
 - (void)pausePreviewWithResult:(FLTThreadSafeFlutterResult *)result;
 - (void)resumePreviewWithResult:(FLTThreadSafeFlutterResult *)result;
+- (void)setDescriptionWhileRecording:(NSString *)cameraName
+                              result:(FLTThreadSafeFlutterResult *)result;
 - (void)setExposurePointWithResult:(FLTThreadSafeFlutterResult *)result x:(double)x y:(double)y;
 - (void)setFocusPointWithResult:(FLTThreadSafeFlutterResult *)result x:(double)x y:(double)y;
 - (void)setExposureOffsetWithResult:(FLTThreadSafeFlutterResult *)result offset:(double)offset;
