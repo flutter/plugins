@@ -133,7 +133,7 @@ class AndroidCameraCameraX extends CameraPlatform {
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
   }) async {
-    // Must obtatin proper permissions before attempting to access a camera.
+    // Must obtain proper permissions before attempting to access a camera.
     await requestCameraPermissions(enableAudio);
 
     // Save CameraSelector that matches cameraDescription.
