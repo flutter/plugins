@@ -191,10 +191,9 @@ void main() {
     await camera.initializeCamera(cameraId);
 
     // Verify preview was bound and unbound to get preview resolution information.
-    verify(camera.processCameraProvider!
-        .bindToLifecycle(camera.cameraSelector!, <UseCase>[camera.testPreview]));
-    verify(
-        camera.processCameraProvider!.unbind(<UseCase>[camera.testPreview]));
+    verify(camera.processCameraProvider!.bindToLifecycle(
+        camera.cameraSelector!, <UseCase>[camera.testPreview]));
+    verify(camera.processCameraProvider!.unbind(<UseCase>[camera.testPreview]));
 
     // Check camera instance was received, but preview is no longer bound.
     expect(camera.camera, equals(mockCamera));
