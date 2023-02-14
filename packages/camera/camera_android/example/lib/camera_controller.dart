@@ -24,7 +24,6 @@ class CameraValue {
     required this.exposureMode,
     required this.focusMode,
     required this.deviceOrientation,
-    required this.description,
     this.lockedCaptureOrientation,
     this.recordingOrientation,
     this.isPreviewPaused = false,
@@ -32,7 +31,7 @@ class CameraValue {
   });
 
   /// Creates a new camera controller state for an uninitialized controller.
-  const CameraValue.uninitialized(CameraDescription description)
+  const CameraValue.uninitialized()
       : this(
           isInitialized: false,
           isRecordingVideo: false,
@@ -44,7 +43,6 @@ class CameraValue {
           focusMode: FocusMode.auto,
           deviceOrientation: DeviceOrientation.portraitUp,
           isPreviewPaused: false,
-          description: description,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -94,9 +92,6 @@ class CameraValue {
   /// The orientation of the currently running video recording.
   final DeviceOrientation? recordingOrientation;
 
-  /// The properties of the camera device controlled by this controller.
-  final CameraDescription description;
-
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -117,7 +112,6 @@ class CameraValue {
     Optional<DeviceOrientation>? lockedCaptureOrientation,
     Optional<DeviceOrientation>? recordingOrientation,
     bool? isPreviewPaused,
-    CameraDescription? description,
     Optional<DeviceOrientation>? previewPauseOrientation,
   }) {
     return CameraValue(
@@ -138,7 +132,6 @@ class CameraValue {
           ? this.recordingOrientation
           : recordingOrientation.orNull,
       isPreviewPaused: isPreviewPaused ?? this.isPreviewPaused,
-      description: description ?? this.description,
       previewPauseOrientation: previewPauseOrientation == null
           ? this.previewPauseOrientation
           : previewPauseOrientation.orNull,
@@ -172,14 +165,14 @@ class CameraValue {
 class CameraController extends ValueNotifier<CameraValue> {
   /// Creates a new camera controller in an uninitialized state.
   CameraController(
-    CameraDescription cameraDescription,
+    this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
     this.imageFormatGroup,
-  }) : super(CameraValue.uninitialized(cameraDescription));
+  }) : super(const CameraValue.uninitialized());
 
   /// The properties of the camera device controlled by this controller.
-  CameraDescription get description => value.description;
+  final CameraDescription description;
 
   /// The resolution this controller is targeting.
   ///
@@ -209,9 +202,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   int get cameraId => _cameraId;
 
   /// Initializes the camera on the device.
-  Future<void> initialize() => _initializeWithDescription(description);
-
-  Future<void> _initializeWithDescription(CameraDescription description) async {
+  Future<void> initialize() async {
     final Completer<CameraInitializedEvent> initializeCompleter =
         Completer<CameraInitializedEvent>();
 
@@ -243,7 +234,6 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     value = value.copyWith(
       isInitialized: true,
-      description: description,
       previewSize: await initializeCompleter.future
           .then((CameraInitializedEvent event) => Size(
                 event.previewWidth,
@@ -282,16 +272,6 @@ class CameraController extends ValueNotifier<CameraValue> {
     value = value.copyWith(
         isPreviewPaused: false,
         previewPauseOrientation: const Optional<DeviceOrientation>.absent());
-  }
-
-  /// Sets the description of the camera.
-  Future<void> setDescription(CameraDescription description) async {
-    if (value.isRecordingVideo) {
-      await CameraPlatform.instance.setDescriptionWhileRecording(description);
-      value = value.copyWith(description: description);
-    } else {
-      await _initializeWithDescription(description);
-    }
   }
 
   /// Captures an image and returns the file where it was saved.
