@@ -392,16 +392,11 @@ class MockAndroidCameraCamerax extends AndroidCameraCameraX {
   }
 
   @override
-  Future<ProcessCameraProvider> getProcessCameraProviderInstance() async {
-    return testProcessCameraProvider;
-  }
-
-  @override
   CameraSelector createCameraSelector(int cameraSelectorLensDirection) {
     switch (cameraSelectorLensDirection) {
-      case CameraSelector.LENS_FACING_FRONT:
+      case CameraSelector.lensFacingFront:
         return mockFrontCameraSelector;
-      case CameraSelector.LENS_FACING_BACK:
+      case CameraSelector.lensFacingBack:
       default:
         return mockBackCameraSelector;
     }

@@ -11,7 +11,8 @@ import 'camera_controller.dart';
 /// A widget showing a live camera preview.
 class CameraPreview extends StatelessWidget {
   /// Creates a preview widget for the given camera controller.
-  const CameraPreview(this.controller, {super.key, this.child});
+  const CameraPreview(this.controller, {Key? key, this.child})
+      : super(key: key);
 
   /// The controller for the camera that the preview is shown for.
   final CameraController controller;
@@ -25,13 +26,10 @@ class CameraPreview extends StatelessWidget {
         ? ValueListenableBuilder<CameraValue>(
             valueListenable: controller,
             builder: (BuildContext context, Object? value, Widget? child) {
-              final double cameraAspectRatio =
-                  controller.value.previewSize!.width /
-                      controller.value.previewSize!.height;
               return AspectRatio(
                 aspectRatio: _isLandscape()
-                    ? cameraAspectRatio
-                    : (1 / cameraAspectRatio),
+                    ? controller.value.aspectRatio
+                    : (1 / controller.value.aspectRatio),
                 child: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[

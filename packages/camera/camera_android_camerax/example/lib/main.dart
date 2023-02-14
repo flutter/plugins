@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
@@ -18,7 +17,7 @@ import 'camera_preview.dart';
 /// Camera example home widget.
 class CameraExampleHome extends StatefulWidget {
   /// Default Constructor
-  const CameraExampleHome({super.key});
+  const CameraExampleHome({Key? key}) : super(key: key);
 
   @override
   State<CameraExampleHome> createState() {
@@ -36,6 +35,10 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
     case CameraLensDirection.external:
       return Icons.camera;
   }
+  // This enum is from a different package, so a new value could be added at
+  // any time. The example should keep working if that happens.
+  // ignore: dead_code
+  return Icons.camera;
 }
 
 void _logError(String code, String? message) {
@@ -51,10 +54,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController? videoController;
   VoidCallback? videoPlayerListener;
   bool enableAudio = true;
-  // TODO(camsim99): Use exposure offset values when exposure configuration supported.
-  // https://github.com/flutter/flutter/issues/120468
-  final double _minAvailableExposureOffset = 0.0;
-  final double _maxAvailableExposureOffset = 0.0;
+  double _minAvailableExposureOffset = 0.0;
+  double _maxAvailableExposureOffset = 0.0;
   double _currentExposureOffset = 0.0;
   late AnimationController _flashModeControlRowAnimationController;
   late Animation<double> _flashModeControlRowAnimation;
@@ -62,6 +63,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   late Animation<double> _exposureModeControlRowAnimation;
   late AnimationController _focusModeControlRowAnimationController;
   late Animation<double> _focusModeControlRowAnimation;
+  double _minAvailableZoom = 1.0;
+  double _maxAvailableZoom = 1.0;
+  double _currentScale = 1.0;
+  double _baseScale = 1.0;
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
@@ -69,7 +74,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   @override
   void initState() {
     super.initState();
-    _ambiguate(WidgetsBinding.instance)?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -99,12 +104,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   void dispose() {
-    _ambiguate(WidgetsBinding.instance)?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     _flashModeControlRowAnimationController.dispose();
     _exposureModeControlRowAnimationController.dispose();
     super.dispose();
   }
 
+  // #docregion AppLifecycle
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = controller;
@@ -120,6 +126,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       onNewCameraSelected(cameraController.description);
     }
   }
+  // #enddocregion AppLifecycle
 
   @override
   Widget build(BuildContext context) {
@@ -182,9 +189,37 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       return Listener(
         onPointerDown: (_) => _pointers++,
         onPointerUp: (_) => _pointers--,
-        child: CameraPreview(controller!),
+        child: CameraPreview(
+          controller!,
+          child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onScaleStart: _handleScaleStart,
+              onScaleUpdate: _handleScaleUpdate,
+              onTapDown: (TapDownDetails details) =>
+                  onViewFinderTap(details, constraints),
+            );
+          }),
+        ),
       );
     }
+  }
+
+  void _handleScaleStart(ScaleStartDetails details) {
+    _baseScale = _currentScale;
+  }
+
+  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
+    // When there are not exactly two fingers on screen don't scale
+    if (controller == null || _pointers != 2) {
+      return;
+    }
+
+    _currentScale = (_baseScale * details.scale)
+        .clamp(_minAvailableZoom, _maxAvailableZoom);
+
+    await controller!.setZoomLevel(_currentScale);
   }
 
   /// Display the thumbnail of the captured image or video.
@@ -357,8 +392,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                         () {}, // TODO(camsim99): Add functionality back here.
                     onLongPress: () {
                       if (controller != null) {
-                        CameraPlatform.instance
-                            .setExposurePoint(controller!.cameraId, null);
+                        controller!.setExposurePoint(null);
                         showInSnackBar('Resetting exposure point');
                       }
                     },
@@ -440,8 +474,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                         () {}, // TODO(camsim99): Add functionality back here.
                     onLongPress: () {
                       if (controller != null) {
-                        CameraPlatform.instance
-                            .setFocusPoint(controller!.cameraId, null);
+                        controller!.setFocusPoint(null);
                       }
                       showInSnackBar('Resetting focus point');
                     },
@@ -481,8 +514,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         ),
         IconButton(
           icon: cameraController != null &&
-                  (!cameraController.value.isRecordingVideo ||
-                      cameraController.value.isRecordingPaused)
+                  cameraController.value.isRecordingPaused
               ? const Icon(Icons.play_arrow)
               : const Icon(Icons.pause),
           color: Colors.blue,
@@ -519,7 +551,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     if (_cameras.isEmpty) {
-      _ambiguate(SchedulerBinding.instance)?.addPostFrameCallback((_) async {
+      SchedulerBinding.instance.addPostFrameCallback((_) async {
         showInSnackBar('No camera found.');
       });
       return const Text('None');
@@ -559,12 +591,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     final CameraController cameraController = controller!;
 
-    final Point<double> point = Point<double>(
+    final Offset offset = Offset(
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight,
     );
-    CameraPlatform.instance.setExposurePoint(cameraController.cameraId, point);
-    CameraPlatform.instance.setFocusPoint(cameraController.cameraId, point);
+    cameraController.setExposurePoint(offset);
+    cameraController.setFocusPoint(offset);
   }
 
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
@@ -593,10 +625,32 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       if (mounted) {
         setState(() {});
       }
+      if (cameraController.value.hasError) {
+        showInSnackBar(
+            'Camera error ${cameraController.value.errorDescription}');
+      }
     });
 
     try {
       await cameraController.initialize();
+      await Future.wait(<Future<Object?>>[
+        // The exposure mode is currently not supported on the web.
+        ...!kIsWeb
+            ? <Future<Object?>>[
+                cameraController.getMinExposureOffset().then(
+                    (double value) => _minAvailableExposureOffset = value),
+                cameraController
+                    .getMaxExposureOffset()
+                    .then((double value) => _maxAvailableExposureOffset = value)
+              ]
+            : <Future<Object?>>[],
+        cameraController
+            .getMaxZoomLevel()
+            .then((double value) => _maxAvailableZoom = value),
+        cameraController
+            .getMinZoomLevel()
+            .then((double value) => _minAvailableZoom = value),
+      ]);
     } on CameraException catch (e) {
       switch (e.code) {
         case 'CameraAccessDenied':
@@ -620,10 +674,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         case 'AudioAccessRestricted':
           // iOS only
           showInSnackBar('Audio access is restricted.');
-          break;
-        case 'cameraPermission':
-          // Android & web only
-          showInSnackBar('Unknown permission error.');
           break;
         default:
           _showCameraException(e);
@@ -973,7 +1023,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 /// CameraApp is the Main Application.
 class CameraApp extends StatelessWidget {
   /// Default Constructor
-  const CameraApp({super.key});
+  const CameraApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -989,16 +1039,9 @@ Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    _cameras = await CameraPlatform.instance.availableCameras();
+    _cameras = await availableCameras();
   } on CameraException catch (e) {
     _logError(e.code, e.description);
   }
   runApp(const CameraApp());
 }
-
-/// This allows a value of type T or T? to be treated as a value of type T?.
-///
-/// We use this so that APIs that have become non-nullable can still be used
-/// with `!` and `?` on the stable branch.
-// TODO(ianh): Remove this once we roll stable in late 2021.
-T? _ambiguate<T>(T? value) => value;

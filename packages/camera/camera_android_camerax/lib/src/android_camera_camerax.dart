@@ -25,8 +25,6 @@ class AndroidCameraCameraX extends CameraPlatform {
     CameraPlatform.instance = AndroidCameraCameraX();
   }
 
-  // Instances used to access camera functionality:
-
   /// The [ProcessCameraProvider] instance used to access camera functionality.
   @visibleForTesting
   ProcessCameraProvider? processCameraProvider;
@@ -35,8 +33,6 @@ class AndroidCameraCameraX extends CameraPlatform {
   /// bound to the lifecycle of the camera it manages.
   @visibleForTesting
   Camera? camera;
-
-  // Instances used to configure and bind use cases to ProcessCameraProvider instance:
 
   /// The [Preview] instance that can be configured to present a live camera preview.
   @visibleForTesting
@@ -48,8 +44,6 @@ class AndroidCameraCameraX extends CameraPlatform {
   bool previewIsBound = false;
 
   bool _previewIsPaused = false;
-
-  // Instances used for camera configuration:
 
   /// The [CameraSelector] used to configure the [processCameraProvider] to use
   /// the desired camera.
@@ -71,14 +65,12 @@ class AndroidCameraCameraX extends CameraPlatform {
       cameraEventStreamController.stream
           .where((CameraEvent event) => event.cameraId == cameraId);
 
-  // Implementation of Flutter camera platform interface (CameraPlatform):
-
   /// Returns list of all available cameras and their descriptions.
   @override
   Future<List<CameraDescription>> availableCameras() async {
     final List<CameraDescription> cameraDescriptions = <CameraDescription>[];
 
-    processCameraProvider ??= await getProcessCameraProviderInstance();
+    processCameraProvider ??= await ProcessCameraProvider.getInstance();
     final List<CameraInfo> cameraInfos =
         await processCameraProvider!.getAvailableCameraInfos();
 
@@ -90,11 +82,11 @@ class AndroidCameraCameraX extends CameraPlatform {
     for (final CameraInfo cameraInfo in cameraInfos) {
       // Determine the lens direction by filtering the CameraInfo
       // TODO(gmackall): replace this with call to CameraInfo.getLensFacing when changes containing that method are available
-      if ((await createCameraSelector(CameraSelector.LENS_FACING_BACK)
+      if ((await createCameraSelector(CameraSelector.lensFacingBack)
               .filter(<CameraInfo>[cameraInfo]))
           .isNotEmpty) {
         cameraLensDirection = CameraLensDirection.back;
-      } else if ((await createCameraSelector(CameraSelector.LENS_FACING_FRONT)
+      } else if ((await createCameraSelector(CameraSelector.lensFacingFront)
               .filter(<CameraInfo>[cameraInfo]))
           .isNotEmpty) {
         cameraLensDirection = CameraLensDirection.front;
@@ -139,14 +131,14 @@ class AndroidCameraCameraX extends CameraPlatform {
     final int cameraSelectorLensDirection =
         _getCameraSelectorLensDirection(cameraDescription.lensDirection);
     final bool cameraIsFrontFacing =
-        cameraSelectorLensDirection == CameraSelector.LENS_FACING_FRONT;
+        cameraSelectorLensDirection == CameraSelector.lensFacingFront;
     cameraSelector = createCameraSelector(cameraSelectorLensDirection);
     // Start listening for device orientation changes preceding camera creation.
     startListeningForDeviceOrientationChange(
         cameraIsFrontFacing, cameraDescription.sensorOrientation);
 
     // Retrieve a ProcessCameraProvider instance.
-    processCameraProvider ??= await getProcessCameraProviderInstance();
+    processCameraProvider ??= await ProcessCameraProvider.getInstance();
 
     // Configure Preview instance and bind to ProcessCameraProvider.
     final int targetRotation =
@@ -154,6 +146,7 @@ class AndroidCameraCameraX extends CameraPlatform {
     final ResolutionInfo? targetResolution =
         _getTargetResolutionForPreview(resolutionPreset);
     preview = createPreview(targetRotation, targetResolution);
+    previewIsBound = false;
     final int flutterSurfaceTextureId = await preview!.setSurfaceProvider();
 
     return flutterSurfaceTextureId;
@@ -315,11 +308,11 @@ class AndroidCameraCameraX extends CameraPlatform {
   int _getCameraSelectorLensDirection(CameraLensDirection lensDirection) {
     switch (lensDirection) {
       case CameraLensDirection.front:
-        return CameraSelector.LENS_FACING_FRONT;
+        return CameraSelector.lensFacingFront;
       case CameraLensDirection.back:
-        return CameraSelector.LENS_FACING_BACK;
+        return CameraSelector.lensFacingBack;
       case CameraLensDirection.external:
-        return CameraSelector.EXTERNAL;
+        return CameraSelector.lensFacingExternal;
     }
   }
 
@@ -365,22 +358,13 @@ class AndroidCameraCameraX extends CameraPlatform {
         cameraIsFrontFacing, sensorOrientation);
   }
 
-  /// Retrives an instance of the [ProcessCameraProvider] to access camera
-  /// functionality.
-  @visibleForTesting
-  Future<ProcessCameraProvider> getProcessCameraProviderInstance() async {
-    final ProcessCameraProvider instance =
-        await ProcessCameraProvider.getInstance();
-    return instance;
-  }
-
   /// Returns a [CameraSelector] based on the specified camera lens direction.
   @visibleForTesting
   CameraSelector createCameraSelector(int cameraSelectorLensDirection) {
     switch (cameraSelectorLensDirection) {
-      case CameraSelector.LENS_FACING_FRONT:
+      case CameraSelector.lensFacingFront:
         return CameraSelector.getDefaultFrontCamera();
-      case CameraSelector.LENS_FACING_BACK:
+      case CameraSelector.lensFacingBack:
         return CameraSelector.getDefaultBackCamera();
       default:
         return CameraSelector(lensFacing: cameraSelectorLensDirection);
