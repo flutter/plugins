@@ -9,8 +9,8 @@ import 'package:google_sign_in_platform_interface/google_sign_in_platform_interf
 import 'package:google_sign_in_web/src/utils.dart';
 import 'package:integration_test/integration_test.dart';
 
-import 'src/create_jwt.dart';
 import 'src/jsify_as.dart';
+import 'src/jwt_examples.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -44,20 +44,13 @@ void main() {
 
   group('gisResponsesToUserData', () {
     testWidgets('happy case', (_) async {
-      final CredentialResponse response = createJwt(<String, Object?>{
-        'email': 'test@example.com',
-        'sub': '123456',
-        'name': 'Test McTestface',
-        'picture': 'https://thispersondoesnotexist.com/image',
-      });
-
-      final GoogleSignInUserData data = gisResponsesToUserData(response)!;
+      final GoogleSignInUserData data = gisResponsesToUserData(okCredential)!;
 
       expect(data.displayName, 'Test McTestface');
       expect(data.id, '123456');
       expect(data.email, 'test@example.com');
       expect(data.photoUrl, 'https://thispersondoesnotexist.com/image');
-      expect(data.idToken, response.credential);
+      expect(data.idToken, okCredential.credential);
     });
 
     testWidgets('null response -> null', (_) async {
@@ -65,7 +58,7 @@ void main() {
     });
 
     testWidgets('null response.credential -> null', (_) async {
-      final CredentialResponse response = createJwt(null);
+      final CredentialResponse response = nullCredential;
       expect(gisResponsesToUserData(response), isNull);
     });
 
