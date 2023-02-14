@@ -248,7 +248,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[4457646586de940f49e054de7d82e60078b205ac627f11a89d077e63f639c9ba1002541d9209a9ee7777e159e97b43d0]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[df5cf97036c09184e386edbf4ab1e741189e0ac5ca7e4c73673c4bf02d8709c9ac733597e8f5b6511b51eafb52e4027f]
       build_script:
         - ./script/tool_runner.sh build-examples --apk
       lint_script:
