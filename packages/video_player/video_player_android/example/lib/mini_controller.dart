@@ -286,10 +286,6 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
     await _applyPlayPause();
   }
 
-  Future<void> enterFullscreen() async {
-    print(1);
-  }
-
   Future<void> _applyPlayPause() async {
     _timer?.cancel();
     if (value.isPlaying) {
