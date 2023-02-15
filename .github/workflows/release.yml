@@ -31,8 +31,7 @@ jobs:
       with:
         fetch-depth: 0 # Fetch all history so the tool can get all the tags to determine version.
     - name: Set up tools
-      run: dart pub get
-      working-directory: ${{ github.workspace }}/script/tool
+      run: dart pub global activate flutter_plugin_tools 0.13.4+3
 
     # This workflow should be the last to run. So wait for all the other tests to succeed.
     - name: Wait on all tests
@@ -50,5 +49,5 @@ jobs:
       run: |
         git config --global user.name ${{ secrets.USER_NAME }}
         git config --global user.email ${{ secrets.USER_EMAIL }}
-        dart ./script/tool/lib/src/main.dart publish --all-changed --base-sha=HEAD~ --skip-confirmation --remote=origin
+        dart pub global run flutter_plugin_tools publish --all-changed --base-sha=HEAD~ --skip-confirmation --remote=origin
       env: {PUB_CREDENTIALS: "${{ secrets.PUB_CREDENTIALS }}"}

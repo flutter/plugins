@@ -11,7 +11,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'file_selector_ios_test.mocks.dart';
-import 'test_api.dart';
+import 'test_api.g.dart';
 
 @GenerateMocks(<Type>[TestFileSelectorApi])
 void main() {
