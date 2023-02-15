@@ -1,3 +1,7 @@
+## 0.9.12
+
+* Allows camera to be switched while video recording.
+
 ## 0.9.11
 
 * Adds back use of Optional type.
