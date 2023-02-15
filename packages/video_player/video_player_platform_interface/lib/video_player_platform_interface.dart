@@ -73,10 +73,6 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('pause() has not been implemented.');
   }
 
-  void ok2() {
-    print(5);
-  }
-
   /// Sets the volume to a range between 0.0 and 1.0.
   Future<void> setVolume(int textureId, double volume) {
     throw UnimplementedError('setVolume() has not been implemented.');
@@ -108,8 +104,8 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   }
 
   /// enter fullscreen.
-  Future<void> enterFullscreen(int textureId) {
-    throw UnimplementedError('enterFullscreen() has not been implemented.');
+  void enterFullscreenForWeb(int textureId) {
+    throw UnimplementedError('enterFullscreenForWeb() has not been implemented.');
   }
 
   /// add listener

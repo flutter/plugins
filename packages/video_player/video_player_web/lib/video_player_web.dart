@@ -148,7 +148,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   Future<void> setMixWithOthers(bool mixWithOthers) => Future<void>.value();
 
   @override
-  Future<void> enterFullscreenForWeb(int textureId) async {
+  void enterFullscreenForWeb(int textureId) {
     return _player(textureId).enterFullscreen();
   }
 
