@@ -147,6 +147,7 @@ class AndroidCameraCameraX extends CameraPlatform {
         _getTargetResolutionForPreview(resolutionPreset);
     preview = createPreview(targetRotation, targetResolution);
     previewIsBound = false;
+    _previewIsPaused = false;
     final int flutterSurfaceTextureId = await preview!.setSurfaceProvider();
 
     return flutterSurfaceTextureId;
