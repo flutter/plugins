@@ -42,7 +42,7 @@ public class PathProviderPlugin: NSObject, FlutterPlugin, PathProviderApi {
 
   // Returns the path for the container of the specified app group.
   func getContainerPath(appGroupIdentifier: String) -> String? {
-      return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)?.path
+    return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)?.path
   }
 }
 
