@@ -1330,6 +1330,12 @@ class Camera
       return;
     }
 
+    // See VideoRenderer.java requires API 26 to switch camera while recording
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+      result.error("setDescriptionWhileRecordingFailed", "Device does not support", null);
+      return;
+    }
+
     stopAndReleaseCamera();
     prepareVideoRenderer();
     cameraProperties = properties;
