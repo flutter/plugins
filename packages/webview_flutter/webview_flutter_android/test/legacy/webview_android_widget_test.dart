@@ -16,7 +16,7 @@ import 'package:webview_flutter_android/src/legacy/webview_android_widget.dart';
 import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
 
 import '../android_webview_test.mocks.dart' show MockTestWebViewHostApi;
-import '../test_android_webview.pigeon.dart';
+import '../test_android_webview.g.dart';
 import 'webview_android_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[

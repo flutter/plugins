@@ -98,8 +98,7 @@ API_AVAILABLE(ios(14))
                                 completionHandler:^(NSData *_Nullable data,
                                                     NSError *_Nullable error) {
                                   if (data != nil) {
-                                    UIImage *image = [[UIImage alloc] initWithData:data];
-                                    [self processImage:image];
+                                    [self processImage:data];
                                   } else {
                                     FlutterError *flutterError =
                                         [FlutterError errorWithCode:@"invalid_image"
@@ -122,7 +121,9 @@ API_AVAILABLE(ios(14))
 /**
  * Processes the image.
  */
-- (void)processImage:(UIImage *)localImage API_AVAILABLE(ios(14)) {
+- (void)processImage:(NSData *)pickerImageData API_AVAILABLE(ios(14)) {
+  UIImage *localImage = [[UIImage alloc] initWithData:pickerImageData];
+
   PHAsset *originalAsset;
   // Only if requested, fetch the full "PHAsset" metadata, which requires  "Photo Library Usage"
   // permissions.
@@ -172,10 +173,13 @@ API_AVAILABLE(ios(14))
     }
   } else {
     // Image picked without an original asset (e.g. User pick image without permission)
+    // maxWidth and maxHeight are used only for GIF images.
     NSString *savedPath =
-        [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
-                                                        image:localImage
-                                                 imageQuality:self.desiredImageQuality];
+        [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:pickerImageData
+                                                               image:localImage
+                                                            maxWidth:self.maxWidth
+                                                           maxHeight:self.maxHeight
+                                                        imageQuality:self.desiredImageQuality];
     [self completeOperationWithPath:savedPath error:nil];
   }
 }

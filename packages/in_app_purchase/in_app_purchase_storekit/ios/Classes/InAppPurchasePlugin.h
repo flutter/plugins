@@ -1,1 +1,1 @@
-../../shared/Classes/InAppPurchasePlugin.h
+../../darwin/Classes/InAppPurchasePlugin.h

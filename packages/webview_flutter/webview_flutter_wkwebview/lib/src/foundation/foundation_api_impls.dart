@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../common/instance_manager.dart';
-import '../common/web_kit.pigeon.dart';
+import '../common/web_kit.g.dart';
 import 'foundation.dart';
 
 Iterable<NSKeyValueObservingOptionsEnumData>

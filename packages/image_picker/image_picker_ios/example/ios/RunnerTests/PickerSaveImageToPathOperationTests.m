@@ -21,7 +21,7 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
 - (void)testSavePNGImage API_AVAILABLE(ios(14)) {
@@ -30,7 +30,7 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"png"];
 }
 
 - (void)testSaveJPGImage API_AVAILABLE(ios(14)) {
@@ -39,7 +39,7 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
 - (void)testSaveGIFImage API_AVAILABLE(ios(14)) {
@@ -48,7 +48,39 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  NSData *dataGIF = [NSData dataWithContentsOfURL:imageURL];
+  CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)dataGIF, nil);
+  size_t numberOfFrames = CGImageSourceGetCount(imageSource);
+
+  XCTestExpectation *pathExpectation = [self expectationWithDescription:@"Path was created"];
+  XCTestExpectation *operationExpectation =
+      [self expectationWithDescription:@"Operation completed"];
+
+  FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
+           initWithResult:result
+                maxHeight:@100
+                 maxWidth:@100
+      desiredImageQuality:@100
+             fullMetadata:NO
+           savedPathBlock:^(NSString *savedPath, FlutterError *error) {
+             XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:savedPath]);
+
+             // Ensure gif is animated.
+             XCTAssertEqualObjects([NSURL URLWithString:savedPath].pathExtension, @"gif");
+             NSData *newDataGIF = [NSData dataWithContentsOfFile:savedPath];
+             CGImageSourceRef newImageSource =
+                 CGImageSourceCreateWithData((__bridge CFDataRef)newDataGIF, nil);
+             size_t newNumberOfFrames = CGImageSourceGetCount(newImageSource);
+             XCTAssertEqual(numberOfFrames, newNumberOfFrames);
+             [pathExpectation fulfill];
+           }];
+  operation.completionBlock = ^{
+    [operationExpectation fulfill];
+  };
+
+  [operation start];
+  [self waitForExpectationsWithTimeout:30 handler:nil];
+  XCTAssertTrue(operation.isFinished);
 }
 
 - (void)testSaveBMPImage API_AVAILABLE(ios(14)) {
@@ -57,7 +89,7 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
 - (void)testSaveHEICImage API_AVAILABLE(ios(14)) {
@@ -66,7 +98,7 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
 - (void)testSaveICNSImage API_AVAILABLE(ios(14)) {
@@ -75,7 +107,7 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
 - (void)testSaveICOImage API_AVAILABLE(ios(14)) {
@@ -84,7 +116,7 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
 - (void)testSaveProRAWImage API_AVAILABLE(ios(14)) {
@@ -93,7 +125,7 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
 - (void)testSaveSVGImage API_AVAILABLE(ios(14)) {
@@ -102,7 +134,7 @@
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
 - (void)testSaveTIFFImage API_AVAILABLE(ios(14)) {
@@ -110,7 +142,7 @@
                                                              withExtension:@"tiff"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
-  [self verifySavingImageWithPickerResult:result fullMetadata:YES];
+  [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
 - (void)testNonexistentImage API_AVAILABLE(ios(14)) {
@@ -176,7 +208,7 @@
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
   OCMReject([photoAssetUtil fetchAssetsWithLocalIdentifiers:OCMOCK_ANY options:OCMOCK_ANY]);
 
-  [self verifySavingImageWithPickerResult:result fullMetadata:NO];
+  [self verifySavingImageWithPickerResult:result fullMetadata:NO withExtension:@"png"];
   OCMVerifyAll(photoAssetUtil);
 }
 
@@ -204,7 +236,8 @@
  * @param result the picker result
  */
 - (void)verifySavingImageWithPickerResult:(PHPickerResult *)result
-                             fullMetadata:(BOOL)fullMetadata API_AVAILABLE(ios(14)) {
+                             fullMetadata:(BOOL)fullMetadata
+                            withExtension:(NSString *)extension API_AVAILABLE(ios(14)) {
   XCTestExpectation *pathExpectation = [self expectationWithDescription:@"Path was created"];
   XCTestExpectation *operationExpectation =
       [self expectationWithDescription:@"Operation completed"];
@@ -217,6 +250,7 @@
              fullMetadata:fullMetadata
            savedPathBlock:^(NSString *savedPath, FlutterError *error) {
              XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:savedPath]);
+             XCTAssertEqualObjects([NSURL URLWithString:savedPath].pathExtension, extension);
              [pathExpectation fulfill];
            }];
   operation.completionBlock = ^{

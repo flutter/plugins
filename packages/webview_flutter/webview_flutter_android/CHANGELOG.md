@@ -1,3 +1,16 @@
+## 3.3.0
+
+* Adds support to access native `WebView`.
+
+## 3.2.4
+
+* Renames Pigeon output files.
+
+## 3.2.3
+
+* Fixes bug that prevented the web view from being garbage collected.
+* Fixes bug causing a `LateInitializationError` when a `PlatformNavigationDelegate` is not provided.
+
 ## 3.2.2
 
 * Updates example code for `use_build_context_synchronously` lint.
