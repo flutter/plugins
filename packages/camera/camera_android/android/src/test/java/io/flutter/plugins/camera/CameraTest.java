@@ -614,8 +614,13 @@ public class CameraTest {
     final CameraProperties newCameraProperties = mock(CameraProperties.class);
     camera.setDescriptionWhileRecording(mockResult, newCameraProperties);
 
-    verify(mockResult, times(1)).success(null);
-    verify(mockResult, never()).error(any(), any(), any());
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+      verify(mockResult, times(1))
+          .error(eq("setDescriptionWhileRecordingFailed"), eq("Device does not support"), eq(null));
+    } else {
+      verify(mockResult, times(1)).success(null);
+      verify(mockResult, never()).error(any(), any(), any());
+    }
   }
 
   @Test
