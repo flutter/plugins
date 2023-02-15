@@ -58,6 +58,11 @@ class CameraSelector extends JavaObject {
   /// See https://developer.android.com/reference/androidx/camera/core/CameraSelector#LENS_FACING_EXTERNAL().
   static const int lensFacingExternal = 2;
 
+  /// ID for unknown lens.
+  ///
+  /// See https://developer.android.com/reference/androidx/camera/core/CameraSelector#LENS_FACING_UNKNOWN().
+  static const int lensFacingUnknown = -1;
+
   /// Selector for default front facing camera.
   static CameraSelector getDefaultFrontCamera({
     BinaryMessenger? binaryMessenger,
