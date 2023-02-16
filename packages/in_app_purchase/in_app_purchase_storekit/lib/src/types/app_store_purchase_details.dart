@@ -20,9 +20,7 @@ class AppStorePurchaseDetails extends PurchaseDetails {
     required super.transactionDate,
     required this.skPaymentTransaction,
     required PurchaseStatus status,
-  })
-      : super(
-            status: status) {
+  }) : super(status: status) {
     this.status = status;
   }
 
