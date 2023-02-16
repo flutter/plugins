@@ -45,9 +45,7 @@ Map<String, Object?>? getJwtTokenPayload(String? token) {
 Map<String, Object?>? decodeJwtPayload(String? payload) {
   try {
     // Payload must be normalized before passing it to the codec
-    return (jwtCodec.decode(base64.normalize(payload!))
-            as Map<String, Object?>?)
-        ?.cast<String, Object?>();
+    return jwtCodec.decode(base64.normalize(payload!)) as Map<String, Object?>?;
   } catch (_) {
     // Do nothing, we always return null for any failure.
   }
