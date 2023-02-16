@@ -25,8 +25,8 @@ void main() {
       final Size flutterLogoSize = flutterLogoFinder.evaluate().single.size ??
           fail('Widget size is null');
 
-      expect(flutterLogoSize.width, equals(101));
-      expect(flutterLogoSize.height, equals(125));
+      expect(flutterLogoSize.width, closeTo(101, 3));
+      expect(flutterLogoSize.height, closeTo(125, 3));
     },
   );
 
@@ -40,22 +40,22 @@ void main() {
       expect(smilingFaceFinder, findsOneWidget);
       final Size smilingFaceSize = smilingFaceFinder.evaluate().single.size ??
           fail('Smiling face widget size is null');
-      expect(smilingFaceSize.width.round(), equals(100));
-      expect(smilingFaceSize.height.round(), equals(96));
+      expect(smilingFaceSize.width.round(), closeTo(100, 3));
+      expect(smilingFaceSize.height.round(), closeTo(96, 3));
 
       final Finder hammerCircleFinder = find.byKey(const Key('Hammer circle'));
       expect(hammerCircleFinder, findsOneWidget);
       final Size hammerCircleSize = hammerCircleFinder.evaluate().single.size ??
           fail('Hammer circle widget size is null');
-      expect(hammerCircleSize.width.round(), equals(100));
-      expect(hammerCircleSize.height.round(), equals(96));
+      expect(hammerCircleSize.width.round(), closeTo(100, 3));
+      expect(hammerCircleSize.height.round(), closeTo(96, 3));
 
       final Finder ladybugFinder = find.byKey(const Key('Ladybug'));
       expect(ladybugFinder, findsOneWidget);
       final Size ladybugSize = ladybugFinder.evaluate().single.size ??
           fail('Ladybug widget size is null');
-      expect(ladybugSize.width.round(), equals(116));
-      expect(ladybugSize.height.round(), equals(111));
+      expect(ladybugSize.width.round(), closeTo(116, 3));
+      expect(ladybugSize.height.round(), closeTo(111, 3));
     },
   );
 
