@@ -23,7 +23,7 @@ dev_dependencies:
 
 # FOR TESTING ONLY. DO NOT MERGE.
 dependency_overrides:
-  video_player_web:
-    path: ../../../video_player/video_player_web
   video_player_platform_interface:
     path: ../../../video_player/video_player_platform_interface
+  video_player_web:
+    path: ../../../video_player/video_player_web

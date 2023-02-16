@@ -105,11 +105,14 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
 
   /// enter fullscreen.
   void enterFullscreenForWeb(int textureId) {
-    throw UnimplementedError('enterFullscreenForWeb() has not been implemented.');
+    throw UnimplementedError(
+        'enterFullscreenForWeb() has not been implemented.');
   }
 
   /// add listener
-  void addEventListener(int textureId, String type, dynamic Function(Object event)? listener, [bool? useCapture]) {
+  void addEventListener(
+      int textureId, String type, dynamic Function(Object event)? listener,
+      [bool? useCapture]) {
     throw UnimplementedError('addEventListener() has not been implemented.');
   }
 }
