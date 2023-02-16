@@ -85,6 +85,9 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  void enterFullscreenForWeb(int textureId) {}
+
+  @override
   Future<void> setVolume(int textureId, double volume) {
     return _api.setVolume(VolumeMessage(
       textureId: textureId,
