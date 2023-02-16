@@ -102,8 +102,9 @@
 }
 
 - (void)testSaveWithOrientation API_AVAILABLE(ios(14)) {
-  NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"jpgImageWithRightOrientation"
-                                                             withExtension:@"jpg"];
+  NSURL *imageURL =
+      [[NSBundle bundleForClass:[self class]] URLForResource:@"jpgImageWithRightOrientation"
+                                               withExtension:@"jpg"];
   NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
   PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
 

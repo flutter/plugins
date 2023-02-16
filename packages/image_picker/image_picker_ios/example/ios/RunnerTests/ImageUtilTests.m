@@ -36,8 +36,9 @@
 }
 
 - (void)testScaledImage_ShouldBeCorrectRotation {
-  NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"jpgImageWithRightOrientation"
-                                                             withExtension:@"jpg"];
+  NSURL *imageURL =
+      [[NSBundle bundleForClass:[self class]] URLForResource:@"jpgImageWithRightOrientation"
+                                               withExtension:@"jpg"];
   NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
   UIImage *image = [UIImage imageWithData:imageData];
   XCTAssertEqual(image.size.width, 130);
