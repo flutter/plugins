@@ -13,18 +13,15 @@ import '../store_kit_wrappers/enum_converters.dart';
 class AppStorePurchaseDetails extends PurchaseDetails {
   /// Creates a new AppStore specific purchase details object with the provided
   /// details.
-  AppStorePurchaseDetails(
-      {String? purchaseID,
-      required String productID,
-      required PurchaseVerificationData verificationData,
-      required String? transactionDate,
-      required this.skPaymentTransaction,
-      required PurchaseStatus status})
+  AppStorePurchaseDetails({
+    super.purchaseID,
+    required super.productID,
+    required super.verificationData,
+    required super.transactionDate,
+    required this.skPaymentTransaction,
+    required PurchaseStatus status,
+  })
       : super(
-            productID: productID,
-            purchaseID: purchaseID,
-            transactionDate: transactionDate,
-            verificationData: verificationData,
             status: status) {
     this.status = status;
   }
