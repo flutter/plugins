@@ -36,11 +36,24 @@ Widget build(BuildContext context) {
 
 ### Flutter->iOS Example
 
+#### objc
 ```objc
-#import <ios_platform_images/UIImage+ios_platform_images.h>
+// #import <ios_platform_images/UIImage+ios_platform_images.h>
+// or
+#import <UIImage+ios_platform_images.h>
 
 static UIImageView* MakeImage() {
-  UIImage* image = [UIImage flutterImageWithName:@"assets/foo.png"];
+  UIImage* image = [UIImage flutterImageWithName: @"assets/foo.png"];
   return [[UIImageView alloc] initWithImage:image];
+}
+```
+
+#### swift
+```swift
+import ios_platform_images
+
+func MakeImage() -> UIImageView {
+  let image = UIImage.flutterImage(withName: "assets/foo.png")
+  return UIImageView(image: image)
 }
 ```
