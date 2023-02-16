@@ -22,6 +22,7 @@ public extension UIImage {
   ///
   /// Note: We don't yet support images from package dependencies (ex.
   /// `AssetImage('icons/heart.png', package: 'my_icons')`).
+  @objc
   static func flutterImage(withName name: String) -> UIImage? {
     let filename = name.components(separatedBy: "/").last
     let path = name.components(separatedBy: "/").dropLast().joined(separator: "/")
