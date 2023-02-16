@@ -29,16 +29,16 @@ packages/**/*_web/**                                     @ditman
 # - Android
 packages/camera/camera_android/**                        @camsim99
 packages/camera/camera_android_camerax/**                @camsim99
-packages/espresso/**                                     @GaryQian
-packages/flutter_plugin_android_lifecycle/**             @GaryQian
-packages/google_maps_flutter/google_maps_flutter_android/**  @GaryQian
+packages/espresso/**                                     @reidbaker
+packages/flutter_plugin_android_lifecycle/**             @reidbaker
+packages/google_maps_flutter/google_maps_flutter_android/**  @reidbaker
 packages/google_sign_in/google_sign_in_android/**        @camsim99
-packages/image_picker/image_picker_android/**            @GaryQian
-packages/in_app_purchase/in_app_purchase_android/**      @GaryQian
+packages/image_picker/image_picker_android/**            @gmackall
+packages/in_app_purchase/in_app_purchase_android/**      @gmackall
 packages/local_auth/local_auth_android/**                @camsim99
 packages/path_provider/path_provider_android/**          @camsim99
 packages/quick_actions/quick_actions_android/**          @camsim99
-packages/url_launcher/url_launcher_android/**            @GaryQian
+packages/url_launcher/url_launcher_android/**            @gmackall
 packages/video_player/video_player_android/**            @camsim99
 
 # - iOS
