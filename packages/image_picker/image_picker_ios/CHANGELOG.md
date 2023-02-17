@@ -1,3 +1,7 @@
+## 0.8.6+8
+
+* Fixes issue with images sometimes changing to incorrect orientation.
+
 ## 0.8.6+7
 
 * Fixes issue where GIF file would not animate without `Photo Library Usage` permissions. Fixes issue where PNG and GIF files were converted to JPG, but only when they are do not have `Photo Library Usage` permissions.
