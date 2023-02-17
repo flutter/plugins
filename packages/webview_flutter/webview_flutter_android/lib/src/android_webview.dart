@@ -59,6 +59,10 @@ class JavaObject with Copyable {
   }
 }
 
+/// Signature for the `onScrollChanged` callback responsible for listening to scroll's offset changed events.
+typedef ScrollChangedCallback = void Function(
+    int left, int top, int oldLeft, int oldTop);
+
 /// An Android View that displays web pages.
 ///
 /// **Basic usage**
@@ -111,6 +115,9 @@ class WebView extends JavaObject {
 
   /// The [WebSettings] object used to control the settings for this WebView.
   late final WebSettings settings = WebSettings(this);
+
+  /// The [ScrollChangedCallback] object used to listen for scroll changed events.
+  late ScrollChangedCallback? onScrollChanged;
 
   /// Enables debugging of web contents (HTML / CSS / JavaScript) loaded into any WebViews of this application.
   ///
@@ -397,12 +404,9 @@ class WebView extends JavaObject {
     return api.setBackgroundColorFromInstance(this, color.value);
   }
 
-  /// Sets the scroll listener to this WebView.
-  Future<void> setScrollListener(ScrollListener? scrollListener) {
-    if (scrollListener != null) {
-      ScrollListener.api.createFromInstance(scrollListener);
-    }
-    return api.setScrollListenerFromInstance(this, scrollListener);
+  ///Toggle scroll listener for this WebView
+  Future<void> enableScrollListener(bool enabled) {
+    return api.enableScrollListenerFromInstance(this, enabled);
   }
 
   @override
@@ -875,34 +879,6 @@ class DownloadListener extends JavaObject {
   @override
   DownloadListener copy() {
     return DownloadListener.detached(onDownloadStart: onDownloadStart);
-  }
-}
-
-/// The interface is to be used to listen to the changes of scroll positions.
-class ScrollListener extends JavaObject {
-  /// Constructs a [ScrollListener].
-  ScrollListener(this.postNewOffset) : super.detached() {
-    AndroidWebViewFlutterApis.instance.ensureSetUp();
-    api.createFromInstance(this);
-  }
-
-  /// Constructs a [ScrollListener] without creating the associated Java
-  /// object.
-  ///
-  /// This should only be used by subclasses created by this library or to
-  /// create copies.
-  ScrollListener.detached(this.postNewOffset) : super.detached();
-
-  /// Pigeon Host Api implementation for [ScrollListener].
-  @visibleForTesting
-  static ScrollListenerHostApiImpl api = ScrollListenerHostApiImpl();
-
-  /// Callback method when javaScript calls `postMessage` on the object instance passed.
-  final void Function(int x, int y)? postNewOffset;
-
-  @override
-  ScrollListener copy() {
-    return ScrollListener.detached(postNewOffset);
   }
 }
 

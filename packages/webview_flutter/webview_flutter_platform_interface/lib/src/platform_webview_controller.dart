@@ -260,10 +260,12 @@ abstract class PlatformWebViewController extends PlatformInterface {
         'setUserAgent is not implemented on the current platform');
   }
 
-  /// Toggle the listener for scroll position
-  Future<void> setScrollListener(void Function(int x, int y)? onOffsetChange) {
+  /// Toggle the listener for content offset changes. Set to null to stop listening.
+  Future<void> setOnContentOffsetChanged(
+      void Function(int left, int top, int oldLeft, int oldTop)?
+          onOffsetChange) {
     throw UnimplementedError(
-        'toggleListenForScrollPos is not implemented on the current platform');
+        'setOnContentOffsetChanged is not implemented on the current platform');
   }
 }
 

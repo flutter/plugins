@@ -339,6 +339,15 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         ),
       ) as _i2.WebSettings);
   @override
+  set onScrollChanged(_i2.ScrollChangedCallback? _onScrollChanged) =>
+      super.noSuchMethod(
+        Invocation.setter(
+          #onScrollChanged,
+          _onScrollChanged,
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
   _i5.Future<void> loadData({
     required String? data,
     String? mimeType,
@@ -613,11 +622,10 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
   @override
-  _i5.Future<void> setScrollListener(_i2.ScrollListener? scrollListener) =>
-      (super.noSuchMethod(
+  _i5.Future<void> enableScrollListener(bool? enabled) => (super.noSuchMethod(
         Invocation.method(
-          #setScrollListener,
-          [scrollListener],
+          #enableScrollListener,
+          [enabled],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),

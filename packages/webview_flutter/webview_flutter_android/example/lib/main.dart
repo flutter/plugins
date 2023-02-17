@@ -130,8 +130,9 @@ Page resource error:
       ..loadRequest(LoadRequestParams(
         uri: Uri.parse('https://dantri.com.vn'),
       ))
-      ..setScrollListener((int x, int y) {
-        debugPrint('Scroll position change to x = $x y = $y');
+      ..setOnContentOffsetChanged((int left, int top, int oldLeft, int oldTop) {
+        debugPrint(
+            'Scroll position change to left = $left y = $top oldX = $oldLeft oldY = $oldTop');
       });
   }
 
@@ -344,7 +345,7 @@ class SampleMenu extends StatelessWidget {
   Future<void> _onListCache() {
     return webViewController.runJavaScript(
         'caches.keys()' // ignore: missing_whitespace_between_adjacent_strings
-        '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
+        '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))' // ignore: missing_whitespace_between_adjacent_strings
         '.then((caches) => Toaster.postMessage(caches))');
   }
 

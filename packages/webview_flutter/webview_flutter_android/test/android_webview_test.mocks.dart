@@ -56,20 +56,9 @@ class _FakeWebViewPoint_2 extends _i1.SmartFake implements _i3.WebViewPoint {
         );
 }
 
-class _FakeScrollListener_3 extends _i1.SmartFake
-    implements _i2.ScrollListener {
-  _FakeScrollListener_3(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeWebChromeClient_4 extends _i1.SmartFake
+class _FakeWebChromeClient_3 extends _i1.SmartFake
     implements _i2.WebChromeClient {
-  _FakeWebChromeClient_4(
+  _FakeWebChromeClient_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -78,8 +67,8 @@ class _FakeWebChromeClient_4 extends _i1.SmartFake
         );
 }
 
-class _FakeWebSettings_5 extends _i1.SmartFake implements _i2.WebSettings {
-  _FakeWebSettings_5(
+class _FakeWebSettings_4 extends _i1.SmartFake implements _i2.WebSettings {
+  _FakeWebSettings_4(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -88,8 +77,8 @@ class _FakeWebSettings_5 extends _i1.SmartFake implements _i2.WebSettings {
         );
 }
 
-class _FakeOffset_6 extends _i1.SmartFake implements _i4.Offset {
-  _FakeOffset_6(
+class _FakeOffset_5 extends _i1.SmartFake implements _i4.Offset {
+  _FakeOffset_5(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -98,8 +87,8 @@ class _FakeOffset_6 extends _i1.SmartFake implements _i4.Offset {
         );
 }
 
-class _FakeWebView_7 extends _i1.SmartFake implements _i2.WebView {
-  _FakeWebView_7(
+class _FakeWebView_6 extends _i1.SmartFake implements _i2.WebView {
+  _FakeWebView_6(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -108,8 +97,8 @@ class _FakeWebView_7 extends _i1.SmartFake implements _i2.WebView {
         );
 }
 
-class _FakeWebViewClient_8 extends _i1.SmartFake implements _i2.WebViewClient {
-  _FakeWebViewClient_8(
+class _FakeWebViewClient_7 extends _i1.SmartFake implements _i2.WebViewClient {
+  _FakeWebViewClient_7(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -942,16 +931,16 @@ class MockTestWebViewHostApi extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void setScrollListener(
+  void enableScrollListener(
     int? instanceId,
-    int? scrollListenerInstanceId,
+    bool? enabled,
   ) =>
       super.noSuchMethod(
         Invocation.method(
-          #setScrollListener,
+          #enableScrollListener,
           [
             instanceId,
-            scrollListenerInstanceId,
+            enabled,
           ],
         ),
         returnValueForMissingStub: null,
@@ -985,49 +974,6 @@ class MockTestAssetManagerHostApi extends _i1.Mock
       ) as String);
 }
 
-/// A class which mocks [TestScrollListenerHostApi].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockTestScrollListenerHostApi extends _i1.Mock
-    implements _i6.TestScrollListenerHostApi {
-  MockTestScrollListenerHostApi() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  void create(int? instanceId) => super.noSuchMethod(
-        Invocation.method(
-          #create,
-          [instanceId],
-        ),
-        returnValueForMissingStub: null,
-      );
-}
-
-/// A class which mocks [ScrollListener].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockScrollListener extends _i1.Mock implements _i2.ScrollListener {
-  MockScrollListener() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i2.ScrollListener copy() => (super.noSuchMethod(
-        Invocation.method(
-          #copy,
-          [],
-        ),
-        returnValue: _FakeScrollListener_3(
-          this,
-          Invocation.method(
-            #copy,
-            [],
-          ),
-        ),
-      ) as _i2.ScrollListener);
-}
-
 /// A class which mocks [WebChromeClient].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -1052,7 +998,7 @@ class MockWebChromeClient extends _i1.Mock implements _i2.WebChromeClient {
           #copy,
           [],
         ),
-        returnValue: _FakeWebChromeClient_4(
+        returnValue: _FakeWebChromeClient_3(
           this,
           Invocation.method(
             #copy,
@@ -1078,11 +1024,20 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
   @override
   _i2.WebSettings get settings => (super.noSuchMethod(
         Invocation.getter(#settings),
-        returnValue: _FakeWebSettings_5(
+        returnValue: _FakeWebSettings_4(
           this,
           Invocation.getter(#settings),
         ),
       ) as _i2.WebSettings);
+  @override
+  set onScrollChanged(_i2.ScrollChangedCallback? _onScrollChanged) =>
+      super.noSuchMethod(
+        Invocation.setter(
+          #onScrollChanged,
+          _onScrollChanged,
+        ),
+        returnValueForMissingStub: null,
+      );
   @override
   _i5.Future<void> loadData({
     required String? data,
@@ -1288,7 +1243,7 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           #getScrollPosition,
           [],
         ),
-        returnValue: _i5.Future<_i4.Offset>.value(_FakeOffset_6(
+        returnValue: _i5.Future<_i4.Offset>.value(_FakeOffset_5(
           this,
           Invocation.method(
             #getScrollPosition,
@@ -1358,11 +1313,10 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
   @override
-  _i5.Future<void> setScrollListener(_i2.ScrollListener? scrollListener) =>
-      (super.noSuchMethod(
+  _i5.Future<void> enableScrollListener(bool? enabled) => (super.noSuchMethod(
         Invocation.method(
-          #setScrollListener,
-          [scrollListener],
+          #enableScrollListener,
+          [enabled],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),
@@ -1373,7 +1327,7 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           #copy,
           [],
         ),
-        returnValue: _FakeWebView_7(
+        returnValue: _FakeWebView_6(
           this,
           Invocation.method(
             #copy,
@@ -1408,7 +1362,7 @@ class MockWebViewClient extends _i1.Mock implements _i2.WebViewClient {
           #copy,
           [],
         ),
-        returnValue: _FakeWebViewClient_8(
+        returnValue: _FakeWebViewClient_7(
           this,
           Invocation.method(
             #copy,

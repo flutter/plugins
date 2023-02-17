@@ -26,8 +26,6 @@ import 'test_android_webview.pigeon.dart';
   TestWebViewClientHostApi,
   TestWebViewHostApi,
   TestAssetManagerHostApi,
-  TestScrollListenerHostApi,
-  ScrollListener,
   WebChromeClient,
   WebView,
   WebViewClient,
@@ -368,31 +366,6 @@ void main() {
 
       test('copy', () {
         expect(webView.copy(), isA<WebView>());
-      });
-
-      test('scrollListener', () {
-        TestScrollListenerHostApi.setup(MockTestScrollListenerHostApi());
-        ScrollListener.api = ScrollListenerHostApiImpl(
-          instanceManager: instanceManager,
-        );
-
-        final ScrollListener mockScrollListener = MockScrollListener();
-        when(mockScrollListener.copy()).thenReturn(MockScrollListener());
-        instanceManager.addDartCreatedInstance(mockScrollListener);
-        webView.setScrollListener(mockScrollListener);
-
-        final int scrollListenerInstanceId =
-            instanceManager.getIdentifier(mockScrollListener)!;
-        verify(mockPlatformHostApi.setScrollListener(
-          webViewInstanceId,
-          scrollListenerInstanceId,
-        ));
-
-        webView.setScrollListener(null);
-        verify(mockPlatformHostApi.setScrollListener(
-          webViewInstanceId,
-          null,
-        ));
       });
     });
 

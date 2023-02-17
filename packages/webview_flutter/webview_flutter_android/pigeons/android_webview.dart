@@ -190,7 +190,7 @@ abstract class WebViewHostApi {
 
   void setBackgroundColor(int instanceId, int color);
 
-  void setScrollListener(int instanceId, int? scrollListenerInstanceId);
+  void enableScrollListener(int instanceId, bool enabled);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebSettingsHostApi')
@@ -289,14 +289,10 @@ abstract class DownloadListenerFlutterApi {
   );
 }
 
-@HostApi(dartHostTestHandler: 'TestScrollListenerHostApi')
-abstract class ScrollListenerHostApi {
-  void create(int instanceId);
-}
-
 @FlutterApi()
-abstract class ScrollListenerFlutterApi {
-  void onScrollPosChange(int instanceId, int x, int y);
+abstract class WebViewFlutterApi {
+  void onScrollPosChange(
+      int webViewInstanceId, int x, int y, int oldX, int oldY);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebChromeClientHostApi')

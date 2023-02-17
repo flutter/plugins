@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.platform.PlatformView;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewFlutterApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
 import java.util.Map;
 import java.util.Objects;
@@ -31,6 +32,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   // Only used with WebView using virtual displays.
   @Nullable private final View containerView;
   private final BinaryMessenger binaryMessenger;
+  private final WebViewFlutterApi webViewFlutterApi;
 
   private Context context;
 
@@ -136,7 +138,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     protected void onScrollChanged(int l, int t, int oldL, int oldT) {
       super.onScrollChanged(l, t, oldL, oldT);
       if (onScrollChangeListener != null) {
-        onScrollChangeListener.onScrollPosChange(l, t);
+        onScrollChangeListener.onScrollPosChange(l, t, oldL, oldT);
       }
     }
 
@@ -227,7 +229,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
       super.onScrollChanged(l, t, oldl, oldt);
       if (onScrollChangeListener != null) {
-        onScrollChangeListener.onScrollPosChange(l, t);
+        onScrollChangeListener.onScrollPosChange(l, t, oldl, oldt);
       }
     }
 
@@ -250,11 +252,13 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       InstanceManager instanceManager,
       BinaryMessenger binaryMessenger,
       WebViewProxy webViewProxy,
+      WebViewFlutterApi webViewFlutterApi,
       Context context,
       @Nullable View containerView) {
     this.instanceManager = instanceManager;
     this.binaryMessenger = binaryMessenger;
     this.webViewProxy = webViewProxy;
+    this.webViewFlutterApi = webViewFlutterApi;
     this.context = context;
     this.containerView = containerView;
   }
@@ -450,13 +454,17 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   @Override
-  public void setScrollListener(@NonNull Long instanceId, @Nullable Long scrollListenerInstanceId) {
+  public void enableScrollListener(@NonNull Long instanceId, @NonNull Boolean enabled) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     if (webView instanceof WebViewExtendedApi) {
-      if (scrollListenerInstanceId != null) {
+      if (enabled) {
         ((WebViewExtendedApi) webView)
             .setScrollListener(
-                (ScrollListener) instanceManager.getInstance(scrollListenerInstanceId));
+                (x, y, oldX, oldY) -> {
+                  webViewFlutterApi.onScrollPosChange(
+                      instanceId, (long) x, (long) y, (long) oldX, (long) oldY, reply -> {});
+                });
+
       } else {
         ((WebViewExtendedApi) webView).setScrollListener(null);
       }

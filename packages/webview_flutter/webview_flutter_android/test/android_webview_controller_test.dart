@@ -862,12 +862,11 @@ void main() {
       final AndroidWebViewController controller = createControllerWithMocks(
         mockWebView: mockWebView,
       );
-      await controller.setScrollListener((int x, int y) {});
-      verify(mockWebView.setScrollListener(
-              argThat(isA<android_webview.ScrollListener>())))
-          .called(1);
-      await controller.setScrollListener(null);
-      verify(mockWebView.setScrollListener(argThat(isNull))).called(1);
+      await controller.setOnContentOffsetChanged(
+          (int left, int top, int oldLeft, int oldTop) {});
+      verify(mockWebView.enableScrollListener(true)).called(1);
+      await controller.setOnContentOffsetChanged(null);
+      verify(mockWebView.enableScrollListener(false)).called(1);
     });
   });
 

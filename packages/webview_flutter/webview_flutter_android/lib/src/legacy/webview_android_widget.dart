@@ -96,21 +96,20 @@ class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
 /// Implementation of [WebViewPlatformController] with the Android WebView api.
 class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// Construct a [WebViewAndroidPlatformController].
-  WebViewAndroidPlatformController({
-    required bool useHybridComposition,
-    required CreationParams creationParams,
-    required this.callbacksHandler,
-    required this.javascriptChannelRegistry,
-    @visibleForTesting this.webViewProxy = const WebViewProxy(),
-    @visibleForTesting
-        this.flutterAssetManager = const android_webview.FlutterAssetManager(),
-    @visibleForTesting android_webview.WebStorage? webStorage,
-  })  : webStorage = webStorage ?? android_webview.WebStorage.instance,
+  WebViewAndroidPlatformController(
+      {required bool useHybridComposition,
+      required CreationParams creationParams,
+      required this.callbacksHandler,
+      required this.javascriptChannelRegistry,
+      @visibleForTesting this.webViewProxy = const WebViewProxy(),
+      @visibleForTesting this.flutterAssetManager =
+          const android_webview.FlutterAssetManager(),
+      @visibleForTesting android_webview.WebStorage? webStorage})
+      : webStorage = webStorage ?? android_webview.WebStorage.instance,
         assert(creationParams.webSettings?.hasNavigationDelegate != null),
         super(callbacksHandler) {
-    webView = webViewProxy.createWebView(
-      useHybridComposition: useHybridComposition,
-    );
+    webView =
+        webViewProxy.createWebView(useHybridComposition: useHybridComposition);
 
     webView.settings.setDomStorageEnabled(true);
     webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);

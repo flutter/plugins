@@ -638,15 +638,17 @@ class MockAndroidWebViewController extends _i1.Mock
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
   @override
-  _i9.Future<void> setScrollListener(
+  _i9.Future<void> setOnContentOffsetChanged(
           void Function(
+    int,
+    int,
     int,
     int,
   )?
               onOffsetChange) =>
       (super.noSuchMethod(
         Invocation.method(
-          #setScrollListener,
+          #setOnContentOffsetChanged,
           [onOffsetChange],
         ),
         returnValue: _i9.Future<void>.value(),
@@ -1791,6 +1793,15 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         ),
       ) as _i2.WebSettings);
   @override
+  set onScrollChanged(_i2.ScrollChangedCallback? _onScrollChanged) =>
+      super.noSuchMethod(
+        Invocation.setter(
+          #onScrollChanged,
+          _onScrollChanged,
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
   _i9.Future<void> loadData({
     required String? data,
     String? mimeType,
@@ -2079,11 +2090,10 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
   @override
-  _i9.Future<void> setScrollListener(_i2.ScrollListener? scrollListener) =>
-      (super.noSuchMethod(
+  _i9.Future<void> enableScrollListener(bool? enabled) => (super.noSuchMethod(
         Invocation.method(
-          #setScrollListener,
-          [scrollListener],
+          #enableScrollListener,
+          [enabled],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),

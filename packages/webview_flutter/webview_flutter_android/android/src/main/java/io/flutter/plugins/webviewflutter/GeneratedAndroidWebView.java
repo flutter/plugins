@@ -692,7 +692,7 @@ public class GeneratedAndroidWebView {
 
     void setBackgroundColor(@NonNull Long instanceId, @NonNull Long color);
 
-    void setScrollListener(@NonNull Long instanceId, @Nullable Long scrollListenerInstanceId);
+    void enableScrollListener(@NonNull Long instanceId, @NonNull Boolean enabled);
 
     /** The codec used by WebViewHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -1563,7 +1563,9 @@ public class GeneratedAndroidWebView {
       {
         BasicMessageChannel<Object> channel =
             new BasicMessageChannel<>(
-                binaryMessenger, "dev.flutter.pigeon.WebViewHostApi.setScrollListener", getCodec());
+                binaryMessenger,
+                "dev.flutter.pigeon.WebViewHostApi.enableScrollListener",
+                getCodec());
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
@@ -1575,12 +1577,12 @@ public class GeneratedAndroidWebView {
                   if (instanceIdArg == null) {
                     throw new NullPointerException("instanceIdArg unexpectedly null.");
                   }
-                  Number scrollListenerInstanceIdArg = (Number) args.get(1);
-                  api.setScrollListener(
-                      (instanceIdArg == null) ? null : instanceIdArg.longValue(),
-                      (scrollListenerInstanceIdArg == null)
-                          ? null
-                          : scrollListenerInstanceIdArg.longValue());
+                  Boolean enabledArg = (Boolean) args.get(1);
+                  if (enabledArg == null) {
+                    throw new NullPointerException("enabledArg unexpectedly null.");
+                  }
+                  api.enableScrollListener(
+                      (instanceIdArg == null) ? null : instanceIdArg.longValue(), enabledArg);
                   wrapped.add(0, null);
                 } catch (Error | RuntimeException exception) {
                   ArrayList<Object> wrappedError = wrapError(exception);
@@ -2472,73 +2474,36 @@ public class GeneratedAndroidWebView {
           });
     }
   }
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
-  public interface ScrollListenerHostApi {
-    void create(@NonNull Long instanceId);
-
-    /** The codec used by ScrollListenerHostApi. */
-    static MessageCodec<Object> getCodec() {
-      return new StandardMessageCodec();
-    }
-    /**
-     * Sets up an instance of `ScrollListenerHostApi` to handle messages through the
-     * `binaryMessenger`.
-     */
-    static void setup(BinaryMessenger binaryMessenger, ScrollListenerHostApi api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(
-                binaryMessenger, "dev.flutter.pigeon.ScrollListenerHostApi.create", getCodec());
-        if (api != null) {
-          channel.setMessageHandler(
-              (message, reply) -> {
-                ArrayList wrapped = new ArrayList<>();
-                try {
-                  ArrayList<Object> args = (ArrayList<Object>) message;
-                  assert args != null;
-                  Number instanceIdArg = (Number) args.get(0);
-                  if (instanceIdArg == null) {
-                    throw new NullPointerException("instanceIdArg unexpectedly null.");
-                  }
-                  api.create((instanceIdArg == null) ? null : instanceIdArg.longValue());
-                  wrapped.add(0, null);
-                } catch (Error | RuntimeException exception) {
-                  ArrayList<Object> wrappedError = wrapError(exception);
-                  wrapped = wrappedError;
-                }
-                reply.reply(wrapped);
-              });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-    }
-  }
   /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
-  public static class ScrollListenerFlutterApi {
+  public static class WebViewFlutterApi {
     private final BinaryMessenger binaryMessenger;
 
-    public ScrollListenerFlutterApi(BinaryMessenger argBinaryMessenger) {
+    public WebViewFlutterApi(BinaryMessenger argBinaryMessenger) {
       this.binaryMessenger = argBinaryMessenger;
     }
 
     public interface Reply<T> {
       void reply(T reply);
     }
-    /** The codec used by ScrollListenerFlutterApi. */
+    /** The codec used by WebViewFlutterApi. */
     static MessageCodec<Object> getCodec() {
       return new StandardMessageCodec();
     }
 
     public void onScrollPosChange(
-        @NonNull Long instanceIdArg, @NonNull Long xArg, @NonNull Long yArg, Reply<Void> callback) {
+        @NonNull Long webViewInstanceIdArg,
+        @NonNull Long xArg,
+        @NonNull Long yArg,
+        @NonNull Long oldXArg,
+        @NonNull Long oldYArg,
+        Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(
               binaryMessenger,
-              "dev.flutter.pigeon.ScrollListenerFlutterApi.onScrollPosChange",
+              "dev.flutter.pigeon.WebViewFlutterApi.onScrollPosChange",
               getCodec());
       channel.send(
-          new ArrayList<Object>(Arrays.asList(instanceIdArg, xArg, yArg)),
+          new ArrayList<Object>(Arrays.asList(webViewInstanceIdArg, xArg, yArg, oldXArg, oldYArg)),
           channelReply -> {
             callback.reply(null);
           });

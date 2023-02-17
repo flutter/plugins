@@ -5,5 +5,5 @@
 package io.flutter.plugins.webviewflutter;
 
 public interface ScrollListener {
-  void onScrollPosChange(int x, int y);
+  void onScrollPosChange(int x, int y, int oldX, int oldY);
 }

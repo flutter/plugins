@@ -6,7 +6,9 @@ package io.flutter.plugins.webviewflutter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -37,6 +39,8 @@ public class WebViewTest {
 
   @Mock WebViewHostApiImpl.WebViewProxy mockWebViewProxy;
 
+  @Mock public GeneratedAndroidWebView.WebViewFlutterApi mockWebViewFlutterApi;
+
   @Mock Context mockContext;
 
   @Mock BinaryMessenger mockBinaryMessenger;
@@ -52,7 +56,12 @@ public class WebViewTest {
         .thenReturn(mockWebView);
     testHostApiImpl =
         new WebViewHostApiImpl(
-            testInstanceManager, mockBinaryMessenger, mockWebViewProxy, mockContext, null);
+            testInstanceManager,
+            mockBinaryMessenger,
+            mockWebViewProxy,
+            mockWebViewFlutterApi,
+            mockContext,
+            null);
     testHostApiImpl.create(0L, true);
   }
 
@@ -316,17 +325,18 @@ public class WebViewTest {
   }
 
   @Test
-  public void setNonNullScrollListener() {
-    final ScrollListener mockScrollListener = mock(ScrollListener.class);
-    testInstanceManager.addDartCreatedInstance(mockScrollListener, 1L);
-
-    testHostApiImpl.setScrollListener(0L, 1L);
-    verify(mockWebView).setScrollListener(mockScrollListener);
+  public void disableScrollListener() {
+    testHostApiImpl.enableScrollListener(0L, false);
+    verify(mockWebView).setScrollListener(null);
   }
 
   @Test
-  public void setNullScrollListener() {
-    testHostApiImpl.setScrollListener(0L, null);
-    verify(mockWebView).setScrollListener(null);
+  public void enableScrollListener() {
+    final ArgumentCaptor<ScrollListener> modeCaptor = ArgumentCaptor.forClass(ScrollListener.class);
+    testHostApiImpl.enableScrollListener(0L, true);
+    verify(mockWebView).setScrollListener(modeCaptor.capture());
+    assertNotNull(modeCaptor.getValue());
+    modeCaptor.getValue().onScrollPosChange(0, 1, 2, 3);
+    verify(mockWebViewFlutterApi).onScrollPosChange(eq(0L), eq(0L), eq(1L), eq(2L), eq(3L), any());
   }
 }

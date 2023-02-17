@@ -4,15 +4,16 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.webkit.WebView;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.ScrollListenerFlutterApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewFlutterApi;
 
 /**
  * Flutter Api implementation for {@link ScrollListener}.
  *
  * <p>Passes arguments of callbacks methods from a {@link ScrollListener} to Dart.
  */
-public class ScrollListenerFlutterApiImpl extends ScrollListenerFlutterApi {
+public class WebViewFlutterApiImpl extends WebViewFlutterApi {
   private final InstanceManager instanceManager;
 
   /**
@@ -21,23 +22,18 @@ public class ScrollListenerFlutterApiImpl extends ScrollListenerFlutterApi {
    * @param binaryMessenger handles sending messages to Dart
    * @param instanceManager maintains instances stored to communicate with Dart objects
    */
-  public ScrollListenerFlutterApiImpl(
-      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+  public WebViewFlutterApiImpl(BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     super(binaryMessenger);
     this.instanceManager = instanceManager;
   }
 
   /** Passes arguments from {@link ScrollListener#onScrollPosChange} to Dart. */
   public void onScrollPosChange(
-      ScrollListener scrollChangeListener, long x, long y, Reply<Void> callback) {
-    onScrollPosChange(getIdentifierForListener(scrollChangeListener), x, y, callback);
-  }
-
-  private long getIdentifierForListener(ScrollListener listener) {
-    final Long identifier = instanceManager.getIdentifierForStrongReference(listener);
-    if (identifier == null) {
-      throw new IllegalStateException("Could not find identifier for OnScrollChangeListener.");
+      WebView webView, long x, long y, long oldX, long oldY, Reply<Void> callback) {
+    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
+    if (webViewIdentifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebView.");
     }
-    return identifier;
+    onScrollPosChange(webViewIdentifier, x, y, oldX, oldY, callback);
   }
 }

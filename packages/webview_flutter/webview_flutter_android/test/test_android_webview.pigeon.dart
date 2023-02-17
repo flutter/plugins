@@ -128,7 +128,7 @@ abstract class TestWebViewHostApi {
 
   void setBackgroundColor(int instanceId, int color);
 
-  void setScrollListener(int instanceId, int? scrollListenerInstanceId);
+  void enableScrollListener(int instanceId, bool enabled);
 
   static void setup(TestWebViewHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
@@ -693,20 +693,22 @@ abstract class TestWebViewHostApi {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewHostApi.setScrollListener', codec,
+          'dev.flutter.pigeon.WebViewHostApi.enableScrollListener', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.WebViewHostApi.setScrollListener was null.');
+              'Argument for dev.flutter.pigeon.WebViewHostApi.enableScrollListener was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_instanceId = (args[0] as int?);
           assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.WebViewHostApi.setScrollListener was null, expected non-null int.');
-          final int? arg_scrollListenerInstanceId = (args[1] as int?);
-          api.setScrollListener(arg_instanceId!, arg_scrollListenerInstanceId);
+              'Argument for dev.flutter.pigeon.WebViewHostApi.enableScrollListener was null, expected non-null int.');
+          final bool? arg_enabled = (args[1] as bool?);
+          assert(arg_enabled != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.enableScrollListener was null, expected non-null bool.');
+          api.enableScrollListener(arg_instanceId!, arg_enabled!);
           return <Object?>[];
         });
       }
@@ -1147,35 +1149,6 @@ abstract class TestDownloadListenerHostApi {
           final int? arg_instanceId = (args[0] as int?);
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.DownloadListenerHostApi.create was null, expected non-null int.');
-          api.create(arg_instanceId!);
-          return <Object?>[];
-        });
-      }
-    }
-  }
-}
-
-abstract class TestScrollListenerHostApi {
-  static const MessageCodec<Object?> codec = StandardMessageCodec();
-
-  void create(int instanceId);
-
-  static void setup(TestScrollListenerHostApi? api,
-      {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.ScrollListenerHostApi.create', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMockMessageHandler(null);
-      } else {
-        channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.ScrollListenerHostApi.create was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.ScrollListenerHostApi.create was null, expected non-null int.');
           api.create(arg_instanceId!);
           return <Object?>[];
         });

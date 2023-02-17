@@ -45,7 +45,7 @@ class AndroidWebViewFlutterApis {
     WebChromeClientFlutterApiImpl? webChromeClientFlutterApi,
     JavaScriptChannelFlutterApiImpl? javaScriptChannelFlutterApi,
     FileChooserParamsFlutterApiImpl? fileChooserParamsFlutterApi,
-    ScrollListenerFlutterApiImpl? scrollListenerFlutterApi,
+    WebViewFlutterApiImpl? scrollListenerFlutterApi,
   }) {
     this.javaObjectFlutterApi =
         javaObjectFlutterApi ?? JavaObjectFlutterApiImpl();
@@ -60,7 +60,7 @@ class AndroidWebViewFlutterApis {
     this.fileChooserParamsFlutterApi =
         fileChooserParamsFlutterApi ?? FileChooserParamsFlutterApiImpl();
     this.scrollListenerFlutterApi =
-        scrollListenerFlutterApi ?? ScrollListenerFlutterApiImpl();
+        scrollListenerFlutterApi ?? WebViewFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -89,7 +89,7 @@ class AndroidWebViewFlutterApis {
   late final FileChooserParamsFlutterApiImpl fileChooserParamsFlutterApi;
 
   /// Flutter Api for [ScrollListener].
-  late final ScrollListenerFlutterApiImpl scrollListenerFlutterApi;
+  late final WebViewFlutterApiImpl scrollListenerFlutterApi;
 
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
@@ -100,7 +100,7 @@ class AndroidWebViewFlutterApis {
       WebChromeClientFlutterApi.setup(webChromeClientFlutterApi);
       JavaScriptChannelFlutterApi.setup(javaScriptChannelFlutterApi);
       FileChooserParamsFlutterApi.setup(fileChooserParamsFlutterApi);
-      ScrollListenerFlutterApi.setup(scrollListenerFlutterApi);
+      WebViewFlutterApi.setup(scrollListenerFlutterApi);
       _haveBeenSetUp = true;
     }
   }
@@ -353,16 +353,10 @@ class WebViewHostApiImpl extends WebViewHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
-  Future<void> setScrollListenerFromInstance(
-    WebView instance,
-    ScrollListener? scrollListener,
-  ) {
-    return setScrollListener(
-      instanceManager.getIdentifier(instance)!,
-      scrollListener != null
-          ? instanceManager.getIdentifier(scrollListener)
-          : null,
-    );
+  Future<void> enableScrollListenerFromInstance(
+      WebView instance, bool enabled) {
+    return enableScrollListener(
+        instanceManager.getIdentifier(instance)!, enabled);
   }
 }
 
@@ -926,45 +920,24 @@ class FileChooserParamsFlutterApiImpl extends FileChooserParamsFlutterApi {
   }
 }
 
-/// Host api implementation for [ScrollListener].
-class ScrollListenerHostApiImpl extends ScrollListenerHostApi {
-  /// Constructs a [JavaScriptChannelHostApiImpl].
-  ScrollListenerHostApiImpl({
-    super.binaryMessenger,
-    InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
-
-  /// Maintains instances stored to communicate with java objects.
-  final InstanceManager instanceManager;
-
-  /// Helper method to convert instances ids to objects.
-  Future<void> createFromInstance(ScrollListener instance) async {
-    if (instanceManager.getIdentifier(instance) == null) {
-      final int identifier = instanceManager.addDartCreatedInstance(instance);
-      await create(
-        identifier,
-      );
-    }
-  }
-}
-
-/// Flutter api implementation for [ScrollListener].
-class ScrollListenerFlutterApiImpl extends ScrollListenerFlutterApi {
+/// Flutter api implementation for [ScrollListenerFlutterApi].
+class WebViewFlutterApiImpl extends WebViewFlutterApi {
   /// Constructs a [JavaScriptChannelFlutterApiImpl].
-  ScrollListenerFlutterApiImpl({InstanceManager? instanceManager})
+  WebViewFlutterApiImpl({InstanceManager? instanceManager})
       : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with java objects.
   final InstanceManager instanceManager;
 
   @override
-  void onScrollPosChange(int instanceId, int x, int y) {
-    final ScrollListener? instance = instanceManager
-        .getInstanceWithWeakReference(instanceId) as ScrollListener?;
+  void onScrollPosChange(
+      int webViewInstanceId, int x, int y, int oldX, int oldY) {
+    final WebView? webViewInstance = instanceManager
+        .getInstanceWithWeakReference(webViewInstanceId) as WebView?;
     assert(
-      instance != null,
-      'InstanceManager does not contain an ScrollListener with instanceId: $instanceId',
+      webViewInstance != null,
+      'InstanceManager does not contain a WebView with instanceId: $webViewInstanceId',
     );
-    instance!.postNewOffset!(x, y);
+    webViewInstance!.onScrollChanged!(x, y, oldX, oldY);
   }
 }
