@@ -24,9 +24,9 @@ import java.util.Map;
 public class ImageStreamReader {
 
   /**
-   * The image format we are going to send back to dart. Usually it's the
-   * same as streamImageFormat but in the case of NV21 we will actually
-   * request YUV frames but convert it to NV21 before sending to dart.
+   * The image format we are going to send back to dart. Usually it's the same as streamImageFormat
+   * but in the case of NV21 we will actually request YUV frames but convert it to NV21 before
+   * sending to dart.
    */
   private final int dartImageFormat;
 
@@ -35,8 +35,10 @@ public class ImageStreamReader {
 
   // For NV21, we will be streaming YUV420 but converting the frames
   // before sending back to dart.
-  public static ImageReader createImageReader(int width, int height, int imageFormat, int maxImages) {
-    final int _imageFormat = imageFormat == ImageFormat.NV21 ? ImageFormat.YUV_420_888 : imageFormat;
+  public static ImageReader createImageReader(
+      int width, int height, int imageFormat, int maxImages) {
+    final int _imageFormat =
+        imageFormat == ImageFormat.NV21 ? ImageFormat.YUV_420_888 : imageFormat;
 
     return ImageReader.newInstance(width, height, _imageFormat, maxImages);
   }
@@ -64,18 +66,16 @@ public class ImageStreamReader {
    */
   public ImageStreamReader(int width, int height, int imageFormat, int maxImages) {
     this.dartImageFormat = imageFormat;
-    this.imageReader = ImageReader.newInstance(
-            width,
-            height,
-            computeStreamImageFormat(imageFormat),
-            maxImages);
+    this.imageReader =
+        ImageReader.newInstance(width, height, computeStreamImageFormat(imageFormat), maxImages);
     this.imageStreamReaderUtils = new ImageStreamReaderUtils();
   }
 
   /**
-   * Returns the image format to stream based on a requested input format.
-   * Usually it's the same except when dart is requesting NV21. In that case
-   * we stream YUV420 and process it into NV21 before sending the frames over.
+   * Returns the image format to stream based on a requested input format. Usually it's the same
+   * except when dart is requesting NV21. In that case we stream YUV420 and process it into NV21
+   * before sending the frames over.
+   *
    * @param dartImageFormat
    * @return
    */
@@ -101,9 +101,9 @@ public class ImageStreamReader {
    */
   @VisibleForTesting
   public void onImageAvailable(
-          @NonNull Image image,
-          CameraCaptureProperties captureProps,
-          EventChannel.EventSink imageStreamSink) {
+      @NonNull Image image,
+      CameraCaptureProperties captureProps,
+      EventChannel.EventSink imageStreamSink) {
     try {
       Map<String, Object> imageBuffer = new HashMap<>();
 
@@ -121,7 +121,7 @@ public class ImageStreamReader {
       imageBuffer.put("sensorExposureTime", captureProps.getLastSensorExposureTime());
       Integer sensorSensitivity = captureProps.getLastSensorSensitivity();
       imageBuffer.put(
-              "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
+          "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
 
       final Handler handler = new Handler(Looper.getMainLooper());
       handler.post(() -> imageStreamSink.success(imageBuffer));
@@ -130,7 +130,12 @@ public class ImageStreamReader {
     } catch (IllegalStateException e) {
       // Handle "buffer is inaccessible" errors that can happen on some devices from ImageStreamReaderUtils.yuv420ThreePlanesToNV21()
       final Handler handler = new Handler(Looper.getMainLooper());
-      handler.post(() -> imageStreamSink.error("IllegalStateException", "Caught IllegalStateException: " + e.getMessage(), null));
+      handler.post(
+          () ->
+              imageStreamSink.error(
+                  "IllegalStateException",
+                  "Caught IllegalStateException: " + e.getMessage(),
+                  null));
       image.close();
     }
   }
@@ -159,11 +164,9 @@ public class ImageStreamReader {
     List<Map<String, Object>> planes = new ArrayList<>();
 
     // We will convert the YUV data to NV21 which is a single-plane image
-    ByteBuffer bytes = imageStreamReaderUtils.yuv420ThreePlanesToNV21(
-            image.getPlanes(),
-            image.getWidth(),
-            image.getHeight()
-    );
+    ByteBuffer bytes =
+        imageStreamReaderUtils.yuv420ThreePlanesToNV21(
+            image.getPlanes(), image.getWidth(), image.getHeight());
 
     Map<String, Object> planeBuffer = new HashMap<>();
     planeBuffer.put("bytesPerRow", image.getWidth());

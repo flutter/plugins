@@ -6,7 +6,6 @@ package io.flutter.plugins.camera.media;
 
 import android.media.Image;
 import java.nio.ByteBuffer;
-import io.flutter.Log;
 
 public class ImageStreamReaderUtils {
   /**
@@ -26,16 +25,15 @@ public class ImageStreamReaderUtils {
    * before the U buffer and the planes have a pixelStride of 2. If this is case, we can just copy
    * them to the NV21 array.
    *
-   * https://github.com/googlesamples/mlkit/blob/master/android/vision-quickstart/app/src/main/java/com/google/mlkit/vision/demo/BitmapUtils.java
+   * <p>https://github.com/googlesamples/mlkit/blob/master/android/vision-quickstart/app/src/main/java/com/google/mlkit/vision/demo/BitmapUtils.java
    */
-  public ByteBuffer yuv420ThreePlanesToNV21(
-          Image.Plane[] yuv420888planes, int width, int height)  {
+  public ByteBuffer yuv420ThreePlanesToNV21(Image.Plane[] yuv420888planes, int width, int height) {
     int imageSize = width * height;
     byte[] out = new byte[imageSize + 2 * (imageSize / 4)];
 
     if (areUVPlanesNV21(yuv420888planes, width, height)) {
-//      Log.i("flutter", "planes are NV21");
-      
+      //      Log.i("flutter", "planes are NV21");
+
       // Copy the Y values.
       yuv420888planes[0].getBuffer().get(out, 0, imageSize);
 
@@ -46,7 +44,7 @@ public class ImageStreamReaderUtils {
       // Copy the first U value and the remaining VU values from the U buffer.
       uBuffer.get(out, imageSize + 1, 2 * imageSize / 4 - 1);
     } else {
-//      Log.i("flutter", "planes are not NV21");
+      //      Log.i("flutter", "planes are not NV21");
 
       // Fallback to copying the UV values one by one, which is slower but also works.
       // Unpack Y.
@@ -63,21 +61,19 @@ public class ImageStreamReaderUtils {
   /**
    * Copyright 2020 Google LLC. All rights reserved.
    *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
+   * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+   * except in compliance with the License. You may obtain a copy of the License at
    *
-   *     http://www.apache.org/licenses/LICENSE-2.0
+   * <p>http://www.apache.org/licenses/LICENSE-2.0
    *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
+   * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+   * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+   * either express or implied. See the License for the specific language governing permissions and
    * limitations under the License.
    *
-   * Checks if the UV plane buffers of a YUV_420_888 image are in the NV21 format.
+   * <p>Checks if the UV plane buffers of a YUV_420_888 image are in the NV21 format.
    *
-   * https://github.com/googlesamples/mlkit/blob/master/android/vision-quickstart/app/src/main/java/com/google/mlkit/vision/demo/BitmapUtils.java
+   * <p>https://github.com/googlesamples/mlkit/blob/master/android/vision-quickstart/app/src/main/java/com/google/mlkit/vision/demo/BitmapUtils.java
    */
   private static boolean areUVPlanesNV21(Image.Plane[] planes, int width, int height) {
     int imageSize = width * height;
@@ -96,7 +92,7 @@ public class ImageStreamReaderUtils {
 
     // Check that the buffers are equal and have the expected number of elements.
     boolean areNV21 =
-            (vBuffer.remaining() == (2 * imageSize / 4 - 2)) && (vBuffer.compareTo(uBuffer) == 0);
+        (vBuffer.remaining() == (2 * imageSize / 4 - 2)) && (vBuffer.compareTo(uBuffer) == 0);
 
     // Restore buffers to their initial state.
     vBuffer.position(vBufferPosition);
@@ -108,27 +104,26 @@ public class ImageStreamReaderUtils {
   /**
    * Copyright 2020 Google LLC. All rights reserved.
    *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
+   * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+   * except in compliance with the License. You may obtain a copy of the License at
    *
-   *     http://www.apache.org/licenses/LICENSE-2.0
+   * <p>http://www.apache.org/licenses/LICENSE-2.0
    *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
+   * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+   * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+   * either express or implied. See the License for the specific language governing permissions and
    * limitations under the License.
    *
-   * Unpack an image plane into a byte array.
+   * <p>Unpack an image plane into a byte array.
    *
    * <p>The input plane data will be copied in 'out', starting at 'offset' and every pixel will be
    * spaced by 'pixelStride'. Note that there is no row padding on the output.
    *
-   * https://github.com/googlesamples/mlkit/blob/master/android/vision-quickstart/app/src/main/java/com/google/mlkit/vision/demo/BitmapUtils.java
+   * <p>https://github.com/googlesamples/mlkit/blob/master/android/vision-quickstart/app/src/main/java/com/google/mlkit/vision/demo/BitmapUtils.java
    */
   private static void unpackPlane(
-          Image.Plane plane, int width, int height, byte[] out, int offset, int pixelStride) throws IllegalStateException{
+      Image.Plane plane, int width, int height, byte[] out, int offset, int pixelStride)
+      throws IllegalStateException {
     ByteBuffer buffer = plane.getBuffer();
     buffer.rewind();
 

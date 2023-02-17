@@ -304,10 +304,10 @@ class Camera
     }
     imageStreamReader =
         new ImageStreamReader(
-                resolutionFeature.getPreviewSize().getWidth(),
-                resolutionFeature.getPreviewSize().getHeight(),
-                imageFormat,
-                1);
+            resolutionFeature.getPreviewSize().getWidth(),
+            resolutionFeature.getPreviewSize().getHeight(),
+            imageFormat,
+            1);
 
     // Open the camera.
     CameraManager cameraManager = CameraUtils.getCameraManager(activity);
