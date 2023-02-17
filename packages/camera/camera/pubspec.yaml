@@ -39,6 +39,10 @@ dev_dependencies:
   plugin_platform_interface: ^2.0.0
   video_player: ^2.0.0
 
+
+# FOR TESTING ONLY. DO NOT MERGE.
 dependency_overrides:
+  camera_android:
+    path: ../../camera/camera_android
   camera_platform_interface:
-    path: ../camera_platform_interface
+    path: ../../camera/camera_platform_interface
