@@ -13,7 +13,9 @@ class FakePlatformGoogleMap {
       : cameraPosition =
             CameraPosition.fromMap(params['initialCameraPosition']),
         channel = MethodChannel('plugins.flutter.io/google_maps_$id') {
-    channel.setMockMethodCallHandler(onMethodCall);
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, onMethodCall);
     updateOptions(params['options'] as Map<dynamic, dynamic>);
     updateMarkers(params);
     updatePolygons(params);
@@ -478,3 +480,9 @@ Map<dynamic, dynamic>? _decodeParams(Uint8List paramsMessage) {
   return const StandardMessageCodec().decodeMessage(messageBytes)
       as Map<dynamic, dynamic>?;
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;
