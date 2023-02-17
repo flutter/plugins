@@ -17,6 +17,7 @@ dependencies:
   camera_platform_interface: ^2.2.0
   flutter:
     sdk: flutter
+  video_player: ^2.4.10
 
 dev_dependencies:
   flutter_test:
