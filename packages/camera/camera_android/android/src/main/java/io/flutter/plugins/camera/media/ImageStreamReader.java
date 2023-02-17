@@ -129,6 +129,15 @@ public class ImageStreamReader {
     }
   }
 
+  /**
+   * Given an input image, will return a list of maps suitable to send back to dart where
+   * each map describes the image plane.
+   *
+   * For Yuv / Jpeg, we do no further processing on the frame so we simply send it as-is.
+   * 
+   * @param image - the image to process.
+   * @return parsed map describing the image planes to be sent to dart.
+   */
   public List<Map<String, Object>> parsePlanesForYuvOrJpeg(@NonNull Image image) {
     List<Map<String, Object>> planes = new ArrayList<>();
 
@@ -149,6 +158,12 @@ public class ImageStreamReader {
     return planes;
   }
 
+  /**
+   * Given an input image, will return a single-plane NV21 image. Assumes YUV420 as an input type.
+   *
+   * @param image - the image to process.
+   * @return parsed map describing the image planes to be sent to dart.
+   */
   public List<Map<String, Object>> parsePlanesForNv21(@NonNull Image image) {
     List<Map<String, Object>> planes = new ArrayList<>();
 
