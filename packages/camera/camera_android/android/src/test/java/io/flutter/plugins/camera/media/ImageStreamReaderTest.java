@@ -18,16 +18,13 @@ import android.media.ImageReader;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import java.nio.ByteBuffer;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class ImageStreamReaderTest {
-  /**
-   * If we request YUV42 we should stream in YUV420.
-   */
+  /** If we request YUV42 we should stream in YUV420. */
   @Test
   public void computeStreamImageFormat_computesCorrectStreamFormatYuv() {
     int requestedStreamFormat = ImageFormat.YUV_420_888;
@@ -36,8 +33,8 @@ public class ImageStreamReaderTest {
   }
 
   /**
-   * When we want to stream in NV21, we should still request YUV420 from the
-   * camera because we will convert it to NV21 before sending it to dart.
+   * When we want to stream in NV21, we should still request YUV420 from the camera because we will
+   * convert it to NV21 before sending it to dart.
    */
   @Test
   public void computeStreamImageFormat_computesCorrectStreamFormatNv21() {
@@ -47,9 +44,8 @@ public class ImageStreamReaderTest {
   }
 
   /**
-   * If we are requesting NV21, then the planes should be processed and
-   * converted to NV21 before being sent to dart. We make sure yuv420ThreePlanesToNV21
-   * is called when we are requesting
+   * If we are requesting NV21, then the planes should be processed and converted to NV21 before
+   * being sent to dart. We make sure yuv420ThreePlanesToNV21 is called when we are requesting
    */
   @Test
   public void onImageAvailable_parsesPlanesForNv21() {
@@ -59,10 +55,11 @@ public class ImageStreamReaderTest {
     ImageReader mockImageReader = mock(ImageReader.class);
     ImageStreamReaderUtils mockImageStreamReaderUtils = mock(ImageStreamReaderUtils.class);
     ImageStreamReader imageStreamReader =
-            new ImageStreamReader(mockImageReader, dartImageFormat, mockImageStreamReaderUtils);
+        new ImageStreamReader(mockImageReader, dartImageFormat, mockImageStreamReaderUtils);
 
     ByteBuffer mockBytes = ByteBuffer.allocate(0);
-    when(mockImageStreamReaderUtils.yuv420ThreePlanesToNV21(any(), anyInt(), anyInt())).thenReturn(mockBytes);
+    when(mockImageStreamReaderUtils.yuv420ThreePlanesToNV21(any(), anyInt(), anyInt()))
+        .thenReturn(mockBytes);
 
     // The image format as streamed from the camera
     int imageFormat = ImageFormat.YUV_420_888;
@@ -107,9 +104,7 @@ public class ImageStreamReaderTest {
     verify(mockImageStreamReaderUtils).yuv420ThreePlanesToNV21(any(), anyInt(), anyInt());
   }
 
-  /**
-   * If we are requesting YUV420, then we should send the 3-plane image as it is.
-   */
+  /** If we are requesting YUV420, then we should send the 3-plane image as it is. */
   @Test
   public void onImageAvailable_parsesPlanesForYuv420() {
     // Dart wants NV21 frames
@@ -118,10 +113,11 @@ public class ImageStreamReaderTest {
     ImageReader mockImageReader = mock(ImageReader.class);
     ImageStreamReaderUtils mockImageStreamReaderUtils = mock(ImageStreamReaderUtils.class);
     ImageStreamReader imageStreamReader =
-            new ImageStreamReader(mockImageReader, dartImageFormat, mockImageStreamReaderUtils);
+        new ImageStreamReader(mockImageReader, dartImageFormat, mockImageStreamReaderUtils);
 
     ByteBuffer mockBytes = ByteBuffer.allocate(0);
-    when(mockImageStreamReaderUtils.yuv420ThreePlanesToNV21(any(), anyInt(), anyInt())).thenReturn(mockBytes);
+    when(mockImageStreamReaderUtils.yuv420ThreePlanesToNV21(any(), anyInt(), anyInt()))
+        .thenReturn(mockBytes);
 
     // The image format as streamed from the camera
     int imageFormat = ImageFormat.YUV_420_888;

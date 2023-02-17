@@ -40,7 +40,8 @@ public class ImageStreamReader {
    * @param imageStreamReaderUtils is an instance of {@link ImageStreamReaderUtils}
    */
   @VisibleForTesting
-  public ImageStreamReader(ImageReader imageReader, int dartImageFormat, ImageStreamReaderUtils imageStreamReaderUtils) {
+  public ImageStreamReader(
+      ImageReader imageReader, int dartImageFormat, ImageStreamReaderUtils imageStreamReaderUtils) {
     this.imageReader = imageReader;
     this.dartImageFormat = dartImageFormat;
     this.imageStreamReaderUtils = imageStreamReaderUtils;

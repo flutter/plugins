@@ -123,7 +123,7 @@ public class ImageStreamReaderUtils {
    * <p>https://github.com/googlesamples/mlkit/blob/master/android/vision-quickstart/app/src/main/java/com/google/mlkit/vision/demo/BitmapUtils.java
    */
   private static void unpackPlane(
-          @NonNull Image.Plane plane, int width, int height, byte[] out, int offset, int pixelStride)
+      @NonNull Image.Plane plane, int width, int height, byte[] out, int offset, int pixelStride)
       throws IllegalStateException {
     ByteBuffer buffer = plane.getBuffer();
     buffer.rewind();
