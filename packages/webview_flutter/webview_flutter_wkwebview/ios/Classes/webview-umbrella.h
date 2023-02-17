@@ -17,5 +17,6 @@
 #import <webview_flutter_wkwebview/FWFUIViewHostApi.h>
 #import <webview_flutter_wkwebview/FWFUserContentControllerHostApi.h>
 #import <webview_flutter_wkwebview/FWFWebViewConfigurationHostApi.h>
+#import <webview_flutter_wkwebview/FWFWebViewFlutterWKWebViewExternalAPI.h>
 #import <webview_flutter_wkwebview/FWFWebViewHostApi.h>
 #import <webview_flutter_wkwebview/FWFWebsiteDataStoreHostApi.h>

@@ -1,1 +1,1 @@
-../../shared/Classes/FIAPReceiptManager.h
+../../darwin/Classes/FIAPReceiptManager.h

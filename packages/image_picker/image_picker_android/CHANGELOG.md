@@ -1,3 +1,12 @@
+## 0.8.5+6
+
+* Updates minimum Flutter version to 3.0.
+* Fixes names of picked files to match original filenames where possible.
+
+## 0.8.5+5
+
+* Updates code for stricter lint checks.
+
 ## 0.8.5+4
 
 * Fixes null cast exception when restoring a cancelled selection.

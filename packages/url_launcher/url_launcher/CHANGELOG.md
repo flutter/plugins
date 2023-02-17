@@ -1,3 +1,12 @@
+## 6.1.9
+
+* Updates minimum Flutter version to 3.0.
+* Updates iOS minimum version in README.
+
+## 6.1.8
+
+* Updates code for stricter lint checks.
+
 ## 6.1.7
 
 * Updates code for new analysis options.

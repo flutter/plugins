@@ -55,7 +55,6 @@ extension ImageFormatGroupName on ImageFormatGroup {
       case ImageFormatGroup.nv21:
         return 'nv21';
       case ImageFormatGroup.unknown:
-      default:
         return 'unknown';
     }
   }

@@ -14,11 +14,13 @@ import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_proxy.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
+import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/src/platform_views_service_proxy.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_platform_interface/src/webview_platform.dart';
 
+import 'android_navigation_delegate_test.dart';
 import 'android_webview_controller_test.mocks.dart';
 
 @GenerateNiceMocks(<MockSpec<Object>>[
@@ -44,7 +46,16 @@ void main() {
   AndroidWebViewController createControllerWithMocks({
     android_webview.FlutterAssetManager? mockFlutterAssetManager,
     android_webview.JavaScriptChannel? mockJavaScriptChannel,
-    android_webview.WebChromeClient? mockWebChromeClient,
+    android_webview.WebChromeClient Function({
+      void Function(android_webview.WebView webView, int progress)?
+          onProgressChanged,
+      Future<List<String>> Function(
+        android_webview.WebView webView,
+        android_webview.FileChooserParams params,
+      )?
+          onShowFileChooser,
+    })?
+        createWebChromeClient,
     android_webview.WebView? mockWebView,
     android_webview.WebViewClient? mockWebViewClient,
     android_webview.WebStorage? mockWebStorage,
@@ -57,10 +68,17 @@ void main() {
         AndroidWebViewControllerCreationParams(
             androidWebStorage: mockWebStorage ?? MockWebStorage(),
             androidWebViewProxy: AndroidWebViewProxy(
-              createAndroidWebChromeClient: (
-                      {void Function(android_webview.WebView, int)?
-                          onProgressChanged}) =>
-                  mockWebChromeClient ?? MockWebChromeClient(),
+              createAndroidWebChromeClient: createWebChromeClient ??
+                  ({
+                    void Function(android_webview.WebView, int)?
+                        onProgressChanged,
+                    Future<List<String>> Function(
+                      android_webview.WebView webView,
+                      android_webview.FileChooserParams params,
+                    )?
+                        onShowFileChooser,
+                  }) =>
+                      MockWebChromeClient(),
               createAndroidWebView: ({required bool useHybridComposition}) =>
                   nonNullMockWebView,
               createAndroidWebViewClient: ({
@@ -486,10 +504,101 @@ void main() {
 
       await controller.setPlatformNavigationDelegate(mockNavigationDelegate);
 
-      verifyInOrder(<Object>[
-        mockWebView.setWebViewClient(mockWebViewClient),
-        mockWebView.setWebChromeClient(mockWebChromeClient),
-      ]);
+      verify(mockWebView.setWebViewClient(mockWebViewClient));
+      verifyNever(mockWebView.setWebChromeClient(mockWebChromeClient));
+    });
+
+    test('onProgress', () {
+      final AndroidNavigationDelegate androidNavigationDelegate =
+          AndroidNavigationDelegate(
+        AndroidNavigationDelegateCreationParams
+            .fromPlatformNavigationDelegateCreationParams(
+          const PlatformNavigationDelegateCreationParams(),
+          androidWebViewProxy: const AndroidWebViewProxy(
+            createAndroidWebViewClient: android_webview.WebViewClient.detached,
+            createAndroidWebChromeClient:
+                android_webview.WebChromeClient.detached,
+            createDownloadListener: android_webview.DownloadListener.detached,
+          ),
+        ),
+      );
+
+      late final int callbackProgress;
+      androidNavigationDelegate
+          .setOnProgress((int progress) => callbackProgress = progress);
+
+      final AndroidWebViewController controller = createControllerWithMocks(
+        createWebChromeClient: CapturingWebChromeClient.new,
+      );
+      controller.setPlatformNavigationDelegate(androidNavigationDelegate);
+
+      CapturingWebChromeClient.lastCreatedDelegate.onProgressChanged!(
+        android_webview.WebView.detached(),
+        42,
+      );
+
+      expect(callbackProgress, 42);
+    });
+
+    test('onProgress does not cause LateInitializationError', () {
+      // ignore: unused_local_variable
+      final AndroidWebViewController controller = createControllerWithMocks(
+        createWebChromeClient: CapturingWebChromeClient.new,
+      );
+
+      // Should not cause LateInitializationError
+      CapturingWebChromeClient.lastCreatedDelegate.onProgressChanged!(
+        android_webview.WebView.detached(),
+        42,
+      );
+    });
+
+    test('setOnShowFileSelector', () async {
+      late final Future<List<String>> Function(
+        android_webview.WebView webView,
+        android_webview.FileChooserParams params,
+      ) onShowFileChooserCallback;
+      final MockWebChromeClient mockWebChromeClient = MockWebChromeClient();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        createWebChromeClient: ({
+          dynamic onProgressChanged,
+          Future<List<String>> Function(
+            android_webview.WebView webView,
+            android_webview.FileChooserParams params,
+          )?
+              onShowFileChooser,
+        }) {
+          onShowFileChooserCallback = onShowFileChooser!;
+          return mockWebChromeClient;
+        },
+      );
+
+      late final FileSelectorParams fileSelectorParams;
+      await controller.setOnShowFileSelector(
+        (FileSelectorParams params) async {
+          fileSelectorParams = params;
+          return <String>[];
+        },
+      );
+
+      verify(
+        mockWebChromeClient.setSynchronousReturnValueForOnShowFileChooser(true),
+      );
+
+      onShowFileChooserCallback(
+        android_webview.WebView.detached(),
+        android_webview.FileChooserParams.detached(
+          isCaptureEnabled: false,
+          acceptTypes: <String>['png'],
+          filenameHint: 'filenameHint',
+          mode: android_webview.FileChooserMode.open,
+        ),
+      );
+
+      expect(fileSelectorParams.isCaptureEnabled, isFalse);
+      expect(fileSelectorParams.acceptTypes, <String>['png']);
+      expect(fileSelectorParams.filenameHint, 'filenameHint');
+      expect(fileSelectorParams.mode, FileSelectorMode.open);
     });
 
     test('runJavaScript', () async {
@@ -774,6 +883,29 @@ void main() {
     await controller.setMediaPlaybackRequiresUserGesture(true);
 
     verify(mockSettings.setMediaPlaybackRequiresUserGesture(true)).called(1);
+  });
+
+  test('webViewIdentifier', () {
+    final MockWebView mockWebView = MockWebView();
+    final InstanceManager instanceManager = InstanceManager(
+      onWeakReferenceRemoved: (_) {},
+    );
+    instanceManager.addHostCreatedInstance(mockWebView, 0);
+
+    android_webview.WebView.api = WebViewHostApiImpl(
+      instanceManager: instanceManager,
+    );
+
+    final AndroidWebViewController controller = createControllerWithMocks(
+      mockWebView: mockWebView,
+    );
+
+    expect(
+      controller.webViewIdentifier,
+      0,
+    );
+
+    android_webview.WebView.api = WebViewHostApiImpl();
   });
 
   group('AndroidWebViewWidget', () {

@@ -36,7 +36,8 @@ void main() {
       int mapId, String method, Map<dynamic, dynamic> data) async {
     final ByteData byteData =
         const StandardMethodCodec().encodeMethodCall(MethodCall(method, data));
-    await TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+    await _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
         .handlePlatformMessage('plugins.flutter.dev/google_maps_ios_$mapId',
             byteData, (ByteData? data) {});
   }
@@ -122,3 +123,9 @@ void main() {
         equals('drag-end-marker'));
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

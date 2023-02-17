@@ -75,7 +75,7 @@ public class MediaRecorderBuilder {
     if (enableAudio) mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
 
-    if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && encoderProfiles != null) {
       EncoderProfiles.VideoProfile videoProfile = encoderProfiles.getVideoProfiles().get(0);
       EncoderProfiles.AudioProfile audioProfile = encoderProfiles.getAudioProfiles().get(0);
 

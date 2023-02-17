@@ -1,0 +1,24 @@
+tasks:
+  - name: prepare tool
+    script: .ci/scripts/prepare_tool.sh
+  - name: create simulator
+    script: .ci/scripts/create_simulator.sh
+  - name: build examples
+    script: script/tool_runner.sh
+    args: ["build-examples", "--ios"]
+  - name: xcode analyze
+    script: script/tool_runner.sh
+    args: ["xcode-analyze", "--ios"]
+  - name: xcode analyze deprecation
+    # Ensure we don't accidentally introduce deprecated code.
+    script: script/tool_runner.sh
+    args: ["xcode-analyze", "--ios", "--ios-min-version=13.0"]
+  - name: native test
+    script: script/tool_runner.sh
+    args: ["native-test", "--ios", "--ios-destination", "platform=iOS Simulator,name=iPhone 13,OS=latest"]
+  - name: drive examples
+    # `drive-examples` contains integration tests, which changes the UI of the application.
+    # This UI change sometimes affects `xctest`.
+    # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
+    script: script/tool_runner.sh
+    args: ["drive-examples", "--ios", "--exclude=script/configs/exclude_integration_ios.yaml"]
