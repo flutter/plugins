@@ -80,8 +80,7 @@ public class ImageStreamReader {
   }
 
   /**
-   * Processes a new frame (image) from the image reader, remove padding if necessary, and send the
-   * frame to Dart.
+   * Processes a new frame (image) from the image reader and send the frame to Dart.
    *
    * @param image is the image which needs processed as an {@link Image}
    * @param captureProps is the capture props from the camera class as {@link
