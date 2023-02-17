@@ -24,15 +24,8 @@ public class ImageStreamReaderUtilsTest {
         this.imageStreamReaderUtils = new ImageStreamReaderUtils();
     }
 
-    /**
-     * Ensure that passing in an image with padding returns one without padding
-     */
-    @Test
-    public void yuv420ThreePlanesToNV21_trimsPaddingWhenPresent() {
-        int imageWidth = 640;
-        int imageHeight = 480;
-        int padding = 256;
-        int rowStride =640 + padding;
+    Image getImage(int imageWidth, int imageHeight, int padding) {
+        int rowStride =imageWidth + padding;
 
         int ySize = (rowStride * imageHeight) - padding;
         int uSize = (ySize / 2) - (padding / 2);
@@ -72,8 +65,32 @@ public class ImageStreamReaderUtilsTest {
         Image.Plane[] planes = {planeY, planeU, planeV};
         when(mockImage.getPlanes()).thenReturn(planes);
 
-        // TODO: find correct size for result here
-        ByteBuffer result = imageStreamReaderUtils.yuv420ThreePlanesToNV21(planes, mockImage.getWidth(), mockImage.getHeight());
-        Assert.assertEquals(result.limit(), imageWidth * imageHeight);
+        return mockImage;
+    }
+
+    /**
+     * Ensure that passing in an image with padding returns one without padding
+     */
+    @Test
+    public void yuv420ThreePlanesToNV21_trimsPaddingWhenPresent() {
+        Image mockImage = getImage(640, 480, 256);
+        int imageWidth = mockImage.getWidth();
+        int imageHeight = mockImage.getHeight();
+
+        ByteBuffer result = imageStreamReaderUtils.yuv420ThreePlanesToNV21(mockImage.getPlanes(), mockImage.getWidth(), mockImage.getHeight());
+        Assert.assertEquals(((long) imageWidth * imageHeight) + (2 * ((long) (imageWidth / 2) * (imageHeight / 2))), result.limit());
+    }
+
+    /**
+     * Ensure that passing in an image without padding returns the same size
+     */
+    @Test
+    public void yuv420ThreePlanesToNV21_trimsPaddingWhenAbsent() {
+        Image mockImage = getImage(640, 480, 0);
+        int imageWidth = mockImage.getWidth();
+        int imageHeight = mockImage.getHeight();
+
+        ByteBuffer result = imageStreamReaderUtils.yuv420ThreePlanesToNV21(mockImage.getPlanes(), mockImage.getWidth(), mockImage.getHeight());
+        Assert.assertEquals(((long) imageWidth * imageHeight) + (2 * ((long) (imageWidth / 2) * (imageHeight / 2))), result.limit());
     }
 }
