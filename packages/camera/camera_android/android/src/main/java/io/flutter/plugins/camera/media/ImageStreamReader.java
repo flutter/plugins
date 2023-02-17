@@ -134,7 +134,7 @@ public class ImageStreamReader {
    * each map describes the image plane.
    *
    * For Yuv / Jpeg, we do no further processing on the frame so we simply send it as-is.
-   * 
+   *
    * @param image - the image to process.
    * @return parsed map describing the image planes to be sent to dart.
    */
