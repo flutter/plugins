@@ -18,7 +18,7 @@ plugin required a major version update.
 
 The **Google Sign-In JavaScript for Web JS SDK** is set to be deprecated after
 March 31, 2023. **Google Identity Services (GIS) SDK** is the new solution to
-quickly and easily sign users into your app suing their Google accounts.
+quickly and easily sign users into your app using their Google accounts.
 
 * In the GIS SDK, Authentication and Authorization are now two separate concerns.
   * Authentication (information about the current user) flows will not
