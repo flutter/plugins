@@ -1,5 +1,10 @@
-## NEXT
+## 2.4.5
 
+* Fixes Initial padding not working when map has not been created yet.
+
+## 2.4.4
+
+* Fixes Points losing precision when converting to LatLng.
 * Updates minimum Flutter version to 3.0.
 
 ## 2.4.3

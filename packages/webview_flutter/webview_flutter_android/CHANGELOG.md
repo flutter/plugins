@@ -1,6 +1,19 @@
+## 3.3.1
+
+* Added `setOnContentOffsetChanged` method to the `AndroidWebViewController`.
+
+## 3.3.0
+
+* Adds support to access native `WebView`.
+
+## 3.2.4
+
+* Renames Pigeon output files.
+
 ## 3.2.3
 
-* Added `setScrollListener` method to the `AndroidWebViewController`.
+* Fixes bug that prevented the web view from being garbage collected.
+* Fixes bug causing a `LateInitializationError` when a `PlatformNavigationDelegate` is not provided.
 
 ## 3.2.2
 

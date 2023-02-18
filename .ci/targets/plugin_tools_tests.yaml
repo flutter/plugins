@@ -1,5 +1,0 @@
-tasks:
-  - name: prepare tool
-    script: .ci/scripts/prepare_tool.sh
-  - name: tool unit tests
-    script: .ci/scripts/plugin_tools_tests.sh

@@ -325,18 +325,19 @@ public class WebViewTest {
   }
 
   @Test
-  public void disableScrollListener() {
-    testHostApiImpl.enableScrollListener(0L, false);
-    verify(mockWebView).setScrollListener(null);
+  public void disableContentOffsetChangedListener() {
+    testHostApiImpl.enableContentOffsetChangedListener(0L, false);
+    verify(mockWebView).setContentOffsetChangedListener(null);
   }
 
   @Test
-  public void enableScrollListener() {
-    final ArgumentCaptor<ScrollListener> modeCaptor = ArgumentCaptor.forClass(ScrollListener.class);
-    testHostApiImpl.enableScrollListener(0L, true);
-    verify(mockWebView).setScrollListener(modeCaptor.capture());
+  public void enableContentOffsetChangedListener() {
+    final ArgumentCaptor<ContentOffsetChangedListener> modeCaptor =
+        ArgumentCaptor.forClass(ContentOffsetChangedListener.class);
+    testHostApiImpl.enableContentOffsetChangedListener(0L, true);
+    verify(mockWebView).setContentOffsetChangedListener(modeCaptor.capture());
     assertNotNull(modeCaptor.getValue());
-    modeCaptor.getValue().onScrollPosChange(0, 1, 2, 3);
+    modeCaptor.getValue().onContentOffsetChange(0, 1, 2, 3);
     verify(mockWebViewFlutterApi).onScrollPosChange(eq(0L), eq(0L), eq(1L), eq(2L), eq(3L), any());
   }
 }

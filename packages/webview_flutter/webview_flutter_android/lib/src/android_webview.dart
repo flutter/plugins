@@ -16,7 +16,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show BinaryMessenger;
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
-import 'android_webview.pigeon.dart';
+import 'android_webview.g.dart';
 import 'android_webview_api_impls.dart';
 import 'instance_manager.dart';
 
@@ -405,8 +405,8 @@ class WebView extends JavaObject {
   }
 
   ///Toggle scroll listener for this WebView
-  Future<void> enableScrollListener(bool enabled) {
-    return api.enableScrollListenerFromInstance(this, enabled);
+  Future<void> enableContentOffsetChangedListener(bool enabled) {
+    return api.enableContentOffsetChangedListenerFromInstance(this, enabled);
   }
 
   @override

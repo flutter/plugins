@@ -132,7 +132,7 @@ Page resource error:
       ))
       ..setOnContentOffsetChanged((int left, int top, int oldLeft, int oldTop) {
         debugPrint(
-            'Scroll position change to left = $left y = $top oldX = $oldLeft oldY = $oldTop');
+            'Scroll offset change to left = $left y = $top oldX = $oldLeft oldY = $oldTop');
       });
   }
 

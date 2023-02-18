@@ -9,9 +9,9 @@ import 'dart:ui' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
-import 'package:webview_flutter_android/src/android_webview.pigeon.dart' as _i3;
+import 'package:webview_flutter_android/src/android_webview.g.dart' as _i3;
 
-import 'test_android_webview.pigeon.dart' as _i6;
+import 'test_android_webview.g.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -931,13 +931,13 @@ class MockTestWebViewHostApi extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  void enableScrollListener(
+  void enableContentOffsetChangedListener(
     int? instanceId,
     bool? enabled,
   ) =>
       super.noSuchMethod(
         Invocation.method(
-          #enableScrollListener,
+          #enableContentOffsetChangedListener,
           [
             instanceId,
             enabled,
@@ -1313,9 +1313,10 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
   @override
-  _i5.Future<void> enableScrollListener(bool? enabled) => (super.noSuchMethod(
+  _i5.Future<void> enableContentOffsetChangedListener(bool? enabled) =>
+      (super.noSuchMethod(
         Invocation.method(
-          #enableScrollListener,
+          #enableContentOffsetChangedListener,
           [enabled],
         ),
         returnValue: _i5.Future<void>.value(),

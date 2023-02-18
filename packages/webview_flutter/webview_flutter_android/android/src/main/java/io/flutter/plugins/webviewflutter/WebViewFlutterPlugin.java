@@ -33,7 +33,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
  * <p>Call {@link #registerWith} to use the stable {@code io.flutter.plugin.common} package instead.
  */
 public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
-  private InstanceManager instanceManager;
+  @Nullable private InstanceManager instanceManager;
 
   private FlutterPluginBinding pluginBinding;
   private WebViewHostApiImpl webViewHostApi;
@@ -149,7 +149,10 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    instanceManager.close();
+    if (instanceManager != null) {
+      instanceManager.close();
+      instanceManager = null;
+    }
   }
 
   @Override

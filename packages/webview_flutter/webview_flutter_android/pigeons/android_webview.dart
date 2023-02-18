@@ -6,8 +6,8 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(
   PigeonOptions(
-    dartOut: 'lib/src/android_webview.pigeon.dart',
-    dartTestOut: 'test/test_android_webview.pigeon.dart',
+    dartOut: 'lib/src/android_webview.g.dart',
+    dartTestOut: 'test/test_android_webview.g.dart',
     dartOptions: DartOptions(copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
       'Use of this source code is governed by a BSD-style license that can be',
@@ -190,7 +190,7 @@ abstract class WebViewHostApi {
 
   void setBackgroundColor(int instanceId, int color);
 
-  void enableScrollListener(int instanceId, bool enabled);
+  void enableContentOffsetChangedListener(int instanceId, bool enabled);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebSettingsHostApi')

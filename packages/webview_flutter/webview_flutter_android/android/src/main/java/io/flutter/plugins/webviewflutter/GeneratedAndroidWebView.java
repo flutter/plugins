@@ -692,7 +692,7 @@ public class GeneratedAndroidWebView {
 
     void setBackgroundColor(@NonNull Long instanceId, @NonNull Long color);
 
-    void enableScrollListener(@NonNull Long instanceId, @NonNull Boolean enabled);
+    void enableContentOffsetChangedListener(@NonNull Long instanceId, @NonNull Boolean enabled);
 
     /** The codec used by WebViewHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -1564,7 +1564,7 @@ public class GeneratedAndroidWebView {
         BasicMessageChannel<Object> channel =
             new BasicMessageChannel<>(
                 binaryMessenger,
-                "dev.flutter.pigeon.WebViewHostApi.enableScrollListener",
+                "dev.flutter.pigeon.WebViewHostApi.enableContentOffsetChangedListener",
                 getCodec());
         if (api != null) {
           channel.setMessageHandler(
@@ -1581,7 +1581,7 @@ public class GeneratedAndroidWebView {
                   if (enabledArg == null) {
                     throw new NullPointerException("enabledArg unexpectedly null.");
                   }
-                  api.enableScrollListener(
+                  api.enableContentOffsetChangedListener(
                       (instanceIdArg == null) ? null : instanceIdArg.longValue(), enabledArg);
                   wrapped.add(0, null);
                 } catch (Error | RuntimeException exception) {

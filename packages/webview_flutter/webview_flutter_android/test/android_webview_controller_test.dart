@@ -14,6 +14,7 @@ import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_proxy.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
+import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/src/platform_views_service_proxy.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -539,6 +540,19 @@ void main() {
       expect(callbackProgress, 42);
     });
 
+    test('onProgress does not cause LateInitializationError', () {
+      // ignore: unused_local_variable
+      final AndroidWebViewController controller = createControllerWithMocks(
+        createWebChromeClient: CapturingWebChromeClient.new,
+      );
+
+      // Should not cause LateInitializationError
+      CapturingWebChromeClient.lastCreatedDelegate.onProgressChanged!(
+        android_webview.WebView.detached(),
+        42,
+      );
+    });
+
     test('setOnShowFileSelector', () async {
       late final Future<List<String>> Function(
         android_webview.WebView webView,
@@ -864,9 +878,9 @@ void main() {
       );
       await controller.setOnContentOffsetChanged(
           (int left, int top, int oldLeft, int oldTop) {});
-      verify(mockWebView.enableScrollListener(true)).called(1);
+      verify(mockWebView.enableContentOffsetChangedListener(true)).called(1);
       await controller.setOnContentOffsetChanged(null);
-      verify(mockWebView.enableScrollListener(false)).called(1);
+      verify(mockWebView.enableContentOffsetChangedListener(false)).called(1);
     });
   });
 
@@ -881,6 +895,29 @@ void main() {
     await controller.setMediaPlaybackRequiresUserGesture(true);
 
     verify(mockSettings.setMediaPlaybackRequiresUserGesture(true)).called(1);
+  });
+
+  test('webViewIdentifier', () {
+    final MockWebView mockWebView = MockWebView();
+    final InstanceManager instanceManager = InstanceManager(
+      onWeakReferenceRemoved: (_) {},
+    );
+    instanceManager.addHostCreatedInstance(mockWebView, 0);
+
+    android_webview.WebView.api = WebViewHostApiImpl(
+      instanceManager: instanceManager,
+    );
+
+    final AndroidWebViewController controller = createControllerWithMocks(
+      mockWebView: mockWebView,
+    );
+
+    expect(
+      controller.webViewIdentifier,
+      0,
+    );
+
+    android_webview.WebView.api = WebViewHostApiImpl();
   });
 
   group('AndroidWebViewWidget', () {

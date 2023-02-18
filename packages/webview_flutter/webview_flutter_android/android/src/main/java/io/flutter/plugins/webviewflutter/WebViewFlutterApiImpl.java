@@ -9,9 +9,9 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewFlutterApi;
 
 /**
- * Flutter Api implementation for {@link ScrollListener}.
+ * Flutter Api implementation for {@link ContentOffsetChangedListener}.
  *
- * <p>Passes arguments of callbacks methods from a {@link ScrollListener} to Dart.
+ * <p>Passes arguments of callbacks methods from a {@link ContentOffsetChangedListener} to Dart.
  */
 public class WebViewFlutterApiImpl extends WebViewFlutterApi {
   private final InstanceManager instanceManager;
@@ -27,7 +27,7 @@ public class WebViewFlutterApiImpl extends WebViewFlutterApi {
     this.instanceManager = instanceManager;
   }
 
-  /** Passes arguments from {@link ScrollListener#onScrollPosChange} to Dart. */
+  /** Passes arguments from {@link ContentOffsetChangedListener#onContentOffsetChange} to Dart. */
   public void onScrollPosChange(
       WebView webView, long x, long y, long oldX, long oldY, Reply<Void> callback) {
     final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);

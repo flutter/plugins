@@ -10,10 +10,10 @@ import 'dart:ui';
 import 'package:flutter/services.dart' show BinaryMessenger;
 
 import 'android_webview.dart';
-import 'android_webview.pigeon.dart';
+import 'android_webview.g.dart';
 import 'instance_manager.dart';
 
-export 'android_webview.pigeon.dart' show FileChooserMode;
+export 'android_webview.g.dart' show FileChooserMode;
 
 /// Converts [WebResourceRequestData] to [WebResourceRequest]
 WebResourceRequest _toWebResourceRequest(WebResourceRequestData data) {
@@ -45,7 +45,7 @@ class AndroidWebViewFlutterApis {
     WebChromeClientFlutterApiImpl? webChromeClientFlutterApi,
     JavaScriptChannelFlutterApiImpl? javaScriptChannelFlutterApi,
     FileChooserParamsFlutterApiImpl? fileChooserParamsFlutterApi,
-    WebViewFlutterApiImpl? scrollListenerFlutterApi,
+    WebViewFlutterApiImpl? webViewFlutterApi,
   }) {
     this.javaObjectFlutterApi =
         javaObjectFlutterApi ?? JavaObjectFlutterApiImpl();
@@ -59,8 +59,7 @@ class AndroidWebViewFlutterApis {
         javaScriptChannelFlutterApi ?? JavaScriptChannelFlutterApiImpl();
     this.fileChooserParamsFlutterApi =
         fileChooserParamsFlutterApi ?? FileChooserParamsFlutterApiImpl();
-    this.scrollListenerFlutterApi =
-        scrollListenerFlutterApi ?? WebViewFlutterApiImpl();
+    this.webViewFlutterApi = webViewFlutterApi ?? WebViewFlutterApiImpl();
   }
 
   static bool _haveBeenSetUp = false;
@@ -89,7 +88,7 @@ class AndroidWebViewFlutterApis {
   late final FileChooserParamsFlutterApiImpl fileChooserParamsFlutterApi;
 
   /// Flutter Api for [ScrollListener].
-  late final WebViewFlutterApiImpl scrollListenerFlutterApi;
+  late final WebViewFlutterApiImpl webViewFlutterApi;
 
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
   void ensureSetUp() {
@@ -100,7 +99,7 @@ class AndroidWebViewFlutterApis {
       WebChromeClientFlutterApi.setup(webChromeClientFlutterApi);
       JavaScriptChannelFlutterApi.setup(javaScriptChannelFlutterApi);
       FileChooserParamsFlutterApi.setup(fileChooserParamsFlutterApi);
-      WebViewFlutterApi.setup(scrollListenerFlutterApi);
+      WebViewFlutterApi.setup(webViewFlutterApi);
       _haveBeenSetUp = true;
     }
   }
@@ -353,9 +352,9 @@ class WebViewHostApiImpl extends WebViewHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
-  Future<void> enableScrollListenerFromInstance(
+  Future<void> enableContentOffsetChangedListenerFromInstance(
       WebView instance, bool enabled) {
-    return enableScrollListener(
+    return enableContentOffsetChangedListener(
         instanceManager.getIdentifier(instance)!, enabled);
   }
 }

@@ -13,5 +13,17 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
         </activity>
+        <activity
+            android:name=".DriverExtensionActivity"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
+        <provider
+            android:authorities="dummy"
+            android:name=".DummyContentProvider"
+            android:exported="true"/>
     </application>
 </manifest>

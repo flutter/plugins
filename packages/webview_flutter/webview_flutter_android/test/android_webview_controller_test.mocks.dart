@@ -349,6 +349,12 @@ class MockAndroidNavigationDelegate extends _i1.Mock
 class MockAndroidWebViewController extends _i1.Mock
     implements _i8.AndroidWebViewController {
   @override
+  int get webViewIdentifier => (super.noSuchMethod(
+        Invocation.getter(#webViewIdentifier),
+        returnValue: 0,
+        returnValueForMissingStub: 0,
+      ) as int);
+  @override
   _i3.PlatformWebViewControllerCreationParams get params => (super.noSuchMethod(
         Invocation.getter(#params),
         returnValue: _FakePlatformWebViewControllerCreationParams_4(
@@ -2090,9 +2096,10 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
   @override
-  _i9.Future<void> enableScrollListener(bool? enabled) => (super.noSuchMethod(
+  _i9.Future<void> enableContentOffsetChangedListener(bool? enabled) =>
+      (super.noSuchMethod(
         Invocation.method(
-          #enableScrollListener,
+          #enableContentOffsetChangedListener,
           [enabled],
         ),
         returnValue: _i9.Future<void>.value(),

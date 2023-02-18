@@ -83,7 +83,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       implements PlatformView, WebViewExtendedApi {
     private WebViewClient currentWebViewClient;
     private WebChromeClientHostApiImpl.SecureWebChromeClient currentWebChromeClient;
-    private @Nullable ScrollListener onScrollChangeListener;
+    private @Nullable ContentOffsetChangedListener contentOffsetChangedListener;
 
     /**
      * Creates a {@link WebViewPlatformView}.
@@ -137,14 +137,15 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     protected void onScrollChanged(int l, int t, int oldL, int oldT) {
       super.onScrollChanged(l, t, oldL, oldT);
-      if (onScrollChangeListener != null) {
-        onScrollChangeListener.onScrollPosChange(l, t, oldL, oldT);
+      if (contentOffsetChangedListener != null) {
+        contentOffsetChangedListener.onContentOffsetChange(l, t, oldL, oldT);
       }
     }
 
     @Override
-    public void setScrollListener(ScrollListener onScrollChangeListener) {
-      this.onScrollChangeListener = onScrollChangeListener;
+    public void setContentOffsetChangedListener(
+        ContentOffsetChangedListener contentOffsetChangedListener) {
+      this.contentOffsetChangedListener = contentOffsetChangedListener;
     }
   }
 
@@ -157,7 +158,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       implements PlatformView, WebViewExtendedApi {
     private WebViewClient currentWebViewClient;
     private WebChromeClientHostApiImpl.SecureWebChromeClient currentWebChromeClient;
-    private @Nullable ScrollListener onScrollChangeListener;
+    private @Nullable ContentOffsetChangedListener contentOffsetChangedListener;
 
     /**
      * Creates a {@link InputAwareWebViewPlatformView}.
@@ -228,14 +229,15 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
       super.onScrollChanged(l, t, oldl, oldt);
-      if (onScrollChangeListener != null) {
-        onScrollChangeListener.onScrollPosChange(l, t, oldl, oldt);
+      if (contentOffsetChangedListener != null) {
+        contentOffsetChangedListener.onContentOffsetChange(l, t, oldl, oldt);
       }
     }
 
     @Override
-    public void setScrollListener(ScrollListener onScrollChangeListener) {
-      this.onScrollChangeListener = onScrollChangeListener;
+    public void setContentOffsetChangedListener(
+        ContentOffsetChangedListener contentOffsetChangedListener) {
+      this.contentOffsetChangedListener = contentOffsetChangedListener;
     }
   }
 
@@ -454,19 +456,25 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   @Override
-  public void enableScrollListener(@NonNull Long instanceId, @NonNull Boolean enabled) {
+  public void enableContentOffsetChangedListener(
+      @NonNull Long instanceId, @NonNull Boolean enabled) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     if (webView instanceof WebViewExtendedApi) {
       if (enabled) {
         ((WebViewExtendedApi) webView)
-            .setScrollListener(
-                (x, y, oldX, oldY) -> {
+            .setContentOffsetChangedListener(
+                (left, top, oldLeft, oldTop) -> {
                   webViewFlutterApi.onScrollPosChange(
-                      instanceId, (long) x, (long) y, (long) oldX, (long) oldY, reply -> {});
+                      instanceId,
+                      (long) left,
+                      (long) top,
+                      (long) oldLeft,
+                      (long) oldTop,
+                      reply -> {});
                 });
 
       } else {
-        ((WebViewExtendedApi) webView).setScrollListener(null);
+        ((WebViewExtendedApi) webView).setContentOffsetChangedListener(null);
       }
     }
   }

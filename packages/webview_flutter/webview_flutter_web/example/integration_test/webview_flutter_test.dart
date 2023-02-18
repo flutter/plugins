@@ -5,6 +5,10 @@
 import 'dart:html' as html;
 import 'dart:io';
 
+// FIX (dit): Remove these integration tests, or make them run. They currently never fail.
+// (They won't run because they use `dart:io`. If you remove all `dart:io` bits from
+// this file, they start failing with `fail()`, for example.)
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
