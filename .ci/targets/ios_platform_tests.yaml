@@ -15,7 +15,7 @@ tasks:
     args: ["xcode-analyze", "--ios", "--ios-min-version=13.0"]
   - name: native test
     script: script/tool_runner.sh
-    args: ["native-test", "--ios", "--ios-destination", "platform=iOS Simulator,name=iPhone 11,OS=latest"]
+    args: ["native-test", "--ios", "--ios-destination", "platform=iOS Simulator,name=iPhone 13,OS=latest"]
   - name: drive examples
     # `drive-examples` contains integration tests, which changes the UI of the application.
     # This UI change sometimes affects `xctest`.

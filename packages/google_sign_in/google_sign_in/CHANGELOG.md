@@ -1,3 +1,15 @@
+## 6.0.0
+
+* **Breaking change** for platform `web`:
+  * Endorses `google_sign_in_web: ^0.11.0` as the web implementation of the plugin.
+    * The web package is now backed by the **Google Identity Services (GIS) SDK**,
+    instead of the **Google Sign-In for Web JS SDK**, which is set to be deprecated
+    after March 31, 2023.
+    * Migration information can be found in the
+      [`google_sign_in_web` package README](https://pub.dev/packages/google_sign_in_web).
+
+For every platform other than `web`, this version should be identical to `5.4.4`.
+
 ## 5.4.4
 
 * Adds documentation for iOS auth with SERVER_CLIENT_ID

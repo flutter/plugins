@@ -25,12 +25,16 @@ void main() {
     required int mapId,
     required Future<dynamic>? Function(MethodCall call) handler,
   }) {
-    maps
-        .ensureChannelInitialized(mapId)
-        .setMockMethodCallHandler((MethodCall methodCall) {
-      log.add(methodCall.method);
-      return handler(methodCall);
-    });
+    final MethodChannel channel = maps.ensureChannelInitialized(mapId);
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      channel,
+      (MethodCall methodCall) {
+        log.add(methodCall.method);
+        return handler(methodCall);
+      },
+    );
   }
 
   Future<void> sendPlatformMessage(

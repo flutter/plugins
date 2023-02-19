@@ -12,23 +12,15 @@ class AppStoreProductDetails extends ProductDetails {
   /// Creates a new AppStore specific product details object with the provided
   /// details.
   AppStoreProductDetails({
-    required String id,
-    required String title,
-    required String description,
-    required String price,
-    required double rawPrice,
-    required String currencyCode,
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.price,
+    required super.rawPrice,
+    required super.currencyCode,
     required this.skProduct,
-    required String currencySymbol,
-  }) : super(
-          id: id,
-          title: title,
-          description: description,
-          price: price,
-          rawPrice: rawPrice,
-          currencyCode: currencyCode,
-          currencySymbol: currencySymbol,
-        );
+    required super.currencySymbol,
+  });
 
   /// Generate a [AppStoreProductDetails] object based on an iOS [SKProductWrapper] object.
   factory AppStoreProductDetails.fromSKProduct(SKProductWrapper product) {

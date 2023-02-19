@@ -1,3 +1,7 @@
+## 0.3.6
+
+* Updates minimum Flutter version to 3.3 and iOS 11.
+
 ## 0.3.5+2
 
 * Fix a crash when `appStoreReceiptURL` is nil.

@@ -164,6 +164,16 @@ class WebKitWebViewController extends PlatformWebViewController {
   WebKitWebViewControllerCreationParams get _webKitParams =>
       params as WebKitWebViewControllerCreationParams;
 
+  /// Identifier used to retrieve the underlying native `WKWebView`.
+  ///
+  /// This is typically used by other plugins to retrieve the native `WKWebView`
+  /// from an `FWFInstanceManager`.
+  ///
+  /// See Objective-C method
+  /// `FLTWebViewFlutterPlugin:webViewForIdentifier:withPluginRegistry`.
+  int get webViewIdentifier =>
+      _webKitParams._instanceManager.getIdentifier(_webView)!;
+
   @override
   Future<void> loadFile(String absoluteFilePath) {
     return _webView.loadFileUrl(

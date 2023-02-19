@@ -1,3 +1,7 @@
+## 3.3.0
+
+* Adds support to access native `WebView`.
+
 ## 3.2.4
 
 * Renames Pigeon output files.

@@ -81,6 +81,7 @@ void main() {
             return nonNullMockWebView;
           },
         ),
+        instanceManager: instanceManager,
       );
 
       final WebKitWebViewController controller = WebKitWebViewController(
@@ -934,6 +935,25 @@ void main() {
       );
 
       expect(callbackProgress, 0);
+    });
+
+    test('webViewIdentifier', () {
+      final InstanceManager instanceManager = InstanceManager(
+        onWeakReferenceRemoved: (_) {},
+      );
+      final MockWKWebView mockWebView = MockWKWebView();
+      when(mockWebView.copy()).thenReturn(MockWKWebView());
+      instanceManager.addHostCreatedInstance(mockWebView, 0);
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        createMockWebView: (_, {dynamic observeValue}) => mockWebView,
+        instanceManager: instanceManager,
+      );
+
+      expect(
+        controller.webViewIdentifier,
+        instanceManager.getIdentifier(mockWebView),
+      );
     });
   });
 

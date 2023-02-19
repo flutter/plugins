@@ -135,7 +135,7 @@ API_AVAILABLE(ios(14))
     localImage = [FLTImagePickerImageUtil scaledImage:localImage
                                              maxWidth:self.maxWidth
                                             maxHeight:self.maxHeight
-                                  isMetadataAvailable:originalAsset != nil];
+                                  isMetadataAvailable:YES];
   }
   if (originalAsset) {
     void (^resultHandler)(NSData *imageData, NSString *dataUTI, NSDictionary *info) =

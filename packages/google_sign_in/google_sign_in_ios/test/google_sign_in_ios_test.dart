@@ -51,14 +51,19 @@ void main() {
   setUp(() {
     responses = Map<String, dynamic>.from(kDefaultResponses);
     log = <MethodCall>[];
-    channel.setMockMethodCallHandler((MethodCall methodCall) {
-      log.add(methodCall);
-      final dynamic response = responses[methodCall.method];
-      if (response != null && response is Exception) {
-        return Future<dynamic>.error('$response');
-      }
-      return Future<dynamic>.value(response);
-    });
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      channel,
+      (MethodCall methodCall) {
+        log.add(methodCall);
+        final dynamic response = responses[methodCall.method];
+        if (response != null && response is Exception) {
+          return Future<dynamic>.error('$response');
+        }
+        return Future<dynamic>.value(response);
+      },
+    );
   });
 
   test('registered instance', () {
@@ -162,3 +167,9 @@ void main() {
     expect(log, tests.values);
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;
