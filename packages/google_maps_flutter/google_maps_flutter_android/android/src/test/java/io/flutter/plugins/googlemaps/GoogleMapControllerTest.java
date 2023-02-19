@@ -4,10 +4,12 @@
 
 package io.flutter.plugins.googlemaps;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -20,6 +22,7 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -144,5 +147,23 @@ public class GoogleMapControllerTest {
 
     argument.getValue().onMapLoaded();
     verify(mapView, never()).invalidate();
+  }
+
+  @Test
+  public void OnMapReadySetsPaddingIfInitialPaddingIsThere() {
+    float padding = 10f;
+    int paddingWithDensity = (int) (padding * googleMapController.density);
+    googleMapController.setInitialPadding(padding, padding, padding, padding);
+    googleMapController.onMapReady(mockGoogleMap);
+    verify(mockGoogleMap, times(1))
+        .setPadding(paddingWithDensity, paddingWithDensity, paddingWithDensity, paddingWithDensity);
+  }
+
+  @Test
+  public void SetPaddingStoresThePaddingValuesInInInitialPaddingWhenGoogleMapIsNull() {
+    assertNull(googleMapController.initialPadding);
+    googleMapController.setPadding(0f, 0f, 0f, 0f);
+    assertNotNull(googleMapController.initialPadding);
+    Assert.assertEquals(4, googleMapController.initialPadding.size());
   }
 }

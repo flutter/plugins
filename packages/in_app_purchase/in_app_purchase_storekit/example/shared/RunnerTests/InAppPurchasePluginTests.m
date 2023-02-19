@@ -313,6 +313,23 @@
   XCTAssert([result isKindOfClass:[NSString class]]);
 }
 
+- (void)testRetrieveReceiptDataNil {
+  NSBundle *mockBundle = OCMPartialMock([NSBundle mainBundle]);
+  OCMStub(mockBundle.appStoreReceiptURL).andReturn(nil);
+  XCTestExpectation *expectation = [self expectationWithDescription:@"nil receipt data retrieved"];
+  FlutterMethodCall *call = [FlutterMethodCall
+      methodCallWithMethodName:@"-[InAppPurchasePlugin retrieveReceiptData:result:]"
+                     arguments:nil];
+  __block NSDictionary *result;
+  [self.plugin handleMethodCall:call
+                         result:^(id r) {
+                           result = r;
+                           [expectation fulfill];
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertNil(result);
+}
+
 - (void)testRetrieveReceiptDataError {
   XCTestExpectation *expectation = [self expectationWithDescription:@"receipt data retrieved"];
   FlutterMethodCall *call = [FlutterMethodCall

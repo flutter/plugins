@@ -8,9 +8,9 @@ Flutter images.
 When loading images from Image.xcassets the device specific variant is chosen
 ([iOS documentation](https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/image-size-and-resolution/)).
 
-|             | iOS  |
-|-------------|------|
-| **Support** | 9.0+ |
+|             | iOS   |
+|-------------|-------|
+| **Support** | 11.0+ |
 
 ## Usage
 

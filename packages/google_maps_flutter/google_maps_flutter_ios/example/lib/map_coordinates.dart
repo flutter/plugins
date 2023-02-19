@@ -53,17 +53,28 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
         _updateVisibleRegion();
         return true;
       },
-      child: ListView(
+      child: Stack(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Center(
-              child: SizedBox(
-                width: 300.0,
-                height: 200.0,
-                child: googleMap,
+          ListView(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Center(
+                  child: SizedBox(
+                    width: 300.0,
+                    height: 200.0,
+                    child: googleMap,
+                  ),
+                ),
               ),
-            ),
+              // Add a block at the bottom of this list to allow validation that the visible region of the map
+              // does not change when scrolled under the safe view on iOS.
+              // https://github.com/flutter/flutter/issues/107913
+              const SizedBox(
+                width: 300,
+                height: 1000,
+              ),
+            ],
           ),
           if (mapController != null)
             Center(
@@ -71,13 +82,6 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
                   '\nnortheast: ${_visibleRegion.northeast},'
                   '\nsouthwest: ${_visibleRegion.southwest}'),
             ),
-          // Add a block at the bottom of this list to allow validation that the visible region of the map
-          // does not change when scrolled under the safe view on iOS.
-          // https://github.com/flutter/flutter/issues/107913
-          const SizedBox(
-            width: 300,
-            height: 1000,
-          ),
         ],
       ),
     );

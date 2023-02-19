@@ -1,5 +1,8 @@
-## NEXT
+## 0.11.0
 
+* **Breaking Change:** Migrates JS-interop to `package:google_identity_services_web`
+  * Uses the new Google Identity Authentication and Authorization JS SDKs. [Docs](https://developers.google.com/identity).
+    * Added "Migrating to v0.11" section to the `README.md`.
 * Updates minimum Flutter version to 3.0.
 
 ## 0.10.2+1
