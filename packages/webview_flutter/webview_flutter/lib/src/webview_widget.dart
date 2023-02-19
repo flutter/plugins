@@ -10,8 +10,35 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'webview_controller.dart';
 
 /// Displays a native WebView as a Widget.
+///
+/// ## Platform-Specific Features
+/// This class contains an underlying implementation provided by the current
+/// platform. Once a platform implementation is imported, the examples below
+/// can be followed to use features provided by a platform's implementation.
+///
+/// {@macro webview_flutter.WebViewWidget.fromPlatformCreationParams}
+///
+/// Below is an example of accessing the platform-specific implementation for
+/// iOS and Android:
+///
+/// ```dart
+/// final WebViewController controller = WebViewController();
+///
+/// final WebViewWidget webViewWidget = WebViewWidget(controller: controller);
+///
+/// if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+///   final WebKitWebViewWidget webKitWidget =
+///       webViewWidget.platform as WebKitWebViewWidget;
+/// } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+///   final AndroidWebViewWidget androidWidget =
+///       webViewWidget.platform as AndroidWebViewWidget;
+/// }
+/// ```
 class WebViewWidget extends StatelessWidget {
   /// Constructs a [WebViewWidget].
+  ///
+  /// See [WebViewWidget.fromPlatformCreationParams] for setting parameters for
+  /// a specific platform.
   WebViewWidget({
     Key? key,
     required WebViewController controller,
@@ -27,8 +54,40 @@ class WebViewWidget extends StatelessWidget {
           ),
         );
 
-  /// Constructs a [WebViewWidget] from creation params for a specific
-  /// platform.
+  /// Constructs a [WebViewWidget] from creation params for a specific platform.
+  ///
+  /// {@template webview_flutter.WebViewWidget.fromPlatformCreationParams}
+  /// Below is an example of setting platform-specific creation parameters for
+  /// iOS and Android:
+  ///
+  /// ```dart
+  /// final WebViewController controller = WebViewController();
+  ///
+  /// PlatformWebViewWidgetCreationParams params =
+  ///     PlatformWebViewWidgetCreationParams(
+  ///   controller: controller.platform,
+  ///   layoutDirection: TextDirection.ltr,
+  ///   gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+  /// );
+  ///
+  /// if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+  ///   params = WebKitWebViewWidgetCreationParams
+  ///       .fromPlatformWebViewWidgetCreationParams(
+  ///     params,
+  ///   );
+  /// } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+  ///   params = AndroidWebViewWidgetCreationParams
+  ///       .fromPlatformWebViewWidgetCreationParams(
+  ///     params,
+  ///   );
+  /// }
+  ///
+  /// final WebViewWidget webViewWidget =
+  ///     WebViewWidget.fromPlatformCreationParams(
+  ///   params: params,
+  /// );
+  /// ```
+  /// {@endtemplate}
   WebViewWidget.fromPlatformCreationParams({
     Key? key,
     required PlatformWebViewWidgetCreationParams params,
