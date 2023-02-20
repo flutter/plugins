@@ -169,6 +169,39 @@ void main() {
       expect(VideoPlayerPlatform.instance.setMixWithOthers(false), completes);
     });
 
+    testWidgets('double call to play emit singe playingUpdate',
+        (WidgetTester tester) async {
+      final int videoPlayerId = await textureId;
+      final Stream<VideoEvent> eventStream =
+          VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
+
+      final Future<List<VideoEvent>> stream = eventStream.timeout(
+        const Duration(seconds: 1),
+        onTimeout: (EventSink<VideoEvent> sink) {
+          sink.close();
+        },
+      ).toList();
+
+      await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
+      await VideoPlayerPlatform.instance.play(videoPlayerId);
+      await VideoPlayerPlatform.instance.play(videoPlayerId);
+
+      // Let the video play, until we stop seeing events for two seconds
+      final List<VideoEvent> events = await stream;
+
+      await VideoPlayerPlatform.instance.pause(videoPlayerId);
+
+      expect(
+          events.where(
+              (VideoEvent e) => e.eventType == VideoEventType.playingUpdate),
+          equals(<VideoEvent>[
+            VideoEvent(
+              eventType: VideoEventType.playingUpdate,
+              isPlaying: true,
+            )
+          ]));
+    });
+
     testWidgets('video playback lifecycle', (WidgetTester tester) async {
       final int videoPlayerId = await textureId;
       final Stream<VideoEvent> eventStream =
