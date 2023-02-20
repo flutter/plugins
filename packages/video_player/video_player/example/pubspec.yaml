@@ -37,3 +37,8 @@ flutter:
     - assets/bumble_bee_captions.srt
     - assets/bumble_bee_captions.vtt
     - assets/Audio.mp3
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  video_player_platform_interface:
+    path: ../../video_player_platform_interface
