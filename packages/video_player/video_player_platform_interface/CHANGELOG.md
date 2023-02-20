@@ -2,6 +2,11 @@
 
 * Updates minimum Flutter version to 3.0.
 
+## 6.0.2
+
+* Add the `VideoEventType.playingUpdate` event to track changes in play / pause status with the
+underlying video player.
+
 ## 6.0.1
 
 * Fixes comment describing file URI construction.

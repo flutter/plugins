@@ -2,6 +2,10 @@
 
 * Updates minimum Flutter version to 3.0.
 
+## 2.3.9
+
+* Synchronize `VideoPlayerValue.isPlaying` with `AVPlayer`.
+
 ## 2.3.8
 
 * Adds compatibilty with version 6.0 of the platform interface.

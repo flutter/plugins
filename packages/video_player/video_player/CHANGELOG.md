@@ -2,6 +2,10 @@
 
 * Updates minimum Flutter version to 3.0.
 
+## 2.5.2
+
+* Synchronize `VideoPlayerValue.isPlaying` with underlying video player.
+
 ## 2.5.1
 
 * Updates code for stricter lint checks.

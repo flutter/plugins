@@ -99,7 +99,7 @@ static void *rateContext = &rateContext;
          forKeyPath:@"playbackBufferFull"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
-  [_player addObserver:self
+  [player addObserver:self
             forKeyPath:@"rate"
                options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
                context:rateContext];
