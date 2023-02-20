@@ -31,3 +31,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  video_player_android:
+    path: ../video_player_android
+  video_player_avfoundation:
+    path: ../video_player_avfoundation
+  video_player_platform_interface:
+    path: ../video_player_platform_interface
+  video_player_web:
+    path: ../video_player_web

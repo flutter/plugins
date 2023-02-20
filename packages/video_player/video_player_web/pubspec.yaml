@@ -26,3 +26,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  video_player_platform_interface:
+    path: ../video_player_platform_interface

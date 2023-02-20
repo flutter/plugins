@@ -25,3 +25,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   pigeon: ^2.0.1
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  video_player_platform_interface:
+    path: ../video_player_platform_interface

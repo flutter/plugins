@@ -33,3 +33,8 @@ flutter:
   assets:
     - assets/flutter-mark-square-64.png
     - assets/Butterfly-209.mp4
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  video_player_platform_interface:
+    path: ../../video_player_platform_interface
