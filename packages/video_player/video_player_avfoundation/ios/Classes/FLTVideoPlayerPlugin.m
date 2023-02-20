@@ -100,9 +100,9 @@ static void *rateContext = &rateContext;
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
   [_player addObserver:self
-         forKeyPath:@"rate"
-            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:rateContext];
+            forKeyPath:@"rate"
+               options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+               context:rateContext];
 
   // Add an observer that will respond to itemDidPlayToEndTime
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -325,10 +325,7 @@ NS_INLINE UIViewController *rootViewController() {
   } else if (context == rateContext) {
     AVPlayer *player = (AVPlayer *)object;
     if (_eventSink != nil) {
-      _eventSink(@{
-        @"event" : @"playingUpdate",
-        @"isPlaying" : player.rate > 0 ? @YES : @NO
-      });
+      _eventSink(@{@"event" : @"playingUpdate", @"isPlaying" : player.rate > 0 ? @YES : @NO});
     }
   }
 }
