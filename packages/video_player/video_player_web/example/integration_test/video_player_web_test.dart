@@ -175,7 +175,7 @@ void main() {
           VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
 
       final Future<List<VideoEvent>> stream = eventStream.timeout(
-        const Duration(seconds: 1),
+        const Duration(seconds: 2),
         onTimeout: (EventSink<VideoEvent> sink) {
           sink.close();
         },
@@ -184,23 +184,25 @@ void main() {
       await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
       await VideoPlayerPlatform.instance.play(videoPlayerId);
 
-      // Let the video play, until we stop seeing events for a second
+      // Let the video play, until we stop seeing events for two seconds
       final List<VideoEvent> events = await stream;
 
       await VideoPlayerPlatform.instance.pause(videoPlayerId);
 
       // The expected list of event types should look like this:
-      // 1. bufferingStart,
-      // 2. bufferingUpdate (videoElement.onWaiting),
-      // 3. initialized (videoElement.onCanPlay),
-      // 4. bufferingEnd (videoElement.onCanPlayThrough),
+      // 1. playingUpdate (videoElement.onPlaying)
+      // 2. bufferingStart,
+      // 3. bufferingUpdate (videoElement.onWaiting),
+      // 4. initialized (videoElement.onCanPlay),
+      // 5. bufferingEnd (videoElement.onCanPlayThrough),
       expect(
           events.map((VideoEvent e) => e.eventType),
           equals(<VideoEventType>[
+            VideoEventType.playingUpdate,
             VideoEventType.bufferingStart,
             VideoEventType.bufferingUpdate,
             VideoEventType.initialized,
-            VideoEventType.bufferingEnd
+            VideoEventType.bufferingEnd,
           ]));
     });
   });

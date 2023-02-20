@@ -400,7 +400,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(isBuffering: false);
           break;
         case VideoEventType.playingUpdate:
-          // TODO(maRci002): make VideoPlayerController immutable and provide equals / hash
+          // TODO(maRci002): make VideoPlayerValue immutable and provide equals / hash
           if (event.isPlaying! != value.isPlaying) {
             value = value.copyWith(isPlaying: event.isPlaying);
           }

@@ -100,9 +100,9 @@ static void *rateContext = &rateContext;
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
   [player addObserver:self
-            forKeyPath:@"rate"
-               options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-               context:rateContext];
+           forKeyPath:@"rate"
+              options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+              context:rateContext];
 
   // Add an observer that will respond to itemDidPlayToEndTime
   [[NSNotificationCenter defaultCenter] addObserver:self
