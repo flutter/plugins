@@ -232,6 +232,16 @@ final class VideoPlayer {
               eventSink.error("VideoError", "Video player had error " + error, null);
             }
           }
+
+          @Override
+          public void onIsPlayingChanged(boolean isPlaying) {
+            if (eventSink != null) {
+              Map<String, Object> event = new HashMap<>();
+              event.put("event", "playingUpdate");
+              event.put("isPlaying", isPlaying);
+              eventSink.success(event);
+            }
+          }
         });
   }
 

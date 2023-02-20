@@ -62,6 +62,7 @@ static void *durationContext = &durationContext;
 static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void *playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void *playbackBufferFullContext = &playbackBufferFullContext;
+static void *rateContext = &rateContext;
 
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset frameUpdater:(FLTFrameUpdater *)frameUpdater {
@@ -98,6 +99,10 @@ static void *playbackBufferFullContext = &playbackBufferFullContext;
          forKeyPath:@"playbackBufferFull"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
+  [item addObserver:self
+         forKeyPath:@"rate"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:rateContext];
 
   // Add an observer that will respond to itemDidPlayToEndTime
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -316,6 +321,14 @@ NS_INLINE UIViewController *rootViewController() {
   } else if (context == playbackBufferFullContext) {
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"bufferingEnd"});
+    }
+  } else if (context == rateContext) {
+    AVPlayerItem *item = (AVPlayerItem *)object;
+    if (_eventSink != nil) {
+      _eventSink(@{
+        @"event" : @"playingUpdate",
+        @"isPlaying" : item.rate > 0 ? @YES : @NO
+      });
     }
   }
 }

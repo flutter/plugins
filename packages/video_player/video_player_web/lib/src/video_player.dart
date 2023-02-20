@@ -102,6 +102,20 @@ class VideoPlayer {
       ));
     });
 
+    _videoElement.onPlay.listen((dynamic _) {
+      _eventController.add(VideoEvent(
+        eventType: VideoEventType.playingUpdate,
+        isPlaying: true,
+      ));
+    });
+
+    _videoElement.onPause.listen((dynamic _) {
+      _eventController.add(VideoEvent(
+        eventType: VideoEventType.playingUpdate,
+        isPlaying: false,
+      ));
+    });
+
     _videoElement.onEnded.listen((dynamic _) {
       setBuffering(false);
       _eventController.add(VideoEvent(eventType: VideoEventType.completed));
