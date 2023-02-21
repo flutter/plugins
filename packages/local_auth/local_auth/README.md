@@ -252,6 +252,42 @@ types (such as face scanning) and you want to support SDKs lower than Q,
 _do not_ call `getAvailableBiometrics`. Simply call `authenticate` with `biometricOnly: true`.
 This will return an error if there was no hardware available.
 
+#### Android theme
+
+Your `LaunchTheme`'s parent must be a valid `Theme.AppCompat` theme to prevent
+crashes on Android 8 and below. For example, use `Theme.AppCompat.DayNight` to
+enable light/dark modes for the biometric dialog. To do that go to
+`android/app/src/main/res/values/styles.xml` and look for the style with name
+`LaunchTheme`. Then change the parent for that style as follows:
+
+```xml
+...
+<resources>
+  <style name="LaunchTheme" parent="Theme.AppCompat.DayNight">
+    ...
+  </style>
+  ...
+</resources>
+...
+```
+
+If you don't have a `styles.xml` file for your Android project you can set up
+the Android theme directly in `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+...
+	<application
+		...
+		<activity
+			...
+			android:theme="@style/Theme.AppCompat.DayNight"
+			...	
+		>
+		</activity>
+	</application>
+...
+```
+
 ## Sticky Auth
 
 You can set the `stickyAuth` option on the plugin to true so that plugin does not
