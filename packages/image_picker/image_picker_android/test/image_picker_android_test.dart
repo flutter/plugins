@@ -18,7 +18,10 @@ void main() {
 
   setUp(() {
     returnValue = '';
-    picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
+        .setMockMethodCallHandler(picker.channel,
+            (MethodCall methodCall) async {
       log.add(methodCall);
       return returnValue;
     });
@@ -189,7 +192,10 @@ void main() {
     });
 
     test('handles a null image path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(
+              picker.channel, (MethodCall methodCall) => null);
 
       expect(await picker.pickImage(source: ImageSource.gallery), isNull);
       expect(await picker.pickImage(source: ImageSource.camera), isNull);
@@ -347,7 +353,10 @@ void main() {
     });
 
     test('handles a null image path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(
+              picker.channel, (MethodCall methodCall) => null);
 
       expect(await picker.pickMultiImage(), isNull);
       expect(await picker.pickMultiImage(), isNull);
@@ -418,7 +427,10 @@ void main() {
     });
 
     test('handles a null video path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(
+              picker.channel, (MethodCall methodCall) => null);
 
       expect(await picker.pickVideo(source: ImageSource.gallery), isNull);
       expect(await picker.pickVideo(source: ImageSource.camera), isNull);
@@ -460,7 +472,10 @@ void main() {
 
   group('#retrieveLostData', () {
     test('retrieveLostData get success response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(picker.channel,
+              (MethodCall methodCall) async {
         return <String, String>{
           'type': 'image',
           'path': '/example/path',
@@ -473,7 +488,10 @@ void main() {
     });
 
     test('retrieveLostData get error response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(picker.channel,
+              (MethodCall methodCall) async {
         return <String, String>{
           'type': 'video',
           'errorCode': 'test_error_code',
@@ -488,14 +506,20 @@ void main() {
     });
 
     test('retrieveLostData get null response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(picker.channel,
+              (MethodCall methodCall) async {
         return null;
       });
       expect((await picker.retrieveLostData()).isEmpty, true);
     });
 
     test('retrieveLostData get both path and error should throw', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(picker.channel,
+              (MethodCall methodCall) async {
         return <String, String>{
           'type': 'video',
           'errorCode': 'test_error_code',
@@ -665,7 +689,10 @@ void main() {
     });
 
     test('handles a null image path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(
+              picker.channel, (MethodCall methodCall) => null);
 
       expect(await picker.getImage(source: ImageSource.gallery), isNull);
       expect(await picker.getImage(source: ImageSource.camera), isNull);
@@ -823,7 +850,10 @@ void main() {
     });
 
     test('handles a null image path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(
+              picker.channel, (MethodCall methodCall) => null);
 
       expect(await picker.getMultiImage(), isNull);
       expect(await picker.getMultiImage(), isNull);
@@ -894,7 +924,10 @@ void main() {
     });
 
     test('handles a null video path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(
+              picker.channel, (MethodCall methodCall) => null);
 
       expect(await picker.getVideo(source: ImageSource.gallery), isNull);
       expect(await picker.getVideo(source: ImageSource.camera), isNull);
@@ -936,7 +969,10 @@ void main() {
 
   group('#getLostData', () {
     test('getLostData get success response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(picker.channel,
+              (MethodCall methodCall) async {
         return <String, String>{
           'type': 'image',
           'path': '/example/path',
@@ -949,7 +985,10 @@ void main() {
     });
 
     test('getLostData should successfully retrieve multiple files', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(picker.channel,
+              (MethodCall methodCall) async {
         return <String, dynamic>{
           'type': 'image',
           'path': '/example/path1',
@@ -965,7 +1004,10 @@ void main() {
     });
 
     test('getLostData get error response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(picker.channel,
+              (MethodCall methodCall) async {
         return <String, String>{
           'type': 'video',
           'errorCode': 'test_error_code',
@@ -980,14 +1022,20 @@ void main() {
     });
 
     test('getLostData get null response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(picker.channel,
+              (MethodCall methodCall) async {
         return null;
       });
       expect((await picker.getLostData()).isEmpty, true);
     });
 
     test('getLostData get both path and error should throw', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(picker.channel,
+              (MethodCall methodCall) async {
         return <String, String>{
           'type': 'video',
           'errorCode': 'test_error_code',
@@ -1183,7 +1231,10 @@ void main() {
     });
 
     test('handles a null image path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(
+              picker.channel, (MethodCall methodCall) => null);
 
       expect(
           await picker.getImageFromSource(source: ImageSource.gallery), isNull);
@@ -1254,3 +1305,9 @@ void main() {
     });
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

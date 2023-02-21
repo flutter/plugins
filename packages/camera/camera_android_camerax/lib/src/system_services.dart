@@ -142,8 +142,6 @@ class SystemServicesFlutterApiImpl implements SystemServicesFlutterApi {
   /// Callback method for any errors caused by camera usage on the Java side.
   @override
   void onCameraError(String errorDescription) {
-    // TODO(camsim99): Use this to implement onCameraError method in plugin.
-    // See https://github.com/flutter/flutter/issues/119571 for context.
     SystemServices.cameraErrorStreamController.add(errorDescription);
   }
 }

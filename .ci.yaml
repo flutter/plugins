@@ -281,15 +281,6 @@ targets:
           {"dependency": "vs_build", "version": "version:vs2019"}
         ]
 
-  - name: Windows plugin_tools_tests
-    recipe: plugins/plugins
-    timeout: 30
-    properties:
-      add_recipes_cq: "true"
-      target_file: plugin_tools_tests.yaml
-      channel: master
-      version_file: flutter_master.version
-
   - name: Linux ci_yaml plugins roller
     recipe: infra/ci_yaml
     timeout: 30

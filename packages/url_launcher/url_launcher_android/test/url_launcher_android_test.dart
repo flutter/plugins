@@ -16,7 +16,9 @@ void main() {
 
   setUp(() {
     log = <MethodCall>[];
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
       log.add(methodCall);
 
       // Return null explicitly instead of relying on the implicit null
@@ -32,7 +34,9 @@ void main() {
 
   group('canLaunch', () {
     test('calls through', () async {
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
         log.add(methodCall);
         return true;
       });
@@ -59,7 +63,9 @@ void main() {
     test('checks a generic URL if an http URL returns false', () async {
       const String specificUrl = 'http://example.com/';
       const String genericUrl = 'http://flutter.dev';
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
         log.add(methodCall);
         return (methodCall.arguments as Map<Object?, Object?>)['url'] !=
             specificUrl;
@@ -76,7 +82,9 @@ void main() {
     test('checks a generic URL if an https URL returns false', () async {
       const String specificUrl = 'https://example.com/';
       const String genericUrl = 'https://flutter.dev';
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
         log.add(methodCall);
         return (methodCall.arguments as Map<Object?, Object?>)['url'] !=
             specificUrl;
@@ -91,7 +99,9 @@ void main() {
     });
 
     test('does not a generic URL if a non-web URL returns false', () async {
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
         log.add(methodCall);
         return false;
       });
@@ -288,3 +298,9 @@ void main() {
     });
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

@@ -101,6 +101,43 @@
   [self verifySavingImageWithPickerResult:result fullMetadata:YES withExtension:@"jpg"];
 }
 
+- (void)testSaveWithOrientation API_AVAILABLE(ios(14)) {
+  NSURL *imageURL =
+      [[NSBundle bundleForClass:[self class]] URLForResource:@"jpgImageWithRightOrientation"
+                                               withExtension:@"jpg"];
+  NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
+  PHPickerResult *result = [self createPickerResultWithProvider:itemProvider];
+
+  XCTestExpectation *pathExpectation = [self expectationWithDescription:@"Path was created"];
+  XCTestExpectation *operationExpectation =
+      [self expectationWithDescription:@"Operation completed"];
+
+  FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
+           initWithResult:result
+                maxHeight:@10
+                 maxWidth:@10
+      desiredImageQuality:@100
+             fullMetadata:NO
+           savedPathBlock:^(NSString *savedPath, FlutterError *error) {
+             XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:savedPath]);
+
+             // Ensure image retained it's orientation data.
+             XCTAssertEqualObjects([NSURL URLWithString:savedPath].pathExtension, @"jpg");
+             UIImage *image = [UIImage imageWithContentsOfFile:savedPath];
+             XCTAssertEqual(image.imageOrientation, UIImageOrientationRight);
+             XCTAssertEqual(image.size.width, 7);
+             XCTAssertEqual(image.size.height, 10);
+             [pathExpectation fulfill];
+           }];
+  operation.completionBlock = ^{
+    [operationExpectation fulfill];
+  };
+
+  [operation start];
+  [self waitForExpectationsWithTimeout:30 handler:nil];
+  XCTAssertTrue(operation.isFinished);
+}
+
 - (void)testSaveICNSImage API_AVAILABLE(ios(14)) {
   NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"icnsImage"
                                                              withExtension:@"icns"];

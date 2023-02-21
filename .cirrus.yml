@@ -4,7 +4,7 @@ gcp_credentials: ENCRYPTED[!3a93d98d7c95a41f5033834ef30e50928fc5d81239dc632b153c
 only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
-  PLUGIN_TOOL_COMMAND: "dart ./script/tool/bin/flutter_plugin_tools.dart"
+  PLUGIN_TOOL_COMMAND: "dart pub global run flutter_plugin_tools"
 
 install_chrome_linux_template: &INSTALL_CHROME_LINUX
   env:
@@ -77,10 +77,6 @@ task:
     namespace: default
   matrix:
     ### Platform-agnostic tasks ###
-    - name: Linux plugin_tools_tests
-      script:
-        - cd script/tool
-        - dart pub run test
     # Repository rules and best-practice enforcement.
     # Only channel-agnostic tests should go here since it is only run once
     # (on Flutter master).
@@ -124,9 +120,6 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      analyze_tool_script:
-        - cd script/tool
-        - dart analyze --fatal-infos
       analyze_script:
         # DO NOT change the custom-analysis argument here without changing the Dart repo.
         # See the comment in script/configs/custom_analysis.yaml for details.
@@ -248,7 +241,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[4457646586de940f49e054de7d82e60078b205ac627f11a89d077e63f639c9ba1002541d9209a9ee7777e159e97b43d0]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[df5cf97036c09184e386edbf4ab1e741189e0ac5ca7e4c73673c4bf02d8709c9ac733597e8f5b6511b51eafb52e4027f]
       build_script:
         - ./script/tool_runner.sh build-examples --apk
       lint_script:
