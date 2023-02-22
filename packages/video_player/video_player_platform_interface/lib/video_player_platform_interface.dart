@@ -240,7 +240,7 @@ class VideoEvent {
 
   /// Play state changed.
   ///
-  /// Only used if [eventType] is [VideoEventType.playingUpdate].
+  /// Only used if [eventType] is [VideoEventType.isPlayingStateUpdate].
   final bool? isPlaying;
 
   @override
@@ -287,9 +287,13 @@ enum VideoEventType {
   /// The video stopped to buffer.
   bufferingEnd,
 
-  /// The video started to play (for instance by user or phone call ended)
-  /// or the video has been paused (for instance by user or phone call ended)
-  playingUpdate,
+  /// Represents an event type emitted by the platform implementation when the
+  /// video playback state is updated, for example, when the video starts or
+  /// pauses due to user actions or phone calls, or other app media such as
+  /// music players.
+  /// Note that when [VideoPlayerOptions.mixWithOthers] is true, the video may
+  /// continue playing even during a phone call.
+  isPlayingStateUpdate,
 
   /// An unknown event has been received.
   unknown,

@@ -320,7 +320,7 @@ void main() {
                     mockChannel,
                     const StandardMethodCodec()
                         .encodeSuccessEnvelope(<String, dynamic>{
-                      'event': 'playingUpdate',
+                      'event': 'isPlayingStateUpdate',
                       'isPlaying': true,
                     }),
                     (ByteData? data) {});
@@ -331,7 +331,7 @@ void main() {
                     mockChannel,
                     const StandardMethodCodec()
                         .encodeSuccessEnvelope(<String, dynamic>{
-                      'event': 'playingUpdate',
+                      'event': 'isPlayingStateUpdate',
                       'isPlaying': false,
                     }),
                     (ByteData? data) {});
@@ -375,11 +375,11 @@ void main() {
             VideoEvent(eventType: VideoEventType.bufferingStart),
             VideoEvent(eventType: VideoEventType.bufferingEnd),
             VideoEvent(
-              eventType: VideoEventType.playingUpdate,
+              eventType: VideoEventType.isPlayingStateUpdate,
               isPlaying: true,
             ),
             VideoEvent(
-              eventType: VideoEventType.playingUpdate,
+              eventType: VideoEventType.isPlayingStateUpdate,
               isPlaying: false,
             ),
           ]));

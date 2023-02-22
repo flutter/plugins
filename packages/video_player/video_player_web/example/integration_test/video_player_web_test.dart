@@ -169,7 +169,8 @@ void main() {
       expect(VideoPlayerPlatform.instance.setMixWithOthers(false), completes);
     });
 
-    testWidgets('double call to play emit singe playingUpdate',
+    testWidgets(
+        'double call to play will emit a single isPlayingStateUpdate event',
         (WidgetTester tester) async {
       final int videoPlayerId = await textureId;
       final Stream<VideoEvent> eventStream =
@@ -192,11 +193,11 @@ void main() {
       await VideoPlayerPlatform.instance.pause(videoPlayerId);
 
       expect(
-          events.where(
-              (VideoEvent e) => e.eventType == VideoEventType.playingUpdate),
+          events.where((VideoEvent e) =>
+              e.eventType == VideoEventType.isPlayingStateUpdate),
           equals(<VideoEvent>[
             VideoEvent(
-              eventType: VideoEventType.playingUpdate,
+              eventType: VideoEventType.isPlayingStateUpdate,
               isPlaying: true,
             )
           ]));
@@ -223,7 +224,7 @@ void main() {
       await VideoPlayerPlatform.instance.pause(videoPlayerId);
 
       // The expected list of event types should look like this:
-      // 1. playingUpdate (videoElement.onPlaying)
+      // 1. isPlayingStateUpdate (videoElement.onPlaying)
       // 2. bufferingStart,
       // 3. bufferingUpdate (videoElement.onWaiting),
       // 4. initialized (videoElement.onCanPlay),
@@ -231,7 +232,7 @@ void main() {
       expect(
           events.map((VideoEvent e) => e.eventType),
           equals(<VideoEventType>[
-            VideoEventType.playingUpdate,
+            VideoEventType.isPlayingStateUpdate,
             VideoEventType.bufferingStart,
             VideoEventType.bufferingUpdate,
             VideoEventType.initialized,

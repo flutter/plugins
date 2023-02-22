@@ -237,7 +237,7 @@ final class VideoPlayer {
           public void onIsPlayingChanged(boolean isPlaying) {
             if (eventSink != null) {
               Map<String, Object> event = new HashMap<>();
-              event.put("event", "playingUpdate");
+              event.put("event", "isPlayingStateUpdate");
               event.put("isPlaying", isPlaying);
               eventSink.success(event);
             }

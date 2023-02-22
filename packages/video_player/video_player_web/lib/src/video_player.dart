@@ -104,14 +104,14 @@ class VideoPlayer {
 
     _videoElement.onPlay.listen((dynamic _) {
       _eventController.add(VideoEvent(
-        eventType: VideoEventType.playingUpdate,
+        eventType: VideoEventType.isPlayingStateUpdate,
         isPlaying: true,
       ));
     });
 
     _videoElement.onPause.listen((dynamic _) {
       _eventController.add(VideoEvent(
-        eventType: VideoEventType.playingUpdate,
+        eventType: VideoEventType.isPlayingStateUpdate,
         isPlaying: false,
       ));
     });

@@ -146,9 +146,9 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
           return VideoEvent(eventType: VideoEventType.bufferingStart);
         case 'bufferingEnd':
           return VideoEvent(eventType: VideoEventType.bufferingEnd);
-        case 'playingUpdate':
+        case 'isPlayingStateUpdate':
           return VideoEvent(
-            eventType: VideoEventType.playingUpdate,
+            eventType: VideoEventType.isPlayingStateUpdate,
             isPlaying: map['isPlaying'] as bool,
           );
         default:

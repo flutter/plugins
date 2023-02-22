@@ -70,7 +70,7 @@ static void *rateContext = &rateContext;
   return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater httpHeaders:@{}];
 }
 
-- (void)addObservers:(AVPlayerItem *)item player:(AVPlayer *)player {
+- (void)addObserversForItem:(AVPlayerItem *)item player:(AVPlayer *)player {
   [item addObserver:self
          forKeyPath:@"loadedTimeRanges"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -99,6 +99,9 @@ static void *rateContext = &rateContext;
          forKeyPath:@"playbackBufferFull"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
+
+  // Add observer to AVPlayer instead of AVPlayerItem since the AVPlayerItem does not have a "rate"
+  // property
   [player addObserver:self
            forKeyPath:@"rate"
               options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -257,7 +260,7 @@ NS_INLINE UIViewController *rootViewController() {
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
-  [self addObservers:item player:_player];
+  [self addObserversForItem:item player:_player];
 
   [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
 
@@ -323,9 +326,12 @@ NS_INLINE UIViewController *rootViewController() {
       _eventSink(@{@"event" : @"bufferingEnd"});
     }
   } else if (context == rateContext) {
+    // Important: Make sure to cast the object to AVPlayer when observing the rate property,
+    // as it is not available in AVPlayerItem.
     AVPlayer *player = (AVPlayer *)object;
     if (_eventSink != nil) {
-      _eventSink(@{@"event" : @"playingUpdate", @"isPlaying" : player.rate > 0 ? @YES : @NO});
+      _eventSink(
+          @{@"event" : @"isPlayingStateUpdate", @"isPlaying" : player.rate > 0 ? @YES : @NO});
     }
   }
 }
