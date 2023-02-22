@@ -1,3 +1,8 @@
+## 0.13.4+1
+
+* Makes `--packages-for-branch` detect any commit on `main` as being `main`,
+  so that it works with pinned checkouts (e.g., on LUCI).
+
 ## 0.13.4
 
 * Adds the ability to validate minimum supported Dart/Flutter versions in

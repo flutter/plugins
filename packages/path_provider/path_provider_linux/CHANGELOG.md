@@ -1,5 +1,6 @@
-## NEXT
+## 2.1.8
 
+* Adds compatibility with `xdg_directories` 1.0.
 * Updates minimum Flutter version to 3.0.
 
 ## 2.1.7

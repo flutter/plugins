@@ -32,14 +32,15 @@ void main() {
     // registerWith is called very early in initialization the bindings won't
     // have been initialized. While registerWith could intialize them, that
     // could slow down startup, so instead the handler should be set up lazily.
-    final ByteData? response = await TestDefaultBinaryMessengerBinding
-        .instance!.defaultBinaryMessenger
-        .handlePlatformMessage(
-            AVFoundationCamera.deviceEventChannelName,
-            const StandardMethodCodec().encodeMethodCall(const MethodCall(
-                'orientation_changed',
-                <String, Object>{'orientation': 'portraitDown'})),
-            (ByteData? data) {});
+    final ByteData? response =
+        await _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+            .defaultBinaryMessenger
+            .handlePlatformMessage(
+                AVFoundationCamera.deviceEventChannelName,
+                const StandardMethodCodec().encodeMethodCall(const MethodCall(
+                    'orientation_changed',
+                    <String, Object>{'orientation': 'portraitDown'})),
+                (ByteData? data) {});
     expect(response, null);
   });
 
@@ -421,7 +422,8 @@ void main() {
       const DeviceOrientationChangedEvent event =
           DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
       for (int i = 0; i < 3; i++) {
-        await TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+        await _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+            .defaultBinaryMessenger
             .handlePlatformMessage(
                 AVFoundationCamera.deviceEventChannelName,
                 const StandardMethodCodec().encodeMethodCall(
@@ -1122,3 +1124,9 @@ void main() {
     });
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

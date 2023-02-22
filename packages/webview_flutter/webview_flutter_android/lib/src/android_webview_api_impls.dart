@@ -10,10 +10,10 @@ import 'dart:ui';
 import 'package:flutter/services.dart' show BinaryMessenger;
 
 import 'android_webview.dart';
-import 'android_webview.pigeon.dart';
+import 'android_webview.g.dart';
 import 'instance_manager.dart';
 
-export 'android_webview.pigeon.dart' show FileChooserMode;
+export 'android_webview.g.dart' show FileChooserMode;
 
 /// Converts [WebResourceRequestData] to [WebResourceRequest]
 WebResourceRequest _toWebResourceRequest(WebResourceRequestData data) {

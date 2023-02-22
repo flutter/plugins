@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:7.4.1'
     }
 }
 
@@ -29,10 +29,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
-        // TODO(stuartmorgan): Enable when gradle is updated.
-        // disable 'AndroidGradlePluginVersion'
-        disable 'InvalidPackage'
-        disable 'GradleDependency'
+        disable 'AndroidGradlePluginVersion', 'InvalidPackage', 'GradleDependency'
         baseline file("lint-baseline.xml")
     }
 
@@ -53,7 +50,7 @@ android {
 dependencies {
     implementation 'com.google.guava:guava:31.1-android'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-    implementation 'com.google.code.gson:gson:2.9.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
     androidTestImplementation 'org.hamcrest:hamcrest:2.2'
 
     testImplementation 'junit:junit:4.13.2'
@@ -69,17 +66,17 @@ dependencies {
     api 'androidx.test:rules:1.1.0'
 
     // Assertions
-    api 'androidx.test.ext:junit:1.1.3'
+    api 'androidx.test.ext:junit:1.1.5'
     api 'androidx.test.ext:truth:1.5.0'
     api 'com.google.truth:truth:0.42'
 
     // Espresso dependencies
-    api 'androidx.test.espresso:espresso-core:3.1.0'
-    api 'androidx.test.espresso:espresso-contrib:3.1.0'
-    api 'androidx.test.espresso:espresso-intents:3.1.0'
+    api 'androidx.test.espresso:espresso-core:3.5.1'
+    api 'androidx.test.espresso:espresso-contrib:3.5.1'
+    api 'androidx.test.espresso:espresso-intents:3.5.1'
     api 'androidx.test.espresso:espresso-accessibility:3.5.1'
-    api 'androidx.test.espresso:espresso-web:3.1.0'
-    api 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
+    api 'androidx.test.espresso:espresso-web:3.5.1'
+    api 'androidx.test.espresso.idling:idling-concurrent:3.5.1'
 
     // The following Espresso dependency can be either "implementation"
     // or "androidTestImplementation", depending on whether you want the
