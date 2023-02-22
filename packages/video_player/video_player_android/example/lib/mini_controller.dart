@@ -8,6 +8,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
@@ -24,10 +25,11 @@ VideoPlayerPlatform get _platform {
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [MiniController].
+@immutable
 class VideoPlayerValue {
   /// Constructs a video with the given values. Only [duration] is required. The
   /// rest will initialize with default values when unset.
-  VideoPlayerValue({
+  const VideoPlayerValue({
     required this.duration,
     this.size = Size.zero,
     this.position = Duration.zero,
@@ -40,11 +42,11 @@ class VideoPlayerValue {
   });
 
   /// Returns an instance for a video that hasn't been loaded.
-  VideoPlayerValue.uninitialized()
+  const VideoPlayerValue.uninitialized()
       : this(duration: Duration.zero, isInitialized: false);
 
   /// Returns an instance with the given [errorDescription].
-  VideoPlayerValue.erroneous(String errorDescription)
+  const VideoPlayerValue.erroneous(String errorDescription)
       : this(
             duration: Duration.zero,
             isInitialized: false,
@@ -127,6 +129,34 @@ class VideoPlayerValue {
       errorDescription: errorDescription ?? this.errorDescription,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is VideoPlayerValue &&
+          runtimeType == other.runtimeType &&
+          duration == other.duration &&
+          position == other.position &&
+          listEquals(buffered, other.buffered) &&
+          isPlaying == other.isPlaying &&
+          isBuffering == other.isBuffering &&
+          playbackSpeed == other.playbackSpeed &&
+          errorDescription == other.errorDescription &&
+          size == other.size &&
+          isInitialized == other.isInitialized;
+
+  @override
+  int get hashCode => Object.hash(
+        duration,
+        position,
+        buffered,
+        isPlaying,
+        isBuffering,
+        playbackSpeed,
+        errorDescription,
+        size,
+        isInitialized,
+      );
 }
 
 /// A very minimal version of `VideoPlayerController` for running the example
@@ -139,21 +169,21 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
   /// package and null otherwise.
   MiniController.asset(this.dataSource, {this.package})
       : dataSourceType = DataSourceType.asset,
-        super(VideoPlayerValue(duration: Duration.zero));
+        super(const VideoPlayerValue(duration: Duration.zero));
 
   /// Constructs a [MiniController] playing a video from obtained from
   /// the network.
   MiniController.network(this.dataSource)
       : dataSourceType = DataSourceType.network,
         package = null,
-        super(VideoPlayerValue(duration: Duration.zero));
+        super(const VideoPlayerValue(duration: Duration.zero));
 
   /// Constructs a [MiniController] playing a video from obtained from a file.
   MiniController.file(File file)
       : dataSource = Uri.file(file.absolute.path).toString(),
         dataSourceType = DataSourceType.file,
         package = null,
-        super(VideoPlayerValue(duration: Duration.zero));
+        super(const VideoPlayerValue(duration: Duration.zero));
 
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
@@ -244,10 +274,7 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(isBuffering: false);
           break;
         case VideoEventType.isPlayingStateUpdate:
-          // TODO(maRci002): make VideoPlayerValue immutable and provide equals / hash
-          if (event.isPlaying! != value.isPlaying) {
-            value = value.copyWith(isPlaying: event.isPlaying);
-          }
+          value = value.copyWith(isPlaying: event.isPlaying);
           break;
         case VideoEventType.unknown:
           break;
