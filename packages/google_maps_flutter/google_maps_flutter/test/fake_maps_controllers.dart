@@ -13,7 +13,9 @@ class FakePlatformGoogleMap {
       : cameraPosition =
             CameraPosition.fromMap(params['initialCameraPosition']),
         channel = MethodChannel('plugins.flutter.io/google_maps_$id') {
-    channel.setMockMethodCallHandler(onMethodCall);
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, onMethodCall);
     updateOptions(params['options'] as Map<dynamic, dynamic>);
     updateMarkers(params);
     updatePolygons(params);
@@ -93,7 +95,9 @@ class FakePlatformGoogleMap {
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
-        updateOptions(call.arguments['options'] as Map<dynamic, dynamic>);
+        final Map<String, Object?> arguments =
+            (call.arguments as Map<Object?, Object?>).cast<String, Object?>();
+        updateOptions(arguments['options']! as Map<dynamic, dynamic>);
         return Future<void>.sync(() {});
       case 'markers#update':
         updateMarkers(call.arguments as Map<dynamic, dynamic>?);
@@ -218,17 +222,18 @@ class FakePlatformGoogleMap {
     return result;
   }
 
+  // Converts a list of points expressed as two-element lists of doubles into
+  // a list of `LatLng`s. All list items are assumed to be non-null.
   List<LatLng> _deserializePoints(List<dynamic> points) {
-    return points.map<LatLng>((dynamic list) {
-      return LatLng(list[0] as double, list[1] as double);
+    return points.map<LatLng>((dynamic item) {
+      final List<Object?> list = item as List<Object?>;
+      return LatLng(list[0]! as double, list[1]! as double);
     }).toList();
   }
 
   List<List<LatLng>> _deserializeHoles(List<dynamic> holes) {
     return holes.map<List<LatLng>>((dynamic hole) {
-      return hole.map<LatLng>((dynamic list) {
-        return LatLng(list[0] as double, list[1] as double);
-      }).toList() as List<LatLng>;
+      return _deserializePoints(hole as List<dynamic>);
     }).toList();
   }
 
@@ -475,3 +480,9 @@ Map<dynamic, dynamic>? _decodeParams(Uint8List paramsMessage) {
   return const StandardMessageCodec().decodeMessage(messageBytes)
       as Map<dynamic, dynamic>?;
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

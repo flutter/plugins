@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,10 +14,13 @@ import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_proxy.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
+import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
+import 'package:webview_flutter_android/src/platform_views_service_proxy.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_platform_interface/src/webview_platform.dart';
 
+import 'android_navigation_delegate_test.dart';
 import 'android_webview_controller_test.mocks.dart';
 
 @GenerateNiceMocks(<MockSpec<Object>>[
@@ -22,8 +28,11 @@ import 'android_webview_controller_test.mocks.dart';
   MockSpec<AndroidWebViewController>(),
   MockSpec<AndroidWebViewProxy>(),
   MockSpec<AndroidWebViewWidgetCreationParams>(),
+  MockSpec<ExpensiveAndroidViewController>(),
   MockSpec<android_webview.FlutterAssetManager>(),
   MockSpec<android_webview.JavaScriptChannel>(),
+  MockSpec<PlatformViewsServiceProxy>(),
+  MockSpec<SurfaceAndroidViewController>(),
   MockSpec<android_webview.WebChromeClient>(),
   MockSpec<android_webview.WebSettings>(),
   MockSpec<android_webview.WebView>(),
@@ -37,7 +46,16 @@ void main() {
   AndroidWebViewController createControllerWithMocks({
     android_webview.FlutterAssetManager? mockFlutterAssetManager,
     android_webview.JavaScriptChannel? mockJavaScriptChannel,
-    android_webview.WebChromeClient? mockWebChromeClient,
+    android_webview.WebChromeClient Function({
+      void Function(android_webview.WebView webView, int progress)?
+          onProgressChanged,
+      Future<List<String>> Function(
+        android_webview.WebView webView,
+        android_webview.FileChooserParams params,
+      )?
+          onShowFileChooser,
+    })?
+        createWebChromeClient,
     android_webview.WebView? mockWebView,
     android_webview.WebViewClient? mockWebViewClient,
     android_webview.WebStorage? mockWebStorage,
@@ -50,10 +68,17 @@ void main() {
         AndroidWebViewControllerCreationParams(
             androidWebStorage: mockWebStorage ?? MockWebStorage(),
             androidWebViewProxy: AndroidWebViewProxy(
-              createAndroidWebChromeClient: (
-                      {void Function(android_webview.WebView, int)?
-                          onProgressChanged}) =>
-                  mockWebChromeClient ?? MockWebChromeClient(),
+              createAndroidWebChromeClient: createWebChromeClient ??
+                  ({
+                    void Function(android_webview.WebView, int)?
+                        onProgressChanged,
+                    Future<List<String>> Function(
+                      android_webview.WebView webView,
+                      android_webview.FileChooserParams params,
+                    )?
+                        onShowFileChooser,
+                  }) =>
+                      MockWebChromeClient(),
               createAndroidWebView: ({required bool useHybridComposition}) =>
                   nonNullMockWebView,
               createAndroidWebViewClient: ({
@@ -479,10 +504,101 @@ void main() {
 
       await controller.setPlatformNavigationDelegate(mockNavigationDelegate);
 
-      verifyInOrder(<Object>[
-        mockWebView.setWebViewClient(mockWebViewClient),
-        mockWebView.setWebChromeClient(mockWebChromeClient),
-      ]);
+      verify(mockWebView.setWebViewClient(mockWebViewClient));
+      verifyNever(mockWebView.setWebChromeClient(mockWebChromeClient));
+    });
+
+    test('onProgress', () {
+      final AndroidNavigationDelegate androidNavigationDelegate =
+          AndroidNavigationDelegate(
+        AndroidNavigationDelegateCreationParams
+            .fromPlatformNavigationDelegateCreationParams(
+          const PlatformNavigationDelegateCreationParams(),
+          androidWebViewProxy: const AndroidWebViewProxy(
+            createAndroidWebViewClient: android_webview.WebViewClient.detached,
+            createAndroidWebChromeClient:
+                android_webview.WebChromeClient.detached,
+            createDownloadListener: android_webview.DownloadListener.detached,
+          ),
+        ),
+      );
+
+      late final int callbackProgress;
+      androidNavigationDelegate
+          .setOnProgress((int progress) => callbackProgress = progress);
+
+      final AndroidWebViewController controller = createControllerWithMocks(
+        createWebChromeClient: CapturingWebChromeClient.new,
+      );
+      controller.setPlatformNavigationDelegate(androidNavigationDelegate);
+
+      CapturingWebChromeClient.lastCreatedDelegate.onProgressChanged!(
+        android_webview.WebView.detached(),
+        42,
+      );
+
+      expect(callbackProgress, 42);
+    });
+
+    test('onProgress does not cause LateInitializationError', () {
+      // ignore: unused_local_variable
+      final AndroidWebViewController controller = createControllerWithMocks(
+        createWebChromeClient: CapturingWebChromeClient.new,
+      );
+
+      // Should not cause LateInitializationError
+      CapturingWebChromeClient.lastCreatedDelegate.onProgressChanged!(
+        android_webview.WebView.detached(),
+        42,
+      );
+    });
+
+    test('setOnShowFileSelector', () async {
+      late final Future<List<String>> Function(
+        android_webview.WebView webView,
+        android_webview.FileChooserParams params,
+      ) onShowFileChooserCallback;
+      final MockWebChromeClient mockWebChromeClient = MockWebChromeClient();
+      final AndroidWebViewController controller = createControllerWithMocks(
+        createWebChromeClient: ({
+          dynamic onProgressChanged,
+          Future<List<String>> Function(
+            android_webview.WebView webView,
+            android_webview.FileChooserParams params,
+          )?
+              onShowFileChooser,
+        }) {
+          onShowFileChooserCallback = onShowFileChooser!;
+          return mockWebChromeClient;
+        },
+      );
+
+      late final FileSelectorParams fileSelectorParams;
+      await controller.setOnShowFileSelector(
+        (FileSelectorParams params) async {
+          fileSelectorParams = params;
+          return <String>[];
+        },
+      );
+
+      verify(
+        mockWebChromeClient.setSynchronousReturnValueForOnShowFileChooser(true),
+      );
+
+      onShowFileChooserCallback(
+        android_webview.WebView.detached(),
+        android_webview.FileChooserParams.detached(
+          isCaptureEnabled: false,
+          acceptTypes: <String>['png'],
+          filenameHint: 'filenameHint',
+          mode: android_webview.FileChooserMode.open,
+        ),
+      );
+
+      expect(fileSelectorParams.isCaptureEnabled, isFalse);
+      expect(fileSelectorParams.acceptTypes, <String>['png']);
+      expect(fileSelectorParams.filenameHint, 'filenameHint');
+      expect(fileSelectorParams.mode, FileSelectorMode.open);
     });
 
     test('runJavaScript', () async {
@@ -769,23 +885,40 @@ void main() {
     verify(mockSettings.setMediaPlaybackRequiresUserGesture(true)).called(1);
   });
 
+  test('webViewIdentifier', () {
+    final MockWebView mockWebView = MockWebView();
+    final InstanceManager instanceManager = InstanceManager(
+      onWeakReferenceRemoved: (_) {},
+    );
+    instanceManager.addHostCreatedInstance(mockWebView, 0);
+
+    android_webview.WebView.api = WebViewHostApiImpl(
+      instanceManager: instanceManager,
+    );
+
+    final AndroidWebViewController controller = createControllerWithMocks(
+      mockWebView: mockWebView,
+    );
+
+    expect(
+      controller.webViewIdentifier,
+      0,
+    );
+
+    android_webview.WebView.api = WebViewHostApiImpl();
+  });
+
   group('AndroidWebViewWidget', () {
-    testWidgets('Builds AndroidView using supplied parameters',
+    testWidgets('Builds Android view using supplied parameters',
         (WidgetTester tester) async {
-      final MockAndroidWebViewWidgetCreationParams mockParams =
-          MockAndroidWebViewWidgetCreationParams();
-      final MockInstanceManager mockInstanceManager = MockInstanceManager();
-      final MockWebView mockWebView = MockWebView();
-      final AndroidWebViewController controller =
-          createControllerWithMocks(mockWebView: mockWebView);
+      final AndroidWebViewController controller = createControllerWithMocks();
 
-      when(mockParams.key).thenReturn(const Key('test_web_view'));
-      when(mockParams.instanceManager).thenReturn(mockInstanceManager);
-      when(mockParams.controller).thenReturn(controller);
-      when(mockInstanceManager.getIdentifier(mockWebView)).thenReturn(42);
-
-      final AndroidWebViewWidget webViewWidget =
-          AndroidWebViewWidget(mockParams);
+      final AndroidWebViewWidget webViewWidget = AndroidWebViewWidget(
+        AndroidWebViewWidgetCreationParams(
+          key: const Key('test_web_view'),
+          controller: controller,
+        ),
+      );
 
       await tester.pumpWidget(Builder(
         builder: (BuildContext context) => webViewWidget.build(context),
@@ -793,6 +926,93 @@ void main() {
 
       expect(find.byType(PlatformViewLink), findsOneWidget);
       expect(find.byKey(const Key('test_web_view')), findsOneWidget);
+    });
+
+    testWidgets('displayWithHybridComposition is false',
+        (WidgetTester tester) async {
+      final AndroidWebViewController controller = createControllerWithMocks();
+
+      final MockPlatformViewsServiceProxy mockPlatformViewsService =
+          MockPlatformViewsServiceProxy();
+
+      when(
+        mockPlatformViewsService.initSurfaceAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      ).thenReturn(MockSurfaceAndroidViewController());
+
+      final AndroidWebViewWidget webViewWidget = AndroidWebViewWidget(
+        AndroidWebViewWidgetCreationParams(
+          key: const Key('test_web_view'),
+          controller: controller,
+          platformViewsServiceProxy: mockPlatformViewsService,
+        ),
+      );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) => webViewWidget.build(context),
+      ));
+      await tester.pumpAndSettle();
+
+      verify(
+        mockPlatformViewsService.initSurfaceAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      );
+    });
+
+    testWidgets('displayWithHybridComposition is true',
+        (WidgetTester tester) async {
+      final AndroidWebViewController controller = createControllerWithMocks();
+
+      final MockPlatformViewsServiceProxy mockPlatformViewsService =
+          MockPlatformViewsServiceProxy();
+
+      when(
+        mockPlatformViewsService.initExpensiveAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      ).thenReturn(MockExpensiveAndroidViewController());
+
+      final AndroidWebViewWidget webViewWidget = AndroidWebViewWidget(
+        AndroidWebViewWidgetCreationParams(
+          key: const Key('test_web_view'),
+          controller: controller,
+          platformViewsServiceProxy: mockPlatformViewsService,
+          displayWithHybridComposition: true,
+        ),
+      );
+
+      await tester.pumpWidget(Builder(
+        builder: (BuildContext context) => webViewWidget.build(context),
+      ));
+      await tester.pumpAndSettle();
+
+      verify(
+        mockPlatformViewsService.initExpensiveAndroidView(
+          id: anyNamed('id'),
+          viewType: anyNamed('viewType'),
+          layoutDirection: anyNamed('layoutDirection'),
+          creationParams: anyNamed('creationParams'),
+          creationParamsCodec: anyNamed('creationParamsCodec'),
+          onFocus: anyNamed('onFocus'),
+        ),
+      );
     });
   });
 }

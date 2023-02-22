@@ -200,6 +200,7 @@ void main() {
           const WKNavigationAction(
             request: NSUrlRequest(url: 'https://www.google.com'),
             targetFrame: WKFrameInfo(isMainFrame: false),
+            navigationType: WKNavigationType.linkActivated,
           ),
         ),
         completion(WKNavigationActionPolicy.allow),
@@ -229,6 +230,7 @@ void main() {
         const WKNavigationAction(
           request: request,
           targetFrame: WKFrameInfo(isMainFrame: false),
+          navigationType: WKNavigationType.linkActivated,
         ),
       );
 

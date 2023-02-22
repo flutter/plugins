@@ -14,8 +14,10 @@ void main() {
   final FakeStoreKitPlatform fakeStoreKitPlatform = FakeStoreKitPlatform();
 
   setUpAll(() {
-    SystemChannels.platform
-        .setMockMethodCallHandler(fakeStoreKitPlatform.onMethodCall);
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
+        .setMockMethodCallHandler(
+            SystemChannels.platform, fakeStoreKitPlatform.onMethodCall);
   });
 
   setUp(() {});
@@ -185,7 +187,9 @@ void main() {
 
 class FakeStoreKitPlatform {
   FakeStoreKitPlatform() {
-    channel.setMockMethodCallHandler(onMethodCall);
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, onMethodCall);
   }
   // get product request
   List<dynamic> startProductRequestParam = <dynamic>[];
@@ -234,7 +238,7 @@ class FakeStoreKitPlatform {
       // receipt manager
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
         if (getReceiptFailTest) {
-          throw 'some arbitrary error';
+          throw Exception('some arbitrary error');
         }
         return Future<String>.value('receipt data');
       // payment queue
@@ -303,3 +307,9 @@ class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
     return true;
   }
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

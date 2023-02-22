@@ -1,3 +1,19 @@
+## 4.0.4
+
+* Adds examples of accessing platform-specific features for each class.
+
+## 4.0.3
+
+* Updates example code for `use_build_context_synchronously` lint.
+
+## 4.0.2
+
+* Updates code for stricter lint checks.
+
+## 4.0.1
+
+* Exposes `WebResourceErrorType` from platform interface.
+
 ## 4.0.0
 
 * **BREAKING CHANGE** Updates implementation to use the `2.0.0` release of

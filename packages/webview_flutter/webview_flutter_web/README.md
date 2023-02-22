@@ -18,59 +18,22 @@ yet, so it currently requires extra setup to use:
 * [Add this package](https://pub.dev/packages/webview_flutter_web/install)
   as an explicit dependency of your project, in addition to depending on
   `webview_flutter`.
-* Register `WebWebViewPlatform` as the `WebViewPlatform.instance` before creating a
-  `WebView`. See below for examples.
 
-Once those steps below are complete, the APIs from `webview_flutter` listed
+Once the step above is complete, the APIs from `webview_flutter` listed
 above can be used as normal on web.
 
-### Registering the implementation
+## Tests
 
-Before creating a `WebView` (for instance, at the start of `main`), you will
-need to register the web implementation.
+Tests are contained in the `test` directory. You can run all tests from the root
+of the package with the following command:
 
-#### Web-only project example
-
-```dart
-...
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_web/webview_flutter_web.dart';
-
-main() {
-  WebViewPlatform.instance = WebWebViewPlatform();
-  ...
+```bash
+$ flutter test --platform chrome
 ```
 
-#### Multi-platform project example
+This package uses `package:mockito` in some tests. Mock files can be updated
+from the root of the package like so:
 
-If your project supports platforms other than web, you will need to use a
-conditional import to avoid directly including `webview_flutter_web.dart` on
-non-web platforms. For example:
-
-`register_web_webview.dart`:
-```dart
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_web/webview_flutter_web.dart';
-
-void registerWebViewWebImplementation() {
-  WebViewPlatform.instance = WebWebViewPlatform();
-}
-```
-
-`register_web_webview_stub.dart`:
-```dart
-void registerWebViewWebImplementation() {
-  // No-op.
-}
-```
-
-`main.dart`:
-```dart
-...
-import 'register_web_webview_stub.dart'
-    if (dart.library.html) 'register_web.dart';
-
-main() {
-  registerWebViewWebImplementation();
-  ...
+```bash
+$ flutter pub run build_runner build --delete-conflicting-outputs
 ```

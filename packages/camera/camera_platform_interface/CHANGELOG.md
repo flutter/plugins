@@ -1,3 +1,16 @@
+## 2.4.0
+
+* Allows camera to be switched while video recording.
+* Updates minimum Flutter version to 3.0.
+
+## 2.3.4
+
+* Updates code for stricter lint checks.
+
+## 2.3.3
+
+* Updates code for stricter lint checks.
+
 ## 2.3.2
 
 * Updates MethodChannelCamera to have startVideoRecording call the newer startVideoCapturing.

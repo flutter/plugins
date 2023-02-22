@@ -4,14 +4,14 @@
 
 import 'package:camera_android_camerax/src/camera_info.dart';
 import 'package:camera_android_camerax/src/camera_selector.dart';
-import 'package:camera_android_camerax/src/camerax_library.pigeon.dart';
+import 'package:camera_android_camerax/src/camerax_library.g.dart';
 import 'package:camera_android_camerax/src/instance_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'camera_selector_test.mocks.dart';
-import 'test_camerax_library.pigeon.dart';
+import 'test_camerax_library.g.dart';
 
 @GenerateMocks(<Type>[TestCameraSelectorHostApi])
 void main() {
@@ -60,10 +60,10 @@ void main() {
       );
       CameraSelector(
           instanceManager: instanceManager,
-          lensFacing: CameraSelector.LENS_FACING_BACK);
+          lensFacing: CameraSelector.lensFacingBack);
 
       verify(
-          mockApi.create(argThat(isA<int>()), CameraSelector.LENS_FACING_BACK));
+          mockApi.create(argThat(isA<int>()), CameraSelector.lensFacingBack));
     });
 
     test('filterTest', () async {
@@ -108,14 +108,14 @@ void main() {
         instanceManager: instanceManager,
       );
 
-      flutterApi.create(0, CameraSelector.LENS_FACING_BACK);
+      flutterApi.create(0, CameraSelector.lensFacingBack);
 
       expect(instanceManager.getInstanceWithWeakReference(0),
           isA<CameraSelector>());
       expect(
           (instanceManager.getInstanceWithWeakReference(0)! as CameraSelector)
               .lensFacing,
-          equals(CameraSelector.LENS_FACING_BACK));
+          equals(CameraSelector.lensFacingBack));
     });
   });
 }

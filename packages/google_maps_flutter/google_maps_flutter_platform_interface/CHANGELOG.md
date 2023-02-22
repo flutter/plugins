@@ -1,6 +1,11 @@
 ## 2.3.0
 
 * Adds options for gesture handling and tilt controls on web.
+* Updates minimum Flutter version to 3.0.
+
+## 2.2.5
+
+* Updates code for stricter lint checks.
 
 ## 2.2.4
 

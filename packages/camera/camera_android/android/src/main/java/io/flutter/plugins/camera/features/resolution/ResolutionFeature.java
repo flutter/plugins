@@ -114,19 +114,23 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
       preset = ResolutionPreset.high;
     }
-    if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       EncoderProfiles profile =
           getBestAvailableCamcorderProfileForResolutionPreset(cameraId, preset);
       List<EncoderProfiles.VideoProfile> videoProfiles = profile.getVideoProfiles();
       EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
 
-      return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
-    } else {
-      @SuppressWarnings("deprecation")
-      CamcorderProfile profile =
-          getBestAvailableCamcorderProfileForResolutionPresetLegacy(cameraId, preset);
-      return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
+      if (defaultVideoProfile != null) {
+        return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
+      }
     }
+
+    @SuppressWarnings("deprecation")
+    // TODO(camsim99): Suppression is currently safe because legacy code is used as a fallback for SDK >= S.
+    // This should be removed when reverting that fallback behavior: https://github.com/flutter/flutter/issues/119668.
+    CamcorderProfile profile =
+        getBestAvailableCamcorderProfileForResolutionPresetLegacy(cameraId, preset);
+    return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
   }
 
   /**
@@ -234,15 +238,24 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     if (!checkIsSupported()) {
       return;
     }
+    boolean captureSizeCalculated = false;
 
-    if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      recordingProfileLegacy = null;
       recordingProfile =
           getBestAvailableCamcorderProfileForResolutionPreset(cameraId, resolutionPreset);
       List<EncoderProfiles.VideoProfile> videoProfiles = recordingProfile.getVideoProfiles();
 
       EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
-      captureSize = new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
-    } else {
+
+      if (defaultVideoProfile != null) {
+        captureSizeCalculated = true;
+        captureSize = new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
+      }
+    }
+
+    if (!captureSizeCalculated) {
+      recordingProfile = null;
       @SuppressWarnings("deprecation")
       CamcorderProfile camcorderProfile =
           getBestAvailableCamcorderProfileForResolutionPresetLegacy(cameraId, resolutionPreset);

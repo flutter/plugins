@@ -37,14 +37,12 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
-        disable 'AndroidGradlePluginVersion'
-        disable 'InvalidPackage'
-        disable 'GradleDependency'
+        disable 'AndroidGradlePluginVersion', 'InvalidPackage', 'GradleDependency'
         baseline file("lint-baseline.xml")
     }
     dependencies {
         testImplementation 'junit:junit:4.13.2'
-        testImplementation 'org.mockito:mockito-inline:4.7.0'
+        testImplementation 'org.mockito:mockito-inline:5.0.0'
     }
 
 

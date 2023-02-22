@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 3.0.
+
+## 0.3.1+1
+
+* Updates code for stricter lint checks.
+
 ## 0.3.1
 
 * Updates to latest camera platform interface, and fails if user attempts to use streaming with recording (since streaming is currently unsupported on web).

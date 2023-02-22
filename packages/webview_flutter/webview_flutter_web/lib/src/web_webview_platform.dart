@@ -24,5 +24,7 @@ class WebWebViewPlatform extends WebViewPlatform {
   }
 
   /// Gets called when the plugin is registered.
-  static void registerWith(Registrar registrar) {}
+  static void registerWith(Registrar registrar) {
+    WebViewPlatform.instance = WebWebViewPlatform();
+  }
 }

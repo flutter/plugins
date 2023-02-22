@@ -1,6 +1,11 @@
 ## 2.3.0
 
 * Adds options for gesture handling and tilt controls on web.
+* Updates minimum Flutter version to 3.0.
+
+## 2.2.3
+
+* Fixes a minor syntax error in `README.md`.
 
 ## 2.2.2
 

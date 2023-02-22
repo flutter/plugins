@@ -365,11 +365,13 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 - (void)checkPhotoAuthorizationForAccessLevel API_AVAILABLE(ios(14)) {
-  PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+  PHAccessLevel requestedAccessLevel = PHAccessLevelReadWrite;
+  PHAuthorizationStatus status =
+      [PHPhotoLibrary authorizationStatusForAccessLevel:requestedAccessLevel];
   switch (status) {
     case PHAuthorizationStatusNotDetermined: {
       [PHPhotoLibrary
-          requestAuthorizationForAccessLevel:PHAccessLevelReadWrite
+          requestAuthorizationForAccessLevel:requestedAccessLevel
                                      handler:^(PHAuthorizationStatus status) {
                                        dispatch_async(dispatch_get_main_queue(), ^{
                                          if (status == PHAuthorizationStatusAuthorized) {

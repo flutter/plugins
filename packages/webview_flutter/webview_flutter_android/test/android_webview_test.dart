@@ -6,12 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_webview.dart';
-import 'package:webview_flutter_android/src/android_webview.pigeon.dart';
+import 'package:webview_flutter_android/src/android_webview.g.dart';
 import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 
 import 'android_webview_test.mocks.dart';
-import 'test_android_webview.pigeon.dart';
+import 'test_android_webview.g.dart';
 
 @GenerateMocks(<Type>[
   CookieManagerHostApi,
@@ -831,8 +831,118 @@ void main() {
         expect(result, containsAllInOrder(<Object?>[mockWebView, 76]));
       });
 
+      test('onShowFileChooser', () async {
+        late final List<Object> result;
+        when(mockWebChromeClient.onShowFileChooser).thenReturn(
+          (WebView webView, FileChooserParams params) {
+            result = <Object>[webView, params];
+            return Future<List<String>>.value(<String>['fileOne', 'fileTwo']);
+          },
+        );
+
+        final FileChooserParams params = FileChooserParams.detached(
+          isCaptureEnabled: false,
+          acceptTypes: <String>[],
+          filenameHint: 'filenameHint',
+          mode: FileChooserMode.open,
+        );
+
+        instanceManager.addHostCreatedInstance(params, 3);
+
+        await expectLater(
+          flutterApi.onShowFileChooser(
+            mockWebChromeClientInstanceId,
+            mockWebViewInstanceId,
+            3,
+          ),
+          completion(<String>['fileOne', 'fileTwo']),
+        );
+        expect(result[0], mockWebView);
+        expect(result[1], params);
+      });
+
+      test('setSynchronousReturnValueForOnShowFileChooser', () {
+        final MockTestWebChromeClientHostApi mockHostApi =
+            MockTestWebChromeClientHostApi();
+        TestWebChromeClientHostApi.setup(mockHostApi);
+
+        WebChromeClient.api =
+            WebChromeClientHostApiImpl(instanceManager: instanceManager);
+
+        final WebChromeClient webChromeClient = WebChromeClient.detached();
+        instanceManager.addHostCreatedInstance(webChromeClient, 2);
+
+        webChromeClient.setSynchronousReturnValueForOnShowFileChooser(false);
+
+        verify(
+          mockHostApi.setSynchronousReturnValueForOnShowFileChooser(2, false),
+        );
+      });
+
+      test(
+          'setSynchronousReturnValueForOnShowFileChooser throws StateError when onShowFileChooser is null',
+          () {
+        final MockTestWebChromeClientHostApi mockHostApi =
+            MockTestWebChromeClientHostApi();
+        TestWebChromeClientHostApi.setup(mockHostApi);
+
+        WebChromeClient.api =
+            WebChromeClientHostApiImpl(instanceManager: instanceManager);
+
+        final WebChromeClient clientWithNullCallback =
+            WebChromeClient.detached();
+        instanceManager.addHostCreatedInstance(clientWithNullCallback, 2);
+
+        expect(
+          () => clientWithNullCallback
+              .setSynchronousReturnValueForOnShowFileChooser(true),
+          throwsStateError,
+        );
+
+        final WebChromeClient clientWithNonnullCallback =
+            WebChromeClient.detached(
+          onShowFileChooser: (_, __) async => <String>[],
+        );
+        instanceManager.addHostCreatedInstance(clientWithNonnullCallback, 3);
+
+        clientWithNonnullCallback
+            .setSynchronousReturnValueForOnShowFileChooser(true);
+
+        verify(
+          mockHostApi.setSynchronousReturnValueForOnShowFileChooser(3, true),
+        );
+      });
+
       test('copy', () {
         expect(WebChromeClient.detached().copy(), isA<WebChromeClient>());
+      });
+    });
+
+    group('FileChooserParams', () {
+      test('FlutterApi create', () {
+        final InstanceManager instanceManager = InstanceManager(
+          onWeakReferenceRemoved: (_) {},
+        );
+
+        final FileChooserParamsFlutterApiImpl flutterApi =
+            FileChooserParamsFlutterApiImpl(
+          instanceManager: instanceManager,
+        );
+
+        flutterApi.create(
+          0,
+          false,
+          const <String>['my', 'list'],
+          FileChooserModeEnumData(value: FileChooserMode.openMultiple),
+          'filenameHint',
+        );
+
+        final FileChooserParams instance = instanceManager
+            .getInstanceWithWeakReference(0)! as FileChooserParams;
+        expect(instance.isCaptureEnabled, false);
+        expect(instance.acceptTypes, const <String>['my', 'list']);
+        expect(instance.mode, FileChooserMode.openMultiple);
+        expect(instance.filenameHint, 'filenameHint');
       });
     });
   });

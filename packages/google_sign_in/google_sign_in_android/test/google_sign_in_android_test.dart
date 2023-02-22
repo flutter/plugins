@@ -50,14 +50,19 @@ void main() {
 
   setUp(() {
     responses = Map<String, dynamic>.from(kDefaultResponses);
-    channel.setMockMethodCallHandler((MethodCall methodCall) {
-      log.add(methodCall);
-      final dynamic response = responses[methodCall.method];
-      if (response != null && response is Exception) {
-        return Future<dynamic>.error('$response');
-      }
-      return Future<dynamic>.value(response);
-    });
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      channel,
+      (MethodCall methodCall) {
+        log.add(methodCall);
+        final dynamic response = responses[methodCall.method];
+        if (response != null && response is Exception) {
+          return Future<dynamic>.error('$response');
+        }
+        return Future<dynamic>.value(response);
+      },
+    );
     log.clear();
   });
 
@@ -99,7 +104,7 @@ void main() {
   });
 
   test('Other functions pass through arguments to the channel', () async {
-    final Map<Function, Matcher> tests = <Function, Matcher>{
+    final Map<void Function(), Matcher> tests = <void Function(), Matcher>{
       () {
         googleSignIn.init(
             hostedDomain: 'example.com',
@@ -152,10 +157,16 @@ void main() {
       googleSignIn.isSignedIn: isMethodCall('isSignedIn', arguments: null),
     };
 
-    for (final Function f in tests.keys) {
+    for (final void Function() f in tests.keys) {
       f();
     }
 
     expect(log, tests.values);
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

@@ -30,10 +30,7 @@ android {
         consumerProguardFiles 'proguard.txt'
     }
     lintOptions {
-        // TODO(stuartmorgan): Enable when gradle is updated.
-        // disable 'AndroidGradlePluginVersion'
-        disable 'InvalidPackage'
-        disable 'GradleDependency'
+        disable 'AndroidGradlePluginVersion', 'InvalidPackage', 'GradleDependency'
     }
 
     dependencies {
@@ -56,6 +53,6 @@ android {
 
 dependencies {
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:4.7.0'
+    testImplementation 'org.mockito:mockito-core:5.1.1'
 }
 

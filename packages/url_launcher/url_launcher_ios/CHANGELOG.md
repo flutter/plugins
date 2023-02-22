@@ -1,5 +1,10 @@
-## NEXT
+## 6.1.0
 
+* Updates minimum Flutter version to 3.3 and iOS 11.
+
+## 6.0.18
+
+* Updates code for stricter lint checks.
 * Updates minimum Flutter version to 2.10.
 
 ## 6.0.17
