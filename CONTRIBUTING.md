@@ -1,6 +1,10 @@
 # Contributing to Flutter Plugins
 
-[![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/main)
+| **ARCHIVED** |
+|--------------|
+| This repository is no longer in use; all source has moved to [flutter/packages](https://github.com/flutter/packages) and future development work will be done there. |
+
+## ARCHIVED CONTENT
 
 _See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/master/CODE_OF_CONDUCT.md)_
 
