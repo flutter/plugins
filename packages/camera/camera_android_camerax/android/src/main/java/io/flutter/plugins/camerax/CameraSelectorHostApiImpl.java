@@ -32,7 +32,7 @@ public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
     CameraSelector cameraSelector;
 
     if (lensFacing != null) {
-      cameraSelector = cameraSelectorBuilder.requireLensFacing(Math.toIntExact(lensFacing)).build();
+      cameraSelector = cameraSelectorBuilder.requireLensFacing(lensFacing.intValue()).build();
     } else {
       cameraSelector = cameraSelectorBuilder.build();
     }
